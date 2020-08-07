@@ -14,9 +14,7 @@ from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
 
 
-plot = False
-if True:
-#def test_linear_buckling(plot=False):
+def test_linear_buckling(plot=False):
     time0 = time.process_time()
     # geometry our FW cylinders
     L = 0.3 # m
@@ -254,5 +252,5 @@ if True:
         plt.show()
     print('elapsed time: %f s' % (time.process_time() - time0))
 
-#if __name__ == '__main__':
-    #test_linear_buckling(plot=False)
+if __name__ == '__main__':
+    test_linear_buckling(plot=False)

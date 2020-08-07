@@ -7,16 +7,16 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import eigsh
 from composites.laminate import read_stack
 
-from bfscylinder import (BFSCylinder, update_KC0, update_M, DOF, DOUBLE, INT,
+from bfsccylinder import (BFSCCylinder, update_KC0, update_M, DOF, DOUBLE, INT,
 KC0_SPARSE_SIZE, M_SPARSE_SIZE)
-from bfscylinder.quadrature import get_points_weights
-from bfscylinder.utils import assign_constant_ABD
+from bfsccylinder.quadrature import get_points_weights
+from bfsccylinder.utils import assign_constant_ABD
 
 
 def test_natural_frequency(plot=False):
     # number of nodes
-    nx = 25 # axial, keep odd if you want a line of nodes exactly in the middle
-    ny = 78 # circumferential
+    nx = 21 # axial, keep odd if you want a line of nodes exactly in the middle
+    ny = 56 # circumferential
 
     # geometry
     L = 0.8 # m
@@ -71,7 +71,7 @@ def test_natural_frequency(plot=False):
     init_k_KC0 = 0
     init_k_M = 0
     for n1, n2, n3, n4 in zip(n1s, n2s, n3s, n4s):
-        shell = BFSCylinder(nint)
+        shell = BFSCCylinder(nint)
         shell.c1 = DOF*nid_pos[n1]
         shell.c2 = DOF*nid_pos[n2]
         shell.c3 = DOF*nid_pos[n3]
@@ -101,8 +101,8 @@ def test_natural_frequency(plot=False):
     # simply supports
     checkSS = isclose(x, 0) | isclose(x, L)
     bk[0::DOF] = checkSS
-    bk[1::DOF] = checkSS
-    bk[2::DOF] = checkSS
+    bk[3::DOF] = checkSS
+    bk[6::DOF] = checkSS
 
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
@@ -125,9 +125,8 @@ def test_natural_frequency(plot=False):
     u = np.zeros(N, dtype=float)
     u[bu] = uu
 
-    w = u[2::DOF].reshape(nx, ny)
-    print('wmax', w.max())
-    print('wmin', w.min())
+    w = u[6::DOF].reshape(nx, ny)
+    print('omegan', omegan)
     if plot:
         import matplotlib
         matplotlib.use('TkAgg')

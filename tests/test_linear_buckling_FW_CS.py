@@ -22,7 +22,7 @@ def test_linear_buckling(plot=False):
     circ = 2*pi*R # m
 
     # number of nodes
-    nx = 40 # axial
+    nx = 20 # axial
     ny = int(nx*circ/L)
     print('nx, ny', nx, ny)
 

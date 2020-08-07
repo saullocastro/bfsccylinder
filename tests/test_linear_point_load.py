@@ -7,15 +7,15 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import cg
 from composites.laminate import read_stack
 
-from bfscylinder import BFSCylinder, update_KC0, DOF, DOUBLE, INT, KC0_SPARSE_SIZE
-from bfscylinder.quadrature import get_points_weights
-from bfscylinder.utils import assign_constant_ABD
+from bfsccylinder import BFSCCylinder, update_KC0, DOF, DOUBLE, INT, KC0_SPARSE_SIZE
+from bfsccylinder.quadrature import get_points_weights
+from bfsccylinder.utils import assign_constant_ABD
 
 
 def test_point_load(plot=False):
     # number of nodes
-    nx = 25 # axial, keep odd if you want a line of nodes exactly in the middle
-    ny = 78 # circumferential, keep even if you want a line of nodes in the middle
+    nx = 11 # axial, keep odd if you want a line of nodes exactly in the middle
+    ny = 30 # circumferential, keep even if you want a line of nodes in the middle
 
     # geometry
     L = 0.8
@@ -65,7 +65,7 @@ def test_point_load(plot=False):
     Kv = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=DOUBLE)
     init_k_KC0 = 0
     for n1, n2, n3, n4 in zip(n1s, n2s, n3s, n4s):
-        shell = BFSCylinder(nint)
+        shell = BFSCCylinder(nint)
         shell.c1 = DOF*nid_pos[n1]
         shell.c2 = DOF*nid_pos[n2]
         shell.c3 = DOF*nid_pos[n3]
@@ -87,8 +87,8 @@ def test_point_load(plot=False):
     # simply supported
     checkSS = isclose(x, 0) | isclose(x, L)
     bk[0::DOF] = checkSS
-    bk[1::DOF] = checkSS
-    bk[2::DOF] = checkSS
+    bk[3::DOF] = checkSS
+    bk[6::DOF] = checkSS
 
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
@@ -98,19 +98,20 @@ def test_point_load(plot=False):
 
     # force at center node
     check = np.isclose(x, L/2) & np.isclose(y, b/2)
-    f[2::DOF][check] = fmid
-    assert np.isclose(f.sum(), fmid)
+    f[6::DOF][check] = fmid
 
     # sub-matrices corresponding to unknown DOFs
     Kuu = K[bu, :][:, bu]
     fu = f[bu]
+    assert np.isclose(fu.sum(), fmid)
 
     # solving
-    uu, info = cg(Kuu, fu)
+    PREC = np.sqrt(1/Kuu.diagonal()).max()
+    uu, info = cg(PREC*Kuu, PREC*fu, tol=1e-4)
     u = np.zeros(K.shape[0], dtype=float)
     u[bu] = uu
 
-    w = u[2::DOF].reshape(nx, ny)
+    w = u[6::DOF].reshape(nx, ny)
     print('wmax', w.max())
     print('wmin', w.min())
     if plot:

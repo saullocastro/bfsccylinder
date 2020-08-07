@@ -20,7 +20,7 @@ def test_linear_buckling(plot=False):
     b = 2*pi*R # m
 
     # number of nodes
-    ny = 30 # circumferential
+    ny = 60 # circumferential
     nx = int(ny*L/b)
 
     # material properties Geier 1997
