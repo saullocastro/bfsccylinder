@@ -1,8 +1,8 @@
-Implementation of the BFSC cylinder, aiming linear and nonlinear analyses.
+Implementation of the BFSC cylinder, for linear and nonlinear analyses.
 
 Travis-CI status:
 
-[![Build Status](https://travis-ci.org/saullocastro/bfsccylinder.svg?branch=master)](https://travis-ci.org/saullocastro/bfsccylinder)
+[![Build Status](https://travis-ci.com/saullocastro/bfsccylinder.svg?token=42zpXqXADpxR3nr2TD7y&branch=master)](https://travis-ci.com/saullocastro/bfsccylinder)
 
 Github Actions status:
 
