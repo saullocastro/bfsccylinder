@@ -1,0 +1,23 @@
+version.py
+# Build related
+bfsccylinder.cpp 
+build
+dist
+.coverage
+.pytest_cache
+*.egg-info
+# Temp files
+.ipynb_checkpoints
+tmp*
+temp*
+tmp*.*
+temp*.*
+.cache
+
+# Python compiled files
+*.pyc
+*.pyo
+*.pyd
+
+bfsccylinder.c 
+bfsccylinder.html 

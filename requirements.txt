@@ -1,0 +1,7 @@
+numpy
+scipy
+cython
+composites
+coveralls
+pytest
+pytest-cov
