@@ -110,6 +110,14 @@ extensions = [
         extra_link_args=link_args,
         language='c++'),
 
+    Extension('bfsccylinder.models_core',
+        sources=[
+            './bfsccylinder/models_core.pyx',
+            ],
+        include_dirs=include_dirs,
+        extra_compile_args=compile_args,
+        extra_link_args=link_args,
+        language='c++'),
     ]
 
 ext_modules = cythonize(extensions,

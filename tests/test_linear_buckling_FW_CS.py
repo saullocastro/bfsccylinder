@@ -168,7 +168,7 @@ def test_linear_buckling(plot=False):
         tol = 1e-5
         eigvals, eigvecsu, hist = lobpcg(A=PREC*Kuu, B=-PREC*KGuu, X=X, M=Ainv, largest=False,
                 maxiter=maxiter, retResidualNormsHistory=True, tol=tol)
-        assert len(hist) <= maxiter, 'did not converge'
+        assert len(hist) <= maxiter, 'lobpcg did not converge'
         load_mult = eigvals
     else:
         if True:
@@ -191,7 +191,7 @@ def test_linear_buckling(plot=False):
     f = np.zeros(N)
     fk = Kuk.T*uu + Kkk*uk
     f[bk] = fk
-    Pcr = (load_mult[0]*f[0::DOF][checkTopEdge]).sum()
+    Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
 
     mode = 0
