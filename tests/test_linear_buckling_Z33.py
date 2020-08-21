@@ -7,7 +7,7 @@ from scipy.sparse import coo_matrix, diags
 from scipy.sparse.linalg import eigsh, cg, lobpcg, LinearOperator, spilu, spsolve
 from composites.laminate import read_stack
 
-from bfsccylinder import (BFSCCylinder, update_KC0, update_KG_constant_stress, DOF, DOUBLE, INT,
+from bfsccylinder import (BFSCCylinder, update_KC0, update_KG, DOF, DOUBLE, INT,
 KC0_SPARSE_SIZE, KG_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
@@ -22,7 +22,7 @@ if True:
     b = 2*pi*R # m
 
     # number of nodes
-    ny = 50 # circumferential
+    ny = 80 # circumferential
     nx = int(ny*L/b)
 
     # material properties Geier 1997
@@ -98,17 +98,7 @@ if True:
         update_KC0(shell, points, weights, Kr, Kc, Kv)
 
     KC0 = coo_matrix((Kv, (Kr, Kc)), shape=(N, N)).tocsc()
-
-    Nxx = -1
-    Nyy = 0
-    Nxy = 0
-
-    KGr = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
-    KGc = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
-    KGv = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=DOUBLE)
-    for shell in elements:
-        update_KG_constant_stress(shell, points, weights, KGr, KGc, KGv, Nxx, Nyy, Nxy)
-    KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
+    print('stiffness matrix OK')
 
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
@@ -118,24 +108,101 @@ if True:
     #bk[1::DOF] = checkBC
     #bk[2::DOF] = checkBC
     bk[3::DOF] = checkBC
+    #bk[4::DOF] = checkBC
     #bk[5::DOF] = checkBC
     bk[6::DOF] = checkBC
     bk[7::DOF] = checkBC
-    bk[8::DOF] = checkBC
-    bk[9::DOF] = checkBC
+    #bk[8::DOF] = checkBC
+    #bk[9::DOF] = checkBC
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
-    Kuu = KC0[bu, :][:, bu]
-    KGuu = KG[bu, :][:, bu]
+    # axial compression applied at x=L
+    u = np.zeros(N, dtype=DOUBLE)
 
-    print('structural matrices OK')
+    compression = 0.0001
+    checkTopEdge = isclose(x, L)
+    checkBottomEdge = isclose(x, 0)
+    u[0::DOF] += checkTopEdge*(-compression/2)
+    u[0::DOF] += checkBottomEdge*(compression/2)
+    uk = u[bk]
+    raise
+
+    # sub-matrices corresponding to unknown DOFs
+    Kuu = KC0[bu, :][:, bu]
+    Kuk = KC0[bu, :][:, bk]
+    Kku = KC0[bk, :][:, bu]
+    Kkk = KC0[bk, :][:, bk]
+
+    fu = -Kuk*uk
+
+    # solving
+    PREC = 1/Kuu.diagonal().max()
+    uu, info = cg(PREC*Kuu, PREC*fu)
+    assert info == 0
+
+    print('static analysis OK')
+    u[bu] = uu
+
+    KGr = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
+    KGc = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
+    KGv = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=DOUBLE)
+    for shell in elements:
+        update_KG(u, shell, points, weights, KGr, KGc, KGv)
+    KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
+    KGuu = KG[bu, :][:, bu]
+    print('geometric stiffness matrix OK')
+
+    if True:
+        # plotting stress
+        xplot = []
+        yplot = []
+        stress = []
+        for shell in elements:
+            x1, y1 = ncoords[nid_pos[shell.n1]]
+            x2, y2 = ncoords[nid_pos[shell.n2]]
+            x3, y3 = ncoords[nid_pos[shell.n3]]
+            x4, y4 = ncoords[nid_pos[shell.n4]]
+            if y3 < y2:
+                y3 += b
+            if y4 < y2:
+                y4 += b
+            x = (x1 + x2 + x3 + x4)/4
+            y = (y1 + y2 + y3 + y4)/4
+            xplot.append(x)
+            yplot.append(y)
+            shell.update_Bm(xi=0, eta=0)
+            shell.update_Bb(xi=0, eta=0)
+            shell.update_Nu(xi=0, eta=0)
+            shell.update_Nu_x(xi=0, eta=0)
+            shell.update_Nv(xi=0, eta=0)
+            shell.update_Nw(xi=0, eta=0)
+            u = np.asarray(shell.u)
+            Nm = lam.A @ shell.Bm @ u + lam.B @ shell.Bb @ u
+
+            displu = shell.Nu @ u
+            displux = shell.Nu_x @ u
+            displv = shell.Nv @ u
+            displw = shell.Nw @ u
+            stress.append(Nm[0])
+
+        import matplotlib
+        matplotlib.use('TkAgg')
+        import matplotlib.pyplot as plt
+        from matplotlib import cm
+        xplot = np.asarray(xplot).reshape(nx-1, ny)
+        yplot = np.asarray(yplot).reshape(nx-1, ny)
+        stress = np.asarray(stress).reshape(nx-1, ny)
+        plt.contourf(xplot, yplot, stress, levels=10, cmap=cm.jet)
+        plt.colorbar()
+        plt.gca().set_aspect('equal')
+        plt.show()
+        raise
 
     # A * x[i] = lambda[i] * M * x[i]
     num_eigvals = 3
     Nu = N - bk.sum()
-    if True:
+    if False:
         #NOTE this works and seems to be the fastest option
-        PREC = 1/Kuu.diagonal().max()
         PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0, drop_tol=1e-8,
                 fill_factor=50)
         print('spilu OK')
@@ -146,7 +213,7 @@ if True:
         X = np.random.rand(Nu, num_eigvals) - 0.5
         X /= np.linalg.norm(X, axis=0)
         #NOTE default tolerance is too large
-        tol = 1e-6
+        tol = 1e-5
         eigvals, eigvecsu, hist = lobpcg(A=PREC*Kuu, B=-PREC*KGuu, X=X, M=Ainv, largest=False,
                 maxiter=maxiter, retResidualNormsHistory=True, tol=tol)
         assert len(hist) <= maxiter, 'did not converge'
@@ -169,9 +236,14 @@ if True:
             load_mult = 1./eigvals
 
     print('linear buckling analysis OK')
-    Pcr = load_mult[0]*Nxx*2*np.pi*R
+    f = np.zeros(N)
+    fk = Kku*uu + Kkk*uk
+    f[bk] = fk
+    Pcr = (load_mult[0]*f[0::DOF][checkTopEdge]).sum()
+    Pcrbot = (load_mult[0]*f[0::DOF][checkBottomEdge]).sum()
     print('load_mult[0]', load_mult[0])
     print('Pcr top=', Pcr)
+    print('Pcr bottom =', Pcrbot)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
