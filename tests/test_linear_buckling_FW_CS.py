@@ -22,8 +22,10 @@ def test_linear_buckling(plot=False):
     circ = 2*pi*R # m
 
     # number of nodes
-    nx = 20 # axial
-    ny = int(nx*circ/L)
+    ny = 40 # circumferential
+    nx = int(ny*L/circ)
+    if nx % 2 == 0:
+        nx += 1
     print('nx, ny', nx, ny)
 
     # material properties our paper
@@ -193,13 +195,14 @@ def test_linear_buckling(plot=False):
     f[bk] = fk
     Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
+    assert isclose(Pcr, -43724, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
     mode_shape[bu] = eigvecsu[:, mode]
 
-    w = mode_shape[6::DOF].reshape(nx, ny)
     if plot:
+        w = mode_shape[6::DOF].reshape(nx, ny)
         import matplotlib
         matplotlib.use('TkAgg')
         import matplotlib.pyplot as plt

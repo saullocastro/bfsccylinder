@@ -41,8 +41,10 @@ def test_linear_buckling(plot=False):
     circ = 2*pi*R # m
 
     # number of nodes
-    nx = 20 # axial
-    ny = int(nx*circ/L)
+    ny = 40 # circumferential
+    nx = int(ny*L/circ)
+    if nx % 2 == 0:
+        nx += 1
     print('nx, ny', nx, ny)
 
     # material properties our paper
@@ -189,7 +191,7 @@ def test_linear_buckling(plot=False):
     PREC = 1/Kuu.diagonal().max()
 
     print('starting static analysis')
-    uu, info = cg(PREC*Kuu, PREC*fu, tol=1e-9)
+    uu, info = cg(PREC*Kuu, PREC*fu)
     assert info == 0
 
     print('static analysis OK')
@@ -221,7 +223,6 @@ def test_linear_buckling(plot=False):
     #NOTE this works and seems to be the fastest option
 
     if True:
-
         print('starting spilu')
         PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0, drop_tol=1e-8,
                 fill_factor=50)
@@ -231,7 +232,7 @@ def test_linear_buckling(plot=False):
         Kuuinv = LinearOperator(matvec=matvec, shape=(Nu, Nu))
 
         maxiter = 1000
-        Xu = np.random.rand(Nu, num_eigvals)
+        Xu = np.random.rand(Nu, num_eigvals) - 0.5
         Xu /= np.linalg.norm(Xu, axis=0)
 
         #NOTE default tolerance is too large
@@ -242,7 +243,7 @@ def test_linear_buckling(plot=False):
         load_mult = eigvals
     else:
         eigvals, eigvecsu = eigsh(A=Kuu, k=num_eigvals, which='SM', M=KGuu,
-                tol=1e-7, sigma=1., mode='buckling')
+                tol=1e-9, sigma=1., mode='buckling')
         load_mult = -eigvals
 
     print('linear buckling analysis OK')
@@ -251,13 +252,14 @@ def test_linear_buckling(plot=False):
     f[bk] = fk
     Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
+    assert isclose(Pcr, -55671, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
     mode_shape[bu] = eigvecsu[:, mode]
 
-    w = mode_shape[6::DOF].reshape(nx, ny)
     if plot:
+        w = mode_shape[6::DOF].reshape(nx, ny)
         import matplotlib
         matplotlib.use('TkAgg')
         import matplotlib.pyplot as plt

@@ -103,9 +103,9 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
-    #SS2 boundary conditions (Castro 2014)
+    #clamped boundary conditions (Castro 2014)
     checkBC = isclose(x, 0) | isclose(x, L)
-    #bk[0::DOF] = checkBC
+    bk[0::DOF] = checkBC
     #bk[1::DOF] = checkBC
     #bk[2::DOF] = checkBC
     bk[3::DOF] = checkBC
@@ -116,33 +116,28 @@ def test_linear_buckling(plot=False):
     #bk[8::DOF] = checkBC
     #bk[9::DOF] = checkBC
 
-    checkBC = isclose(x, L/2) & isclose(y, 0)
-    bk[0::DOF] = checkBC
-
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
-    # force-controlled
-    applied_force = 1000.
-    force_nodes = applied_force/ny
-    f = np.zeros(N)
-    check = isclose(x, 0)
-    f[0::DOF][check] = force_nodes
-    check = isclose(x, L)
-    f[0::DOF][check] = -force_nodes
+    # axial compression applied at x=L
+    u = np.zeros(N, dtype=DOUBLE)
+    compression = -0.0001
+    checkTopEdge = isclose(x, L)
+    u[0::DOF] += checkTopEdge*compression
+    uk = u[bk]
 
     # sub-matrices corresponding to unknown DOFs
     Kuu = KC0[bu, :][:, bu]
+    Kuk = KC0[bu, :][:, bk]
+    Kkk = KC0[bk, :][:, bk]
 
-    fu = f[bu]
+    fu = -Kuk*uk
 
     # solving
-    #PREC = 1/Kuu.diagonal().max()
-    #uu, info = cg(PREC*Kuu, PREC*fu)
-    #assert info == 0
-    uu = spsolve(Kuu, fu)
+    PREC = 1/Kuu.diagonal().max()
+    uu, info = cg(PREC*Kuu, PREC*fu)
+    assert info == 0
 
     print('static analysis OK')
-    u = np.zeros(N, dtype=DOUBLE)
     u[bu] = uu
 
     KGr = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
@@ -186,7 +181,7 @@ def test_linear_buckling(plot=False):
             displux = shell.Nu_x @ u
             displv = shell.Nv @ u
             displw = shell.Nw @ u
-            stress.append(Nb[0])
+            stress.append(Nm[0])
 
         import matplotlib
         matplotlib.use('TkAgg')
@@ -206,7 +201,6 @@ def test_linear_buckling(plot=False):
     Nu = N - bk.sum()
     if True:
         #NOTE this works and seems to be the fastest option
-        PREC = 1.#1/Kuu.diagonal().max()
         PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0, drop_tol=1e-8,
                 fill_factor=50)
         print('spilu OK')
@@ -242,9 +236,11 @@ def test_linear_buckling(plot=False):
             load_mult = 1./eigvals
 
     print('linear buckling analysis OK')
-    Pcr = load_mult[0]*applied_force
-    print('Pcr top=', Pcr)
-    assert isclose(Pcr, 201424, rtol=0.01)
+    f = np.zeros(N)
+    fk = Kuk.T*uu + Kkk*uk
+    f[bk] = fk
+    Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
+    print('Pcr =', Pcr)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)

@@ -14,7 +14,7 @@ from bfsccylinder.utils import assign_constant_ABD
 
 
 def test_linear_buckling(plot=False):
-    # geometry Z33 Castro 2014
+    # geometry Z22 Castro 2014
     L = 0.510 # m
     R = 0.250 # m
     b = 2*pi*R # m
@@ -26,13 +26,13 @@ def test_linear_buckling(plot=False):
         nx += 1
 
     # material properties Geier 1997
-    E11 = 145.5e9
-    E22 = 8.7e9
-    nu12 = 0.28
-    G12 = 5.1e9
+    E11 = 123.55e9
+    E22 = 8.708e9
+    nu12 = 0.319
+    G12 = 5.595e9
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
-    stack = [0, 0, 19, -19, 37, -37, 45, -45, 51, -51]
+    stack = [+49, -49, +36, -36, 0, 0]
     lam = read_stack(stack=stack, plyt=plyt,
             laminaprop=laminaprop)
 
@@ -112,17 +112,17 @@ def test_linear_buckling(plot=False):
     #bk[4::DOF] = checkBC
     #bk[5::DOF] = checkBC
     bk[6::DOF] = checkBC
-    bk[7::DOF] = checkBC
+    #bk[7::DOF] = checkBC
     #bk[8::DOF] = checkBC
     #bk[9::DOF] = checkBC
 
-    checkBC = isclose(x, L/2) & isclose(y, 0)
+    checkBC = isclose(x, L/2) & (isclose(y, 0) | isclose(y, 2*pi*R/2))
     bk[0::DOF] = checkBC
 
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
     # force-controlled
-    applied_force = 1000.
+    applied_force = 1.
     force_nodes = applied_force/ny
     f = np.zeros(N)
     check = isclose(x, 0)
@@ -244,7 +244,7 @@ def test_linear_buckling(plot=False):
     print('linear buckling analysis OK')
     Pcr = load_mult[0]*applied_force
     print('Pcr top=', Pcr)
-    assert isclose(Pcr, 201424, rtol=0.01)
+    assert isclose(Pcr, 37189, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
