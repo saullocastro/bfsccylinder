@@ -6,7 +6,7 @@ import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix, diags
 from scipy.sparse.linalg import eigsh, cg, lobpcg, LinearOperator, spilu
-from composites.laminate import read_stack
+from composites import laminated_plate
 
 from bfsccylinder import (BFSCCylinder, update_KC0, update_KG, DOF, DOUBLE, INT,
 KC0_SPARSE_SIZE, KG_SPARSE_SIZE)
@@ -121,27 +121,27 @@ def test_linear_buckling(plot=False):
             theta_local = theta_VAT_P_x(xlocal, L, desvar)
             steering_angle = abs(theta_min - theta_local)
             plyt_local = plyt/np.cos(np.deg2rad(steering_angle))
-            lam = read_stack(stack=[theta_local, -theta_local],
+            lam = laminated_plate(stack=[theta_local, -theta_local],
                     plyt=plyt_local, laminaprop=laminaprop)
             for j in range(nint):
-                shell.A11[i, j] = lam.ABD[0, 0]
-                shell.A12[i, j] = lam.ABD[0, 1]
-                shell.A16[i, j] = lam.ABD[0, 2]
-                shell.A22[i, j] = lam.ABD[1, 1]
-                shell.A26[i, j] = lam.ABD[1, 2]
-                shell.A66[i, j] = lam.ABD[2, 2]
-                shell.B11[i, j] = lam.ABD[0, 3]
-                shell.B12[i, j] = lam.ABD[0, 4]
-                shell.B16[i, j] = lam.ABD[0, 5]
-                shell.B22[i, j] = lam.ABD[1, 4]
-                shell.B26[i, j] = lam.ABD[1, 5]
-                shell.B66[i, j] = lam.ABD[2, 5]
-                shell.D11[i, j] = lam.ABD[3, 3]
-                shell.D12[i, j] = lam.ABD[3, 4]
-                shell.D16[i, j] = lam.ABD[3, 5]
-                shell.D22[i, j] = lam.ABD[4, 4]
-                shell.D26[i, j] = lam.ABD[4, 5]
-                shell.D66[i, j] = lam.ABD[5, 5]
+                shell.A11[i, j] = lam.A11
+                shell.A12[i, j] = lam.A12
+                shell.A16[i, j] = lam.A16
+                shell.A22[i, j] = lam.A22
+                shell.A26[i, j] = lam.A26
+                shell.A66[i, j] = lam.A66
+                shell.B11[i, j] = lam.B11
+                shell.B12[i, j] = lam.B12
+                shell.B16[i, j] = lam.B16
+                shell.B22[i, j] = lam.B22
+                shell.B26[i, j] = lam.B26
+                shell.B66[i, j] = lam.B66
+                shell.D11[i, j] = lam.D11
+                shell.D12[i, j] = lam.D12
+                shell.D16[i, j] = lam.D16
+                shell.D22[i, j] = lam.D22
+                shell.D26[i, j] = lam.D26
+                shell.D66[i, j] = lam.D66
         shell.init_k_KC0 = init_k_KC0
         shell.init_k_KG = init_k_KG
         init_k_KC0 += KC0_SPARSE_SIZE

@@ -5,7 +5,7 @@ import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import cg
-from composites.laminate import read_stack
+from composites import isotropic_plate
 
 from bfsccylinder import BFSCCylinder, update_KC0, DOF, DOUBLE, INT, KC0_SPARSE_SIZE
 from bfsccylinder.quadrature import get_points_weights
@@ -25,7 +25,7 @@ def test_linear_axial_compression(plot=False):
     E = 70e9
     nu = 0.33
     h = 0.001
-    lam = read_stack(stack=[0], plyt=h, laminaprop=[E, E, nu])
+    lam = isotropic_plate(thickness=h, E=E, nu=nu)
 
     nids = 1 + np.arange(nx*(ny+1))
     nids_mesh = nids.reshape(nx, ny+1)

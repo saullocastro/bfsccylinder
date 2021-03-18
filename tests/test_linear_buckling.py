@@ -5,7 +5,7 @@ import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix, diags
 from scipy.sparse.linalg import eigsh, cg, lobpcg, LinearOperator, spilu
-from composites.laminate import read_stack
+from composites import laminated_plate
 
 from bfsccylinder import (BFSCCylinder, update_KC0, update_KG, DOF, DOUBLE, INT,
 KC0_SPARSE_SIZE, KG_SPARSE_SIZE)
@@ -31,8 +31,7 @@ def test_linear_buckling(plot=False):
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [+60, -60, 0, 0, +68, -68, +52, -52, +37, -37][::-1]
-    lam = read_stack(stack=stack, plyt=plyt,
-            laminaprop=laminaprop)
+    lam = laminated_plate(stack=stack, plyt=plyt, laminaprop=laminaprop)
 
     nids = 1 + np.arange(nx*(ny+1))
     nids_mesh = nids.reshape(nx, ny+1)
