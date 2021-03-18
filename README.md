@@ -1,16 +1,12 @@
 Implementation of the BFSC cylinder, for linear and nonlinear analyses.
 
-Travis-CI status:
-
-[![Build Status](https://travis-ci.com/saullocastro/bfsccylinder.svg?token=42zpXqXADpxR3nr2TD7y&branch=master)](https://travis-ci.com/saullocastro/bfsccylinder)
-
 Github Actions status:
 
 [![Actions Status](https://github.com/saullocastro/bfsccylinder/workflows/pytest/badge.svg)](https://github.com/saullocastro/bfsccylinder/actions)
 
 Coverage status:
 
-[![Coverage Status](https://coveralls.io/repos/github/saullocastro/bfsccylinder/badge.svg?branch=master)](https://coveralls.io/github/saullocastro/bfsccylinder?branch=master)
+[![Codecov Status](https://codecov.io/gh/saullocastro/bfsccylinder/branch/master/graph/badge.svg?token=KD9D8G8D2P)](https://codecov.io/gh/saullocastro/bfsccylinder)
 
 
 License
