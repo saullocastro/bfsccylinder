@@ -31,7 +31,7 @@ def test_linear_buckling(plot=False):
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [0, 0, 19, -19, 37, -37, 45, -45, 51, -51]
-    lam = laminated_plate(stack=stack, plyt=plyt, laminaprop=laminaprop)
+    prop = laminated_plate(stack=stack, plyt=plyt, laminaprop=laminaprop)
 
     nids = 1 + np.arange(nx*(ny+1))
     nids_mesh = nids.reshape(nx, ny+1)
@@ -81,7 +81,7 @@ def test_linear_buckling(plot=False):
         shell.R = R
         shell.lex = L/(nx-1)
         shell.ley = b/ny
-        assign_constant_ABD(shell, lam.ABD)
+        assign_constant_ABD(shell, prop)
         shell.init_k_KC0 = init_k_KC0
         shell.init_k_KG = init_k_KG
         init_k_KC0 += KC0_SPARSE_SIZE

@@ -1,20 +1,20 @@
-def assign_constant_ABD(bfsccylinder, ABD):
-    bfsccylinder.A11[:] = ABD[0, 0]
-    bfsccylinder.A12[:] = ABD[0, 1]
-    bfsccylinder.A16[:] = ABD[0, 2]
-    bfsccylinder.A22[:] = ABD[1, 1]
-    bfsccylinder.A26[:] = ABD[1, 2]
-    bfsccylinder.A66[:] = ABD[2, 2]
-    bfsccylinder.B11[:] = ABD[0, 3]
-    bfsccylinder.B12[:] = ABD[0, 4]
-    bfsccylinder.B16[:] = ABD[0, 5]
-    bfsccylinder.B22[:] = ABD[1, 4]
-    bfsccylinder.B26[:] = ABD[1, 5]
-    bfsccylinder.B66[:] = ABD[2, 5]
-    bfsccylinder.D11[:] = ABD[3, 3]
-    bfsccylinder.D12[:] = ABD[3, 4]
-    bfsccylinder.D16[:] = ABD[3, 5]
-    bfsccylinder.D22[:] = ABD[4, 4]
-    bfsccylinder.D26[:] = ABD[4, 5]
-    bfsccylinder.D66[:] = ABD[5, 5]
+def assign_constant_ABD(bfscylinder, prop):
+    bfsccylinder.A11[:] = prop.A11
+    bfsccylinder.A12[:] = prop.A12
+    bfsccylinder.A16[:] = prop.A16
+    bfsccylinder.A22[:] = prop.A22
+    bfsccylinder.A26[:] = prop.A26
+    bfsccylinder.A66[:] = prop.A66
+    bfsccylinder.B11[:] = prop.B11
+    bfsccylinder.B12[:] = prop.B12
+    bfsccylinder.B16[:] = prop.B16
+    bfsccylinder.B22[:] = prop.B22
+    bfsccylinder.B26[:] = prop.B26
+    bfsccylinder.B66[:] = prop.B66
+    bfsccylinder.D11[:] = prop.D11
+    bfsccylinder.D12[:] = prop.D12
+    bfsccylinder.D16[:] = prop.D16
+    bfsccylinder.D22[:] = prop.D22
+    bfsccylinder.D26[:] = prop.D26
+    bfsccylinder.D66[:] = prop.D66
 

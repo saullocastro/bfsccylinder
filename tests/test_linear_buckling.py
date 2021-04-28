@@ -31,7 +31,7 @@ def test_linear_buckling(plot=False):
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [+60, -60, 0, 0, +68, -68, +52, -52, +37, -37][::-1]
-    lam = laminated_plate(stack=stack, plyt=plyt, laminaprop=laminaprop)
+    prop = laminated_plate(stack=stack, plyt=plyt, laminaprop=laminaprop)
 
     nids = 1 + np.arange(nx*(ny+1))
     nids_mesh = nids.reshape(nx, ny+1)
@@ -81,7 +81,7 @@ def test_linear_buckling(plot=False):
         shell.R = R
         shell.lex = L/(nx-1)
         shell.ley = b/ny
-        assign_constant_ABD(shell, lam.ABD)
+        assign_constant_ABD(shell, prop)
         shell.init_k_KC0 = init_k_KC0
         shell.init_k_KG = init_k_KG
         init_k_KC0 += KC0_SPARSE_SIZE
@@ -160,7 +160,7 @@ def test_linear_buckling(plot=False):
             shell.calc_Bm(xi=0, eta=0)
             shell.calc_Bb(xi=0, eta=0)
             u = np.asarray(shell.u)
-            Nm = lam.A @ shell.Bm @ u + lam.B @ shell.Bb @ u
+            Nm = prop.A @ shell.Bm @ u + prop.B @ shell.Bb @ u
             stress.append(Nm[0])
         import matplotlib
         matplotlib.use('TkAgg')

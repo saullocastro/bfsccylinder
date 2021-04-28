@@ -25,7 +25,7 @@ def test_linear_axial_compression(plot=False):
     E = 70e9
     nu = 0.33
     h = 0.001
-    lam = isotropic_plate(thickness=h, E=E, nu=nu)
+    prop = isotropic_plate(thickness=h, E=E, nu=nu)
 
     nids = 1 + np.arange(nx*(ny+1))
     nids_mesh = nids.reshape(nx, ny+1)
@@ -73,7 +73,7 @@ def test_linear_axial_compression(plot=False):
         shell.R = R
         shell.lex = L/(nx-1)
         shell.ley = b/ny
-        assign_constant_ABD(shell, lam.ABD)
+        assign_constant_ABD(shell, prop)
         shell.init_k_KC0 = init_k_KC0
         update_KC0(shell, points, weights, Kr, Kc, Kv)
         init_k_KC0 += KC0_SPARSE_SIZE

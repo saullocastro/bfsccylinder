@@ -28,7 +28,7 @@ def test_natural_frequency(plot=False):
     nu = 0.33
     h = 0.001 # m
     rho = 2.7e3 # kg/m3
-    lam = isotropic_plate(thickness=h, E=E, nu=nu)
+    prop = isotropic_plate(thickness=h, E=E, nu=nu)
 
     nids = 1 + np.arange(nx*(ny+1))
     nids_mesh = nids.reshape(nx, ny+1)
@@ -81,7 +81,7 @@ def test_natural_frequency(plot=False):
         shell.rho = rho
         shell.lex = L/(nx-1)
         shell.ley = b/ny
-        assign_constant_ABD(shell, lam.ABD)
+        assign_constant_ABD(shell, prop)
         shell.init_k_KC0 = init_k_KC0
         shell.init_k_M = init_k_M
         update_KC0(shell, points, weights, Kr, Kc, Kv)
