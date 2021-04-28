@@ -205,7 +205,7 @@ def test_linear_buckling(plot=False):
     Nu = N - bk.sum()
     if True:
         #NOTE this works and seems to be the fastest option
-        PREC = 1.#1/Kuu.diagonal().max()
+        PREC = 1/Kuu.diagonal().max()
         PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0, drop_tol=1e-8,
                 fill_factor=50)
         print('spilu OK')

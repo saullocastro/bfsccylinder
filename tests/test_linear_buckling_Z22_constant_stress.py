@@ -117,6 +117,7 @@ def test_linear_buckling(plot=False):
     #bk[1::DOF] = checkBC
     #bk[2::DOF] = checkBC
     bk[3::DOF] = checkBC
+    #bk[4::DOF] = checkBC
     #bk[5::DOF] = checkBC
     bk[6::DOF] = checkBC
     #bk[7::DOF] = checkBC
@@ -162,6 +163,7 @@ def test_linear_buckling(plot=False):
             load_mult = -eigvals
         else:
             #NOTE this is giving close but varying results for each run
+            PREC = 1/Kuu.diagonal().max()
             PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0)
             print('spilu OK')
             def matvec(x):
