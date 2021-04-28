@@ -1,4 +1,4 @@
-def assign_constant_ABD(bfscylinder, prop):
+def assign_constant_ABD(bfsccylinder, prop):
     bfsccylinder.A11[:] = prop.A11
     bfsccylinder.A12[:] = prop.A12
     bfsccylinder.A16[:] = prop.A16
