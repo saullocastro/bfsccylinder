@@ -191,7 +191,7 @@ def test_linear_buckling(plot=False):
     PREC = 1/Kuu.diagonal().max()
 
     print('starting static analysis')
-    uu, info = cg(PREC*Kuu, PREC*fu)
+    uu, info = cg(PREC*Kuu, PREC*fu, atol='legacy')
     assert info == 0
 
     print('static analysis OK')
