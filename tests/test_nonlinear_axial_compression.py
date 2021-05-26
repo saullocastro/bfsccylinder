@@ -180,18 +180,19 @@ def test_nonlinear_axial_compression_load_controlled():
         #print('#   trying spsolve()')
         #uu = spsolve(KC0uu, fext[bu])
     count = 0
-    KTuu = KC0uu
     fint = np.zeros(N)
     fint = calc_fint(u0, fint)
     Ri = fint - fext
     du = np.zeros(N)
     ui = u0.copy()
     epsilon = 1.e-4
-    D = KTuu.diagonal() # at beginning of load increment
+    KT = calc_KT(u0, KCNLv, KGv)
+    KTuu = KT[bu, :][:, bu]
+    D = KC0uu.diagonal() # at beginning of load increment
     while True:
         print('count', count)
-        PREC = 1/KTuu.diagonal().max()
         duu = spsolve(KTuu, -Ri[bu])
+        #PREC = 1/KTuu.diagonal().max()
         #duu, info = cg(PREC*KTuu, -PREC*Ri[bu], atol=1e-9)
         #if info != 0:
             #print('#   failed with cg()')
