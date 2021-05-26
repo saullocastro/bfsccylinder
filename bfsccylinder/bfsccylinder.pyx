@@ -35,7 +35,7 @@ cdef class BFSCCylinder(object):
     """
     cdef public cINT n1, n2, n3, n4
     cdef public cINT c1, c2, c3, c4
-    cdef public cINT init_k_KC0, init_k_KG, init_k_M
+    cdef public cINT init_k_KC0, init_k_KCNL, init_k_KG, init_k_M
     cdef public double lex, ley, rho, h, R
     cdef public cDOUBLE[:, :] A11, A12, A16, A22, A26, A66
     cdef public cDOUBLE[:, :] B11, B12, B16, B22, B26, B66
@@ -61,6 +61,7 @@ cdef class BFSCCylinder(object):
         self.c2 = -1
         self.c3 = -1
         self.c4 = -1
+        self.init_k_KC0 = 0
         self.init_k_KC0 = 0
         self.init_k_KG = 0
         self.init_k_M = 0
@@ -19641,6 +19642,7 @@ cpdef void update_fint(np.ndarray[cDOUBLE, ndim=1] u,
     cdef double R, lex, ley, w_x, w_y
     cdef double Nxx0, Nyy0, Nxy0, Mxx0, Mxy0, Myy0
     cdef double NxxL, NyyL, NxyL
+    cdef double NG1_01, NG2_01
     cdef double xi, eta, weight_xi, weight_eta, weight
     cdef double A11, A12, A16, A22, A26, A66
     cdef double B11, B12, B16, B22, B26, B66
