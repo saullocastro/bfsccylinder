@@ -187,6 +187,7 @@ def test_nonlinear_axial_compression_load_controlled():
     du = np.zeros(N)
     ui = u0.copy()
     epsilon = 1.e-4
+    D = KTuu.diagonal() # at beginning of load increment
     while True:
         print('count', count)
         PREC = 1/KTuu.diagonal().max()
@@ -200,7 +201,6 @@ def test_nonlinear_axial_compression_load_controlled():
         u = ui + du
         fint = calc_fint(u, fint)
         Ri = fint - fext
-        D = KTuu.diagonal()
         crisfield_test = scaling(Ri[bu], D)/max(scaling(fext[bu], D), scaling(fint[bu], D))
         print('    crisfield_test', crisfield_test)
         if crisfield_test < epsilon:
