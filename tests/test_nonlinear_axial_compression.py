@@ -6,7 +6,7 @@ import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import splu, spilu, LinearOperator
-from scipy.sparse.linalg import cg
+from scipy.sparse.linalg import cg, spsolve
 from composites import laminated_plate
 
 from bfsccylinder import (BFSCCylinder, update_KC0, update_KCNL, update_KG,
@@ -22,7 +22,7 @@ def test_nonlinear_axial_compression_load_controlled():
     R = 0.20318603 # m
     ny = 4*16
 
-    load = 1000. # N
+    load = 50000. # N
 
     # geometry our FW cylinders
     circ = 2*pi*R # m
@@ -156,9 +156,7 @@ def test_nonlinear_axial_compression_load_controlled():
 
     fint = np.zeros(N)
 
-    def calc_KT(u):
-        global KCNLv
-        global KGv
+    def calc_KT(u, KCNLv, KGv):
         KCNLv *= 0
         KGv *= 0
         for shell in elements:
@@ -168,8 +166,7 @@ def test_nonlinear_axial_compression_load_controlled():
         KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
         return KC0 + KCNL + KG
 
-    def calc_fint(u):
-        global fint
+    def calc_fint(u, fint):
         fint *= 0
         for shell in elements:
             update_fint(u, shell, points, weights, fint)
@@ -188,16 +185,17 @@ def test_nonlinear_axial_compression_load_controlled():
     #initial
     u0 = np.zeros(N) # any initial condition here
 
-    PREC = 1/KC0uu.diagonal().max()
-    u0[bu], info = cg(PREC*KC0uu, PREC*fext[bu], atol=1e-6)
-    if info != 0:
-        print('#   failed with cg()')
-        print('#   trying spsolve()')
-        uu = spsolve(KC0uu, fext[bu])
+    u0[bu] = spsolve(KC0uu, fext[bu])
+    #PREC = 1/KC0uu.diagonal().max()
+    #u0[bu], info = cg(PREC*KC0uu, PREC*fext[bu], atol=1e-9)
+    #if info != 0:
+        #print('#   failed with cg()')
+        #print('#   trying spsolve()')
+        #uu = spsolve(KC0uu, fext[bu])
     du = 0
     count = 0
     KTuu = KC0uu
-    fint = calc_fint(u0)
+    fint = calc_fint(u0, fint)
     Ri = fint - fext
     du = np.zeros(N)
     ui = u0.copy()
@@ -205,15 +203,15 @@ def test_nonlinear_axial_compression_load_controlled():
     while True:
         print('count', count)
         PREC = 1/KTuu.diagonal().max()
-        duu, info = cg(PREC*KTuu, -PREC*Ri[bu], atol=1e-12)
+        duu = spsolve(KTuu, -Ri[bu])
+        #duu, info = cg(PREC*KTuu, -PREC*Ri[bu], atol=1e-9)
+        #if info != 0:
+            #print('#   failed with cg()')
+            #print('#   trying spsolve()')
+            #duu = spsolve(KTuu, -Ri[bu])
         du[bu] = duu
-        if info != 0:
-            print('#   failed with cg()')
-            print('#   trying spsolve()')
-            du = spsolve(KTuu, -Ri[bu])
-        print(du.sum())
         u = ui + du
-        fint = calc_fint(u)
+        fint = calc_fint(u, fint)
         Ri = fint - fext
         D = KTuu.diagonal()
         crisfield_test = scaling(Ri[bu], D)/max(scaling(fext[bu], D), scaling(fint[bu], D))
@@ -222,9 +220,11 @@ def test_nonlinear_axial_compression_load_controlled():
             print('    converged')
             break
         count += 1
-        KT = calc_KT(u)
+        KT = calc_KT(u, KCNLv, KGv)
         KTuu = KT[bu, :][:, bu]
         ui = u.copy()
+        if count > 6:
+            raise RuntimeError('Not converged!')
 
 if __name__ == '__main__':
     test_nonlinear_axial_compression_load_controlled()
