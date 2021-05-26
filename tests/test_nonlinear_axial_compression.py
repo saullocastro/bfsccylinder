@@ -8,10 +8,6 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import splu, spilu, LinearOperator
 from scipy.sparse.linalg import cg
 from composites import laminated_plate
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-from matplotlib import cm
 
 from bfsccylinder import (BFSCCylinder, update_KC0, update_KCNL, update_KG,
         update_fint, DOF, DOUBLE, INT, KC0_SPARSE_SIZE, KCNL_SPARSE_SIZE,
