@@ -139,22 +139,9 @@ def test_nonlinear_axial_compression_load_controlled():
     fext[0::DOF][checkTopEdge] = -load/ny
     assert np.isclose(fext.sum(), 0)
 
-
-    # axial compression applied at x=L
-    u = np.zeros(N, dtype=float)
-
-    compression = -0.01
-    checkTopEdge = isclose(x, L)
-    u[0::DOF] += checkTopEdge*compression
-    uk = u[bk].copy()
-
-    bu = ~bk # same as np.logical_not, defining unknown DOFs
-
     # sub-matrices corresponding to unknown DOFs
     KC0uu = KC0[bu, :][:, bu]
     KC0uk = KC0[bu, :][:, bk]
-
-    fint = np.zeros(N)
 
     def calc_KT(u, KCNLv, KGv):
         KCNLv *= 0
@@ -192,9 +179,9 @@ def test_nonlinear_axial_compression_load_controlled():
         #print('#   failed with cg()')
         #print('#   trying spsolve()')
         #uu = spsolve(KC0uu, fext[bu])
-    du = 0
     count = 0
     KTuu = KC0uu
+    fint = np.zeros(N)
     fint = calc_fint(u0, fint)
     Ri = fint - fext
     du = np.zeros(N)
