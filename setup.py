@@ -114,7 +114,6 @@ extensions = [
         extra_compile_args=compile_args,
         extra_link_args=link_args,
         language='c++'),
-
     ]
 
 ext_modules = cythonize(extensions,
@@ -138,6 +137,7 @@ s = setup(
     url = "https://github.com/saullocastro/bfsccylinder",
     data_files=data_files,
     long_description=read('README.md'),
+    long_description_content_type = 'text/markdown',
     classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
     install_requires=install_requires,
     ext_modules = ext_modules,
