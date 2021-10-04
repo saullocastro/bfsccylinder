@@ -10,8 +10,8 @@ import numpy as np
 from Cython.Build import cythonize
 
 
-is_released = False
-version = '0.2.2'
+is_released = True
+version = '0.2.3'
 
 
 def git_version():
