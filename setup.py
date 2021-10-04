@@ -11,7 +11,7 @@ from Cython.Build import cythonize
 
 
 is_released = False
-version = '0.2.1'
+version = '0.2.2'
 
 
 def git_version():
@@ -132,7 +132,7 @@ s = setup(
     author = "Saullo G. P. Castro",
     author_email = "S.G.P.Castro@tudelft.nl",
     description = ("Implementation of the BFSC cylinder finite element"),
-    license = "2-Clause BSD",
+    license = "3-Clause BSD",
     keywords = "finite elements shell structural analysis buckling vibration dynamics",
     url = "https://github.com/saullocastro/bfsccylinder",
     data_files=data_files,
