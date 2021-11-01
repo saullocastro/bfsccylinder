@@ -19624,7 +19624,7 @@ cpdef void update_fint(np.ndarray[cDOUBLE, ndim=1] u,
     u : np.array
         Global displacement vector
     shell : `.BFSCylinder` object
-        The shell element being added to K
+        The shell element being added to fint
     points : np.array
         Integration poins
     weights : np.array
