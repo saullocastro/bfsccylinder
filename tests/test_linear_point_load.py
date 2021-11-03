@@ -114,6 +114,10 @@ def test_point_load(plot=False):
     w = u[6::DOF].reshape(nx, ny)
     print('wmax', w.max())
     print('wmin', w.min())
+
+    assert isclose(w.max(), 0.00023523450899127333)
+    assert isclose(w.min(), -0.000705462681909122)
+
     if plot:
         import matplotlib
         matplotlib.use('TkAgg')

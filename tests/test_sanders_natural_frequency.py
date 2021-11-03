@@ -1,5 +1,5 @@
 import sys
-sys.path.append(r'..')
+sys.path.append(r'../..')
 
 import numpy as np
 from numpy import isclose, pi
@@ -7,8 +7,8 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import eigsh
 from composites import isotropic_plate
 
-from bfsccylinder import (BFSCCylinder, update_KC0, update_M, DOF, DOUBLE, INT,
-KC0_SPARSE_SIZE, M_SPARSE_SIZE)
+from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0, update_M,
+        DOF, DOUBLE, INT, KC0_SPARSE_SIZE, M_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
 
@@ -71,7 +71,7 @@ def test_natural_frequency(plot=False):
     init_k_KC0 = 0
     init_k_M = 0
     for n1, n2, n3, n4 in zip(n1s, n2s, n3s, n4s):
-        shell = BFSCCylinder(nint)
+        shell = BFSCCylinderSanders(nint)
         shell.c1 = DOF*nid_pos[n1]
         shell.c2 = DOF*nid_pos[n2]
         shell.c3 = DOF*nid_pos[n3]
@@ -128,7 +128,7 @@ def test_natural_frequency(plot=False):
     w = u[6::DOF].reshape(nx, ny)
     print('omegan', omegan)
 
-    assert isclose(omegan[0], 1096.05207512)
+    assert isclose(omegan[0], 1088.9032913)
 
     if plot:
         import matplotlib

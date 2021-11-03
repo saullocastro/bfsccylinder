@@ -1,36 +1,38 @@
 import sys
-sys.path.append(r'..')
+sys.path.append(r'../..')
 
 import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix, diags
-from scipy.sparse.linalg import eigsh, cg, lobpcg, LinearOperator, spilu
+from scipy.sparse.linalg import eigsh, cg, lobpcg, LinearOperator, spilu, spsolve
 from composites import laminated_plate
 
-from bfsccylinder import (BFSCCylinder, update_KC0, update_KG, DOF, DOUBLE, INT,
-KC0_SPARSE_SIZE, KG_SPARSE_SIZE)
+from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0, update_KG,
+        DOF, DOUBLE, INT, KC0_SPARSE_SIZE, KG_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
 
 
 def test_linear_buckling(plot=False):
-    # geometry Z18 Geier 1997
+    # geometry Z33 Castro 2014
     L = 0.510 # m
     R = 0.250 # m
     b = 2*pi*R # m
 
     # number of nodes
-    ny = 60 # circumferential
+    ny = 50 # circumferential
     nx = int(ny*L/b)
+    if nx % 2 == 0:
+        nx += 1
 
     # material properties Geier 1997
-    E11 = 123.55e9
-    E22 = 8.708e9
-    nu12 = 0.319
-    G12 = 5.695e9
+    E11 = 145.5e9
+    E22 = 8.7e9
+    nu12 = 0.28
+    G12 = 5.1e9
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
-    stack = [+60, -60, 0, 0, +68, -68, +52, -52, +37, -37][::-1]
+    stack = [0, 0, 19, -19, 37, -37, 45, -45, 51, -51]
     prop = laminated_plate(stack=stack, plyt=plyt, laminaprop=laminaprop)
 
     nids = 1 + np.arange(nx*(ny+1))
@@ -69,7 +71,7 @@ def test_linear_buckling(plot=False):
     init_k_KC0 = 0
     init_k_KG = 0
     for n1, n2, n3, n4 in zip(n1s, n2s, n3s, n4s):
-        shell = BFSCCylinder(nint)
+        shell = BFSCCylinderSanders(nint)
         shell.n1 = n1
         shell.n2 = n2
         shell.n3 = n3
@@ -100,17 +102,24 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
-    # simply supported
-    checkSS = isclose(x, 0) | isclose(x, L)
-    bk[0::DOF] = checkSS
-    bk[3::DOF] = checkSS
-    bk[6::DOF] = checkSS
+    #clamped boundary conditions (Castro 2014)
+    checkBC = isclose(x, 0) | isclose(x, L)
+    bk[0::DOF] = checkBC
+    #bk[1::DOF] = checkBC
+    #bk[2::DOF] = checkBC
+    bk[3::DOF] = checkBC
+    #bk[4::DOF] = checkBC
+    #bk[5::DOF] = checkBC
+    bk[6::DOF] = checkBC
+    bk[7::DOF] = checkBC
+    #bk[8::DOF] = checkBC
+    #bk[9::DOF] = checkBC
+
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
     # axial compression applied at x=L
     u = np.zeros(N, dtype=DOUBLE)
-
-    compression = -0.001
+    compression = -0.0001
     checkTopEdge = isclose(x, L)
     u[0::DOF] += checkTopEdge*compression
     uk = u[bk]
@@ -157,11 +166,22 @@ def test_linear_buckling(plot=False):
             y = (y1 + y2 + y3 + y4)/4
             xplot.append(x)
             yplot.append(y)
-            shell.calc_Bm(xi=0, eta=0)
-            shell.calc_Bb(xi=0, eta=0)
+            shell.update_Bm(xi=0, eta=0)
+            shell.update_Bb(xi=0, eta=0)
+            shell.update_Nu(xi=0, eta=0)
+            shell.update_Nu_x(xi=0, eta=0)
+            shell.update_Nv(xi=0, eta=0)
+            shell.update_Nw(xi=0, eta=0)
             u = np.asarray(shell.u)
             Nm = prop.A @ shell.Bm @ u + prop.B @ shell.Bb @ u
+            Nb = prop.B @ shell.Bm @ u + prop.D @ shell.Bb @ u
+
+            displu = shell.Nu @ u
+            displux = shell.Nu_x @ u
+            displv = shell.Nv @ u
+            displw = shell.Nw @ u
             stress.append(Nm[0])
+
         import matplotlib
         matplotlib.use('TkAgg')
         import matplotlib.pyplot as plt
@@ -171,6 +191,7 @@ def test_linear_buckling(plot=False):
         stress = np.asarray(stress).reshape(nx-1, ny)
         plt.contourf(xplot, yplot, stress, levels=10, cmap=cm.jet)
         plt.colorbar()
+        plt.gca().set_aspect('equal')
         plt.show()
         raise
 
@@ -179,7 +200,8 @@ def test_linear_buckling(plot=False):
     Nu = N - bk.sum()
     if True:
         #NOTE this works and seems to be the fastest option
-        PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0)
+        PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0, drop_tol=1e-8,
+                fill_factor=50)
         print('spilu OK')
         def matvec(x):
             return PREC2.solve(x)
@@ -201,7 +223,9 @@ def test_linear_buckling(plot=False):
             load_mult = -eigvals
         else:
             #NOTE this is giving close but varying results for each run
-            PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0)
+            PREC = 1/Kuu.diagonal().max()
+            PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0, drop_tol=1e-8,
+                    fill_factor=50)
             print('spilu OK')
             def matvec(x):
                 return PREC2.solve(x)
@@ -214,17 +238,17 @@ def test_linear_buckling(plot=False):
     f = np.zeros(N)
     fk = Kuk.T*uu + Kkk*uk
     f[bk] = fk
-    Pcr = (load_mult[0]*f[0::DOF][checkTopEdge]).sum()
+    Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
 
-    assert isclose(Pcr, -228459.04645094523, rtol=0.02)
+    assert np.isclose(Pcr, -215237.14801264074, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
     mode_shape[bu] = eigvecsu[:, mode]
 
-    w = mode_shape[6::DOF].reshape(nx, ny)
     if plot:
+        w = mode_shape[6::DOF].reshape(nx, ny)
         import matplotlib
         matplotlib.use('TkAgg')
         import matplotlib.pyplot as plt

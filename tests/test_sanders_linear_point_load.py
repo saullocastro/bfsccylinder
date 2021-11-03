@@ -1,33 +1,32 @@
 import sys
-sys.path.append(r'..')
+sys.path.append(r'../..')
 
 import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix
-from scipy.sparse.linalg import eigsh
+from scipy.sparse.linalg import cg
 from composites import isotropic_plate
 
-from bfsccylinder import (BFSCCylinder, update_KC0, update_M, DOF, DOUBLE, INT,
-KC0_SPARSE_SIZE, M_SPARSE_SIZE)
+from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0, DOF, DOUBLE,
+        INT, KC0_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
 
 
-def test_natural_frequency(plot=False):
+def test_point_load(plot=False):
     # number of nodes
-    nx = 21 # axial, keep odd if you want a line of nodes exactly in the middle
-    ny = 56 # circumferential
+    nx = 11 # axial, keep odd if you want a line of nodes exactly in the middle
+    ny = 30 # circumferential, keep even if you want a line of nodes in the middle
 
     # geometry
-    L = 0.8 # m
-    R = 0.4 # m
-    b = 2*pi*R # m
+    L = 0.8
+    R = 0.4
+    b = 2*pi*R
 
     # material properties
-    E = 70e9 # Pa
+    E = 70e9
     nu = 0.33
-    h = 0.001 # m
-    rho = 2.7e3 # kg/m3
+    h = 0.001
     prop = isotropic_plate(thickness=h, E=E, nu=nu)
 
     nids = 1 + np.arange(nx*(ny+1))
@@ -65,40 +64,28 @@ def test_natural_frequency(plot=False):
     Kr = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=INT)
     Kc = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=INT)
     Kv = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=DOUBLE)
-    Mr = np.zeros(M_SPARSE_SIZE*num_elements, dtype=INT)
-    Mc = np.zeros(M_SPARSE_SIZE*num_elements, dtype=INT)
-    Mv = np.zeros(M_SPARSE_SIZE*num_elements, dtype=DOUBLE)
     init_k_KC0 = 0
-    init_k_M = 0
     for n1, n2, n3, n4 in zip(n1s, n2s, n3s, n4s):
-        shell = BFSCCylinder(nint)
+        shell = BFSCCylinderSanders(nint)
         shell.c1 = DOF*nid_pos[n1]
         shell.c2 = DOF*nid_pos[n2]
         shell.c3 = DOF*nid_pos[n3]
         shell.c4 = DOF*nid_pos[n4]
         shell.R = R
-        shell.h = h
-        shell.rho = rho
         shell.lex = L/(nx-1)
         shell.ley = b/ny
         assign_constant_ABD(shell, prop)
         shell.init_k_KC0 = init_k_KC0
-        shell.init_k_M = init_k_M
         update_KC0(shell, points, weights, Kr, Kc, Kv)
-        update_M(shell, Mr, Mc, Mv)
         init_k_KC0 += KC0_SPARSE_SIZE
-        init_k_M += M_SPARSE_SIZE
         elements.append(shell)
 
-    KC0 = coo_matrix((Kv, (Kr, Kc)), shape=(N, N)).tocsc()
-    M = coo_matrix((Mv, (Mr, Mc)), shape=(N, N)).tocsc()
-
-    print('structural matrices OK')
+    K = coo_matrix((Kv, (Kr, Kc)), shape=(N, N)).tocsc()
 
     # applying boundary conditions
-    bk = np.zeros(N, dtype=bool)
+    bk = np.zeros(K.shape[0], dtype=bool)
 
-    # simply supports
+    # simply supported
     checkSS = isclose(x, 0) | isclose(x, L)
     bk[0::DOF] = checkSS
     bk[3::DOF] = checkSS
@@ -106,29 +93,31 @@ def test_natural_frequency(plot=False):
 
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
+    # external force vector for point load at center
+    f = np.zeros(K.shape[0])
+    fmid = -100.
+
+    # force at center node
+    check = np.isclose(x, L/2) & np.isclose(y, b/2)
+    f[6::DOF][check] = fmid
+
     # sub-matrices corresponding to unknown DOFs
-    Kuu = KC0[bu, :][:, bu]
-    Muu = M[bu, :][:, bu]
+    Kuu = K[bu, :][:, bu]
+    fu = f[bu]
+    assert np.isclose(fu.sum(), fmid)
 
-    # solving for natural frequencies
-    k = 16
-    # doing lambda = 1/omegan**2
-    # A * x[i] = lambda[i] * M * x[i]
-    eigvals, eigvecsu = eigsh(A=Muu, M=Kuu, k=k, which='LM', sigma=1.)
-    # sorting to correct sequence
-    eigvals = eigvals[::-1]
-    eigvecsu = eigvecsu[:, ::-1]
-    omegan = np.sqrt(1/eigvals)
-
-    mode = 0
-    uu = eigvecsu[:, mode]
-    u = np.zeros(N, dtype=float)
+    # solving
+    PREC = np.sqrt(1/Kuu.diagonal()).max()
+    uu, info = cg(PREC*Kuu, PREC*fu, tol=1e-4, atol='legacy')
+    u = np.zeros(K.shape[0], dtype=float)
     u[bu] = uu
 
     w = u[6::DOF].reshape(nx, ny)
-    print('omegan', omegan)
+    print('wmax', w.max())
+    print('wmin', w.min())
 
-    assert isclose(omegan[0], 1096.05207512)
+    assert isclose(w.max(), 0.00023710782832362203)
+    assert isclose(w.min(), -0.0007098715355559141)
 
     if plot:
         import matplotlib
@@ -142,4 +131,4 @@ def test_natural_frequency(plot=False):
         plt.show()
 
 if __name__ == '__main__':
-    test_natural_frequency(plot=True)
+    test_point_load(plot=True)
