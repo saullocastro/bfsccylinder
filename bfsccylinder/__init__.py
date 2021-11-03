@@ -2,6 +2,9 @@
 BFSCCYLINDER - Implementation of the single-curvature BFSC (cylinder) finite
 element
 
+For Donnell-type kinematics: bfsccylinder.pyx
+For Sanders-type kinematics: bfsccylinder_sanders.pyx
+
 Author: Saullo G. P. Castro
 
 """
