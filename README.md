@@ -1,4 +1,7 @@
-Implementation of the BFSC cylinder, for linear and nonlinear analyses.
+Implementation of the single-curvature BFSC (SC-BFSC) element, for linear and
+nonlinear analyses.
+
+Donnell-type and Sanders-type kinematics are available.
 
 Github Actions status:
 
