@@ -217,6 +217,8 @@ def test_linear_buckling(plot=False):
     Pcr = (load_mult[0]*f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
 
+    assert isclose(Pcr, -228459.04645094523, rtol=0.02)
+
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
     mode_shape[bu] = eigvecsu[:, mode]
