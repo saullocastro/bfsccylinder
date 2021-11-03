@@ -19,6 +19,8 @@ M_SPARSE_SIZE = 544
 
 cdef class BFSCCylinder(object):
     """
+    Single-curvature BFSC element with Donnell-type kinematics.
+
     Nodal connectivity for cylindrical shell element
     similar to Nastran's CQUAD4
 
