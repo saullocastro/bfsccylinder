@@ -1,6 +1,7 @@
 version.py
 # Build related
 bfsccylinder.cpp 
+bfsccylinder_sanders.cpp 
 build
 dist
 .coverage
@@ -20,4 +21,7 @@ temp*.*
 *.pyd
 
 bfsccylinder.c 
+bfsccylinder_sanders.c 
 bfsccylinder.html 
+bfsccylinder_sanders.html 
+output.txt
