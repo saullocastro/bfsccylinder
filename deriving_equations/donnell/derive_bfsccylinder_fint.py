@@ -15,6 +15,7 @@ if True:
     var('R')
     var('Nxx0, Nyy0, Nxy0, Mxx0, Myy0, Mxy0')
     var('NxxL, NyyL, NxyL')
+    var('MxxL, MyyL, MxyL')
     var('A11, A12, A16, A22, A26, A66')
     var('B11, B12, B16, B22, B26, B66')
     var('D11, D12, D16, D22, D26, D66')
@@ -125,25 +126,6 @@ if True:
         Bbs.append(Bbis)
     Bb = Matrix(Bbs)
 
-    G = Matrix([
-        (2/lex)*Nw.diff(xi),
-        (2/ley)*Nw.diff(eta)
-        ])
-    print()
-    Gs = []
-    for i in range(G.shape[0]):
-        Gis = []
-        for j in range(G.shape[1]):
-            Gij = G[i, j]
-            if Gij != 0:
-                print('                G%d_%02d = %s' % ((i+1), (j+1), str(Gij)))
-                Gis.append(symbols('G%d_%02d' % (i+1, j+1)))
-            else:
-                Gis.append(0)
-        Gs.append(Gis)
-    print()
-    G = Matrix(Gs)
-
     A = Matrix([
         [A11, A12, A16],
         [A12, A22, A26],
@@ -161,6 +143,7 @@ if True:
     N0 = A*Bm*ue + B*Bb*ue
     M0 = B*Bm*ue + D*Bb*ue
     NL = A*BmL*ue
+    ML = B*BmL*ue
     print('Nxx0 =', N0[0])
     print('Nyy0 =', N0[1])
     print('Nxy0 =', N0[2])
@@ -170,37 +153,19 @@ if True:
     print('NxxL =', NL[0])
     print('NyyL =', NL[1])
     print('NxyL =', NL[2])
-
-    Nmatrix = Matrix([[Nxx0, Nxy0],
-                      [Nxy0, Nyy0]])
+    print('MxxL =', ML[0])
+    print('MyyL =', ML[1])
+    print('MxyL =', ML[2])
 
     # Internal force vector
     # PhD thesis Saullo, Eq. 3.8.14
     N0 = Matrix([[Nxx0, Nyy0, Nxy0]]).T
     M0 = Matrix([[Mxx0, Myy0, Mxy0]]).T
     NL = Matrix([[NxxL, NyyL, NxyL]]).T
-    NG = Nmatrix*G*ue
-    print()
-    NGs = []
-    for i in range(NG.shape[0]):
-        NGis = []
-        for j in range(NG.shape[1]):
-            NGij = NG[i, j]
-            if NGij != 0:
-                print('                NG%d_%02d = %s' % ((i+1), (j+1), str(NGij)))
-                NGis.append(symbols('NG%d_%02d' % (i+1, j+1)))
-            else:
-                NGis.append(0)
-        NGs.append(NGis)
-    NG = Matrix(NGs)
-    print()
+    ML = Matrix([[MxxL, MyyL, MxyL]]).T
 
-    fint00 = Bm.T*N0 + Bb.T*M0
-    fint0L = Bm.T*NL
-    fintL0 = BmL.T*N0
-    fintLL = BmL.T*NL
-    fintKG = G.T*NG
-    fint = weight*(lex*ley)/4.*(fint00 + fint0L + fintL0 + fintLL + fintKG)
+    fint_terms = Bm.T*N0 + Bm.T*NL + BmL.T*N0 + BmL.T*NL + Bb.T*M0 + Bb.T*ML
+    fint = weight*(lex*ley)/4.*(fint_terms)
 
     def name_ind(i):
         if i >=0 and i < DOF:
