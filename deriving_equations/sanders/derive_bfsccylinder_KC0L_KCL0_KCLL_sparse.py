@@ -104,8 +104,10 @@ def main():
     v = Nv*uG
     w_x = Nw_x*uG
     w_y = Nw_y*uG
+    print('v =', simplify(v)[0, 0])
     print('w_x =', simplify(w_x)[0, 0])
     print('w_y =', simplify(w_y)[0, 0])
+    v = var('v')
     w_x = var('w_x')
     w_y = var('w_y')
     BmL = Matrix([
