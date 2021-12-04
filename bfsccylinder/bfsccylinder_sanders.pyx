@@ -27228,9 +27228,7 @@ cpdef void update_fint(np.ndarray[cDOUBLE, ndim=1] u,
     cdef double Bb1_07, Bb1_08, Bb1_09, Bb1_10, Bb1_17, Bb1_18, Bb1_19, Bb1_20, Bb1_27, Bb1_28, Bb1_29, Bb1_30, Bb1_37, Bb1_38, Bb1_39, Bb1_40, Bb2_04, Bb2_05, Bb2_06, Bb2_07, Bb2_08, Bb2_09, Bb2_10, Bb2_14, Bb2_15, Bb2_16, Bb2_17, Bb2_18, Bb2_19, Bb2_20, Bb2_24, Bb2_25, Bb2_26, Bb2_27, Bb2_28, Bb2_29, Bb2_30, Bb2_34, Bb2_35, Bb2_36, Bb2_37, Bb2_38, Bb2_39, Bb2_40, Bb3_04, Bb3_05, Bb3_06, Bb3_07, Bb3_08, Bb3_09, Bb3_10, Bb3_14, Bb3_15, Bb3_16, Bb3_17, Bb3_18, Bb3_19, Bb3_20, Bb3_24, Bb3_25, Bb3_26, Bb3_27, Bb3_28, Bb3_29, Bb3_30, Bb3_34, Bb3_35, Bb3_36, Bb3_37, Bb3_38, Bb3_39, Bb3_40
     cdef double R, lex, ley, v, w_x, w_y
     cdef double Nxx0, Nyy0, Nxy0, Mxx0, Mxy0, Myy0
-    cdef double NxxL, NyyL, NxyL
-    cdef double MxxL, MyyL, MxyL
-    cdef double NG1_01, NG2_01, NG3_01
+    cdef double NxxL, NyyL, NxyL, MxxL, MyyL, MxyL
     cdef double xi, eta, weight_xi, weight_eta, weight
     cdef double A11, A12, A16, A22, A26, A66
     cdef double B11, B12, B16, B22, B26, B66
