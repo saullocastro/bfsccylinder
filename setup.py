@@ -1,17 +1,15 @@
-from __future__ import absolute_import
-
+import platform
 import os
 import inspect
 import subprocess
 from setuptools import setup, find_packages
 from distutils.extension import Extension
 
-import numpy as np
 from Cython.Build import cythonize
 
 
-is_released = True
-version = '0.3.12'
+is_released = False
+version = '0.4.0'
 
 
 def git_version():
@@ -48,7 +46,10 @@ def get_version_info(version, is_released):
 
 def write_version_py(version, is_released, filename='bfsccylinder/version.py'):
     fullversion = get_version_info(version, is_released)
-    with open("./bfsccylinder/version.py", "wb") as f:
+    version_file = "./bfsccylinder/version.py"
+    if os.path.isfile(version_file):
+        os.remove(version_file)
+    with open(version_file, "wb") as f:
         f.write(b'__version__ = "%s"\n' % fullversion.encode())
     return fullversion
 
@@ -77,51 +78,63 @@ Development Status :: 4 - Beta
 Intended Audience :: Education
 Intended Audience :: Science/Research
 Intended Audience :: Developers
+Topic :: Scientific/Engineering
 Topic :: Scientific/Engineering :: Mathematics
 Topic :: Education
-License :: OSI Approved :: BSD License
-Programming Language :: Python :: 3.7
-Programming Language :: Python :: 3.8
-Programming Language :: Python :: 3.9
+Topic :: Software Development
+Topic :: Software Development :: Libraries :: Python Modules
+Operating System :: POSIX :: BSD
 Operating System :: Microsoft :: Windows
 Operating System :: Unix
+Programming Language :: Python :: 3.8
+Programming Language :: Python :: 3.9
+Programming Language :: Python :: 3.10
+Programming Language :: Python :: 3.11
+License :: OSI Approved :: BSD License
 
 """
 
 fullversion = write_version_py(version, is_released)
 
-if os.name == 'nt':
-    compile_args = ['/openmp', '/O2']
+if platform.system() == 'Windows':
+    compile_args = ['/openmp']
     link_args = []
-else:
+elif platform.system() == 'Linux':
     compile_args = ['-fopenmp', '-static', '-static-libgcc', '-static-libstdc++']
     link_args = ['-fopenmp', '-static-libgcc', '-static-libstdc++']
-
-if 'CYTHON_TRACE_NOGIL' in os.environ.keys():
-    compile_args = ['-O0']
+else: # MAC-OS
+    compile_args = []
     link_args = []
 
+if 'CYTHON_TRACE_NOGIL' in os.environ.keys():
+    if os.name == 'nt': # Windows
+        compile_args = ['/O0']
+        link_args = []
+    else: # MAC-OS or Linux
+        compile_args = ['-O0']
+        link_args = []
+
 include_dirs = [
-            np.get_include(),
             ]
+
+extension_kwargs = dict(
+    include_dirs=include_dirs,
+    extra_compile_args=compile_args,
+    extra_link_args=link_args,
+    language='c++',
+    )
 
 extensions = [
     Extension('bfsccylinder.bfsccylinder',
         sources=[
             './bfsccylinder/bfsccylinder.pyx',
             ],
-        include_dirs=include_dirs,
-        extra_compile_args=compile_args,
-        extra_link_args=link_args,
-        language='c++'),
+        **extension_kwargs),
     Extension('bfsccylinder.bfsccylinder_sanders',
         sources=[
             './bfsccylinder/bfsccylinder_sanders.pyx',
             ],
-        include_dirs=include_dirs,
-        extra_compile_args=compile_args,
-        extra_link_args=link_args,
-        language='c++'),
+        **extension_kwargs),
     ]
 
 ext_modules = cythonize(extensions,
@@ -134,22 +147,39 @@ data_files = [('', [
         'LICENSE',
         ])]
 
+package_data = {
+        'bfsccylinder': ['*.pxd', '*.pyx'],
+        '': ['tests/*.*'],
+        }
+
+keywords = [
+            'finite elements',
+            'plate',
+            'shell',
+            'cylindrical shell',
+            'static analysis',
+            'buckling',
+            'vibration',
+            'structural dynamics',
+            ]
+
 s = setup(
     name = "bfsccylinder",
     version = fullversion,
     author = "Saullo G. P. Castro",
     author_email = "S.G.P.Castro@tudelft.nl",
     description = ("Implementation of the BFSC cylinder finite element"),
-    license = "3-Clause BSD",
-    keywords = "finite elements shell structural analysis buckling vibration dynamics",
-    url = "https://github.com/saullocastro/bfsccylinder",
-    data_files=data_files,
-    long_description=read('README.md'),
+    long_description = read('README.md'),
     long_description_content_type = 'text/markdown',
-    classifiers=[_f for _f in CLASSIFIERS.split('\n') if _f],
-    install_requires=install_requires,
+    license = "3-Clause BSD",
+    keywords = keywords,
+    url = "https://github.com/saullocastro/bfsccylinder",
+    package_data = package_data,
+    data_files = data_files,
+    classifiers = [_f for _f in CLASSIFIERS.split('\n') if _f],
+    install_requires = install_requires,
     ext_modules = ext_modules,
-    include_package_data=True,
-    packages=find_packages(),
+    include_package_data = True,
+    packages = find_packages(),
 )
 
