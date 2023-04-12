@@ -8,7 +8,7 @@ from distutils.extension import Extension
 from Cython.Build import cythonize
 
 
-is_released = False
+is_released = True
 version = '0.4.0'
 
 
