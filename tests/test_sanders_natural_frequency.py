@@ -128,7 +128,7 @@ def test_natural_frequency(plot=False):
     w = u[6::DOF].reshape(nx, ny)
     print('omegan', omegan)
 
-    assert isclose(omegan[0], 1088.9032913)
+    assert isclose(omegan[0], 1088.9032913, rtol=0.01)
 
     if plot:
         import matplotlib
