@@ -7,9 +7,9 @@ from scipy.sparse import coo_matrix
 from scipy.sparse.linalg import eigsh
 from composites import isotropic_plate
 
-from bfsccylinder import INT, DOUBLE, DOF
 from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0, update_M,
-                                  KC0_SPARSE_SIZE, M_SPARSE_SIZE)
+                                  DOF, DOUBLE, INT, KC0_SPARSE_SIZE,
+                                  M_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
 
