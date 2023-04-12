@@ -1,6 +1,6 @@
 import time
 import sys
-sys.path.append(r'../..')
+sys.path.append(r'..')
 
 import numpy as np
 from numpy import isclose, pi
@@ -9,9 +9,10 @@ from scipy.sparse.linalg import splu, spilu, LinearOperator
 from scipy.sparse.linalg import cg, spsolve
 from composites import laminated_plate
 
+from bfsccylinder import INT, DOUBLE, DOF
 from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0, update_KCNL,
-        update_KG, update_fint, DOF, DOUBLE, INT, KC0_SPARSE_SIZE,
-        KCNL_SPARSE_SIZE, KG_SPARSE_SIZE)
+                                  update_KG, update_fint, KC0_SPARSE_SIZE,
+                                  KCNL_SPARSE_SIZE, KG_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
 
