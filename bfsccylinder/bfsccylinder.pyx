@@ -6,7 +6,6 @@
 import numpy as np
 
 
-INT = np.int
 DOUBLE = np.float64
 cdef int DOF = 10
 cdef int num_nodes = 4
