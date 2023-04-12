@@ -17,5 +17,6 @@ License
 Distrubuted under the 3-Clause BSD license
 (https://raw.github.com/saullocastro/bfsccylinder/master/LICENSE).
 
-Contact: S.G.P.Castro@tudelft.nl
+Contacts:
+- Saullo G. P. Castro, S.G.P.Castro@tudelft.nl
 
