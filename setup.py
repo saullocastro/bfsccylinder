@@ -9,7 +9,7 @@ from Cython.Build import cythonize
 
 
 is_released = True
-version = '0.4.0'
+version = '0.4.1'
 
 
 def git_version():
@@ -74,22 +74,22 @@ install_requires = [
 #Trove classifiers
 CLASSIFIERS = """\
 
-Development Status :: 4 - Beta
-Intended Audience :: Education
+Development Status :: 5 - Production/Stable
 Intended Audience :: Science/Research
 Intended Audience :: Developers
+Intended Audience :: Education
 Topic :: Scientific/Engineering
 Topic :: Scientific/Engineering :: Mathematics
 Topic :: Education
 Topic :: Software Development
 Topic :: Software Development :: Libraries :: Python Modules
-Operating System :: POSIX :: BSD
 Operating System :: Microsoft :: Windows
 Operating System :: Unix
-Programming Language :: Python :: 3.8
+Operating System :: POSIX :: BSD
 Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
+Programming Language :: Python :: 3.12
 License :: OSI Approved :: BSD License
 
 """
