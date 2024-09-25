@@ -15,6 +15,7 @@ temp*
 tmp*.*
 temp*.*
 .cache
+.DS_Store
 
 # Python compiled files
 *.pyc
