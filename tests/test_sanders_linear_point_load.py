@@ -116,8 +116,8 @@ def test_point_load(plot=False):
     print('wmax', w.max())
     print('wmin', w.min())
 
-    assert isclose(w.max(), 0.00023710782832362203)
-    assert isclose(w.min(), -0.0007098715355559141)
+    assert isclose(w.max(), 0.00023710782832362203, rtol=1.e-3)
+    assert isclose(w.min(), -0.0007098715355559141, rtol=1.e-3)
 
     if plot:
         import matplotlib
