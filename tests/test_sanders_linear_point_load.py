@@ -108,7 +108,7 @@ def test_point_load(plot=False):
 
     # solving
     PREC = np.sqrt(1/Kuu.diagonal()).max()
-    uu, info = cg(PREC*Kuu, PREC*fu, tol=1e-4, atol='legacy')
+    uu, info = cg(PREC*Kuu, PREC*fu, tol=1.e-4)
     u = np.zeros(K.shape[0], dtype=float)
     u[bu] = uu
 

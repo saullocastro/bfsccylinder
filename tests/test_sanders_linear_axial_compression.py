@@ -109,7 +109,7 @@ def test_linear_axial_compression(plot=False):
 
     # solving
     PREC = 1/Kuu.diagonal().max()
-    uu, info = cg(PREC*Kuu, PREC*fu, atol='legacy')
+    uu, info = cg(PREC*Kuu, PREC*fu)
     assert info == 0
     u[bu] = uu
 

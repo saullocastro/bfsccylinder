@@ -174,7 +174,7 @@ def test_nonlinear_axial_compression_load_controlled():
 
     u0[bu] = spsolve(KC0uu, fext[bu])
     #PREC = 1/KC0uu.diagonal().max()
-    #u0[bu], info = cg(PREC*KC0uu, PREC*fext[bu], atol=1e-9)
+    #u0[bu], info = cg(PREC*KC0uu, PREC*fext[bu])
     #if info != 0:
         #print('#   failed with cg()')
         #print('#   trying spsolve()')
@@ -193,7 +193,7 @@ def test_nonlinear_axial_compression_load_controlled():
         print('count', count)
         duu = spsolve(KTuu, -Ri[bu])
         #PREC = 1/KTuu.diagonal().max()
-        #duu, info = cg(PREC*KTuu, -PREC*Ri[bu], atol=1e-9)
+        #duu, info = cg(PREC*KTuu, -PREC*Ri[bu])
         #if info != 0:
             #print('#   failed with cg()')
             #print('#   trying spsolve()')
