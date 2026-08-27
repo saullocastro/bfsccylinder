@@ -27,3 +27,5 @@ bfsccylinder_sanders.c
 bfsccylinder.html 
 bfsccylinder_sanders.html 
 output.txt
+deriving_equations/donnell/*.txt
+deriving_equations/sanders/*.txt
