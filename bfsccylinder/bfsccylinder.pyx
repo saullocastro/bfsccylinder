@@ -42,15 +42,15 @@ cdef class BFSCCylinder(object):
     cdef public double [:, ::1] D11, D12, D16, D22, D26, D66
     cdef public double [:, ::1] Bm
     cdef public double [:, ::1] Bb
-    cdef public double [::1] Nu
-    cdef public double [::1] Nu_x
-    cdef public double [::1] Nu_y
-    cdef public double [::1] Nv
-    cdef public double [::1] Nv_x
-    cdef public double [::1] Nv_y
-    cdef public double [::1] Nw
-    cdef public double [::1] Nw_x
-    cdef public double [::1] Nw_y
+    cdef public double [::1] Su
+    cdef public double [::1] Su_x
+    cdef public double [::1] Su_y
+    cdef public double [::1] Sv
+    cdef public double [::1] Sv_x
+    cdef public double [::1] Sv_y
+    cdef public double [::1] Sw
+    cdef public double [::1] Sw_x
+    cdef public double [::1] Sw_y
     cdef public double [::1] u
     def __init__(BFSCCylinder self, int nint):
         self.n1 = -1
@@ -90,15 +90,15 @@ cdef class BFSCCylinder(object):
         self.R = 0
         self.Bm = np.zeros((3, num_nodes*DOF), dtype=DOUBLE)
         self.Bb = np.zeros((3, num_nodes*DOF), dtype=DOUBLE)
-        self.Nu = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nu_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nu_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nv = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nv_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nv_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nw = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nw_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
-        self.Nw_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Su = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Su_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Su_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sv = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sv_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sv_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sw = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sw_x = np.zeros(num_nodes*DOF, dtype=DOUBLE)
+        self.Sw_y = np.zeros(num_nodes*DOF, dtype=DOUBLE)
         self.u = np.zeros(num_nodes*DOF, dtype=DOUBLE)
 
     cpdef void update_Bm(BFSCCylinder self, double xi, double eta):
@@ -226,179 +226,179 @@ cdef class BFSCCylinder(object):
             self.Bb[2, 38] = -8*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
             self.Bb[2, 39] = -8*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
 
-    cpdef void update_Nu(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Su(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nu[0] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nu[1] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nu[2] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nu[10] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nu[11] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nu[12] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nu[20] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nu[21] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nu[22] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nu[30] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nu[31] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nu[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Su[0] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Su[1] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Su[2] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Su[10] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Su[11] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+            self.Su[12] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Su[20] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Su[21] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+            self.Su[22] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Su[30] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Su[31] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Su[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
-    cpdef void update_Nu_x(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Su_x(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nu_x[0] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[1] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[2] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[10] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[11] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[12] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[20] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[21] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[22] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nu_x[30] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[31] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nu_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Su_x[0] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Su_x[1] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Su_x[2] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Su_x[10] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Su_x[11] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Su_x[12] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Su_x[20] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Su_x[21] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Su_x[22] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Su_x[30] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Su_x[31] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Su_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
-    cpdef void update_Nu_y(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Su_y(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nu_y[0] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nu_y[1] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nu_y[2] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nu_y[10] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nu_y[11] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nu_y[12] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nu_y[20] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nu_y[21] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nu_y[22] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nu_y[30] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nu_y[31] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nu_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Su_y[0] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Su_y[1] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Su_y[2] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Su_y[10] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Su_y[11] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Su_y[12] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Su_y[20] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Su_y[21] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Su_y[22] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Su_y[30] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Su_y[31] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Su_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
-    cpdef void update_Nv(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Sv(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nv[3] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nv[4] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nv[5] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nv[13] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nv[14] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nv[15] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nv[23] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nv[24] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nv[25] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nv[33] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nv[34] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sv[3] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sv[4] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sv[5] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sv[13] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sv[14] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sv[15] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sv[23] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sv[24] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sv[25] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sv[33] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sv[34] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
-    cpdef void update_Nv_x(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Sv_x(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nv_x[3] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[4] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[5] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[13] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[14] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[15] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[23] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[24] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[25] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nv_x[33] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[34] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[3] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[4] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[5] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[13] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[14] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[15] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[23] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[24] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[25] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sv_x[33] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[34] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
-    cpdef void update_Nv_y(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Sv_y(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nv_y[3] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nv_y[4] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nv_y[5] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nv_y[13] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nv_y[14] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nv_y[15] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nv_y[23] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nv_y[24] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nv_y[25] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nv_y[33] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nv_y[34] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sv_y[3] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sv_y[4] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sv_y[5] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sv_y[13] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sv_y[14] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sv_y[15] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sv_y[23] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sv_y[24] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sv_y[25] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sv_y[33] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sv_y[34] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
-    cpdef void update_Nw(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Sw(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nw[6] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nw[7] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nw[8] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nw[9] = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nw[16] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nw[17] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nw[18] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nw[19] = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nw[26] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nw[27] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nw[28] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
-            self.Nw[29] = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
-            self.Nw[36] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nw[37] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
-            self.Nw[38] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
-            self.Nw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sw[6] = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sw[7] = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sw[8] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sw[9] = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sw[16] = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sw[17] = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sw[18] = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sw[19] = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sw[26] = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sw[27] = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sw[28] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+            self.Sw[29] = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+            self.Sw[36] = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sw[37] = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+            self.Sw[38] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+            self.Sw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
 
-    cpdef void update_Nw_x(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Sw_x(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nw_x[6] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[7] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[8] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[9] = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[16] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[17] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[18] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[19] = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[26] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[27] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[28] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[29] = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
-            self.Nw_x[36] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[37] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[38] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
-            self.Nw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[6] = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[7] = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[8] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[9] = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[16] = 2*((-eta - 2)*(eta - 1)**2*(0.125*xi + 0.125)*(xi - 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[17] = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[18] = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[19] = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[26] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[27] = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[28] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[29] = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+            self.Sw_x[36] = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[37] = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[38] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+            self.Sw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
-    cpdef void update_Nw_y(BFSCCylinder self, double xi, double eta):
+    cpdef void update_Sw_y(BFSCCylinder self, double xi, double eta):
         cdef double lex, ley
         with nogil:
             lex = self.lex
             ley = self.ley
-            self.Nw_y[6] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nw_y[7] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nw_y[8] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nw_y[9] = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nw_y[16] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nw_y[17] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nw_y[18] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nw_y[19] = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nw_y[26] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nw_y[27] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nw_y[28] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
-            self.Nw_y[29] = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
-            self.Nw_y[36] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nw_y[37] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
-            self.Nw_y[38] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
-            self.Nw_y[39] = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sw_y[6] = 2*((-eta - 2)*(0.125*eta - 0.125)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sw_y[7] = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sw_y[8] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sw_y[9] = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sw_y[16] = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sw_y[17] = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sw_y[18] = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sw_y[19] = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sw_y[26] = 2*((0.125*eta + 0.125)*(eta - 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sw_y[27] = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sw_y[28] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+            self.Sw_y[29] = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+            self.Sw_y[36] = 2*((0.125*eta + 0.125)*(eta - 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sw_y[37] = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+            self.Sw_y[38] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+            self.Sw_y[39] = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
 
 
 cpdef void update_KC0(BFSCCylinder shell,
