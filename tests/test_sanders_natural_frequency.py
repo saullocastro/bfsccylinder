@@ -112,14 +112,10 @@ def test_natural_frequency(plot=False):
     Muu = M[bu, :][:, bu]
 
     # solving for natural frequencies
-    k = 16
-    # doing lambda = 1/omegan**2
-    # A * x[i] = lambda[i] * M * x[i]
-    eigvals, eigvecsu = eigsh(A=Muu, M=Kuu, k=k, which='LM', sigma=1.)
-    # sorting to correct sequence
-    eigvals = eigvals[::-1]
-    eigvecsu = eigvecsu[:, ::-1]
-    omegan = np.sqrt(1/eigvals)
+    num_eigenvalues = 16
+    eigvals, eigvecsu = eigsh(A=Kuu, M=Muu, sigma=-1., which='LM',
+            k=num_eigenvalues, tol=1e-9)
+    omegan = eigvals**0.5
 
     mode = 0
     uu = eigvecsu[:, mode]
@@ -129,7 +125,7 @@ def test_natural_frequency(plot=False):
     w = u[6::DOF].reshape(nx, ny)
     print('omegan', omegan)
 
-    assert isclose(omegan[0], 1088.9032913, rtol=0.01)
+    assert isclose(omegan[0], 1090.05996203, rtol=0.01)
 
     if plot:
         import matplotlib
