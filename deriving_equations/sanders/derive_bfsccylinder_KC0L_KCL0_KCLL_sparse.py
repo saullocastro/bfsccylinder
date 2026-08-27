@@ -34,21 +34,21 @@ def main():
     # node 3 (+1, +1)
     # node 4 (-1, +1)
 
-    Nu = sympy.Matrix([[
+    Su = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0, 0, 0, 0,
         Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0, 0, 0, 0,
         ]])
-    Nv = sympy.Matrix([[
+    Sv = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0,
         0, 0, 0, Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0,
         ]])
-    Nw = sympy.Matrix([[
+    Sw = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, 0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), Hxyi(-1, -1),
         0, 0, 0, 0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), Hxyi(+1, -1),
@@ -69,15 +69,15 @@ def main():
         [D16, D26, D66]])
 
     # membrane
-    Nu_x = (2/lex)*Nu.diff(xi)
-    Nu_y = (2/ley)*Nu.diff(eta)
-    Nv_x = (2/lex)*Nv.diff(xi)
-    Nv_y = (2/ley)*Nv.diff(eta)
+    Su_x = (2/lex)*Su.diff(xi)
+    Su_y = (2/ley)*Su.diff(eta)
+    Sv_x = (2/lex)*Sv.diff(xi)
+    Sv_y = (2/ley)*Sv.diff(eta)
 
     Bm = Matrix([
-        Nu_x, # epsilon_xx
-        Nv_y + 1/R*Nw, # epsilon_yy
-        Nu_y + Nv_x # gamma_xy
+        Su_x, # epsilon_xx
+        Sv_y + 1/R*Sw, # epsilon_yy
+        Su_y + Sv_x # gamma_xy
         ])
 
     Bms = []
@@ -99,11 +99,11 @@ def main():
     print()
 
     uG = Matrix([symbols(r'ue[%d]' % i) for i in range(0, Bm.shape[1])])
-    Nw_x = (2/lex)*Nw.diff(xi)
-    Nw_y = (2/ley)*Nw.diff(eta)
-    v = Nv*uG
-    w_x = Nw_x*uG
-    w_y = Nw_y*uG
+    Sw_x = (2/lex)*Sw.diff(xi)
+    Sw_y = (2/ley)*Sw.diff(eta)
+    v = Sv*uG
+    w_x = Sw_x*uG
+    w_y = Sw_y*uG
     print('v =', simplify(v)[0, 0])
     print('w_x =', simplify(w_x)[0, 0])
     print('w_y =', simplify(w_y)[0, 0])
@@ -111,9 +111,9 @@ def main():
     w_x = var('w_x')
     w_y = var('w_y')
     BmL = Matrix([
-        w_x*Nw_x,
-        w_y*Nw_y + 1/R**2*v*Nv - 1/R*v*Nw_y - 1/R*w_y*Nv,
-        w_x*Nw_y + w_y*Nw_x - 1/R*v*Nw_x - 1/R*w_x*Nv
+        w_x*Sw_x,
+        w_y*Sw_y + 1/R**2*v*Sv - 1/R*v*Sw_y - 1/R*w_y*Sv,
+        w_x*Sw_y + w_y*Sw_x - 1/R*v*Sw_x - 1/R*w_x*Sv
         ])
 
     BmLs = []
@@ -135,16 +135,16 @@ def main():
     print()
 
     # bending
-    Nphix = -(2/lex)*Nw.diff(xi)
-    Nphiy = -(2/ley)*Nw.diff(eta)
-    Nphix_x = (2/lex)*Nphix.diff(xi)
-    Nphix_y = (2/ley)*Nphix.diff(eta)
-    Nphiy_x = (2/lex)*Nphiy.diff(xi)
-    Nphiy_y = (2/ley)*Nphiy.diff(eta)
+    Sphix = -(2/lex)*Sw.diff(xi)
+    Sphiy = -(2/ley)*Sw.diff(eta)
+    Sphix_x = (2/lex)*Sphix.diff(xi)
+    Sphix_y = (2/ley)*Sphix.diff(eta)
+    Sphiy_x = (2/lex)*Sphiy.diff(xi)
+    Sphiy_y = (2/ley)*Sphiy.diff(eta)
     Bb = sympy.Matrix([
-        Nphix_x,
-        Nphiy_y + 1/R*Nv_y,
-        Nphix_y + Nphiy_x + 1/R*Nv_x
+        Sphix_x,
+        Sphiy_y + 1/R*Sv_y,
+        Sphix_y + Sphiy_x + 3/2*1/R*Sv_x - 1/(2*R)*Su_y
         ])
 
     Bbs = []

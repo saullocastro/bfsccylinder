@@ -35,21 +35,21 @@ def main():
     # node 3 (+1, +1)
     # node 4 (-1, +1)
 
-    Nu = sympy.Matrix([[
+    Su = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0, 0, 0, 0,
         Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0, 0, 0, 0,
         ]])
-    Nv = sympy.Matrix([[
+    Sv = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0,
         0, 0, 0, Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0,
         ]])
-    Nw = sympy.Matrix([[
+    Sw = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, 0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), Hxyi(-1, -1),
         0, 0, 0, 0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), Hxyi(+1, -1),
@@ -69,19 +69,19 @@ def main():
         [D12, D22, D26],
         [D16, D26, D66]])
 
-    Nw_x = (2/lex)*Nw.diff(xi)
-    Nw_y = (2/ley)*Nw.diff(eta)
+    Sw_x = (2/lex)*Sw.diff(xi)
+    Sw_y = (2/ley)*Sw.diff(eta)
 
     # membrane
-    Nu_x = (2/lex)*Nu.diff(xi)
-    Nu_y = (2/ley)*Nu.diff(eta)
-    Nv_x = (2/lex)*Nv.diff(xi)
-    Nv_y = (2/ley)*Nv.diff(eta)
+    Su_x = (2/lex)*Su.diff(xi)
+    Su_y = (2/ley)*Su.diff(eta)
+    Sv_x = (2/lex)*Sv.diff(xi)
+    Sv_y = (2/ley)*Sv.diff(eta)
 
     Bm = sympy.Matrix([
-        Nu_x, # epsilon_xx
-        Nv_y + 1/R*Nw, # epsilon_yy
-        Nu_y + Nv_x # gamma_xy
+        Su_x, # epsilon_xx
+        Sv_y + 1/R*Sw, # epsilon_yy
+        Su_y + Sv_x # gamma_xy
         ])
 
     print('Bm')
@@ -109,27 +109,27 @@ def main():
         print(''.join(['%s[%d] = %s\n' % (name, i, str(v))
             for (i, v) in enumerate(f) if v != 0]))
 
-    tmpprint('Nu', Nu)
-    tmpprint('Nu_x', Nu_x)
-    tmpprint('Nu_y', Nu_y)
-    tmpprint('Nv', Nv)
-    tmpprint('Nv_x', Nv_x)
-    tmpprint('Nv_y', Nv_y)
-    tmpprint('Nw', Nw)
-    tmpprint('Nw_x', Nw_x)
-    tmpprint('Nw_y', Nw_y)
+    tmpprint('Su', Su)
+    tmpprint('Su_x', Su_x)
+    tmpprint('Su_y', Su_y)
+    tmpprint('Sv', Sv)
+    tmpprint('Sv_x', Sv_x)
+    tmpprint('Sv_y', Sv_y)
+    tmpprint('Sw', Sw)
+    tmpprint('Sw_x', Sw_x)
+    tmpprint('Sw_y', Sw_y)
 
     # bending
-    Nphix = -(2/lex)*Nw.diff(xi)
-    Nphiy = -(2/ley)*Nw.diff(eta)
-    Nphix_x = (2/lex)*Nphix.diff(xi)
-    Nphix_y = (2/ley)*Nphix.diff(eta)
-    Nphiy_x = (2/lex)*Nphiy.diff(xi)
-    Nphiy_y = (2/ley)*Nphiy.diff(eta)
+    Sphix = -(2/lex)*Sw.diff(xi)
+    Sphiy = -(2/ley)*Sw.diff(eta)
+    Sphix_x = (2/lex)*Sphix.diff(xi)
+    Sphix_y = (2/ley)*Sphix.diff(eta)
+    Sphiy_x = (2/lex)*Sphiy.diff(xi)
+    Sphiy_y = (2/ley)*Sphiy.diff(eta)
     Bb = sympy.Matrix([
-        Nphix_x,
-        Nphiy_y + 1/R*Nv_y,
-        Nphix_y + Nphiy_x + 1/R*Nv_x
+        Sphix_x,
+        Sphiy_y + 1/R*Sv_y,
+        Sphix_y + Sphiy_x + 3/2*1/R*Sv_x - 1/(2*R)*Su_y
         ])
 
     print('Bb')
