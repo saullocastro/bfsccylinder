@@ -1,7 +1,7 @@
 Implementation of the single-curvature BFSC (SC-BFSC) element, for linear and
 nonlinear analyses.
 
-Donnell-type and Sanders-type kinematics are available.
+Donnell-type and Sanders-Koiter type kinematics are available.
 
 Github Actions status:
 
