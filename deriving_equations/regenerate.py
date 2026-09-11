@@ -58,6 +58,16 @@ SOURCES = [
 OPERATORS = ('Bm', 'BmL', 'Bb', 'G', 'Nu', 'Nv', 'Nw', 'Su', 'Sv', 'Sw')
 _assign = re.compile(r'^(%s)(\d)_(\d\d) = ' % '|'.join(OPERATORS))
 _stress = re.compile(r'^(Nxx|Nyy|Nxy|Mxx|Myy|Mxy) = ')
+_size = re.compile(r'^(\w+)_SPARSE_SIZE (\d+)$')
+_size_decl = re.compile(r'^(\w+)_SPARSE_SIZE = (\d+)$')
+
+
+class Drift(Exception):
+    """The .pyx and the derivations no longer line up structurally.
+
+    Raised instead of skipping quietly, so that --check can never pass by
+    simply failing to look at something.
+    """
 
 
 def run_derivation(path):
@@ -173,6 +183,40 @@ def gen_fint(gen):
     return [ln.strip() for ln in gen if ln.strip().startswith('fint[')]
 
 
+def gen_sparse_size(gen, tag):
+    """The entry count a derivation reports, e.g. "KCNL_SPARSE_SIZE 1024"."""
+    for line in gen:
+        m = _size.match(line.strip())
+        if m is not None and m.group(1) == tag:
+            return int(m.group(2))
+    return None
+
+
+def sparse_size_line(lines, tag):
+    """Index of the module-level "<TAG>_SPARSE_SIZE = n" declaration."""
+    idx = [i for i, ln in enumerate(lines)
+           if _size_decl.match(ln.strip())
+           and _size_decl.match(ln.strip()).group(1) == tag]
+    if len(idx) != 1:
+        return None
+    return idx[0]
+
+
+def declared_names(lines, lo, hi):
+    """Every name declared by a cdef inside one function body."""
+    names = set()
+    for i in range(lo, hi):
+        s = lines[i].strip()
+        if not s.startswith('cdef '):
+            continue
+        parts = s.split(None, 2)
+        if len(parts) < 3:
+            continue
+        for nm in parts[2].split(','):
+            names.add(nm.strip().lstrip('*').split('[')[0].strip())
+    return names
+
+
 def indent_of(line):
     return line[:len(line) - len(line.lstrip())]
 
@@ -218,14 +262,29 @@ def plan(kin, verbose=False):
     lines = text.replace('\r\n', '\n').split('\n')
     edits = []
 
+    def require(want, have, what, fname):
+        """A block the derivation writes must exist in the .pyx.
+
+        Skipping it instead would let --check pass over a function that has
+        drifted or was never complete, which is the one thing this tool is
+        supposed to make impossible.
+        """
+        if want and have is None:
+            raise Drift('%s: %s has no %s block, but %s writes %d lines of '
+                        'one. Restore the block by hand, or remove the entry '
+                        'from SOURCES.'
+                        % (kin, fname, what, script, len(want)))
+        return want and have
+
     for fname, script, tag in SOURCES:
         path = os.path.join(HERE, sub, script)
         if not os.path.exists(path):
-            continue
+            raise Drift('%s: derivation script is missing: %s' % (kin, path))
         try:
             lo, hi = function_span(lines, fname)
         except KeyError:
-            continue
+            raise Drift('%s: %s is not defined in %s, but %s generates its '
+                        'code' % (kin, fname, pyx_path, script))
         gen = run_derivation(path)
 
         # strain-displacement operator assignments. The last group of a given
@@ -233,10 +292,12 @@ def plan(kin, verbose=False):
         # belongs to the hand-written class methods
         blocks = assign_blocks(lines, lo, hi)
         loop = dict((op, spans[-1]) for op, spans in blocks.items())
+        needed = []
         for op in OPERATORS:
             want = gen_assigns(gen, op)
             if not want:
                 continue
+            needed.extend(w.split(' = ')[0] for w in want)
             if op in loop:
                 a, b = loop[op]
                 pad = indent_of(lines[a])
@@ -244,49 +305,66 @@ def plan(kin, verbose=False):
                                   [pad + w for w in want]))
             elif loop:
                 # the derivation started emitting an operator this function
-                # did not carry before: put it after the last block, and
-                # declare its symbols
+                # did not carry before: put it after the last block
                 at = max(b for _, b in loop.values())
                 pad = indent_of(lines[min(a for a, _ in loop.values())])
                 edits.append(Edit('%s/%s %s (new block)' % (kin, fname, op),
                                   at, at, [''] + [pad + w for w in want]))
-                names = [w.split(' = ')[0] for w in want]
-                decl = [i for i in range(lo, hi)
-                        if lines[i].strip().startswith('cdef double ')
-                        and re.match(r'^cdef double (%s)\d_\d\d'
-                                     % '|'.join(OPERATORS), lines[i].strip())]
-                if decl:
-                    dpad = indent_of(lines[decl[-1]])
-                    edits.append(Edit('%s/%s %s (new cdef)' % (kin, fname, op),
-                                      decl[-1] + 1, decl[-1] + 1,
-                                      [dpad + 'cdef double ' + ', '.join(names)]))
+
+        # every generated symbol must be declared, whether it came from a new
+        # operator or was added to one that already had a block. An
+        # undeclared local is assigned inside "with nogil", so Cython refuses
+        # to compile it and regeneration leaves an unbuildable .pyx
+        missing = [n for n in needed if n not in declared_names(lines, lo, hi)]
+        if missing:
+            decl = [i for i in range(lo, hi)
+                    if re.match(r'^cdef double (%s)\d_\d\d'
+                                % '|'.join(OPERATORS), lines[i].strip())]
+            at = (decl[-1] + 1) if decl else (lo + 1)
+            dpad = indent_of(lines[decl[-1]] if decl else lines[lo + 1])
+            edits.append(Edit('%s/%s cdef' % (kin, fname), at, at,
+                              [dpad + 'cdef double ' + ', '.join(missing)]))
 
         if tag is not None:
             want = gen_values(gen, tag)
             have = value_block(lines, lo, hi, tag)
-            if want and have:
+            if require(want, have, 'values', fname):
                 a, b = have
                 pad = indent_of(lines[a])
                 edits.append(Edit('%s/%s values' % (kin, fname), a, b,
                                   interleave(want, pad)))
             want = gen_rowcols(gen, tag)
             have = rowcol_block(lines, lo, hi, tag)
-            if want and have:
+            if require(want, have, 'row/column', fname):
                 a, b = have
                 pad = indent_of(lines[a])
                 edits.append(Edit('%s/%s rowcol' % (kin, fname), a, b,
                                   interleave_pairs(want, pad)))
+
+            # the number of sparse entries the loop above writes. Callers size
+            # their arrays as <TAG>_SPARSE_SIZE*num_elements, and the .pyx is
+            # compiled with boundscheck=False, so a size left behind by a
+            # derivation that gained or lost a nonzero entry is a silent
+            # out-of-bounds write rather than an IndexError
+            size = gen_sparse_size(gen, tag)
+            if size is not None:
+                at = sparse_size_line(lines, tag)
+                if at is None:
+                    raise Drift('%s: %s emits %s_SPARSE_SIZE but %s declares '
+                                'no such constant' % (kin, script, tag, pyx_path))
+                edits.append(Edit('%s/%s_SPARSE_SIZE' % (kin, tag), at, at + 1,
+                                  ['%s_SPARSE_SIZE = %d' % (tag, size)]))
         else:
             want = gen_stress(gen)
             have = stress_block(lines, lo, hi)
-            if want and have:
+            if require(want, have, 'stress resultant', fname):
                 a, b = have
                 pad = indent_of(lines[a])
                 edits.append(Edit('%s/%s stress' % (kin, fname), a, b,
                                   [pad + w for w in want]))
             want = gen_fint(gen)
             have = fint_block(lines, lo, hi)
-            if want and have:
+            if require(want, have, 'fint', fname):
                 a, b = have
                 pad = indent_of(lines[a])
                 edits.append(Edit('%s/%s fint' % (kin, fname), a, b,
@@ -314,6 +392,14 @@ def main():
                     help='restrict to one kinematics (default: both)')
     args = ap.parse_args()
 
+    try:
+        return run(args)
+    except Drift as exc:
+        print('DRIFT: %s' % exc)
+        return 2
+
+
+def run(args):
     stale = 0
     for kin in (args.kinematics or sorted(TARGETS)):
         pyx_path, lines, newline, edits = plan(kin)
