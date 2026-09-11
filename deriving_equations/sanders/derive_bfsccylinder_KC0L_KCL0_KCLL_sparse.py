@@ -165,11 +165,49 @@ def main():
     print()
     print()
 
+    # Geometric contribution of the nonlinear part of the membrane stress.
+    #
+    # The consistent tangent carries G.T*[N]*G with N the stress of the TOTAL
+    # membrane strain. update_KG builds that term from the linear strain
+    # alone, A*Bm*ue + B*Bb*ue, which keeps KG homogeneous of degree one in
+    # ue. A linear buckling analysis needs exactly that, so that lambda*KG
+    # means the stress state at load lambda*P. The missing piece is the
+    # stress of the quadratic strain BmL*ue/2, and it is collected here
+    # instead, so that KC0 + KCNL + KG is the exact Jacobian of fint while
+    # update_KG keeps its linear buckling meaning
+    G = Matrix([
+        (2/lex)*Sw.diff(xi),
+        (2/ley)*Sw.diff(eta) - (1/R)*Sv,
+        ])
+    Gs = []
+    for i in range(G.shape[0]):
+        Gis = []
+        for j in range(G.shape[1]):
+            Gij = G[i, j]
+            if Gij != 0:
+                print('                G%d_%02d = %s' % ((i+1), (j+1), str(Gij)))
+                Gis.append(symbols('G%d_%02d' % (i+1, j+1)))
+            else:
+                Gis.append(0)
+        Gs.append(Gis)
+    G = Matrix(Gs)
+
+    print()
+    print()
+    print()
+
+    # nonlinear part of the membrane strain, eps_NL = BmL*ue/2
+    epsL = Matrix([[w_x**2/2, (w_y - v/R)**2/2, w_x*(w_y - v/R)]]).T
+    NL = A*epsL
+    NLmatrix = Matrix([[NL[0], NL[2]],
+                       [NL[2], NL[1]]])
+
     # Constitutive nonlinear stiffness matrix in element coordinate KCNLe
     KC0Le = Bm.T*A*BmL + Bb.T*B*BmL
     KCL0e = BmL.T*A*Bm + BmL.T*B*Bb
     KCLLe = BmL.T*A*BmL
-    KCNLe = weight*(lex*ley)/4.*(KC0Le + KCL0e + KCLLe)
+    KGNLe = G.T*NLmatrix*G
+    KCNLe = weight*(lex*ley)/4.*(KC0Le + KCL0e + KCLLe + KGNLe)
 
     # KCNL represents the global constitutive nonlinear stiffness matrix
     # in case we want to apply coordinate transformations

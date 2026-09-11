@@ -139,8 +139,18 @@ if True:
         [D16, D26, D66]])
 
     ue = Matrix([symbols(r'ue[%d]' % i) for i in range(0, Bb.shape[1])])
-    N = A*(Bm + BmL)*ue + B*Bb*ue
-    M = B*(Bm + BmL)*ue + D*Bb*ue
+    # NOTE BmL is the variation of the quadratic part of the membrane strain,
+    #      d(eps_NL)/d(ue). Because eps_NL is quadratic in ue, Euler's theorem
+    #      gives BmL*ue = 2*eps_NL, so the strain itself is Bm*ue + BmL*ue/2,
+    #      while its variation is (Bm + BmL)*delta_ue. Only the variation
+    #      carries the full BmL, and that is the one multiplying N in fint
+    #      below. Using (Bm + BmL)*ue for the strain counts the von Karman
+    #      terms twice and makes fint stop being the gradient of the strain
+    #      energy, so that KC0 + KCNL + KG is no longer its Jacobian
+    eps = (Bm + BmL/2)*ue
+    kappa = Bb*ue
+    N = A*eps + B*kappa
+    M = B*eps + D*kappa
     print('Nxx =', N[0])
     print('Nyy =', N[1])
     print('Nxy =', N[2])
