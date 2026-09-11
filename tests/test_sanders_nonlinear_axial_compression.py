@@ -1,3 +1,15 @@
+"""Nonlinear axial compression of a cylinder, load controlled, Sanders kinematics
+
+One load step of a full Newton-Raphson solve, checking that it converges.
+
+What this test does NOT cover: the state it reaches is mild. At 50 kN the
+largest radial displacement is 0.05 of the shell thickness, and ||KCNL||
+and ||KG|| are 9.7e-4 and 5.3e-4 of ||KC0||. An inconsistent tangent
+converges here too, so this is not a guard on KC0 + KCNL + KG being the
+Jacobian of fint; tests/test_tangent_consistency.py is. Nor does it assert
+anything about the solution, so it would not notice a wrong fint either.
+
+"""
 import time
 import sys
 sys.path.append(r'..')
@@ -74,7 +86,6 @@ def test_nonlinear_axial_compression_load_controlled():
     n4s = nids_mesh[:-1, 1:].flatten()
 
     # number of integration points within element (along xi and eta)
-    #TODO investigate different number of integration points
     nint = 4
     points, weights = get_points_weights(nint=nint)
 
@@ -129,6 +140,9 @@ def test_nonlinear_axial_compression_load_controlled():
     bk[0::DOF] = check
     bu = ~bk # same as np.logical_not, defining unknown DOFs
     u0 = np.zeros(N, dtype=DOUBLE)
+    #NOTE every prescribed DOF is zero here, so uk and KC0uk below are never
+    #     used. A non-zero prescribed displacement would need -KC0uk@uk on
+    #     the right-hand side of the initial solve
     uk = u0[bk]
 
     # axially compressive load applied at x=0 and x=L
@@ -140,11 +154,16 @@ def test_nonlinear_axial_compression_load_controlled():
     fext[0::DOF][checkTopEdge] = -load/ny
     assert np.isclose(fext.sum(), 0)
 
-    # sub-matrices corresponding to unknown DOFs
+    # sub-matrices corresponding to unknown DOFs; KC0uk would only be needed
+    # for non-zero prescribed displacements, see the note above
     KC0uu = KC0[bu, :][:, bu]
     KC0uk = KC0[bu, :][:, bk]
 
     def calc_KT(u, KCNLv, KGv):
+        # the generated code accumulates with "+=" over the integration
+        # points, so the value arrays must be zeroed on every call. The row
+        # and column arrays are rewritten identically each time, and could
+        # be filled once for a fixed mesh
         KCNLv *= 0
         KGv *= 0
         for shell in elements:
@@ -152,6 +171,9 @@ def test_nonlinear_axial_compression_load_controlled():
             update_KG(u, shell, points, weights, KGr, KGc, KGv)
         KCNL = coo_matrix((KCNLv, (KCNLr, KCNLc)), shape=(N, N)).tocsc()
         KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
+        # KCNL also carries the geometric term of the nonlinear membrane
+        # stress, so that KG stays homogeneous of degree one in u and keeps
+        # its linear buckling meaning. The three together are d(fint)/du
         return KC0 + KCNL + KG
 
     def calc_fint(u, fint):
@@ -160,7 +182,10 @@ def test_nonlinear_axial_compression_load_controlled():
             update_fint(u, shell, points, weights, fint)
         return fint
 
-    # solving using Modified Newton-Raphson method
+    # solving using the full Newton-Raphson method: calc_KT is called again
+    # at every iteration, not held fixed as a modified Newton-Raphson would.
+    # That is what buys quadratic convergence, now that KC0 + KCNL + KG is
+    # the exact Jacobian of fint
     def scaling(vec, D):
         """
             A. Peano and R. Riccioni, Automated discretisatton error
@@ -170,8 +195,9 @@ def test_nonlinear_axial_compression_load_controlled():
         """
         return np.sqrt((vec*np.abs(1/D))@vec)
 
-    #initial
-    u0 = np.zeros(N) # any initial condition here
+    # initial estimate: the zeros only fix the prescribed DOFs, the free
+    # ones are overwritten below with the linear solution
+    u0 = np.zeros(N)
 
     u0[bu] = spsolve(KC0uu, fext[bu])
     #PREC = 1/KC0uu.diagonal().max()
@@ -186,10 +212,11 @@ def test_nonlinear_axial_compression_load_controlled():
     Ri = fint - fext
     du = np.zeros(N)
     ui = u0.copy()
-    epsilon = 1.e-4
+    # A consistent tangent reaches 2.0e-9 in two iterations here
+    epsilon = 1.e-9
     KT = calc_KT(u0, KCNLv, KGv)
     KTuu = KT[bu, :][:, bu]
-    D = KC0uu.diagonal() # at beginning of load increment
+    D = KC0uu.diagonal() # at beginning of load increment, only one here
     while True:
         print('count', count)
         duu = spsolve(KTuu, -Ri[bu])
