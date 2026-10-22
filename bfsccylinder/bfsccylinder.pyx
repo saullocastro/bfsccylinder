@@ -270,20 +270,38 @@ u)\} dA` over the loaded region is, for both kinematics,
     \Delta v) \right) dA
 
 with `\{n_x, n_y\}^T` the outward normal of the contour of the loaded
-region. The assembled matrix is therefore symmetric, a conservative load,
-when `p` is uniform over the loaded region and, on each edge of the region,
-either `w` or the displacement normal to the edge, `u` on an edge `x` =
-constant and `v` on an edge `y` = constant, is zero, e.g. a cylinder closed
-around the circumference whose ends are simply supported or clamped, or
-symmetry planes. It is unsymmetric for free or partially restrained edges,
-for a pressure on a part of the shell, whose edges are inside the shell,
-and for a varying `p`; the matrix of one element is unsymmetric. This is
-the result of Hibbitt [8]_ and of Schweizerhof and Ramm [9]_ for a
-pressure that depends on the reference coordinates: the load stiffness is
-symmetric for closed surfaces or when the boundary of the loaded surface is
-fixed. A pressure that depends on the current position, e.g. a hydrostatic
-head, is not modelled. For ``quadratic=1`` the matrix at `\{u\} \neq \{0\}`
-is unsymmetric in general. With `p` uniform over the element, the
+region. The curvature terms of the cylinder are symmetric and cancel in
+the skew part, which therefore holds for both kinematics. The load
+stiffness matrix is therefore symmetric, and the follower pressure
+conservative, if and only if:
+
+- `p` is uniform over the loaded region, such that the area integral
+  vanishes; and
+- at each point of the contour of the loaded region, either `w = 0` or the
+  in-plane displacement normal to the contour vanishes, `u = 0` on an edge
+  `x` = constant and `v = 0` on an edge `y` = constant, such that the
+  contour integral vanishes.
+
+These conditions are met by simply supported and clamped edges, by
+symmetry planes, and by closed surfaces such as complete rings, cylinders
+and spheres, for which no boundary exists; for a cylinder closed around
+the circumference, the contour of the loaded region is that of its ends.
+In these cases the load potential is the pressure times the change of the
+enclosed volume. Conversely, the matrix is unsymmetric for free or partially
+restrained edges, for a pressure applied on a patch whose edges lie inside
+the shell, and for a pressure that varies over the surface. This is the
+result of Hibbitt [8]_ and of Schweizerhof and Ramm [9]_, who showed that
+the pressure load stiffness is symmetric for closed surfaces or for loaded
+surfaces with a fixed boundary. For the matrix of one element, the contour
+of the loaded region is the boundary of the element, where the second
+condition does not hold, and the element matrix is unsymmetric; in the
+assembled matrix the contour integrals along the edges shared by two
+elements cancel when `p` is continuous, since `u`, `v` and `w` are
+continuous, such that the conditions apply to the contour of the loaded
+region of the shell. A pressure that depends on the current position, e.g.
+a hydrostatic head, is not modelled. The conditions are those of the
+first-order area vector; for ``quadratic=1`` the matrix depends on
+`\{u\}`. With `p` uniform over the element, the
 integrands of the force vector and of the load stiffness matrix are
 polynomials in `\xi` and `\eta`, of degree up to 6 in each for
 ``quadratic=0``, integrated exactly with ``nint >= 4``, and up to 9 for

@@ -95,14 +95,17 @@ vanishing load, which the follower load stiffness cancels, see the Notes of
 Unsymmetric load stiffness matrix
 ---------------------------------
 
-`[K_{Cfollower}]` is unsymmetric in general, a non-conservative load. The
-assembled matrix restricted to the unknown degrees of freedom is symmetric
-when the pressure is uniform over the loaded region and, on each edge of
-the region, `w` or the displacement normal to the edge is constrained, e.g.
-a cylinder closed around the circumference with simply supported or
-clamped ends; free or partially restrained edges, a pressure on part of the
-shell or a varying pressure give an unsymmetric matrix, and so does the
-matrix of one element. The conditions are given in the Notes of
+`[K_{Cfollower}]` is unsymmetric in general, a non-conservative load. For
+the first-order area vector, ``quadratic=0``, it is symmetric, and the
+follower pressure conservative, if and only if the pressure is uniform
+over the loaded region and, at each point of the contour of the loaded
+region, `w = 0` or the in-plane displacement normal to the contour is
+zero, e.g. a cylinder closed around the circumference with simply
+supported or clamped ends, or symmetry planes. The matrix of one element,
+free or partially restrained edges, a pressure on a patch whose edges lie
+inside the shell or a varying pressure give an unsymmetric matrix; in the
+assembled matrix, restricted to the unknown degrees of freedom, the
+contributions of the edges shared by two elements cancel. The conditions are given in the Notes of
 :mod:`bfsccylinder.bfsccylinder`. The matrix is written in full and must not
 be symmetrized: the linear systems and the eigenvalue problems are solved
 with the solvers of unsymmetric matrices, e.g. ``structsolve.lb`` with
