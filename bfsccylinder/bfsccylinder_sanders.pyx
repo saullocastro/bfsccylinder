@@ -164,7 +164,7 @@ cdef class BFSCCylinderSanders(object):
     Single-curvature BFSC element with Sanders-type kinematics.
 
     Nodal connectivity for cylindrical shell element
-    similar to Nastran's CQUAD4.
+    similar to Nastran's CQUAD4::
 
       ^ y (circumferential direction)
       |
@@ -970,7 +970,7 @@ cpdef void update_KC0(BFSCCylinderSanders shell,
 
     Parameters
     ----------
-    shell : `.BFSCCylinderSanders` object
+    shell : :class:`.BFSCCylinderSanders` object
         The cylindrical shell element being added to KC0
     points : np.array
         Integration poins
@@ -9246,7 +9246,7 @@ cpdef void update_KCNL(double [::1] u,
         positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
         ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
         for the first derivatives and of one over length for `w_{,xy}`.
-    shell : `.BFSCCylinderSanders` object
+    shell : :class:`.BFSCCylinderSanders` object
         The shell element being added to K
     points : np.array
         Integration poins
@@ -16952,7 +16952,7 @@ cpdef void update_KG(double [::1] u,
         positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
         ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
         for the first derivatives and of one over length for `w_{,xy}`.
-    shell : `.BFSCCylinderSanders` object
+    shell : :class:`.BFSCCylinderSanders` object
         The cylindrical shell element being added to KG
     points : np.array
         Integration poins
@@ -21200,7 +21200,7 @@ cpdef void update_KG_constant_stress(BFSCCylinderSanders shell,
 
     Parameters
     ----------
-    shell : `.BFSCCylinderSanders` object
+    shell : :class:`.BFSCCylinderSanders` object
         The cylindrical shell element being added to KG
     points : np.array
         Integration poins
@@ -25258,7 +25258,7 @@ cpdef void update_M(BFSCCylinderSanders shell,
 
     Parameters
     ----------
-    shell : `.BFSCCylinderSanders` object
+    shell : :class:`.BFSCCylinderSanders` object
         The cylindrical shell element being added to M
     Mr : np.array
         Array to store row positions of sparse values
@@ -29950,7 +29950,7 @@ cpdef void update_fint(double [::1] u,
         positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
         ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
         for the first derivatives and of one over length for `w_{,xy}`.
-    shell : `.BFSCCylinderSanders` object
+    shell : :class:`.BFSCCylinderSanders` object
         The shell element being added to fint
     points : np.array
         Integration poins
@@ -30355,7 +30355,7 @@ cpdef void update_fext_follower(double [::1] u,
         positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
         ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
         for the first derivatives and of one over length for `w_{,xy}`.
-    shell : `.BFSCCylinderSanders` object
+    shell : :class:`.BFSCCylinderSanders` object
         The shell element being added to fext
     points : np.array
         Integration poins
@@ -30675,7 +30675,7 @@ cpdef void update_KCfollower(double [::1] u,
         positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
         ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
         for the first derivatives and of one over length for `w_{,xy}`.
-    shell : `.BFSCCylinderSanders` object
+    shell : :class:`.BFSCCylinderSanders` object
         The shell element being added to KCfollower
     points : np.array
         Integration poins
