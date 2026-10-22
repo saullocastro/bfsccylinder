@@ -55,6 +55,12 @@ The dates of the released versions are those of their tagged commits.
   element loop, the boundary conditions, the follower pressure and the
   convergence criterion, in `analyses.rst` and
   `ex_structsolve_nonlinear.rst`.
+- Tutorials, Jupyter notebooks in `doc/source/tutorials/` stored with their
+  outputs: natural frequencies (Sewall and Naumann, NASA TN D-4705, 1968)
+  and axial buckling (Card and Jones, NASA TN D-3639, 1966) of
+  stringer-stiffened cylinders, with the skin of `BFSCCylinderSanders`
+  elements and blade stringers of the BFSC plate element of `bfscplate2d`,
+  compared with the published tests and theories.
 
 ### Tests
 

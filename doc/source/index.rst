@@ -65,6 +65,15 @@ Usage examples
     ex_kinematics.rst
 
 
+Tutorials
+---------
+
+.. toctree::
+    :maxdepth: 1
+
+    tutorials.rst
+
+
 bfsccylinder API
 ----------------
 

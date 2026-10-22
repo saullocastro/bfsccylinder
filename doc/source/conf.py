@@ -53,6 +53,10 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['**.ipynb_checkpoints']
 
+# the notebooks of the tutorials are stored with their outputs and are not
+# executed when the documentation is built
+nbsphinx_execute = 'never'
+
 default_role = 'math'
 
 # the methods of the element class are documented by autodoc, with
