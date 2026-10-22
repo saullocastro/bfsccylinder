@@ -173,45 +173,15 @@ through the optional keyword argument ``inc``, the load factor, which
 structsolve passes to the callables that declare it. The external forces
 are the dead part `\{F_p(0)\}` of ``p``, ``calc_fint`` subtracts the part
 that depends on the displacements, ``reference=0``, and ``calc_kC`` adds the
-load stiffness matrix of `\lambda p`, e.g. with the list ``pressures`` of
-the pressure of each element::
+load stiffness matrix of `\lambda p`, as in
+``tests/test_follower_pressure_structsolve.py``, see
+:doc:`ex_structsolve_nonlinear`:
 
-    fp0 = np.zeros(N)
-    for shell, p in zip(elements, pressures):
-        update_fext_follower(np.zeros(N), shell, points, weights, p, fp0,
-                             quadratic)
+.. literalinclude:: ../../tests/test_follower_pressure_structsolve.py
+    :pyobject: FollowerCallables
 
-    def calc_fext(inc=1., silent=False):
-        return inc*fp0[bu]
-
-    def calc_fint(c, inc=1., silent=False):
-        u = expand(c)
-        fint = np.zeros(N)
-        for shell, p in zip(elements, pressures):
-            update_fint(u, shell, points, weights, fint)
-            # minus the part of the follower pressure that depends on u
-            update_fext_follower(u, shell, points, weights, -inc*p, fint,
-                                 quadratic, 0)
-        return fint[bu]
-
-    def calc_kC(c=None, NLgeom=False, inc=1., silent=False):
-        if not NLgeom:
-            return KC0[bu, :][:, bu]
-        u = expand(c)
-        KCNLv[:] = 0
-        KCfv[:] = 0
-        for shell, p in zip(elements, pressures):
-            update_KCNL(u, shell, points, weights, KCNLr, KCNLc, KCNLv)
-            update_KCfollower(u, shell, points, weights, inc*p, KCfr, KCfc,
-                              KCfv, quadratic)
-        KCNL = coo_matrix((KCNLv, (KCNLr, KCNLc)), shape=(N, N))
-        KCf = coo_matrix((KCfv, (KCfr, KCfc)), shape=(N, N))
-        return (KC0 + KCNL + KCf).tocsc()[bu, :][:, bu]
-
-with ``expand(c)`` the displacements of the model from ``c = u[bu]``, and
-``calc_kG`` as above. The tangent stiffness matrix is then unsymmetric in
-general, which the solvers of structsolve support with LU factorizations.
-For the arc-length methods, ``Analysis.NL_method``, ``calc_fext`` also
+The tangent stiffness matrix is then unsymmetric in general, which the
+solvers of structsolve support with LU factorizations. For the arc-length methods, ``Analysis.NL_method``, ``calc_fext`` also
 declares the configuration ``c`` and returns the follower force vector
 `\{F_p(c)\}` of ``p``, the derivative of the residual with respect to the
 load factor.

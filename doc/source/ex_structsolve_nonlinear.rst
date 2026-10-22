@@ -28,3 +28,17 @@ The solution is ``u = callables.expand(cs[-1])``. With the default
 convergence criterion of Crisfield, `\zeta \le 10^{-9}`, the iterations
 give `\zeta` = 2.5e-2, 2.2e-4, 2.0e-9 and then the round-off, about
 1e-15, the quadratic convergence of a consistent tangent stiffness matrix.
+
+
+Follower pressure
+-----------------
+
+The callables of a follower pressure, ``FollowerCallables``, which receive
+the load factor ``inc``, are given in :ref:`solving-with-structsolve`.
+A cylinder clamped at one end and free at the other, with an unsymmetric
+load stiffness matrix, solved with these callables for both kinematics,
+checking the equilibrium with the whole follower pressure and the
+quadratic convergence of the Newton-Raphson iterations:
+
+.. literalinclude:: ../../tests/test_follower_pressure_structsolve.py
+    :pyobject: test_clamped_free_cylinder
