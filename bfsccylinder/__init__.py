@@ -4,10 +4,11 @@ kinematics
 
 The ``bfsccylinder`` namespace gives the element class :class:`.BFSCCylinder`
 and the functions ``update_KC0``, ``update_KCNL``, ``update_KG``,
-``update_KG_constant_stress``, ``update_M`` and ``update_fint`` of the module
+``update_KG_constant_stress``, ``update_M``, ``update_fint``,
+``update_fext_follower`` and ``update_KCfollower`` of the module
 :mod:`bfsccylinder.bfsccylinder`, with the sizes ``KC0_SPARSE_SIZE``,
-``KCNL_SPARSE_SIZE``, ``KG_SPARSE_SIZE`` and ``M_SPARSE_SIZE`` of the sparse
-arrays that one element fills. The module :mod:`bfsccylinder.sanders` gives
+``KCNL_SPARSE_SIZE``, ``KG_SPARSE_SIZE``, ``M_SPARSE_SIZE`` and
+``KCfollower_SPARSE_SIZE`` of the sparse arrays that one element fills. The module :mod:`bfsccylinder.sanders` gives
 the same names for the element with Sanders-type kinematics. The module
 :mod:`bfsccylinder.quadrature` gives the integration points and weights, and
 :mod:`bfsccylinder.utils` the assignment of the laminate stiffnesses to an
@@ -28,8 +29,10 @@ import numpy as np
 
 
 from .bfsccylinder import (BFSCCylinder, update_KC0, update_KCNL, update_KG,
-        update_KG_constant_stress, update_M, update_fint)
-from .bfsccylinder import KC0_SPARSE_SIZE, KCNL_SPARSE_SIZE, KG_SPARSE_SIZE, M_SPARSE_SIZE
+        update_KG_constant_stress, update_M, update_fint,
+        update_fext_follower, update_KCfollower)
+from .bfsccylinder import (KC0_SPARSE_SIZE, KCNL_SPARSE_SIZE, KG_SPARSE_SIZE,
+        M_SPARSE_SIZE, KCfollower_SPARSE_SIZE)
 
 
 if ctypes.sizeof(ctypes.c_long) == 8:
