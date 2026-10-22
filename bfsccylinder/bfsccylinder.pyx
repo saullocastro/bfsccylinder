@@ -483,7 +483,7 @@ cdef class BFSCCylinder(object):
         self.c3 = -1
         self.c4 = -1
         self.init_k_KC0 = 0
-        self.init_k_KC0 = 0
+        self.init_k_KCNL = 0
         self.init_k_KG = 0
         self.init_k_M = 0
         self.init_k_KCfollower = 0
