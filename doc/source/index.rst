@@ -37,6 +37,33 @@ Code repository
 https://github.com/saullocastro/bfsccylinder
 
 
+User guide
+----------
+
+.. toctree::
+    :maxdepth: 1
+
+    element.rst
+    kinematics.rst
+    assembling.rst
+    analyses.rst
+    follower_pressure.rst
+
+
+Usage examples
+--------------
+
+.. toctree::
+    :maxdepth: 1
+
+    ex_linear_static.rst
+    ex_linear_buckling.rst
+    ex_natural_frequency.rst
+    ex_nonlinear_static.rst
+    ex_follower_pressure.rst
+    ex_kinematics.rst
+
+
 bfsccylinder API
 ----------------
 
