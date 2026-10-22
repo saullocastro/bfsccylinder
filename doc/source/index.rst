@@ -60,6 +60,7 @@ Usage examples
     ex_linear_buckling.rst
     ex_natural_frequency.rst
     ex_nonlinear_static.rst
+    ex_structsolve_nonlinear.rst
     ex_follower_pressure.rst
     ex_kinematics.rst
 

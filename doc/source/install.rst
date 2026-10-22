@@ -36,9 +36,15 @@ and the tests with::
 
     python -m pytest tests
 
-``tests/test_follower_pressure_validation.py`` also requires
-`structsolve <https://github.com/saullocastro/structsolve>`_, which is not
-listed in ``requirements.txt``.
+``requirements.txt`` also lists `structsolve
+<https://saullocastro.github.io/structsolve/>`_, which solves the nonlinear
+static analysis of the tests and of the examples and the linear buckling
+problems of ``tests/test_follower_pressure_validation.py``, see
+:doc:`analyses`. It is a requirement of the tests and of the examples of
+the documentation only: bfsccylinder does not import it, and it is not
+installed with bfsccylinder, not being in ``install_requires`` of
+``setup.py``. The tests require a version of structsolve newer than 0.8.0,
+with Crisfield's convergence criterion as default.
 
 ``setup.py`` compiles with ``/O2`` on Windows and with ``-O3
 -fno-math-errno`` on Linux and macOS, without flags that change the
