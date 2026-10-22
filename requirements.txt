@@ -3,5 +3,6 @@ numpy
 scipy
 cython
 composites
+structsolve
 pytest
 pytest-cov

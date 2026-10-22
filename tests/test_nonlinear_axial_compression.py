@@ -1,6 +1,7 @@
 """Nonlinear axial compression of a cylinder, load controlled, Donnell kinematics
 
-One load step of a full Newton-Raphson solve, checking that it converges.
+One load step of a full Newton-Raphson solve, with structsolve.Analysis and
+the callables of ``Callables``, checking that it converges.
 
 What this test does NOT cover: the state it reaches is mild. At 50 kN the
 largest radial displacement is 0.05 of the shell thickness, and ||KCNL||
@@ -26,6 +27,81 @@ from bfsccylinder import (BFSCCylinder, update_KC0, update_KCNL, update_KG,
         KG_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
+from structsolve import Analysis
+
+
+class Callables(object):
+    """The callables of structsolve.Analysis for the ``elements`` of a model
+    under the external forces ``fext``.
+
+    They loop over the elements with the update functions and assemble, and
+    work on the unknown degrees of freedom ``bu`` only, the partition of the
+    free dofs of structsolve: the solution vector of the solvers is ``c =
+    u[bu]``, and the force vectors and matrices are restricted to ``bu``.
+    The prescribed degrees of freedom are zero.
+    """
+    def __init__(self, elements, points, weights, KC0, bu, fext):
+        self.elements = elements
+        self.points = points
+        self.weights = weights
+        self.N = KC0.shape[0]
+        self.KC0 = KC0
+        self.KC0uu = KC0[bu, :][:, bu]
+        self.bu = bu
+        self.fext = fext
+        num_elements = len(elements)
+        self.KCNLr = np.zeros(KCNL_SPARSE_SIZE*num_elements, dtype=INT)
+        self.KCNLc = np.zeros(KCNL_SPARSE_SIZE*num_elements, dtype=INT)
+        self.KCNLv = np.zeros(KCNL_SPARSE_SIZE*num_elements, dtype=DOUBLE)
+        self.KGr = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
+        self.KGc = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
+        self.KGv = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=DOUBLE)
+
+    def expand(self, c):
+        """The displacements of the model from those of the unknown dofs."""
+        u = np.zeros(self.N, dtype=DOUBLE)
+        u[self.bu] = c
+        return u
+
+    def calc_fext(self, inc=1., silent=False):
+        return inc*self.fext[self.bu]
+
+    def calc_fint(self, c, silent=False):
+        fint = np.zeros(self.N, dtype=DOUBLE)
+        u = self.expand(c)
+        for shell in self.elements:
+            update_fint(u, shell, self.points, self.weights, fint)
+        return fint[self.bu]
+
+    def calc_kC(self, c=None, NLgeom=False, silent=False):
+        if not NLgeom:
+            return self.KC0uu
+        # the generated code accumulates with "+=" over the integration
+        # points, so the value arrays must be zeroed on every call. The row
+        # and column arrays are rewritten identically each time, and could
+        # be filled once for a fixed mesh
+        self.KCNLv *= 0
+        u = self.expand(c)
+        for shell in self.elements:
+            update_KCNL(u, shell, self.points, self.weights, self.KCNLr,
+                        self.KCNLc, self.KCNLv)
+        KCNL = coo_matrix((self.KCNLv, (self.KCNLr, self.KCNLc)),
+                          shape=(self.N, self.N)).tocsc()
+        # KCNL also carries the geometric term of the nonlinear membrane
+        # stress, so that KG stays homogeneous of degree one in u and keeps
+        # its linear buckling meaning. KC0 + KCNL + KG is d(fint)/du
+        return (self.KC0 + KCNL)[self.bu, :][:, self.bu]
+
+    def calc_kG(self, c=None, NLgeom=False, silent=False):
+        self.KGv *= 0
+        u = self.expand(c)
+        for shell in self.elements:
+            update_KG(u, shell, self.points, self.weights, self.KGr,
+                      self.KGc, self.KGv)
+        KG = coo_matrix((self.KGv, (self.KGr, self.KGc)),
+                        shape=(self.N, self.N)).tocsc()
+        return KG[self.bu, :][:, self.bu]
+
 
 def test_nonlinear_axial_compression_load_controlled():
     # geometry
@@ -94,12 +170,6 @@ def test_nonlinear_axial_compression_load_controlled():
 
     elements = []
     N = DOF*nx*ny
-    KCNLr = np.zeros(KCNL_SPARSE_SIZE*num_elements, dtype=INT)
-    KCNLc = np.zeros(KCNL_SPARSE_SIZE*num_elements, dtype=INT)
-    KCNLv = np.zeros(KCNL_SPARSE_SIZE*num_elements, dtype=DOUBLE)
-    KGr = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
-    KGc = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=INT)
-    KGv = np.zeros(KG_SPARSE_SIZE*num_elements, dtype=DOUBLE)
     init_k_KC0 = 0
     init_k_KCNL = 0
     init_k_KG = 0
@@ -139,11 +209,10 @@ def test_nonlinear_axial_compression_load_controlled():
     check = isclose(x, L/2.)
     bk[0::DOF] = check
     bu = ~bk # same as np.logical_not, defining unknown DOFs
-    u0 = np.zeros(N, dtype=DOUBLE)
-    #NOTE every prescribed DOF is zero here, so uk and KC0uk below are never
-    #     used. A non-zero prescribed displacement would need -KC0uk@uk on
-    #     the right-hand side of the initial solve
-    uk = u0[bk]
+    #NOTE every prescribed DOF is zero here, which the expansion u[bu] = c of
+    #     Callables assumes. A non-zero prescribed displacement would need
+    #     the load factor dependent load vector of structsolve, calc_fext
+    #     declaring lbd
 
     # axially compressive load applied at x=0 and x=L
     checkTopEdge = isclose(x, L)
@@ -154,93 +223,26 @@ def test_nonlinear_axial_compression_load_controlled():
     fext[0::DOF][checkTopEdge] = -load/ny
     assert np.isclose(fext.sum(), 0)
 
-    # sub-matrices corresponding to unknown DOFs; KC0uk would only be needed
-    # for non-zero prescribed displacements, see the note above
-    KC0uu = KC0[bu, :][:, bu]
-    KC0uk = KC0[bu, :][:, bk]
-
-    def calc_KT(u, KCNLv, KGv):
-        # the generated code accumulates with "+=" over the integration
-        # points, so the value arrays must be zeroed on every call. The row
-        # and column arrays are rewritten identically each time, and could
-        # be filled once for a fixed mesh
-        KCNLv *= 0
-        KGv *= 0
-        for shell in elements:
-            update_KCNL(u, shell, points, weights, KCNLr, KCNLc, KCNLv)
-            update_KG(u, shell, points, weights, KGr, KGc, KGv)
-        KCNL = coo_matrix((KCNLv, (KCNLr, KCNLc)), shape=(N, N)).tocsc()
-        KG = coo_matrix((KGv, (KGr, KGc)), shape=(N, N)).tocsc()
-        # KCNL also carries the geometric term of the nonlinear membrane
-        # stress, so that KG stays homogeneous of degree one in u and keeps
-        # its linear buckling meaning. The three together are d(fint)/du
-        return KC0 + KCNL + KG
-
-    def calc_fint(u, fint):
-        fint *= 0
-        for shell in elements:
-            update_fint(u, shell, points, weights, fint)
-        return fint
-
-    # solving using the full Newton-Raphson method: calc_KT is called again
-    # at every iteration, not held fixed as a modified Newton-Raphson would.
-    # That is what buys quadratic convergence, now that KC0 + KCNL + KG is
-    # the exact Jacobian of fint
-    def scaling(vec, D):
-        """
-            A. Peano and R. Riccioni, Automated discretisatton error
-            control in finite element analysis. In Finite Elements m
-            the Commercial Enviror&ent (Editei by J. 26.  Robinson),
-            pp. 368-387. Robinson & Assoc., Verwood.  England (1978)
-        """
-        return np.sqrt((vec*np.abs(1/D))@vec)
-
-    # initial estimate: the zeros only fix the prescribed DOFs, the free
-    # ones are overwritten below with the linear solution
-    u0 = np.zeros(N)
-
-    u0[bu] = spsolve(KC0uu, fext[bu])
-    #PREC = 1/KC0uu.diagonal().max()
-    #u0[bu], info = cg(PREC*KC0uu, PREC*fext[bu])
-    #if info != 0:
-        #print('#   failed with cg()')
-        #print('#   trying spsolve()')
-        #uu = spsolve(KC0uu, fext[bu])
-    count = 0
-    fint = np.zeros(N)
-    fint = calc_fint(u0, fint)
-    Ri = fint - fext
-    du = np.zeros(N)
-    ui = u0.copy()
+    # solving using the full Newton-Raphson method of structsolve, in one
+    # load step: the tangent stiffness matrix calc_kC + calc_kG is computed
+    # again at every iteration, not held fixed as a modified Newton-Raphson
+    # would. That is what buys quadratic convergence, now that KC0 + KCNL +
+    # KG is the exact Jacobian of fint. The predictor is the linear solution
+    # of KC0uu, and the convergence criterion is Crisfield's, with the
+    # residual and the forces scaled with the diagonal of KC0uu, to 1e-9.
     # A consistent tangent reaches 2.0e-9 in two iterations here
-    epsilon = 1.e-9
-    KT = calc_KT(u0, KCNLv, KGv)
-    KTuu = KT[bu, :][:, bu]
-    D = KC0uu.diagonal() # at beginning of load increment, only one here
-    while True:
-        print('count', count)
-        duu = spsolve(KTuu, -Ri[bu])
-        #PREC = 1/KTuu.diagonal().max()
-        #duu, info = cg(PREC*KTuu, -PREC*Ri[bu])
-        #if info != 0:
-            #print('#   failed with cg()')
-            #print('#   trying spsolve()')
-            #duu = spsolve(KTuu, -Ri[bu])
-        du[bu] = duu
-        u = ui + du
-        fint = calc_fint(u, fint)
-        Ri = fint - fext
-        crisfield_test = scaling(Ri[bu], D)/max(scaling(fext[bu], D), scaling(fint[bu], D))
-        print('    crisfield_test', crisfield_test)
-        if crisfield_test < epsilon:
-            print('    converged')
-            break
-        count += 1
-        KT = calc_KT(u, KCNLv, KGv)
-        KTuu = KT[bu, :][:, bu]
-        ui = u.copy()
-        if count > 6:
-            raise RuntimeError('Not converged!')
+    callables = Callables(elements, points, weights, KC0, bu, fext)
+    an = Analysis(calc_fext=callables.calc_fext,
+                  calc_fint=callables.calc_fint,
+                  calc_kC=callables.calc_kC,
+                  calc_kG=callables.calc_kG)
+    an.initialInc = 1.
+    # at most 7 corrections, otherwise structsolve cuts the load step
+    an.maxNumIter = 7
+    increments, cs = an.static(NLgeom=True)
+    if increments != [1.]:
+        raise RuntimeError('Not converged!')
+
 
 if __name__ == '__main__':
     test_nonlinear_axial_compression_load_controlled()
