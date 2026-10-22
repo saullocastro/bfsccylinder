@@ -1,0 +1,40 @@
+cff-version: 1.2.0
+title: >-
+  Implementation of the BFSC cylinder finite element
+type: software
+abstract: >-
+  The `bfsccylinder` module implements the single-curvature BFSC (SC-BFSC)
+  finite element of cylindrical shells, for linear and nonlinear analyses,
+  with Donnell-type and Sanders-Koiter type kinematics. It computes the
+  contributions of each element to:
+
+  * The linear constitutive stiffness matrix, for linear static analyses
+
+  * The geometric stiffness matrix, for linear buckling analyses
+
+  * The mass matrix, for natural frequency analyses
+
+  * The internal force vector and the tangent stiffness matrix, for
+    geometrically nonlinear static analyses
+message: >-
+  Please, cite this software using:
+  Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.6.1). https://github.com/saullocastro/bfsccylinder.
+authors:
+  - family-names: Castro
+    given-names: Saullo G. P.
+    email: S.G.P.Castro@tudelft.nl
+    affiliation: Delft University of Technology
+    orcid: 'https://orcid.org/0000-0001-9711-0991'
+repository-code: 'https://github.com/saullocastro/bfsccylinder'
+license: BSD-3-Clause
+keywords:
+  - finite elements
+  - plate
+  - shell
+  - cylindrical shell
+  - static analysis
+  - buckling
+  - vibration
+  - structural dynamics
+version: 0.6.1
+date-released: '2026-09-25'
