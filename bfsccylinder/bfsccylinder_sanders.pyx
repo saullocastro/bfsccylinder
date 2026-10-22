@@ -68,7 +68,7 @@ also have terms of `u` and `v` divided by `R`:
 
 with `[B_b]` the rows ``Bb`` of :meth:`.BFSCCylinderSanders.update_Bb`.
 With the rotations `\beta_x = -w_{,x}` and `\beta_y = -w_{,y} + v/R`, the
-nonlinear membrane strains are
+nonlinear membrane strains are those of Sanders [3]_,
 
 .. math::
 
@@ -90,13 +90,9 @@ current displacements in :func:`.update_KCNL` and :func:`.update_fint`, the
 rows of `[B_{mL}]` are ``BmL1``, ``BmL2`` and ``BmL3`` and those of `[G]`
 are ``G1`` and ``G2``, such that `\delta\{\varepsilon_{NL}\} =
 [B_{mL}]\{\delta u_e\}` and `[G]\{u_e\} = \{w_{,x}, w_{,y} - v/R\}^T =
--\{\beta_x, \beta_y\}^T`. The terms of the rotation about the normal to the
-mid-surface, which the nonlinear theory of Sanders [3]_ also contains, are
-not included.
-
-TODO(author): confirm that the nonlinear membrane strains are to be
-attributed to [3]_ with the terms of the rotation about the normal
-neglected, or name the source of this form.
+-\{\beta_x, \beta_y\}^T`. Only the rotations `\beta_x` and `\beta_y` of the
+normal enter the nonlinear membrane strains; the rotation about the normal,
+`(v_{,x} - u_{,y}/R)/2`, enters only the linear twist `\kappa_{xy}`.
 
 With the terms in `1/R`, the strains and the curvatures vanish for the
 small rigid-body translation `w = c \cos(y/R)`, `v = -c \sin(y/R)`, for
