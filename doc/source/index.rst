@@ -83,6 +83,15 @@ Installing bfsccylinder
     install.rst
 
 
+Changelog
+---------
+
+.. toctree::
+    :maxdepth: 1
+
+    changelog.rst
+
+
 License
 -------
 
