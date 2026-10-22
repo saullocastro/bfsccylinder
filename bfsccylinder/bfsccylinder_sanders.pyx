@@ -111,15 +111,12 @@ References
 ----------
 .. [1] Sanders, J. L., An improved first-approximation theory for thin
    shells, NASA Technical Report R-24, 1959.
-   TODO(author): confirm this source
 .. [2] Koiter, W. T., A consistent first approximation in the general
    theory of thin elastic shells, Proceedings of the IUTAM Symposium on the
    Theory of Thin Elastic Shells, Delft, 1959, North-Holland, Amsterdam,
-   1960.
-   TODO(author): confirm this source
+   1960, pp. 12-33.
 .. [3] Sanders, J. L., Nonlinear theories for thin shells, Quarterly of
-   Applied Mathematics, 21(1), 21-36, 1963.
-   TODO(author): confirm this source
+   Applied Mathematics, 21(1), 21-36, 1963, doi:10.1090/qam/147023.
 
 """
 import numpy as np

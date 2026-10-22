@@ -115,9 +115,12 @@ degrees of freedom of the two nodes of that edge, such that `u`, `v`, `w`
 and their first derivatives are continuous between elements that share an
 edge.
 
-TODO(author): should the publication that introduced the BFSC element, with
-the in-plane displacements interpolated by the Hermite functions, be cited
-here?
+This interpolation of `u` and `v` with the Hermite functions is that of the
+BFSC plate element of Castro and Jansen [4]_, of which this element is the
+single-curvature version, first presented by Castro and Jansen [5]_ with
+Donnell-type and Sanders-type kinematics and later used by Wang et al. [6]_
+and by dos Santos and Castro [7]_, who give its interpolation functions and
+the order of its nodal degrees of freedom.
 
 .. rubric:: Kinematics
 
@@ -230,13 +233,27 @@ References
    inter-element-compatible stiffness and mass matrices by the use of
    interpolation formulas, Proceedings of the Conference on Matrix Methods
    in Structural Mechanics, AFFDL-TR-66-80, Wright-Patterson Air Force
-   Base, Ohio, 1965.
-   TODO(author): confirm this source
+   Base, Dayton, Ohio, 26-28 October 1965, pp. 395-444.
 .. [2] Ochoa, O. O., and Reddy, J. N., Finite Element Analysis of Composite
    Laminates, Springer, Dordrecht, 1992.
 .. [3] Donnell, L. H., Stability of thin-walled tubes under torsion, NACA
    Report 479, 1933.
-   TODO(author): confirm this source
+.. [4] Castro, S. G. P., and Jansen, E. L., Displacement-based formulation
+   of Koiter's method: application to multi-modal post-buckling finite
+   element analysis of plates, Thin-Walled Structures, 159, 107217, 2021,
+   doi:10.1016/j.tws.2020.107217.
+.. [5] Castro, S. G. P., and Jansen, E. L., Displacement-based multi-modal
+   formulation of Koiter's method applied to cylindrical shells, AIAA
+   SciTech 2022 Forum, AIAA 2022-0256, 2022, doi:10.2514/6.2022-0256.
+.. [6] Wang, Z., Almeida Jr, J. H. S., Ashok, A., Wang, Z., and Castro, S.
+   G. P., Lightweight design of variable-angle filament-wound cylinders
+   combining Kriging-based metamodels with particle swarm optimization,
+   Structural and Multidisciplinary Optimization, 65, 140, 2022,
+   doi:10.1007/s00158-022-03227-8.
+.. [7] dos Santos, R. R., and Castro, S. G. P., Lightweight design of
+   variable-stiffness cylinders with reduced imperfection sensitivity
+   enabled by continuous tow shearing and machine learning, Materials,
+   15(12), 4117, 2022, doi:10.3390/ma15124117.
 
 """
 import numpy as np
