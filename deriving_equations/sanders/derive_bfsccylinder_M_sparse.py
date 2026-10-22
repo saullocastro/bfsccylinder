@@ -1,5 +1,11 @@
 """
-Mass matrix for BFSC cylinder
+Mass matrix for BFSC cylinder with Sanders-type kinematics
+
+The rotary inertia uses the rotations of the Kirchhoff-Love field of the
+Sanders-type kinematics, u(z) = u - z w,x, v(z) = v + z (-w,y + v/R),
+w(z) = w, for a density uniform over the thickness, the mid-surface as the
+reference surface and without the factor 1 + z/R of the area (shallow
+shell)
 """
 from multiprocessing import Pool
 import numpy as np
@@ -14,6 +20,7 @@ def integrate_simplify(integrand):
 
 def main():
     sympy.var('xi, eta, lex, ley, rho, h')
+    sympy.var('R')
     sympy.var('A11, A12, A16, A22, A26, A66')
     sympy.var('B11, B12, B16, B22, B26, B66')
     sympy.var('D11, D12, D16, D22, D26, D66')
@@ -57,7 +64,8 @@ def main():
         ]])
     # bending
     Nphix = -(2/lex)*Nw.diff(xi)
-    Nphiy = -(2/ley)*Nw.diff(eta)
+    # Sanders-type rotation of the normal about x, -w,y + v/R
+    Nphiy = -(2/ley)*Nw.diff(eta) + Nv/R
 
     #TODO
     # - offset for monolithic

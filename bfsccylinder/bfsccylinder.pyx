@@ -17789,10 +17789,14 @@ cpdef void update_M(BFSCCylinder shell,
               [S_{w,x}] + [S_{w,y}]^T [S_{w,y}] \right) \right) dA
 
     The terms in `h^3/12` are the rotary inertia of the rotations `-w_{,x}`
-    and `-w_{,y}`. There is no coupling between the in-plane and the normal
-    displacements, which corresponds to a reference surface at the middle of
-    the thickness, and the variation of the area with `z` is neglected. The
-    integrand is a polynomial and the integral is exact.
+    and `-w_{,y}` of the Donnell-type kinematics. There is no coupling
+    between the in-plane and the normal displacements, which corresponds to
+    a reference surface at the middle of the thickness, and the variation of
+    the area with `z` is neglected. The integrand is a polynomial and the
+    integral is exact. The matrix of
+    :func:`bfsccylinder.bfsccylinder_sanders.update_M` differs: its rotary
+    inertia uses the Sanders-type rotation `-w_{,y} + v/R`, which couples
+    `v` and `w`.
 
     """
     cdef int c1, c2, c3, c4, k
