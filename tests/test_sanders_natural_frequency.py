@@ -4,7 +4,6 @@ sys.path.append(r'..')
 import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix
-from scipy.sparse.linalg import eigsh
 from composites import isotropic_plate
 
 from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0, update_M,
@@ -12,6 +11,8 @@ from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0, update_M,
                                   M_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
+
+from natural_frequency_solver import lowest_frequencies
 
 
 def test_natural_frequency(plot=False):
@@ -113,8 +114,8 @@ def test_natural_frequency(plot=False):
 
     # solving for natural frequencies
     num_eigenvalues = 16
-    eigvals, eigvecsu = eigsh(A=Kuu, M=Muu, sigma=-1., which='LM',
-            k=num_eigenvalues, tol=1e-9)
+    # deterministic and verified, see natural_frequency_solver.py
+    eigvals, eigvecsu = lowest_frequencies(Kuu, Muu, num_eigenvalues)
     omegan = eigvals**0.5
 
     mode = 0
