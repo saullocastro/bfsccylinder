@@ -4,7 +4,7 @@
 #cython: nonecheck=False
 #cython: initializedcheck=False
 #cython: infer_types=False
-"""
+r"""
 Donnell-type cylinder element (:mod:`bfsccylinder.bfsccylinder`)
 
 .. currentmodule:: bfsccylinder.bfsccylinder
@@ -40,6 +40,203 @@ The module also defines:
 
 The module :mod:`bfsccylinder.bfsccylinder_sanders` has the same contents
 for the element with Sanders-type kinematics.
+
+Notes
+-----
+The element is a rectangle of the developed mid-surface of a cylinder of
+radius `R` = ``R``, with `x` the axial coordinate and `y = R \theta` the arc
+length along the circumference, of sides `l_{ex}` = ``lex`` along `x` and
+`l_{ey}` = ``ley`` along `y`. The natural coordinates `\xi` and `\eta`, from
+`-1` to `1`, give `x = x_1 + l_{ex} (\xi + 1)/2` and `y = y_1 + l_{ey} (\eta
++ 1)/2`, with `(x_1, y_1)` the position of node 1, such that
+`\partial/\partial x = (2/l_{ex}) \partial/\partial \xi`, `\partial/\partial
+y = (2/l_{ey}) \partial/\partial \eta` and `dA = (l_{ex} l_{ey}/4) d\xi
+d\eta`.
+
+.. rubric:: Interpolation
+
+For the node `i` at the corner `(\xi_i, \eta_i)`, `(-1, -1)`, `(+1, -1)`,
+`(+1, +1)` and `(-1, +1)` for the nodes 1, 2, 3 and 4, the interpolation
+functions are products of cubic Hermite polynomials in `\xi` and `\eta`
+[2]_:
+
+.. math::
+
+    H_i = \frac{1}{16} (\xi + \xi_i)^2 (\xi \xi_i - 2)
+          (\eta + \eta_i)^2 (\eta \eta_i - 2)
+
+.. math::
+
+    H_{xi} = -\frac{l_{ex}}{32} \xi_i (\xi + \xi_i)^2 (\xi \xi_i - 1)
+             (\eta + \eta_i)^2 (\eta \eta_i - 2)
+
+.. math::
+
+    H_{yi} = -\frac{l_{ey}}{32} (\xi + \xi_i)^2 (\xi \xi_i - 2)
+             \eta_i (\eta + \eta_i)^2 (\eta \eta_i - 1)
+
+.. math::
+
+    H_{xyi} = \frac{l_{ex} l_{ey}}{64} \xi_i (\xi + \xi_i)^2 (\xi \xi_i - 1)
+              \eta_i (\eta + \eta_i)^2 (\eta \eta_i - 1)
+
+At the nodes, `H_i` is one at its node and zero at the others, and its
+derivatives `\partial/\partial x`, `\partial/\partial y` and
+`\partial^2/\partial x \partial y` are zero at all nodes; `H_{xi}`,
+`H_{yi}` and `H_{xyi}` are zero at all nodes, and so are these derivatives,
+except `\partial H_{xi}/\partial x = \partial H_{yi}/\partial y =
+\partial^2 H_{xyi}/\partial x \partial y = 1` at their own node. The factors
+`l_{ex}/2` and `l_{ey}/2` convert the derivatives in `\xi` and `\eta` into
+derivatives in `x` and `y`. The normal displacement is interpolated as in
+the element of Bogner, Fox and Schmit [1]_,
+
+.. math::
+
+    w = \sum_{i=1}^{4} \left( H_i w_i + H_{xi} {w_{,x}}_i + H_{yi} {w_{,y}}_i
+        + H_{xyi} {w_{,xy}}_i \right)
+
+and the in-plane displacements with the same functions but without the
+cross derivative, which is not a degree of freedom of `u` and `v`:
+
+.. math::
+
+    u = \sum_{i=1}^{4} \left( H_i u_i + H_{xi} {u_{,x}}_i + H_{yi} {u_{,y}}_i
+        \right), \qquad
+    v = \sum_{i=1}^{4} \left( H_i v_i + H_{xi} {v_{,x}}_i + H_{yi} {v_{,y}}_i
+        \right)
+
+In row form `u = [S_u]\{u_e\}`, `v = [S_v]\{u_e\}` and `w =
+[S_w]\{u_e\}`, with `\{u_e\}` the element displacement vector ``u`` and the
+rows ``Su``, ``Sv`` and ``Sw`` of :meth:`.BFSCCylinder.update_Su`,
+:meth:`.BFSCCylinder.update_Sv` and :meth:`.BFSCCylinder.update_Sw`; the
+rows of the derivatives, e.g. ``Sw_x``, are their derivatives. Along an edge,
+`u`, `v`, `w` and their derivatives normal to the edge depend only on the
+degrees of freedom of the two nodes of that edge, such that `u`, `v`, `w`
+and their first derivatives are continuous between elements that share an
+edge.
+
+TODO(author): should the publication that introduced the BFSC element, with
+the in-plane displacements interpolated by the Hermite functions, be cited
+here?
+
+.. rubric:: Kinematics
+
+The kinematics are those of Donnell [3]_ for a thin cylindrical shell under
+the Kirchhoff-Love hypothesis, such that transverse shear deformation is
+neglected, with `w` positive outwards, away from the axis of the cylinder.
+The membrane strains `\{\varepsilon\} = \{\varepsilon_{xx}, \varepsilon_{yy},
+\gamma_{xy}\}^T` are the sum of a linear part `\{\varepsilon_L\}` and of a
+nonlinear part `\{\varepsilon_{NL}\}` in the slopes of `w`, for small strains
+and moderate rotations, and the curvatures `\{\kappa\} = \{\kappa_{xx},
+\kappa_{yy}, \kappa_{xy}\}^T` are linear:
+
+.. math::
+
+    \{\varepsilon_L\} = \begin{Bmatrix} u_{,x} \\ v_{,y} + w/R \\
+    u_{,y} + v_{,x} \end{Bmatrix} = [B_m]\{u_e\}, \qquad
+    \{\kappa\} = \begin{Bmatrix} -w_{,xx} \\ -w_{,yy} \\ -2 w_{,xy}
+    \end{Bmatrix} = [B_b]\{u_e\}
+
+.. math::
+
+    \{\varepsilon_{NL}\} = \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\
+    w_{,x} w_{,y} \end{Bmatrix} = \frac{1}{2} [B_{mL}]\{u_e\}, \qquad
+    [B_{mL}] = \begin{bmatrix} w_{,x} [S_{w,x}] \\ w_{,y} [S_{w,y}] \\
+    w_{,x} [S_{w,y}] + w_{,y} [S_{w,x}] \end{bmatrix}
+
+where `[B_m]` and `[B_b]` are the rows ``Bm`` and ``Bb`` of
+:meth:`.BFSCCylinder.update_Bm` and :meth:`.BFSCCylinder.update_Bb`, and
+`[B_{mL}]`, which depends on the slopes ``w_x`` and ``w_y`` of the current
+displacements, has the rows ``BmL1``, ``BmL2`` and ``BmL3`` of
+:func:`.update_KCNL` and :func:`.update_fint`, such that the variation of
+the nonlinear strains is `\delta\{\varepsilon_{NL}\} = [B_{mL}]\{\delta
+u_e\}`. The slopes are `\{w_{,x}, w_{,y}\}^T = [G]\{u_e\}`, with `[G]` of
+the rows `[S_{w,x}]` and `[S_{w,y}]`, ``G1`` and ``G2`` in the code.
+
+The in-plane displacements do not enter the curvatures and the rotations,
+which are those of a flat plate, and the curvature of the shell enters only
+through the term `w/R` of `\varepsilon_{yy}`. These approximations are
+accurate when the displacements vary over lengths that are small compared
+with `R`, e.g. for many circumferential waves, and lose accuracy for long
+waves. For instance, the curvatures do not vanish for the small rigid-body
+translation `w = c \cos(y/R)`, `v = -c \sin(y/R)`, for which `\kappa_{yy} =
+w/R^2`; the kinematics of :mod:`bfsccylinder.bfsccylinder_sanders` give
+zero strains and curvatures for it.
+
+.. rubric:: Constitutive relation
+
+The membrane stress resultants `\{N\} = \{N_{xx}, N_{yy}, N_{xy}\}^T` and the
+moment resultants `\{M\} = \{M_{xx}, M_{yy}, M_{xy}\}^T` are those of the
+classical laminated plate theory,
+
+.. math::
+
+    \begin{Bmatrix} \{N\} \\ \{M\} \end{Bmatrix} =
+    \begin{bmatrix} [A] & [B] \\ [B] & [D] \end{bmatrix}
+    \begin{Bmatrix} \{\varepsilon_L\} + \{\varepsilon_{NL}\} \\ \{\kappa\}
+    \end{Bmatrix}, \qquad
+    [A] = \begin{bmatrix} A_{11} & A_{12} & A_{16} \\ A_{12} & A_{22} &
+    A_{26} \\ A_{16} & A_{26} & A_{66} \end{bmatrix}
+
+and likewise `[B]` and `[D]`, with the values of ``A11, ..., D66`` of the
+element at each integration point. They are the stiffnesses of a flat
+laminate referred to the mid-surface, without terms in `h/R`.
+
+.. rubric:: Element matrices and internal forces
+
+The strain energy of the element is
+
+.. math::
+
+    U = \frac{1}{2} \int_A \left( \{\varepsilon\}^T [A] \{\varepsilon\}
+        + 2 \{\varepsilon\}^T [B] \{\kappa\}
+        + \{\kappa\}^T [D] \{\kappa\} \right) dA
+
+with `\{\varepsilon\} = \{\varepsilon_L\} + \{\varepsilon_{NL}\}`. The
+internal force vector of :func:`.update_fint` is its gradient
+`\partial U/\partial \{u_e\}`, and the tangent stiffness matrix, its Hessian,
+is split into
+
+.. math::
+
+    [K_T] = \frac{\partial^2 U}{\partial \{u_e\}^2} = [K_{C0}]
+            + [K_{CNL}(u_e)] + [K_G(u_e)]
+
+computed by :func:`.update_KC0`, :func:`.update_KCNL` and :func:`.update_KG`,
+whose Notes give each term. The mass matrix of :func:`.update_M` comes from
+the kinetic energy, see its Notes.
+
+The integrals over the element are computed with the Gauss-Legendre
+quadrature of :func:`bfsccylinder.quadrature.get_points_weights` in each
+direction,
+
+.. math::
+
+    \int_A f \, dA \approx \frac{l_{ex} l_{ey}}{4} \sum_{i=0}^{nint-1}
+    \sum_{j=0}^{nint-1} weights_i \, weights_j \, f(points_i, points_j)
+
+and the mass matrix in closed form. Since KCNL and KG are the derivatives of
+the same quadrature sums as the internal forces, `[K_T]` is the exact
+Jacobian of the internal forces for any ``nint``. With `[A]`, `[B]` and
+`[D]` constant over the element, the integrands are polynomials in `\xi`
+and `\eta`: of degree up to 6 in each for KC0 and for
+:func:`.update_KG_constant_stress`, integrated exactly with ``nint >= 4``;
+up to 9 for KG, exact with ``nint >= 5``; and up to 12 for KCNL and the
+internal forces, exact with ``nint >= 7``.
+
+References
+----------
+.. [1] Bogner, F. K., Fox, R. L., and Schmit, L. A., The generation of
+   inter-element-compatible stiffness and mass matrices by the use of
+   interpolation formulas, Proceedings of the Conference on Matrix Methods
+   in Structural Mechanics, AFFDL-TR-66-80, Wright-Patterson Air Force
+   Base, Ohio, 1965.
+   TODO(author): confirm this source
+.. [2] Ochoa, O. O., and Reddy, J. N., Finite Element Analysis of Composite
+   Laminates, Springer, Dordrecht, 1992.
+.. [3] Donnell, L. H., Stability of thin-walled tubes under torsion, NACA
+   Report 479, 1933.
+   TODO(author): confirm this source
 
 """
 import numpy as np
@@ -154,6 +351,19 @@ cdef class BFSCCylinder(object):
         dimensionless for the first derivatives and of one over length for
         `w_{,xy}`.
 
+    Notes
+    -----
+    The element and its theory are described in the Notes of
+    :mod:`bfsccylinder.bfsccylinder`. The arrays ``A11, ..., D66`` hold the
+    laminate stiffness matrices `[A]`, `[B]` and `[D]` of the constitutive
+    relation at each integration point, such that stiffnesses that vary over
+    the element, e.g. of a laminate whose fiber angles vary, are integrated
+    point by point. ``Bm`` and ``Bb`` are the operators `[B_m]` and `[B_b]`
+    of the linear membrane strains and of the curvatures, and ``Su``, ...,
+    ``Sw_y`` the rows of the interpolation of the displacements and of their
+    derivatives; the ``update_*`` functions of the module evaluate the same
+    operators at each integration point in local variables.
+
     """
     cdef public int n1, n2, n3, n4
     cdef public int c1, c2, c3, c4
@@ -240,6 +450,20 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        With the rows of the interpolation of the Notes of
+        :mod:`bfsccylinder.bfsccylinder`, the rows of the Donnell-type linear
+        membrane strains are
+
+        .. math::
+
+            [B_m] = \begin{bmatrix} [S_{u,x}] \\ [S_{v,y}] + [S_w]/R \\
+            [S_{u,y}] + [S_{v,x}] \end{bmatrix}
+
+        such that `\{\varepsilon_L\} = \{u_{,x}, v_{,y} + w/R, u_{,y} +
+        v_{,x}\}^T = [B_m]\{u_e\}`.
 
         """
         cdef double lex, ley, R
@@ -330,6 +554,21 @@ cdef class BFSCCylinder(object):
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
 
+        Notes
+        -----
+        With the rows `[S_w]` of the interpolation of `w` of the Notes of
+        :mod:`bfsccylinder.bfsccylinder`, the rows of the Donnell-type
+        curvatures are
+
+        .. math::
+
+            [B_b] = -\begin{bmatrix} [S_{w,xx}] \\ [S_{w,yy}] \\ 2 [S_{w,xy}]
+            \end{bmatrix}
+
+        such that `\{\kappa\} = \{-w_{,xx}, -w_{,yy}, -2 w_{,xy}\}^T =
+        [B_b]\{u_e\}`. They do not depend on ``R``: the curvatures are those
+        of a flat plate.
+
         """
         cdef double lex, ley
         with nogil:
@@ -385,7 +624,7 @@ cdef class BFSCCylinder(object):
             self.Bb[2, 39] = -8*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
 
     cpdef void update_Su(BFSCCylinder self, double xi, double eta):
-        """Update ``Su`` at a natural coordinate point
+        r"""Update ``Su`` at a natural coordinate point
 
         ``Su`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -399,6 +638,14 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries of node ``i``, from 1 to 4, at the positions
+        ``10*(i - 1) + 0``, ``10*(i - 1) + 1`` and ``10*(i - 1) + 2``, are
+        the Hermite functions `H_i`, `H_{xi}` and `H_{yi}` of the Notes
+        of :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
+        that `u = [S_u]\{u_e\}`.
 
         """
         cdef double lex, ley
@@ -419,7 +666,7 @@ cdef class BFSCCylinder(object):
             self.Su[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Su_x(BFSCCylinder self, double xi, double eta):
-        """Update ``Su_x`` at a natural coordinate point
+        r"""Update ``Su_x`` at a natural coordinate point
 
         ``Su_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -433,6 +680,13 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial x = (2/l_{ex})
+        \partial/\partial \xi` of those of
+        :meth:`.BFSCCylinder.update_Su`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
 
         """
         cdef double lex, ley
@@ -453,7 +707,7 @@ cdef class BFSCCylinder(object):
             self.Su_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Su_y(BFSCCylinder self, double xi, double eta):
-        """Update ``Su_y`` at a natural coordinate point
+        r"""Update ``Su_y`` at a natural coordinate point
 
         ``Su_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -467,6 +721,13 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial y = (2/l_{ey})
+        \partial/\partial \eta` of those of
+        :meth:`.BFSCCylinder.update_Su`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
 
         """
         cdef double lex, ley
@@ -487,7 +748,7 @@ cdef class BFSCCylinder(object):
             self.Su_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Sv(BFSCCylinder self, double xi, double eta):
-        """Update ``Sv`` at a natural coordinate point
+        r"""Update ``Sv`` at a natural coordinate point
 
         ``Sv`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -501,6 +762,14 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries of node ``i``, from 1 to 4, at the positions
+        ``10*(i - 1) + 3``, ``10*(i - 1) + 4`` and ``10*(i - 1) + 5``, are
+        the Hermite functions `H_i`, `H_{xi}` and `H_{yi}` of the Notes
+        of :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
+        that `v = [S_v]\{u_e\}`.
 
         """
         cdef double lex, ley
@@ -521,7 +790,7 @@ cdef class BFSCCylinder(object):
             self.Sv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Sv_x(BFSCCylinder self, double xi, double eta):
-        """Update ``Sv_x`` at a natural coordinate point
+        r"""Update ``Sv_x`` at a natural coordinate point
 
         ``Sv_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -535,6 +804,13 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial x = (2/l_{ex})
+        \partial/\partial \xi` of those of
+        :meth:`.BFSCCylinder.update_Sv`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
 
         """
         cdef double lex, ley
@@ -555,7 +831,7 @@ cdef class BFSCCylinder(object):
             self.Sv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Sv_y(BFSCCylinder self, double xi, double eta):
-        """Update ``Sv_y`` at a natural coordinate point
+        r"""Update ``Sv_y`` at a natural coordinate point
 
         ``Sv_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -569,6 +845,13 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial y = (2/l_{ey})
+        \partial/\partial \eta` of those of
+        :meth:`.BFSCCylinder.update_Sv`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
 
         """
         cdef double lex, ley
@@ -589,7 +872,7 @@ cdef class BFSCCylinder(object):
             self.Sv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Sw(BFSCCylinder self, double xi, double eta):
-        """Update ``Sw`` at a natural coordinate point
+        r"""Update ``Sw`` at a natural coordinate point
 
         ``Sw`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -604,6 +887,14 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries of node ``i``, from 1 to 4, at the positions
+        ``10*(i - 1) + 6`` to ``10*(i - 1) + 9``, are the Hermite functions
+        `H_i`, `H_{xi}`, `H_{yi}` and `H_{xyi}` of the Notes of
+        :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
+        that `w = [S_w]\{u_e\}`.
 
         """
         cdef double lex, ley
@@ -628,7 +919,7 @@ cdef class BFSCCylinder(object):
             self.Sw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
 
     cpdef void update_Sw_x(BFSCCylinder self, double xi, double eta):
-        """Update ``Sw_x`` at a natural coordinate point
+        r"""Update ``Sw_x`` at a natural coordinate point
 
         ``Sw_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -642,6 +933,13 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial x = (2/l_{ex})
+        \partial/\partial \xi` of those of
+        :meth:`.BFSCCylinder.update_Sw`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
 
         """
         cdef double lex, ley
@@ -666,7 +964,7 @@ cdef class BFSCCylinder(object):
             self.Sw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Sw_y(BFSCCylinder self, double xi, double eta):
-        """Update ``Sw_y`` at a natural coordinate point
+        r"""Update ``Sw_y`` at a natural coordinate point
 
         ``Sw_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
         product with an element displacement vector, e.g. ``u``, gives the
@@ -680,6 +978,13 @@ cdef class BFSCCylinder(object):
         xi, eta : double
             Natural coordinates of the point, dimensionless, from ``-1`` to
             ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial y = (2/l_{ey})
+        \partial/\partial \eta` of those of
+        :meth:`.BFSCCylinder.update_Sw`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
 
         """
         cdef double lex, ley
@@ -711,7 +1016,7 @@ cpdef void update_KC0(BFSCCylinder shell,
                       long [::1] KC0c,
                       double [::1] KC0v,
                       ):
-    """Update sparse vectors for linear constitutive stiffness matrix KC0
+    r"""Update sparse vectors for linear constitutive stiffness matrix KC0
 
     The element matrix, with ``40*40`` entries, is integrated with the
     integration points and weights given by ``points`` and ``weights``,
@@ -754,6 +1059,24 @@ cpdef void update_KC0(BFSCCylinder shell,
     See Also
     --------
     update_KCNL, update_KG
+
+    Notes
+    -----
+    KC0 is the Hessian of the strain energy of the Notes of
+    :mod:`bfsccylinder.bfsccylinder` with the linear strains only,
+    `\{\varepsilon\} = \{\varepsilon_L\}`:
+
+    .. math::
+
+        [K_{C0}] = \int_A \left( [B_m]^T [A] [B_m] + [B_m]^T [B] [B_b]
+                   + [B_b]^T [B] [B_m] + [B_b]^T [D] [B_b] \right) dA
+
+    with the rows `[B_m]` and `[B_b]` of :meth:`.BFSCCylinder.update_Bm` and
+    :meth:`.BFSCCylinder.update_Bb`, evaluated at each integration point as
+    the local variables ``Bm1_*``, ``Bm2_*``, ``Bm3_*``, ``Bb1_*``, ``Bb2_*``
+    and ``Bb3_*``, and the `[A]`, `[B]` and `[D]` of that point. KC0 does not
+    depend on the displacements: it is the stiffness matrix of a linear static
+    analysis and the tangent stiffness matrix at zero displacements.
 
     """
     cdef int c1, c2, c3, c4, nint, i, j, k
@@ -8930,7 +9253,7 @@ cpdef void update_KCNL(double [::1] u,
                        long [::1] KCNLc,
                        double [::1] KCNLv,
                        ):
-    """Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
+    r"""Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
 
     The element matrix is integrated with the integration points and weights
     given by ``points`` and ``weights``, from ``lex``, ``ley``, ``R``, the
@@ -8943,23 +9266,10 @@ cpdef void update_KCNL(double [::1] u,
     added to ``KCNLv``, at the positions ``shell.init_k_KCNL`` to
     ``shell.init_k_KCNL + KCNL_SPARSE_SIZE - 1``. Before this function is
     called, ``c1, c2, c3, c4``, ``init_k_KCNL``, ``lex``, ``ley``, ``R`` and
-    the stiffnesses of ``shell`` must be set.
-
-    Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL
-
-    The first three groups are the constitutive terms coupling the linear and
-    the nonlinear parts of the membrane strain. KGNL is the geometric term
-    carrying the stress of the nonlinear membrane strain, A*BmL*u/2.
-
-    KGNL is geometric rather than constitutive, and would normally sit in
-    update_KG. It is collected here so that update_KG can stay homogeneous of
-    degree one in u, which is what a linear buckling analysis needs. With it
-    here,
-
-        KT = KC0 + KCNL(u) + KG(u)
-
-    is the exact Jacobian of the vector assembled by update_fint, so a
-    Newton-Raphson built on these three converges quadratically.
+    the stiffnesses of ``shell`` must be set. KC0 + KCNL + KG, computed with
+    :func:`.update_KC0`, this function and :func:`.update_KG` with the same
+    ``u``, ``points`` and ``weights``, is the tangent stiffness matrix of the
+    internal forces of :func:`.update_fint`.
 
     Parameters
     ----------
@@ -8998,6 +9308,47 @@ cpdef void update_KCNL(double [::1] u,
     See Also
     --------
     update_KC0, update_KG, update_fint
+
+    Notes
+    -----
+    Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL
+
+    The first three groups are the constitutive terms coupling the linear and
+    the nonlinear parts of the membrane strain. KGNL is the geometric term
+    carrying the stress of the nonlinear membrane strain, A*BmL*u/2.
+
+    KGNL is geometric rather than constitutive, and would normally sit in
+    update_KG. It is collected here so that update_KG can stay homogeneous of
+    degree one in u, which is what a linear buckling analysis needs. With it
+    here,
+
+        KT = KC0 + KCNL(u) + KG(u)
+
+    is the exact Jacobian of the vector assembled by update_fint, so a
+    Newton-Raphson built on these three converges quadratically.
+
+    With the operators of the Notes of :mod:`bfsccylinder.bfsccylinder`,
+    evaluated at each integration point with the slopes ``w_x`` and ``w_y``
+    of the element displacements ``shell.u``:
+
+    .. math::
+
+        [K_{C0L}] = \int_A \left( [B_m]^T [A] + [B_b]^T [B] \right) [B_{mL}] dA,
+        \qquad
+        [K_{CL0}] = \int_A [B_{mL}]^T \left( [A] [B_m] + [B] [B_b] \right) dA
+
+    .. math::
+
+        [K_{CLL}] = \int_A [B_{mL}]^T [A] [B_{mL}] dA, \qquad
+        [K_{GNL}] = \int_A [G]^T \begin{bmatrix} N_{NLxx} & N_{NLxy} \\
+        N_{NLxy} & N_{NLyy} \end{bmatrix} [G] dA
+
+    with `\{N_{NLxx}, N_{NLyy}, N_{NLxy}\}^T = [A]\{\varepsilon_{NL}\} =
+    [A]\{w_{,x}^2/2, w_{,y}^2/2, w_{,x} w_{,y}\}^T`. KC0L and KCL0 are linear
+    in the displacements, KCLL and KGNL quadratic, and KCNL vanishes at zero
+    displacements. Since `[B_{mL}]` and `[G]` have entries only at the
+    degrees of freedom of `w`, the block of the in-plane degrees of freedom
+    is zero.
 
     """
     cdef double *ue
@@ -14386,7 +14737,7 @@ cpdef void update_KG(double [::1] u,
                      long [::1] KGc,
                      double [::1] KGv,
                      ):
-    """Update sparse vectors for geometric stiffness matrix KG
+    r"""Update sparse vectors for geometric stiffness matrix KG
 
     The element matrix is integrated with the integration points and weights
     given by ``points`` and ``weights``, from ``lex``, ``ley`` and ``R`` of
@@ -14399,16 +14750,10 @@ cpdef void update_KG(double [::1] u,
     indices to ``KGr`` and ``KGc``, and the values added to ``KGv``, at the
     positions ``shell.init_k_KG`` to ``shell.init_k_KG + KG_SPARSE_SIZE - 1``.
     Before this function is called, ``c1, c2, c3, c4``, ``init_k_KG``, ``lex``,
-    ``ley``, ``R`` and the stiffnesses of ``shell`` must be set.
-
-    Built from the membrane stress of the LINEAR strain alone, A*Bm*u +
-    B*Bb*u, which keeps KG homogeneous of degree one in u. A linear buckling
-    analysis needs exactly that, so that lambda*KG represents the stress
-    state at load lambda*P.
-
-    The geometric term of the nonlinear membrane stress is therefore NOT
-    here; update_KCNL carries it, so that KC0 + KCNL + KG is still the
-    consistent tangent of update_fint.
+    ``ley``, ``R`` and the stiffnesses of ``shell`` must be set. ``Nxx``,
+    ``Nyy`` and ``Nxy`` are those of the linear strains, such that the values
+    are linear in ``u``; the corresponding term of the nonlinear strains is
+    in :func:`.update_KCNL`.
 
     Parameters
     ----------
@@ -14447,6 +14792,35 @@ cpdef void update_KG(double [::1] u,
     See Also
     --------
     update_KG_constant_stress, update_KCNL
+
+    Notes
+    -----
+    Built from the membrane stress of the LINEAR strain alone, A*Bm*u +
+    B*Bb*u, which keeps KG homogeneous of degree one in u. A linear buckling
+    analysis needs exactly that, so that lambda*KG represents the stress
+    state at load lambda*P.
+
+    The geometric term of the nonlinear membrane stress is therefore NOT
+    here; update_KCNL carries it, so that KC0 + KCNL + KG is still the
+    consistent tangent of update_fint.
+
+    With the operators of the Notes of :mod:`bfsccylinder.bfsccylinder`,
+    at each integration point:
+
+    .. math::
+
+        [K_G] = \int_A [G]^T \begin{bmatrix} N_{xx} & N_{xy} \\ N_{xy} &
+        N_{yy} \end{bmatrix} [G] dA, \qquad
+        \begin{Bmatrix} N_{xx} \\ N_{yy} \\ N_{xy} \end{Bmatrix} =
+        [A][B_m]\{u_e\} + [B][B_b]\{u_e\}
+
+    with `[G]` the rows `[S_{w,x}]` and `[S_{w,y}]`, ``G1`` and ``G2``, such
+    that `[G]\{u_e\} = \{w_{,x}, w_{,y}\}^T`. It is the second derivative of
+    `\int_A \{N\}^T \{\varepsilon_{NL}\} dA` with respect to `\{u_e\}` for
+    `\{N\}` held fixed. In a linear buckling analysis, with ``u`` the linear
+    static solution for a reference load, the load multipliers `\lambda` and
+    the buckling modes `\{\phi\}` solve `([K_{C0}] + \lambda [K_G])\{\phi\} =
+    \{0\}`, with `[K_{C0}]` of :func:`.update_KC0`.
 
     """
     cdef double *ue
@@ -15992,6 +16366,16 @@ cpdef void update_KG_constant_stress(BFSCCylinder shell,
     --------
     update_KG
 
+    Notes
+    -----
+    The matrix is the `[K_G]` of the Notes of :func:`.update_KG` with the
+    given `N_{xx}`, `N_{yy}` and `N_{xy}`, and with the same rows `[G]`, which
+    do not depend on `R` in the Donnell-type kinematics. Since it is linear in
+    the given stress resultants, the load multipliers of a linear buckling
+    analysis multiply the given membrane state, which is assumed instead of
+    computed from a linear static solution, e.g. a uniform axial compression
+    without the effects of the boundary conditions on the membrane state.
+
     """
     cdef double *ue
     cdef int c1, c2, c3, c4, i, j, k, nint
@@ -17341,7 +17725,7 @@ cpdef void update_M(BFSCCylinder shell,
                     long [::1] Mc,
                     double [::1] Mv,
                     ):
-    """Update sparse vectors for mass matrix M
+    r"""Update sparse vectors for mass matrix M
 
     The element mass matrix is computed from ``lex``, ``ley``, ``rho`` and
     ``h`` of ``shell`` with closed-form expressions, without integration
@@ -17372,6 +17756,26 @@ cpdef void update_M(BFSCCylinder shell,
         Dimension of mass between the displacements `u`, `v`, `w`, multiplied
         by a length for each of the row and the column that is a first
         derivative, and by a length squared for each that is `w_{,xy}`.
+
+    Notes
+    -----
+    The consistent mass matrix of the interpolation of the Notes of
+    :mod:`bfsccylinder.bfsccylinder`, for a density `\rho` = ``rho`` uniform
+    over the thickness `h` = ``h``, with the Kirchhoff-Love displacements
+    `u - z w_{,x}`, `v - z w_{,y}` and `w` at the distance `z` from the
+    mid-surface:
+
+    .. math::
+
+        [M] = \int_A \rho \left( h \left( [S_u]^T [S_u] + [S_v]^T [S_v]
+              + [S_w]^T [S_w] \right) + \frac{h^3}{12} \left( [S_{w,x}]^T
+              [S_{w,x}] + [S_{w,y}]^T [S_{w,y}] \right) \right) dA
+
+    The terms in `h^3/12` are the rotary inertia of the rotations `-w_{,x}`
+    and `-w_{,y}`. There is no coupling between the in-plane and the normal
+    displacements, which corresponds to a reference surface at the middle of
+    the thickness, and the variation of the area with `z` is neglected. The
+    integrand is a polynomial and the integral is exact.
 
     """
     cdef int c1, c2, c3, c4, k
@@ -20118,7 +20522,7 @@ cpdef void update_fint(double [::1] u,
                        double [::1] weights,
                        double [::1] fint,
                        ):
-    """Update global internal force vector
+    r"""Update global internal force vector
 
     The internal forces of the element are integrated with the integration
     points and weights given by ``points`` and ``weights``, from ``lex``,
@@ -20161,6 +20565,32 @@ cpdef void update_fint(double [::1] u,
     See Also
     --------
     update_KCNL
+
+    Notes
+    -----
+    The internal forces are the gradient of the strain energy of the Notes of
+    :mod:`bfsccylinder.bfsccylinder`:
+
+    .. math::
+
+        \{f_{int}\} = \int_A \left( \left( [B_m] + [B_{mL}] \right)^T \{N\}
+                      + [B_b]^T \{M\} \right) dA
+
+    with the stress resultants of the total membrane strains,
+
+    .. math::
+
+        \{N\} = [A] \left( [B_m] + \frac{1}{2} [B_{mL}] \right) \{u_e\}
+                + [B][B_b]\{u_e\}, \qquad
+        \{M\} = [B] \left( [B_m] + \frac{1}{2} [B_{mL}] \right) \{u_e\}
+                + [D][B_b]\{u_e\}
+
+    ``Nxx``, ``Nyy``, ``Nxy`` and ``Mxx``, ``Myy``, ``Mxy`` in the code,
+    evaluated at each integration point with the slopes ``w_x`` and ``w_y``.
+    The tangent stiffness matrix `\partial \{f_{int}\}/\partial \{u_e\}` is
+    the sum of the matrices of :func:`.update_KC0`, :func:`.update_KCNL` and
+    :func:`.update_KG` computed with the same ``u``, ``points`` and
+    ``weights``. At equilibrium `\{f_{int}\}` balances the external forces.
 
     """
     cdef double *ue

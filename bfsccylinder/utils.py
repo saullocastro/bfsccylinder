@@ -30,6 +30,15 @@ def assign_constant_ABD(bfsccylinder, prop):
         :func:`composites.utils.laminated_plate` or
         :func:`composites.utils.isotropic_plate`.
 
+    Notes
+    -----
+    The attributes of ``prop`` are the entries of the laminate stiffness
+    matrices `[A]`, `[B]` and `[D]` of the constitutive relation of the Notes
+    of :mod:`bfsccylinder.bfsccylinder`, referred to the mid-surface, with
+    `x` the axial and `y` the circumferential direction of the element. With
+    the same values at every integration point, the laminate is uniform over
+    the element.
+
     """
     bfsccylinder.A11[:] = prop.A11
     bfsccylinder.A12[:] = prop.A12

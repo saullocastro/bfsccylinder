@@ -12,7 +12,7 @@ as natural coordinates ``xi`` and ``eta`` by the functions of the modules
 import numpy as np
 
 def get_points_weights(nint):
-    """Points and weights of the Gauss-Legendre quadrature
+    r"""Points and weights of the Gauss-Legendre quadrature
 
     Gives the ``nint`` points and weights of the one-dimensional
     Gauss-Legendre quadrature on the interval ``[-1, 1]``, from tabulated
@@ -40,6 +40,29 @@ def get_points_weights(nint):
     ------
     NotImplementedError
         If ``nint`` is not one of ``2, 3, ..., 10``.
+
+    Notes
+    -----
+    The points `x_i` are the roots of the Legendre polynomial `P_{nint}` of
+    degree ``nint``, and the weights are
+
+    .. math::
+
+        w_i = \frac{2}{(1 - x_i^2) \left[ P'_{nint}(x_i) \right]^2}
+
+    such that
+
+    .. math::
+
+        \int_{-1}^{1} f(x) dx \approx \sum_{i=1}^{nint} w_i f(x_i)
+
+    is exact for the polynomials `f` of degree up to ``2*nint - 1``; the
+    weights sum to 2, the length of the interval. The product rule used by
+    the elements, with the weight ``weights[i]*weights[j]`` at
+    ``(points[i], points[j])``, is exact for the polynomials of degree up to
+    ``2*nint - 1`` in each of ``xi`` and ``eta``. The Notes of
+    :mod:`bfsccylinder.bfsccylinder` give the ``nint`` that integrates each
+    element matrix exactly.
 
     """
     points = [0]*nint
