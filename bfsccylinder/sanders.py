@@ -2,6 +2,18 @@
 BFSCCYLINDER - Single-curvature BFSC (cylinder) finite element with Sanders-type
 kinematics
 
+The module gives, for the element with Sanders-type kinematics, the names
+that the ``bfsccylinder`` namespace gives for the element with Donnell-type
+kinematics: the element class :class:`.BFSCCylinderSanders` and the functions
+``update_KC0``, ``update_KCNL``, ``update_KG``, ``update_KG_constant_stress``,
+``update_M`` and ``update_fint`` of the module
+:mod:`bfsccylinder.bfsccylinder_sanders`, with the sizes ``KC0_SPARSE_SIZE``,
+``KCNL_SPARSE_SIZE``, ``KG_SPARSE_SIZE`` and ``M_SPARSE_SIZE`` of the sparse
+arrays that one element fills, and ``DOF = 10``, ``INT`` and ``DOUBLE``,
+defined as in the ``bfsccylinder`` namespace. ``KCNL_SPARSE_SIZE`` and
+``KG_SPARSE_SIZE`` are larger than those of the element with Donnell-type
+kinematics.
+
 
 """
 import ctypes

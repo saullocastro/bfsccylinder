@@ -1,6 +1,47 @@
+"""
+Gauss-Legendre quadrature (:mod:`bfsccylinder.quadrature`)
+
+.. currentmodule:: bfsccylinder.quadrature
+
+The function :func:`.get_points_weights` gives the points and weights of the
+one-dimensional Gauss-Legendre quadrature on the interval ``[-1, 1]``, used
+as natural coordinates ``xi`` and ``eta`` by the functions of the modules
+:mod:`bfsccylinder.bfsccylinder` and :mod:`bfsccylinder.bfsccylinder_sanders`.
+
+"""
 import numpy as np
 
 def get_points_weights(nint):
+    """Points and weights of the Gauss-Legendre quadrature
+
+    Gives the ``nint`` points and weights of the one-dimensional
+    Gauss-Legendre quadrature on the interval ``[-1, 1]``, from tabulated
+    values, with the points in increasing order. The points are the natural
+    coordinates given as ``points`` to the ``update_*`` functions of the
+    elements, which use them in both directions, ``xi`` and ``eta``, for
+    ``nint*nint`` integration points; the same ``nint`` is given to the
+    constructor of the element.
+
+    Parameters
+    ----------
+    nint : int
+        Number of integration points, from ``2`` to ``10``.
+
+    Returns
+    -------
+    points : np.ndarray
+        1-D array of ``float`` of size ``nint`` with the points,
+        dimensionless.
+    weights : np.ndarray
+        1-D array of ``float`` of size ``nint`` with the weights,
+        dimensionless.
+
+    Raises
+    ------
+    NotImplementedError
+        If ``nint`` is not one of ``2, 3, ..., 10``.
+
+    """
     points = [0]*nint
     weights = [0]*nint
     if nint == 2:

@@ -4,6 +4,44 @@
 #cython: nonecheck=False
 #cython: initializedcheck=False
 #cython: infer_types=False
+"""
+Donnell-type cylinder element (:mod:`bfsccylinder.bfsccylinder`)
+
+.. currentmodule:: bfsccylinder.bfsccylinder
+
+The module provides the single-curvature BFSC element with Donnell-type
+kinematics, the class :class:`.BFSCCylinder`, and the functions
+:func:`.update_KC0`, :func:`.update_KCNL`, :func:`.update_KG`,
+:func:`.update_KG_constant_stress` and :func:`.update_M`, that write the
+contributions of one element to the linear constitutive stiffness matrix
+KC0, the nonlinear constitutive stiffness matrix KCNL, the geometric
+stiffness matrix KG and the mass matrix M in sparse row, column and value
+arrays, starting at the positions given by its ``init_k_*`` attributes, and
+:func:`.update_fint`, that adds its internal forces to a global internal
+force vector. The row, column and value arrays of the elements can be
+gathered in a sparse matrix of coordinate format, e.g. with
+``scipy.sparse.coo_matrix``, which sums the values at repeated positions.
+
+Each of the four nodes has ``DOF = 10`` degrees of freedom, in the order
+`u`, `u_{,x}`, `u_{,y}`, `v`, `v_{,x}`, `v_{,y}`, `w`, `w_{,x}`, `w_{,y}`,
+`w_{,xy}`, where `x` is the axial and `y` the circumferential coordinate,
+and `u`, `v` and `w` are the axial, circumferential and normal
+displacements. Element vectors of size ``4*DOF = 40`` have the degrees of
+freedom of nodes 1, 2, 3 and 4 in sequence.
+
+The module also defines:
+
+- ``KC0_SPARSE_SIZE = 1600``, ``KCNL_SPARSE_SIZE = 1024``,
+  ``KG_SPARSE_SIZE = 256`` and ``M_SPARSE_SIZE = 544``: number of entries
+  that one element writes in the row, column and value arrays of KC0,
+  KCNL, KG and M. For ``n`` elements the arrays need ``n`` times these
+  sizes;
+- ``DOUBLE = np.float64``: NumPy type of the arrays of values.
+
+The module :mod:`bfsccylinder.bfsccylinder_sanders` has the same contents
+for the element with Sanders-type kinematics.
+
+"""
 import numpy as np
 
 
@@ -32,6 +70,89 @@ cdef class BFSCCylinder(object):
       |       |
       |_______|
      1         2
+
+    The constructor sets ``n1, n2, n3, n4`` and ``c1, c2, c3, c4`` to ``-1``,
+    ``lex``, ``ley``, ``rho``, ``h`` and ``R`` to zero, and allocates every
+    array filled with zeros; the ``init_k_*`` positions are zero. Before the
+    functions of this module are called with the element, the caller sets
+    ``c1, c2, c3, c4``, the ``init_k_*`` positions of the matrices being
+    computed, ``lex``, ``ley`` and ``R``, the stiffnesses ``A11, ..., D66``,
+    e.g. with :func:`bfsccylinder.utils.assign_constant_ABD`, and, for
+    :func:`.update_M`, ``rho`` and ``h``.
+
+    Parameters
+    ----------
+    nint : int
+        Number of integration points in each direction: the size of the
+        ``points`` and ``weights`` arrays later given to the functions of
+        this module, which read the stiffness arrays ``A11, ..., D66`` at
+        the indices ``[i, j]`` from ``0`` to ``nint - 1``.
+
+    Attributes
+    ----------
+    n1, n2, n3, n4 : int
+        Node identification numbers. Not used by the functions of this
+        module.
+    c1, c2, c3, c4 : int
+        Position of the first degree of freedom of nodes 1, 2, 3 and 4 in
+        the global vectors and matrices. The ``DOF`` degrees of freedom of
+        node 1 are at the positions ``c1`` to ``c1 + 9``, and likewise for
+        the other nodes, e.g. ``c1 = DOF*i`` for the node of index ``i``.
+    init_k_KC0, init_k_KCNL, init_k_KG, init_k_M : int
+        Position in the sparse arrays from which :func:`.update_KC0`,
+        :func:`.update_KCNL`, :func:`.update_KG` or
+        :func:`.update_KG_constant_stress`, and :func:`.update_M` write the
+        entries of the element, e.g. the index of the element times
+        ``KC0_SPARSE_SIZE``, ``KCNL_SPARSE_SIZE``, ``KG_SPARSE_SIZE`` and
+        ``M_SPARSE_SIZE``.
+    lex, ley : double
+        Length of the element along the axial direction `x` and along the
+        circumferential direction `y`, dimension of length.
+    rho : double
+        Density, mass per unit volume. Used only by :func:`.update_M`.
+    h : double
+        Thickness, dimension of length. Used only by :func:`.update_M`.
+    R : double
+        Radius of the cylinder, dimension of length. Terms of KC0, KCNL and
+        KG, of the internal forces and of ``Bm`` are divided by ``R``, so it
+        must be set to a nonzero value before these are computed. Not used
+        by :func:`.update_KG_constant_stress` and :func:`.update_M`.
+    A11, A12, A16, A22, A26, A66 : 2-D array
+        Membrane stiffnesses, force per unit length. Shape ``(nint,
+        nint)``, the entry ``[i, j]`` being used at the integration point
+        ``xi = points[i]``, ``eta = points[j]``.
+    B11, B12, B16, B22, B26, B66 : 2-D array
+        Membrane-bending coupling stiffnesses, dimension of force. Same
+        shape and use as ``A11``.
+    D11, D12, D16, D22, D26, D66 : 2-D array
+        Bending stiffnesses, force times length. Same shape and use as
+        ``A11``.
+    Bm : 2-D array
+        Shape ``(3, 40)``, rows giving the linear membrane strains at the
+        last point given to :meth:`.update_Bm`. Dimension of one over the
+        dimension of each degree of freedom.
+    Bb : 2-D array
+        Shape ``(3, 40)``, rows giving the curvatures at the last point
+        given to :meth:`.update_Bb`. Dimension of one over length times one
+        over the dimension of each degree of freedom.
+    Su, Sv, Sw : 1-D array
+        Size ``40``, rows giving the displacements `u`, `v` and `w` at the
+        last point given to :meth:`.update_Su`, :meth:`.update_Sv` and
+        :meth:`.update_Sw`.
+    Su_x, Sv_x, Sw_x : 1-D array
+        Size ``40``, rows giving `u_{,x}`, `v_{,x}` and `w_{,x}` at the last
+        point given to :meth:`.update_Su_x`, :meth:`.update_Sv_x` and
+        :meth:`.update_Sw_x`.
+    Su_y, Sv_y, Sw_y : 1-D array
+        Size ``40``, rows giving `u_{,y}`, `v_{,y}` and `w_{,y}` at the last
+        point given to :meth:`.update_Su_y`, :meth:`.update_Sv_y` and
+        :meth:`.update_Sw_y`.
+    u : 1-D array
+        Size ``40``, element displacement vector, copied from the global
+        displacement vector by :func:`.update_KCNL`, :func:`.update_KG` and
+        :func:`.update_fint`. Dimension of length for `u`, `v`, `w`,
+        dimensionless for the first derivatives and of one over length for
+        `w_{,xy}`.
 
     """
     cdef public int n1, n2, n3, n4
@@ -103,6 +224,24 @@ cdef class BFSCCylinder(object):
         self.u = np.zeros(num_nodes*DOF, dtype=DOUBLE)
 
     cpdef void update_Bm(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Bm`` at a natural coordinate point
+
+        The rows of ``Bm`` are computed at ``xi``, ``eta`` from ``lex``,
+        ``ley`` and ``R``. Their products with an element displacement
+        vector, e.g. ``u``, give at that point the linear membrane strains
+        `\varepsilon_{xx}`, `\varepsilon_{yy}` and `\gamma_{xy}` for the
+        rows ``0``, ``1`` and ``2``, dimensionless. Only the entries that
+        are not identically zero are written, the other entries keep the
+        zeros of the constructor. The functions of this module do not read
+        ``Bm``.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley, R
         with nogil:
             lex = self.lex
@@ -174,6 +313,24 @@ cdef class BFSCCylinder(object):
             self.Bm[2, 35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Bb(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Bb`` at a natural coordinate point
+
+        The rows of ``Bb`` are computed at ``xi``, ``eta`` from ``lex`` and
+        ``ley``. Their products with an element displacement vector, e.g.
+        ``u``, give at that point the curvatures `\kappa_{xx}`, `\kappa_{yy}`
+        and `\kappa_{xy}` for the rows ``0``, ``1`` and ``2``, dimension of one
+        over length. Only the entries at the degrees of freedom `w`, `w_{,x}`,
+        `w_{,y}`, `w_{,xy}` of the nodes are written, the other entries keep
+        the zeros of the constructor. The functions of this module do not read
+        ``Bb``.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -228,6 +385,22 @@ cdef class BFSCCylinder(object):
             self.Bb[2, 39] = -8*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
 
     cpdef void update_Su(BFSCCylinder self, double xi, double eta):
+        """Update ``Su`` at a natural coordinate point
+
+        ``Su`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        displacement `u` at that point, dimension of length. Only the entries
+        at the degrees of freedom `u`, `u_{,x}`, `u_{,y}` of the nodes, the
+        positions ``0, 1, 2`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -246,6 +419,22 @@ cdef class BFSCCylinder(object):
             self.Su[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Su_x(BFSCCylinder self, double xi, double eta):
+        """Update ``Su_x`` at a natural coordinate point
+
+        ``Su_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `u_{,x}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `u`, `u_{,x}`, `u_{,y}` of the nodes, the
+        positions ``0, 1, 2`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -264,6 +453,22 @@ cdef class BFSCCylinder(object):
             self.Su_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Su_y(BFSCCylinder self, double xi, double eta):
+        """Update ``Su_y`` at a natural coordinate point
+
+        ``Su_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `u_{,y}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `u`, `u_{,x}`, `u_{,y}` of the nodes, the
+        positions ``0, 1, 2`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -282,6 +487,22 @@ cdef class BFSCCylinder(object):
             self.Su_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Sv(BFSCCylinder self, double xi, double eta):
+        """Update ``Sv`` at a natural coordinate point
+
+        ``Sv`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        displacement `v` at that point, dimension of length. Only the entries
+        at the degrees of freedom `v`, `v_{,x}`, `v_{,y}` of the nodes, the
+        positions ``3, 4, 5`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -300,6 +521,22 @@ cdef class BFSCCylinder(object):
             self.Sv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Sv_x(BFSCCylinder self, double xi, double eta):
+        """Update ``Sv_x`` at a natural coordinate point
+
+        ``Sv_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `v_{,x}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `v`, `v_{,x}`, `v_{,y}` of the nodes, the
+        positions ``3, 4, 5`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -318,6 +555,22 @@ cdef class BFSCCylinder(object):
             self.Sv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Sv_y(BFSCCylinder self, double xi, double eta):
+        """Update ``Sv_y`` at a natural coordinate point
+
+        ``Sv_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `v_{,y}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `v`, `v_{,x}`, `v_{,y}` of the nodes, the
+        positions ``3, 4, 5`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -336,6 +589,23 @@ cdef class BFSCCylinder(object):
             self.Sv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Sw(BFSCCylinder self, double xi, double eta):
+        """Update ``Sw`` at a natural coordinate point
+
+        ``Sw`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        displacement `w` at that point, dimension of length. Only the entries
+        at the degrees of freedom `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}` of the
+        nodes, the positions ``6, 7, 8, 9`` plus ``0``, ``10``, ``20`` and
+        ``30``, are written, the other entries keep the zeros of the
+        constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -358,6 +628,22 @@ cdef class BFSCCylinder(object):
             self.Sw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
 
     cpdef void update_Sw_x(BFSCCylinder self, double xi, double eta):
+        """Update ``Sw_x`` at a natural coordinate point
+
+        ``Sw_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `w_{,x}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}` of the nodes,
+        the positions ``6, 7, 8, 9`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -380,6 +666,22 @@ cdef class BFSCCylinder(object):
             self.Sw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Sw_y(BFSCCylinder self, double xi, double eta):
+        """Update ``Sw_y`` at a natural coordinate point
+
+        ``Sw_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `w_{,y}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}` of the nodes,
+        the positions ``6, 7, 8, 9`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -411,20 +713,47 @@ cpdef void update_KC0(BFSCCylinder shell,
                       ):
     """Update sparse vectors for linear constitutive stiffness matrix KC0
 
-    Properties
+    The element matrix, with ``40*40`` entries, is integrated with the
+    integration points and weights given by ``points`` and ``weights``,
+    from ``lex``, ``ley``, ``R`` and the stiffnesses ``A11, ..., D66`` of
+    ``shell``. All its entries are written: the global row and column
+    indices to ``KC0r`` and ``KC0c``, and the values added to ``KC0v``, at
+    the positions ``shell.init_k_KC0`` to ``shell.init_k_KC0 +
+    KC0_SPARSE_SIZE - 1``. Before this function is called, ``c1, c2, c3,
+    c4``, ``init_k_KC0``, ``lex``, ``ley``, ``R`` and the stiffnesses of
+    ``shell`` must be set.
+
+    Parameters
     ----------
     shell : `.BFSCCylinder` object
         The cylindrical shell element being added to KC0
     points : np.array
         Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
     weights : np.array
         Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
     KC0r : np.array
         Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KC0 + KC0_SPARSE_SIZE``.
     KC0c : np.array
         Array to store column positions of sparse values
+        Same type and size as ``KC0r``.
     KC0v : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KC0r``. The values are
+        added to the existing ones.
+        Dimension of force per unit length between the displacements `u`, `v`,
+        `w`, multiplied by a length for each of the row and the column that is
+        a first derivative, and by a length squared for each that is `w_{,xy}`.
+
+    See Also
+    --------
+    update_KCNL, update_KG
 
     """
     cdef int c1, c2, c3, c4, nint, i, j, k
@@ -8603,6 +8932,19 @@ cpdef void update_KCNL(double [::1] u,
                        ):
     """Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
 
+    The element matrix is integrated with the integration points and weights
+    given by ``points`` and ``weights``, from ``lex``, ``ley``, ``R``, the
+    stiffnesses ``A11, ..., B66`` of ``shell`` (the ``D`` stiffnesses are not
+    used) and the displacements of the nodes of the element, copied from ``u``
+    to ``shell.u``. The entries for which both the row and the column
+    correspond to the in-plane degrees of freedom `u`, `u_{,x}`, `u_{,y}`, `v`,
+    `v_{,x}`, `v_{,y}` are not written. The global row and column indices of
+    the other entries are written to ``KCNLr`` and ``KCNLc``, and their values
+    added to ``KCNLv``, at the positions ``shell.init_k_KCNL`` to
+    ``shell.init_k_KCNL + KCNL_SPARSE_SIZE - 1``. Before this function is
+    called, ``c1, c2, c3, c4``, ``init_k_KCNL``, ``lex``, ``ley``, ``R`` and
+    the stiffnesses of ``shell`` must be set.
+
     Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL
 
     The first three groups are the constitutive terms coupling the linear and
@@ -8619,22 +8961,43 @@ cpdef void update_KCNL(double [::1] u,
     is the exact Jacobian of the vector assembled by update_fint, so a
     Newton-Raphson built on these three converges quadratically.
 
-    Properties
+    Parameters
     ----------
     u : np.array
         Global displacement vector
-    shell : `.BFSCylinder` object
+        1-D array of ``DOUBLE`` with ``DOF`` entries per node of the model, in
+        the order of the degrees of freedom of a node given in the module
+        documentation. The entries of the nodes of ``shell`` are read at the
+        positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
+        ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
+        for the first derivatives and of one over length for `w_{,xy}`.
+    shell : `.BFSCCylinder` object
         The shell element being added to K
     points : np.array
         Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
     weights : np.array
         Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
     KCNLr : np.array
         Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KCNL + KCNL_SPARSE_SIZE``.
     KCNLc : np.array
         Array to store column positions of sparse values
+        Same type and size as ``KCNLr``.
     KCNLv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KCNLr``. The values are
+        added to the existing ones, with the dimensions given for ``KC0v``
+        in :func:`.update_KC0`.
+
+    See Also
+    --------
+    update_KC0, update_KG, update_fint
 
     """
     cdef double *ue
@@ -14025,6 +14388,19 @@ cpdef void update_KG(double [::1] u,
                      ):
     """Update sparse vectors for geometric stiffness matrix KG
 
+    The element matrix is integrated with the integration points and weights
+    given by ``points`` and ``weights``, from ``lex``, ``ley`` and ``R`` of
+    ``shell``. At each integration point the membrane stress resultants
+    ``Nxx``, ``Nyy`` and ``Nxy`` are computed from the stiffnesses
+    ``A11, ..., B66`` of ``shell`` and from the displacements of the nodes of
+    the element, copied from ``u`` to ``shell.u``. Only the entries for which
+    both the row and the column correspond to the degrees of freedom `w`,
+    `w_{,x}`, `w_{,y}`, `w_{,xy}` are written: the global row and column
+    indices to ``KGr`` and ``KGc``, and the values added to ``KGv``, at the
+    positions ``shell.init_k_KG`` to ``shell.init_k_KG + KG_SPARSE_SIZE - 1``.
+    Before this function is called, ``c1, c2, c3, c4``, ``init_k_KG``, ``lex``,
+    ``ley``, ``R`` and the stiffnesses of ``shell`` must be set.
+
     Built from the membrane stress of the LINEAR strain alone, A*Bm*u +
     B*Bb*u, which keeps KG homogeneous of degree one in u. A linear buckling
     analysis needs exactly that, so that lambda*KG represents the stress
@@ -14034,22 +14410,43 @@ cpdef void update_KG(double [::1] u,
     here; update_KCNL carries it, so that KC0 + KCNL + KG is still the
     consistent tangent of update_fint.
 
-    Properties
+    Parameters
     ----------
     u : np.array
         Global displacement vector
+        1-D array of ``DOUBLE`` with ``DOF`` entries per node of the model, in
+        the order of the degrees of freedom of a node given in the module
+        documentation. The entries of the nodes of ``shell`` are read at the
+        positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
+        ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
+        for the first derivatives and of one over length for `w_{,xy}`.
     shell : `.BFSCCylinder` object
         The cylindrical shell element being added to KG
     points : np.array
         Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
     weights : np.array
         Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
     KGr : np.array
-       Array to store row positions of sparse values
+        Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KG + KG_SPARSE_SIZE``.
     KGc : np.array
-       Array to store column positions of sparse values
+        Array to store column positions of sparse values
+        Same type and size as ``KGr``.
     KGv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KGr``. The values are added
+        to the existing ones, with the dimensions given for ``KC0v`` in
+        :func:`.update_KC0`.
+
+    See Also
+    --------
+    update_KG_constant_stress, update_KCNL
 
     """
     cdef double *ue
@@ -15551,22 +15948,49 @@ cpdef void update_KG_constant_stress(BFSCCylinder shell,
         ):
     """Update sparse vectors for geometric stiffness matrix KG
 
-    Properties
+    The same matrix as :func:`.update_KG`, with the membrane stress resultants
+    ``Nxx``, ``Nyy`` and ``Nxy`` given, constant over the element, instead of
+    computed from displacements. It is integrated with the integration points
+    and weights given by ``points`` and ``weights``, from ``lex`` and ``ley``
+    of ``shell``; the stiffnesses and ``shell.u`` are not used. The entries are
+    those of :func:`.update_KG`: the global row and column indices are written
+    to ``KGr`` and ``KGc``, and the values added to ``KGv``, at the positions
+    ``shell.init_k_KG`` to ``shell.init_k_KG + KG_SPARSE_SIZE - 1``. Before
+    this function is called, ``c1, c2, c3, c4``, ``init_k_KG``, ``lex`` and
+    ``ley`` of ``shell`` must be set.
+
+    Parameters
     ----------
     shell : `.BFSCCylinder` object
         The cylindrical shell element being added to KG
     points : np.array
         Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
     weights : np.array
         Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
     KGr : np.array
-       Array to store row positions of sparse values
+        Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KG + KG_SPARSE_SIZE``.
     KGc : np.array
-       Array to store column positions of sparse values
+        Array to store column positions of sparse values
+        Same type and size as ``KGr``.
     KGv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KGr``. The values are added
+        to the existing ones, with the dimensions given for ``KC0v`` in
+        :func:`.update_KC0`.
     Nxx, Nyy, Nxy : float
         Constant membrane stress state
+        Force per unit length, used at every integration point.
+
+    See Also
+    --------
+    update_KG
 
     """
     cdef double *ue
@@ -16919,16 +17343,35 @@ cpdef void update_M(BFSCCylinder shell,
                     ):
     """Update sparse vectors for mass matrix M
 
-    Properties
+    The element mass matrix is computed from ``lex``, ``ley``, ``rho`` and
+    ``h`` of ``shell`` with closed-form expressions, without integration
+    points; ``R`` and the stiffnesses are not used. Only the entries that
+    couple the degrees of freedom `u`, `u_{,x}`, `u_{,y}` with themselves, `v`,
+    `v_{,x}`, `v_{,y}` with themselves, and `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}`
+    with themselves are written: the global row and column indices to ``Mr``
+    and ``Mc``, and the values added to ``Mv``, at the positions
+    ``shell.init_k_M`` to ``shell.init_k_M + M_SPARSE_SIZE - 1``. Before this
+    function is called, ``c1, c2, c3, c4``, ``init_k_M``, ``lex``, ``ley``,
+    ``rho`` and ``h`` of ``shell`` must be set.
+
+    Parameters
     ----------
     shell : `.BFSCCylinder` object
         The cylindrical shell element being added to M
     Mr : np.array
         Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_M + M_SPARSE_SIZE``.
     Mc : np.array
         Array to store column positions of sparse values
+        Same type and size as ``Mr``.
     Mv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``Mr``. The values are added
+        to the existing ones.
+        Dimension of mass between the displacements `u`, `v`, `w`, multiplied
+        by a length for each of the row and the column that is a first
+        derivative, and by a length squared for each that is `w_{,xy}`.
 
     """
     cdef int c1, c2, c3, c4, k
@@ -19677,18 +20120,47 @@ cpdef void update_fint(double [::1] u,
                        ):
     """Update global internal force vector
 
-    Properties
+    The internal forces of the element are integrated with the integration
+    points and weights given by ``points`` and ``weights``, from ``lex``,
+    ``ley``, ``R``, the stiffnesses ``A11, ..., D66`` of ``shell`` and the
+    displacements of the nodes of the element, copied from ``u`` to
+    ``shell.u``, including the terms nonlinear in the displacements. They
+    are added to ``fint`` at the positions ``c1+i``, ``c2+i``, ``c3+i`` and
+    ``c4+i``, for ``i`` from ``0`` to ``9``. Before this function is called,
+    ``c1, c2, c3, c4``, ``lex``, ``ley``, ``R`` and the stiffnesses of
+    ``shell`` must be set.
+
+    Parameters
     ----------
     u : np.array
         Global displacement vector
-    shell : `.BFSCylinder` object
+        1-D array of ``DOUBLE`` with ``DOF`` entries per node of the model, in
+        the order of the degrees of freedom of a node given in the module
+        documentation. The entries of the nodes of ``shell`` are read at the
+        positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
+        ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
+        for the first derivatives and of one over length for `w_{,xy}`.
+    shell : `.BFSCCylinder` object
         The shell element being added to fint
     points : np.array
         Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
     weights : np.array
         Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
     fint : np.array
         Global internal force array
+        1-D array of ``DOUBLE`` of the same size as ``u``. The values are
+        added to the existing ones. Dimension of force for `u`, `v`, `w`,
+        multiplied by a length for the first derivatives and by a length
+        squared for `w_{,xy}`.
+
+    See Also
+    --------
+    update_KCNL
 
     """
     cdef double *ue
