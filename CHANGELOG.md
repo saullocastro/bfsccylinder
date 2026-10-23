@@ -8,6 +8,10 @@ The dates of the released versions are those of their tagged commits.
 
 - Python 3.9 is no longer supported, it reached its end of life in October 2025: Python 3.10 or newer is required, and the tests and wheels cover Python 3.10 to 3.14.
 
+### Packaging
+
+- Packaging: the metadata, with the version, in `pyproject.toml` (PEP 621), built with `setuptools>=77` and Cython; `setup.py` keeps only the Cython extensions with the compiler flags and writes `bfsccylinder/version.py` from `pyproject.toml`. NumPy and wheel are no longer build requirements, and README.md and LICENSE are no longer installed in the root of the Python environment (`data_files`); the license is in the wheel metadata.
+
 ### New: follower pressure
 
 - `update_fext_follower` and `update_KCfollower`, for both kinematics, with

@@ -18,8 +18,9 @@ The two elements are written in Cython, in the extension modules
 ``bfsccylinder.bfsccylinder`` and ``bfsccylinder.bfsccylinder_sanders``,
 translated to C++ and compiled when the package is built, such that installing from the source code requires a C++
 compiler, e.g. Microsoft Visual C++ on Windows, GCC on Linux or Clang on
-macOS. Cython, NumPy, setuptools and wheel are the build requirements of
-``pyproject.toml``, installed by ``pip`` in an isolated environment::
+macOS. The package metadata, with the version, and the build requirements,
+setuptools and Cython, are in ``pyproject.toml``; ``pip`` installs the build
+requirements in an isolated environment::
 
     python -m pip install .
 
@@ -28,7 +29,8 @@ are listed in ``requirements.txt``::
 
     python -m pip install -r requirements.txt
 
-To build in place, for running the tests from the source tree::
+To build in place, for running the tests from the source tree, which also
+writes ``bfsccylinder/version.py`` with the version of ``pyproject.toml``::
 
     python setup.py build_ext --inplace
 
@@ -42,8 +44,8 @@ static analysis of the tests and of the examples and the linear buckling
 problems of ``tests/test_follower_pressure_validation.py``, see
 :doc:`analyses`. It is a requirement of the tests and of the examples of
 the documentation only: bfsccylinder does not import it, and it is not
-installed with bfsccylinder, not being in ``install_requires`` of
-``setup.py``. The tests require a version of structsolve newer than 0.8.0,
+installed with bfsccylinder, not being in the ``dependencies`` of
+``pyproject.toml``. The tests require a version of structsolve newer than 0.8.0,
 with Crisfield's convergence criterion as default.
 
 ``setup.py`` compiles with ``/O2`` on Windows and with ``-O3
