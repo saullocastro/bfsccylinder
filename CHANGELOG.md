@@ -4,6 +4,10 @@ The dates of the released versions are those of their tagged commits.
 
 ## Unreleased
 
+### Python versions
+
+- Python 3.9 is no longer supported, it reached its end of life in October 2025: Python 3.10 or newer is required, and the tests and wheels cover Python 3.10 to 3.14.
+
 ### New: follower pressure
 
 - `update_fext_follower` and `update_KCfollower`, for both kinematics, with

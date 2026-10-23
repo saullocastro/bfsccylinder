@@ -87,7 +87,6 @@ Topic :: Software Development :: Libraries :: Python Modules
 Operating System :: Microsoft :: Windows
 Operating System :: Unix
 Operating System :: POSIX :: BSD
-Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
 Programming Language :: Python :: 3.12
@@ -220,6 +219,7 @@ s = setup(
     data_files = data_files,
     classifiers = [_f for _f in CLASSIFIERS.split('\n') if _f],
     install_requires = install_requires,
+    python_requires = '>=3.10',
     ext_modules = ext_modules,
     include_package_data = True,
     packages = find_packages(),
