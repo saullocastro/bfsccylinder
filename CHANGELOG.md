@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## Unreleased
+## 0.7.0 (2026-10-23)
 
 ### Python versions
 
