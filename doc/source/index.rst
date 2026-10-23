@@ -111,7 +111,7 @@ License
 Citing this library
 -------------------
 
-Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.6.1). https://github.com/saullocastro/bfsccylinder.
+Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.0). https://github.com/saullocastro/bfsccylinder.
 
 In BibTeX:
 
@@ -121,7 +121,7 @@ In BibTeX:
       author  = {Castro, Saullo G. P.},
       title   = {Implementation of the BFSC cylinder finite element},
       year    = {2026},
-      version = {0.6.1},
+      version = {0.7.0},
       url     = {https://github.com/saullocastro/bfsccylinder}
     }
 

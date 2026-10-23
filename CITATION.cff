@@ -16,9 +16,13 @@ abstract: >-
 
   * The internal force vector and the tangent stiffness matrix, for
     geometrically nonlinear static analyses
+
+  * The force vector and the unsymmetric load stiffness matrix of a
+    follower pressure, normal to the deformed mid-surface, for nonlinear
+    static and linear buckling analyses
 message: >-
   Please, cite this software using:
-  Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.6.1). https://github.com/saullocastro/bfsccylinder.
+  Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.0). https://github.com/saullocastro/bfsccylinder.
 authors:
   - family-names: Castro
     given-names: Saullo G. P.
@@ -36,5 +40,5 @@ keywords:
   - buckling
   - vibration
   - structural dynamics
-version: 0.6.1
-date-released: '2026-09-25'
+version: 0.7.0
+date-released: '2026-10-23'
