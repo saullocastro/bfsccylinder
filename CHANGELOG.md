@@ -64,7 +64,7 @@ The dates of the released versions are those of their tagged commits.
 
 ### Tests
 
-- `structsolve>=0.8.5`, with its module `structsolve.convergence`, is a
+- `structsolve>=0.9.0`, with its module `structsolve.convergence`, is a
   requirement of the tests, listed in
   `requirements.txt` and not in `install_requires`.
 - `tests/test_nonlinear_axial_compression.py` solves the non-linear static

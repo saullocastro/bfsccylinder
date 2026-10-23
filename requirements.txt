@@ -3,6 +3,6 @@ numpy
 scipy
 cython
 composites
-structsolve>=0.8.5
+structsolve>=0.9.0
 pytest
 pytest-cov
