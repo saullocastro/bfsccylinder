@@ -233,7 +233,7 @@ def test_linear_buckling(plot=False):
         Kuuinv = LinearOperator(matvec=matvec, shape=(Nu, Nu))
 
         maxiter = 1000
-        Xu = np.random.rand(Nu, num_eigvals) - 0.5
+        Xu = np.random.default_rng(0).random((Nu, num_eigvals)) - 0.5
         Xu /= np.linalg.norm(Xu, axis=0)
 
         #NOTE default tolerance is too large

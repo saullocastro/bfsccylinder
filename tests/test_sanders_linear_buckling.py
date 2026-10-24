@@ -186,7 +186,7 @@ def test_linear_buckling(plot=False):
             return PREC2.solve(x)
         Ainv = LinearOperator(matvec=matvec, shape=(Nu, Nu))
         maxiter = 1000
-        X = np.random.rand(Nu, num_eigvals) - 0.5
+        X = np.random.default_rng(0).random((Nu, num_eigvals)) - 0.5
         X /= np.linalg.norm(X, axis=0)
         #NOTE default tolerance is too large
         tol = 1e-5
