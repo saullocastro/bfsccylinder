@@ -29,6 +29,12 @@ what the derivation scripts already emit:
              sparse entries
 ``stress``   the ``Nxx = ...`` .. ``Mxy = ...`` lines of update_fint
 ``fint``     the ``fint[i + c1] += ...`` lines
+``point``    the ``u_x = ...`` .. ``w_y = ...`` lines of the displacement
+             gradients at an integration point, in update_fext_follower and
+             update_KCfollower
+``area``     the ``ax = ...``, ``ay = ...``, ``az = ...`` lines of the area
+             vector of update_fext_follower
+``fext``     the ``fext[i + c1] += ...`` lines of update_fext_follower
 """
 import argparse
 import io
@@ -46,13 +52,20 @@ TARGETS = {
     'sanders': ('sanders', os.path.join(ROOT, 'bfsccylinder', 'bfsccylinder_sanders.pyx')),
 }
 
-# .pyx function -> derivation script that writes its blocks
+# .pyx function -> derivation script that writes its blocks, the tag of the
+# sparse arrays (None for a vector) and the kinds of blocks besides the
+# operator assignments
 SOURCES = [
-    ('update_KC0', 'derive_bfsccylinder_KC0_sparse.py', 'KC0'),
-    ('update_KCNL', 'derive_bfsccylinder_KC0L_KCL0_KCLL_sparse.py', 'KCNL'),
-    ('update_KG', 'derive_bfsccylinder_KG_sparse.py', 'KG'),
-    ('update_M', 'derive_bfsccylinder_M_sparse.py', 'M'),
-    ('update_fint', 'derive_bfsccylinder_fint.py', None),
+    ('update_KC0', 'derive_bfsccylinder_KC0_sparse.py', 'KC0', ('matrix',)),
+    ('update_KCNL', 'derive_bfsccylinder_KC0L_KCL0_KCLL_sparse.py', 'KCNL',
+     ('matrix',)),
+    ('update_KG', 'derive_bfsccylinder_KG_sparse.py', 'KG', ('matrix',)),
+    ('update_M', 'derive_bfsccylinder_M_sparse.py', 'M', ('matrix',)),
+    ('update_fint', 'derive_bfsccylinder_fint.py', None, ('stress', 'fint')),
+    ('update_fext_follower', 'derive_bfsccylinder_follower.py', None,
+     ('point', 'area', 'fext')),
+    ('update_KCfollower', 'derive_bfsccylinder_follower.py', 'KCfollower',
+     ('point', 'matrix')),
 ]
 
 OPERATORS = ('Bm', 'BmL', 'Bb', 'G', 'Nu', 'Nv', 'Nw', 'Su', 'Sv', 'Sw')
@@ -60,6 +73,8 @@ _assign = re.compile(r'^(%s)(\d)_(\d\d) = ' % '|'.join(OPERATORS))
 _stress = re.compile(r'^(Nxx|Nyy|Nxy|Mxx|Myy|Mxy) = ')
 _size = re.compile(r'^(\w+)_SPARSE_SIZE (\d+)$')
 _size_decl = re.compile(r'^(\w+)_SPARSE_SIZE = (\d+)$')
+_point = re.compile(r'^(u_x|u_y|v_x|v_y|v|w|w_x|w_y) = ')
+_area = re.compile(r'^(ax|ay|az) = ')
 
 
 class Drift(Exception):
@@ -70,13 +85,23 @@ class Drift(Exception):
     """
 
 
+_derivations = {}
+
+
 def run_derivation(path):
-    """Run a derivation script and return its stdout as a list of lines."""
+    """Run a derivation script and return its stdout as a list of lines.
+
+    The output is kept, since one script can write the blocks of more than
+    one function.
+    """
+    if path in _derivations:
+        return _derivations[path]
     out = subprocess.run([sys.executable, path], capture_output=True,
                          text=True, cwd=ROOT)
     if out.returncode != 0:
         raise RuntimeError('%s failed:\n%s' % (path, out.stderr[-4000:]))
-    return out.stdout.replace('\r\n', '\n').split('\n')
+    _derivations[path] = out.stdout.replace('\r\n', '\n').split('\n')
+    return _derivations[path]
 
 
 def function_span(lines, name):
@@ -137,8 +162,17 @@ def stress_block(lines, lo, hi):
     return idx[0], idx[-1] + 1
 
 
-def fint_block(lines, lo, hi):
-    idx = [i for i in range(lo, hi) if lines[i].strip().startswith('fint[')]
+def fint_block(lines, lo, hi, name='fint'):
+    idx = [i for i in range(lo, hi)
+           if lines[i].strip().startswith(name + '[')]
+    if not idx:
+        return None
+    return idx[0], idx[-1] + 1
+
+
+def pattern_block(lines, lo, hi, pat):
+    """Span from the first to the last line that matches ``pat``."""
+    idx = [i for i in range(lo, hi) if pat.match(lines[i].strip())]
     if not idx:
         return None
     return idx[0], idx[-1] + 1
@@ -179,8 +213,13 @@ def gen_stress(gen):
             if k in out]
 
 
-def gen_fint(gen):
-    return [ln.strip() for ln in gen if ln.strip().startswith('fint[')]
+def gen_fint(gen, name='fint'):
+    return [ln.strip() for ln in gen if ln.strip().startswith(name + '[')]
+
+
+def gen_pattern(gen, pat):
+    """Generated lines that match ``pat``, in order."""
+    return [ln.strip() for ln in gen if pat.match(ln.strip())]
 
 
 def gen_sparse_size(gen, tag):
@@ -276,7 +315,7 @@ def plan(kin, verbose=False):
                         % (kin, fname, what, script, len(want)))
         return want and have
 
-    for fname, script, tag in SOURCES:
+    for fname, script, tag, kinds in SOURCES:
         path = os.path.join(HERE, sub, script)
         if not os.path.exists(path):
             raise Drift('%s: derivation script is missing: %s' % (kin, path))
@@ -325,7 +364,7 @@ def plan(kin, verbose=False):
             edits.append(Edit('%s/%s cdef' % (kin, fname), at, at,
                               [dpad + 'cdef double ' + ', '.join(missing)]))
 
-        if tag is not None:
+        if 'matrix' in kinds:
             want = gen_values(gen, tag)
             have = value_block(lines, lo, hi, tag)
             if require(want, have, 'values', fname):
@@ -354,7 +393,7 @@ def plan(kin, verbose=False):
                                 'no such constant' % (kin, script, tag, pyx_path))
                 edits.append(Edit('%s/%s_SPARSE_SIZE' % (kin, tag), at, at + 1,
                                   ['%s_SPARSE_SIZE = %d' % (tag, size)]))
-        else:
+        if 'stress' in kinds:
             want = gen_stress(gen)
             have = stress_block(lines, lo, hi)
             if require(want, have, 'stress resultant', fname):
@@ -362,12 +401,28 @@ def plan(kin, verbose=False):
                 pad = indent_of(lines[a])
                 edits.append(Edit('%s/%s stress' % (kin, fname), a, b,
                                   [pad + w for w in want]))
-            want = gen_fint(gen)
-            have = fint_block(lines, lo, hi)
-            if require(want, have, 'fint', fname):
+        for kind, pat in (('point', _point), ('area', _area)):
+            if kind not in kinds:
+                continue
+            want = gen_pattern(gen, pat)
+            if not want:
+                raise Drift('%s: %s writes no %s lines for %s'
+                            % (kin, script, kind, fname))
+            have = pattern_block(lines, lo, hi, pat)
+            if require(want, have, kind, fname):
                 a, b = have
                 pad = indent_of(lines[a])
-                edits.append(Edit('%s/%s fint' % (kin, fname), a, b,
+                edits.append(Edit('%s/%s %s' % (kin, fname, kind), a, b,
+                                  [pad + w for w in want]))
+        for name in ('fint', 'fext'):
+            if name not in kinds:
+                continue
+            want = gen_fint(gen, name)
+            have = fint_block(lines, lo, hi, name)
+            if require(want, have, name, fname):
+                a, b = have
+                pad = indent_of(lines[a])
+                edits.append(Edit('%s/%s %s' % (kin, fname, name), a, b,
                                   [pad + w for w in want]))
 
     for e in edits:

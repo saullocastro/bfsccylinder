@@ -4,6 +4,344 @@
 #cython: nonecheck=False
 #cython: initializedcheck=False
 #cython: infer_types=False
+r"""
+Donnell-type cylinder element (:mod:`bfsccylinder.bfsccylinder`)
+
+.. currentmodule:: bfsccylinder.bfsccylinder
+
+The module provides the single-curvature BFSC element with Donnell-type
+kinematics, the class :class:`.BFSCCylinder`, and the functions
+:func:`.update_KC0`, :func:`.update_KCNL`, :func:`.update_KG`,
+:func:`.update_KG_constant_stress` and :func:`.update_M`, that write the
+contributions of one element to the linear constitutive stiffness matrix
+KC0, the nonlinear constitutive stiffness matrix KCNL, the geometric
+stiffness matrix KG and the mass matrix M in sparse row, column and value
+arrays, starting at the positions given by its ``init_k_*`` attributes, and
+:func:`.update_fint`, that adds its internal forces to a global internal
+force vector. For a pressure that follows the deformation of the shell,
+:func:`.update_fext_follower` adds the force vector of one element to a
+global external force vector and :func:`.update_KCfollower` writes its load
+stiffness matrix KCfollower in sparse arrays, see the Notes. The row, column
+and value arrays of the elements can be gathered in a sparse matrix of
+coordinate format, e.g. with ``scipy.sparse.coo_matrix``, which sums the
+values at repeated positions.
+
+Each of the four nodes has ``DOF = 10`` degrees of freedom, in the order
+`u`, `u_{,x}`, `u_{,y}`, `v`, `v_{,x}`, `v_{,y}`, `w`, `w_{,x}`, `w_{,y}`,
+`w_{,xy}`, where `x` is the axial and `y` the circumferential coordinate,
+and `u`, `v` and `w` are the axial, circumferential and normal
+displacements. Element vectors of size ``4*DOF = 40`` have the degrees of
+freedom of nodes 1, 2, 3 and 4 in sequence.
+
+The module also defines:
+
+- ``KC0_SPARSE_SIZE = 1600``, ``KCNL_SPARSE_SIZE = 1024``,
+  ``KG_SPARSE_SIZE = 256``, ``M_SPARSE_SIZE = 544`` and
+  ``KCfollower_SPARSE_SIZE = 1312``: number of entries that one element
+  writes in the row, column and value arrays of KC0, KCNL, KG, M and
+  KCfollower. For ``n`` elements the arrays need ``n`` times these sizes;
+- ``DOUBLE = np.float64``: NumPy type of the arrays of values.
+
+The module :mod:`bfsccylinder.bfsccylinder_sanders` has the same contents
+for the element with Sanders-type kinematics.
+
+Notes
+-----
+The element is a rectangle of the developed mid-surface of a cylinder of
+radius `R` = ``R``, with `x` the axial coordinate and `y = R \theta` the arc
+length along the circumference, of sides `l_{ex}` = ``lex`` along `x` and
+`l_{ey}` = ``ley`` along `y`. The natural coordinates `\xi` and `\eta`, from
+`-1` to `1`, give `x = x_1 + l_{ex} (\xi + 1)/2` and `y = y_1 + l_{ey} (\eta
++ 1)/2`, with `(x_1, y_1)` the position of node 1, such that
+`\partial/\partial x = (2/l_{ex}) \partial/\partial \xi`, `\partial/\partial
+y = (2/l_{ey}) \partial/\partial \eta` and `dA = (l_{ex} l_{ey}/4) d\xi
+d\eta`.
+
+.. rubric:: Interpolation
+
+For the node `i` at the corner `(\xi_i, \eta_i)`, `(-1, -1)`, `(+1, -1)`,
+`(+1, +1)` and `(-1, +1)` for the nodes 1, 2, 3 and 4, the interpolation
+functions are products of cubic Hermite polynomials in `\xi` and `\eta`
+[2]_:
+
+.. math::
+
+    H_i = \frac{1}{16} (\xi + \xi_i)^2 (\xi \xi_i - 2)
+          (\eta + \eta_i)^2 (\eta \eta_i - 2)
+
+.. math::
+
+    H_{xi} = -\frac{l_{ex}}{32} \xi_i (\xi + \xi_i)^2 (\xi \xi_i - 1)
+             (\eta + \eta_i)^2 (\eta \eta_i - 2)
+
+.. math::
+
+    H_{yi} = -\frac{l_{ey}}{32} (\xi + \xi_i)^2 (\xi \xi_i - 2)
+             \eta_i (\eta + \eta_i)^2 (\eta \eta_i - 1)
+
+.. math::
+
+    H_{xyi} = \frac{l_{ex} l_{ey}}{64} \xi_i (\xi + \xi_i)^2 (\xi \xi_i - 1)
+              \eta_i (\eta + \eta_i)^2 (\eta \eta_i - 1)
+
+At the nodes, `H_i` is one at its node and zero at the others, and its
+derivatives `\partial/\partial x`, `\partial/\partial y` and
+`\partial^2/\partial x \partial y` are zero at all nodes; `H_{xi}`,
+`H_{yi}` and `H_{xyi}` are zero at all nodes, and so are these derivatives,
+except `\partial H_{xi}/\partial x = \partial H_{yi}/\partial y =
+\partial^2 H_{xyi}/\partial x \partial y = 1` at their own node. The factors
+`l_{ex}/2` and `l_{ey}/2` convert the derivatives in `\xi` and `\eta` into
+derivatives in `x` and `y`. The normal displacement is interpolated as in
+the element of Bogner, Fox and Schmit [1]_,
+
+.. math::
+
+    w = \sum_{i=1}^{4} \left( H_i w_i + H_{xi} {w_{,x}}_i + H_{yi} {w_{,y}}_i
+        + H_{xyi} {w_{,xy}}_i \right)
+
+and the in-plane displacements with the same functions but without the
+cross derivative, which is not a degree of freedom of `u` and `v`:
+
+.. math::
+
+    u = \sum_{i=1}^{4} \left( H_i u_i + H_{xi} {u_{,x}}_i + H_{yi} {u_{,y}}_i
+        \right), \qquad
+    v = \sum_{i=1}^{4} \left( H_i v_i + H_{xi} {v_{,x}}_i + H_{yi} {v_{,y}}_i
+        \right)
+
+In row form `u = [S_u]\{u_e\}`, `v = [S_v]\{u_e\}` and `w =
+[S_w]\{u_e\}`, with `\{u_e\}` the element displacement vector ``u`` and the
+rows ``Su``, ``Sv`` and ``Sw`` of :meth:`.BFSCCylinder.update_Su`,
+:meth:`.BFSCCylinder.update_Sv` and :meth:`.BFSCCylinder.update_Sw`; the
+rows of the derivatives, e.g. ``Sw_x``, are their derivatives. Along an edge,
+`u`, `v`, `w` and their derivatives normal to the edge depend only on the
+degrees of freedom of the two nodes of that edge, such that `u`, `v`, `w`
+and their first derivatives are continuous between elements that share an
+edge.
+
+This interpolation of `u` and `v` with the Hermite functions is that of the
+BFSC plate element of Castro and Jansen [4]_, of which this element is the
+single-curvature version, first presented by Castro and Jansen [5]_ with
+Donnell-type and Sanders-type kinematics and later used by Wang et al. [6]_
+and by dos Santos and Castro [7]_, who give its interpolation functions and
+the order of its nodal degrees of freedom.
+
+.. rubric:: Kinematics
+
+The kinematics are those of Donnell [3]_ for a thin cylindrical shell under
+the Kirchhoff-Love hypothesis, such that transverse shear deformation is
+neglected, with `w` positive outwards, away from the axis of the cylinder.
+The membrane strains `\{\varepsilon\} = \{\varepsilon_{xx}, \varepsilon_{yy},
+\gamma_{xy}\}^T` are the sum of a linear part `\{\varepsilon_L\}` and of a
+nonlinear part `\{\varepsilon_{NL}\}` in the slopes of `w`, for small strains
+and moderate rotations, and the curvatures `\{\kappa\} = \{\kappa_{xx},
+\kappa_{yy}, \kappa_{xy}\}^T` are linear:
+
+.. math::
+
+    \{\varepsilon_L\} = \begin{Bmatrix} u_{,x} \\ v_{,y} + w/R \\
+    u_{,y} + v_{,x} \end{Bmatrix} = [B_m]\{u_e\}, \qquad
+    \{\kappa\} = \begin{Bmatrix} -w_{,xx} \\ -w_{,yy} \\ -2 w_{,xy}
+    \end{Bmatrix} = [B_b]\{u_e\}
+
+.. math::
+
+    \{\varepsilon_{NL}\} = \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\
+    w_{,x} w_{,y} \end{Bmatrix} = \frac{1}{2} [B_{mL}]\{u_e\}, \qquad
+    [B_{mL}] = \begin{bmatrix} w_{,x} [S_{w,x}] \\ w_{,y} [S_{w,y}] \\
+    w_{,x} [S_{w,y}] + w_{,y} [S_{w,x}] \end{bmatrix}
+
+where `[B_m]` and `[B_b]` are the rows ``Bm`` and ``Bb`` of
+:meth:`.BFSCCylinder.update_Bm` and :meth:`.BFSCCylinder.update_Bb`, and
+`[B_{mL}]`, which depends on the slopes ``w_x`` and ``w_y`` of the current
+displacements, has the rows ``BmL1``, ``BmL2`` and ``BmL3`` of
+:func:`.update_KCNL` and :func:`.update_fint`, such that the variation of
+the nonlinear strains is `\delta\{\varepsilon_{NL}\} = [B_{mL}]\{\delta
+u_e\}`. The slopes are `\{w_{,x}, w_{,y}\}^T = [G]\{u_e\}`, with `[G]` of
+the rows `[S_{w,x}]` and `[S_{w,y}]`, ``G1`` and ``G2`` in the code.
+
+The in-plane displacements do not enter the curvatures and the rotations,
+which are those of a flat plate, and the curvature of the shell enters only
+through the term `w/R` of `\varepsilon_{yy}`. These approximations are
+accurate when the displacements vary over lengths that are small compared
+with `R`, e.g. for many circumferential waves, and lose accuracy for long
+waves. For instance, the curvatures do not vanish for the small rigid-body
+translation `w = c \cos(y/R)`, `v = -c \sin(y/R)`, for which `\kappa_{yy} =
+w/R^2`; the kinematics of :mod:`bfsccylinder.bfsccylinder_sanders` give
+zero strains and curvatures for it.
+
+.. rubric:: Constitutive relation
+
+The membrane stress resultants `\{N\} = \{N_{xx}, N_{yy}, N_{xy}\}^T` and the
+moment resultants `\{M\} = \{M_{xx}, M_{yy}, M_{xy}\}^T` are those of the
+classical laminated plate theory,
+
+.. math::
+
+    \begin{Bmatrix} \{N\} \\ \{M\} \end{Bmatrix} =
+    \begin{bmatrix} [A] & [B] \\ [B] & [D] \end{bmatrix}
+    \begin{Bmatrix} \{\varepsilon_L\} + \{\varepsilon_{NL}\} \\ \{\kappa\}
+    \end{Bmatrix}, \qquad
+    [A] = \begin{bmatrix} A_{11} & A_{12} & A_{16} \\ A_{12} & A_{22} &
+    A_{26} \\ A_{16} & A_{26} & A_{66} \end{bmatrix}
+
+and likewise `[B]` and `[D]`, with the values of ``A11, ..., D66`` of the
+element at each integration point. They are the stiffnesses of a flat
+laminate referred to the mid-surface, without terms in `h/R`.
+
+.. rubric:: Element matrices and internal forces
+
+The strain energy of the element is
+
+.. math::
+
+    U = \frac{1}{2} \int_A \left( \{\varepsilon\}^T [A] \{\varepsilon\}
+        + 2 \{\varepsilon\}^T [B] \{\kappa\}
+        + \{\kappa\}^T [D] \{\kappa\} \right) dA
+
+with `\{\varepsilon\} = \{\varepsilon_L\} + \{\varepsilon_{NL}\}`. The
+internal force vector of :func:`.update_fint` is its gradient
+`\partial U/\partial \{u_e\}`, and the tangent stiffness matrix, its Hessian,
+is split into
+
+.. math::
+
+    [K_T] = \frac{\partial^2 U}{\partial \{u_e\}^2} = [K_{C0}]
+            + [K_{CNL}(u_e)] + [K_G(u_e)]
+
+computed by :func:`.update_KC0`, :func:`.update_KCNL` and :func:`.update_KG`,
+whose Notes give each term. The mass matrix of :func:`.update_M` comes from
+the kinetic energy, see its Notes.
+
+The integrals over the element are computed with the Gauss-Legendre
+quadrature of :func:`bfsccylinder.quadrature.get_points_weights` in each
+direction,
+
+.. math::
+
+    \int_A f \, dA \approx \frac{l_{ex} l_{ey}}{4} \sum_{i=0}^{nint-1}
+    \sum_{j=0}^{nint-1} weights_i \, weights_j \, f(points_i, points_j)
+
+and the mass matrix in closed form. Since KCNL and KG are the derivatives of
+the same quadrature sums as the internal forces, `[K_T]` is the exact
+Jacobian of the internal forces for any ``nint``. With `[A]`, `[B]` and
+`[D]` constant over the element, the integrands are polynomials in `\xi`
+and `\eta`: of degree up to 6 in each for KC0 and for
+:func:`.update_KG_constant_stress`, integrated exactly with ``nint >= 4``;
+up to 9 for KG, exact with ``nint >= 5``; and up to 12 for KCNL and the
+internal forces, exact with ``nint >= 7``.
+
+.. rubric:: Follower pressure
+
+A pressure `p`, per unit area of the undeformed mid-surface and a function
+of the undeformed coordinates, that stays normal to the deformed
+mid-surface and acts on its deformed area, a follower pressure, does the
+virtual work `\delta W_p = \int_A p \{a\}^T \{\delta u\} dA`, with `\{a\} =
+X_{,x} \times X_{,y}` the area vector of the deformed mid-surface `X = X_0
++ u` per unit undeformed area, see the Notes of
+:func:`.update_fext_follower`. With the Donnell-type kinematics the
+rotation of the normal about `x` is `-w_{,y}`, the term `v/R` being
+neglected as in the strains. The area vector is split into its parts of
+order 0, 1 and 2 in the displacement gradients, `\{a\} = \{a_0\} + \{a_1\}
++ \{a_2\}`, with `\{a_0\} = \{0, 0, 1\}^T` the dead load and `\{a_1\}` the
+rotation of the normal and the change of area. The truncation `\{a_0\} +
+\{a_1\}`, ``quadratic=0``, is consistent with the moderate rotations of the
+strains, and `\{a_2\}`, added with ``quadratic=1``, is of the order of the
+terms that the strains neglect. A positive `p` pushes along `+z`,
+outwards, the direction of a positive `w`, such that an external pressure
+is negative.
+
+The force vector `\{F_p(u)\}` of :func:`.update_fext_follower` enters the
+residual `\{f_{int}(u)\} - \{F_p(u)\}`, whose Jacobian is `[K_{C0}] +
+[K_{CNL}] + [K_G] + [K_{Cfollower}]`, with the load stiffness matrix
+`[K_{Cfollower}] = -\partial \{F_p\}/\partial \{u\}` of
+:func:`.update_KCfollower`. For ``quadratic=0``, `\{F_p\}` is affine in the
+displacements and `[K_{Cfollower}]` is constant. The load stiffness matrix
+is unsymmetric in general. For ``quadratic=0``, the skew part of the
+bilinear form `P(\delta u, \Delta u) = \int_A p \{\delta u\}^T \{a_1(\Delta
+u)\} dA` over the loaded region is, for both kinematics,
+
+.. math::
+
+    P(\delta u, \Delta u) - P(\Delta u, \delta u) = -\oint p \left(
+    (\delta u \Delta w - \delta w \Delta u) n_x + (\delta v \Delta w -
+    \delta w \Delta v) n_y \right) ds + \int_A \left( p_{,x} (\delta u
+    \Delta w - \delta w \Delta u) + p_{,y} (\delta v \Delta w - \delta w
+    \Delta v) \right) dA
+
+with `\{n_x, n_y\}^T` the outward normal of the contour of the loaded
+region. The curvature terms of the cylinder are symmetric and cancel in
+the skew part, which therefore holds for both kinematics. The load
+stiffness matrix is therefore symmetric, and the follower pressure
+conservative, if and only if:
+
+- `p` is uniform over the loaded region, such that the area integral
+  vanishes; and
+- at each point of the contour of the loaded region, either `w = 0` or the
+  in-plane displacement normal to the contour vanishes, `u = 0` on an edge
+  `x` = constant and `v = 0` on an edge `y` = constant, such that the
+  contour integral vanishes.
+
+These conditions are met by simply supported and clamped edges, by
+symmetry planes, and by closed surfaces such as complete rings, cylinders
+and spheres, for which no boundary exists; for a cylinder closed around
+the circumference, the contour of the loaded region is that of its ends.
+In these cases the load potential is the pressure times the change of the
+enclosed volume. Conversely, the matrix is unsymmetric for free or partially
+restrained edges, for a pressure applied on a patch whose edges lie inside
+the shell, and for a pressure that varies over the surface. This is the
+result of Hibbitt [8]_ and of Schweizerhof and Ramm [9]_, who showed that
+the pressure load stiffness is symmetric for closed surfaces or for loaded
+surfaces with a fixed boundary. For the matrix of one element, the contour
+of the loaded region is the boundary of the element, where the second
+condition does not hold, and the element matrix is unsymmetric; in the
+assembled matrix the contour integrals along the edges shared by two
+elements cancel when `p` is continuous, since `u`, `v` and `w` are
+continuous, such that the conditions apply to the contour of the loaded
+region of the shell. A pressure that depends on the current position, e.g.
+a hydrostatic head, is not modelled. The conditions are those of the
+first-order area vector; for ``quadratic=1`` the matrix depends on
+`\{u\}`. With `p` uniform over the element, the
+integrands of the force vector and of the load stiffness matrix are
+polynomials in `\xi` and `\eta`, of degree up to 6 in each for
+``quadratic=0``, integrated exactly with ``nint >= 4``, and up to 9 for
+``quadratic=1``, exact with ``nint >= 5``.
+
+References
+----------
+.. [1] Bogner, F. K., Fox, R. L., and Schmit, L. A., The generation of
+   inter-element-compatible stiffness and mass matrices by the use of
+   interpolation formulas, Proceedings of the Conference on Matrix Methods
+   in Structural Mechanics, AFFDL-TR-66-80, Wright-Patterson Air Force
+   Base, Dayton, Ohio, 26-28 October 1965, pp. 395-444.
+.. [2] Ochoa, O. O., and Reddy, J. N., Finite Element Analysis of Composite
+   Laminates, Springer, Dordrecht, 1992.
+.. [3] Donnell, L. H., Stability of thin-walled tubes under torsion, NACA
+   Report 479, 1933.
+.. [4] Castro, S. G. P., and Jansen, E. L., Displacement-based formulation
+   of Koiter's method: application to multi-modal post-buckling finite
+   element analysis of plates, Thin-Walled Structures, 159, 107217, 2021,
+   doi:10.1016/j.tws.2020.107217.
+.. [5] Castro, S. G. P., and Jansen, E. L., Displacement-based multi-modal
+   formulation of Koiter's method applied to cylindrical shells, AIAA
+   SciTech 2022 Forum, AIAA 2022-0256, 2022, doi:10.2514/6.2022-0256.
+.. [6] Wang, Z., Almeida Jr, J. H. S., Ashok, A., Wang, Z., and Castro, S.
+   G. P., Lightweight design of variable-angle filament-wound cylinders
+   combining Kriging-based metamodels with particle swarm optimization,
+   Structural and Multidisciplinary Optimization, 65, 140, 2022,
+   doi:10.1007/s00158-022-03227-8.
+.. [7] dos Santos, R. R., and Castro, S. G. P., Lightweight design of
+   variable-stiffness cylinders with reduced imperfection sensitivity
+   enabled by continuous tow shearing and machine learning, Materials,
+   15(12), 4117, 2022, doi:10.3390/ma15124117.
+.. [8] Hibbitt, H. D., Some follower forces and load stiffness,
+   International Journal for Numerical Methods in Engineering, 14(6),
+   937-941, 1979, doi:10.1002/nme.1620140613.
+.. [9] Schweizerhof, K., and Ramm, E., Displacement dependent pressure loads
+   in nonlinear finite element analyses, Computers & Structures, 18(6),
+   1099-1114, 1984, doi:10.1016/0045-7949(84)90154-8.
+
+"""
 import numpy as np
 
 
@@ -14,6 +352,7 @@ KC0_SPARSE_SIZE = 1600
 KCNL_SPARSE_SIZE = 1024
 KG_SPARSE_SIZE = 256
 M_SPARSE_SIZE = 544
+KCfollower_SPARSE_SIZE = 1312
 
 
 cdef class BFSCCylinder(object):
@@ -21,7 +360,7 @@ cdef class BFSCCylinder(object):
     Single-curvature BFSC element with Donnell-type kinematics.
 
     Nodal connectivity for cylindrical shell element
-    similar to Nastran's CQUAD4
+    similar to Nastran's CQUAD4::
 
       ^ y (circumferential direction)
       |
@@ -33,10 +372,109 @@ cdef class BFSCCylinder(object):
       |_______|
      1         2
 
+    The constructor sets ``n1, n2, n3, n4`` and ``c1, c2, c3, c4`` to ``-1``,
+    ``lex``, ``ley``, ``rho``, ``h`` and ``R`` to zero, and allocates every
+    array filled with zeros; the ``init_k_*`` positions are zero. Before the
+    functions of this module are called with the element, the caller sets
+    ``c1, c2, c3, c4``, the ``init_k_*`` positions of the matrices being
+    computed, ``lex``, ``ley`` and ``R``, the stiffnesses ``A11, ..., D66``,
+    e.g. with :func:`bfsccylinder.utils.assign_constant_ABD`, and, for
+    :func:`.update_M`, ``rho`` and ``h``.
+
+    Parameters
+    ----------
+    nint : int
+        Number of integration points in each direction: the size of the
+        ``points`` and ``weights`` arrays later given to the functions of
+        this module, which read the stiffness arrays ``A11, ..., D66`` at
+        the indices ``[i, j]`` from ``0`` to ``nint - 1``.
+
+    Attributes
+    ----------
+    n1, n2, n3, n4 : int
+        Node identification numbers. Not used by the functions of this
+        module.
+    c1, c2, c3, c4 : int
+        Position of the first degree of freedom of nodes 1, 2, 3 and 4 in
+        the global vectors and matrices. The ``DOF`` degrees of freedom of
+        node 1 are at the positions ``c1`` to ``c1 + 9``, and likewise for
+        the other nodes, e.g. ``c1 = DOF*i`` for the node of index ``i``.
+    init_k_KC0, init_k_KCNL, init_k_KG, init_k_M, init_k_KCfollower : int
+        Position in the sparse arrays from which :func:`.update_KC0`,
+        :func:`.update_KCNL`, :func:`.update_KG` or
+        :func:`.update_KG_constant_stress`, :func:`.update_M` and
+        :func:`.update_KCfollower` write the entries of the element, e.g.
+        the index of the element times ``KC0_SPARSE_SIZE``,
+        ``KCNL_SPARSE_SIZE``, ``KG_SPARSE_SIZE``, ``M_SPARSE_SIZE`` and
+        ``KCfollower_SPARSE_SIZE``.
+    lex, ley : double
+        Length of the element along the axial direction `x` and along the
+        circumferential direction `y`, dimension of length.
+    rho : double
+        Density, mass per unit volume. Used only by :func:`.update_M`.
+    h : double
+        Thickness, dimension of length. Used only by :func:`.update_M`.
+    R : double
+        Radius of the cylinder, dimension of length. Terms of KC0, KCNL and
+        KG, of the internal forces, of the follower pressure and of ``Bm``
+        are divided by ``R``, so it must be set to a nonzero value before
+        these are computed. Not used by :func:`.update_KG_constant_stress`
+        and :func:`.update_M`.
+    A11, A12, A16, A22, A26, A66 : 2-D array
+        Membrane stiffnesses, force per unit length. Shape ``(nint,
+        nint)``, the entry ``[i, j]`` being used at the integration point
+        ``xi = points[i]``, ``eta = points[j]``.
+    B11, B12, B16, B22, B26, B66 : 2-D array
+        Membrane-bending coupling stiffnesses, dimension of force. Same
+        shape and use as ``A11``.
+    D11, D12, D16, D22, D26, D66 : 2-D array
+        Bending stiffnesses, force times length. Same shape and use as
+        ``A11``.
+    Bm : 2-D array
+        Shape ``(3, 40)``, rows giving the linear membrane strains at the
+        last point given to :meth:`.update_Bm`. Dimension of one over the
+        dimension of each degree of freedom.
+    Bb : 2-D array
+        Shape ``(3, 40)``, rows giving the curvatures at the last point
+        given to :meth:`.update_Bb`. Dimension of one over length times one
+        over the dimension of each degree of freedom.
+    Su, Sv, Sw : 1-D array
+        Size ``40``, rows giving the displacements `u`, `v` and `w` at the
+        last point given to :meth:`.update_Su`, :meth:`.update_Sv` and
+        :meth:`.update_Sw`.
+    Su_x, Sv_x, Sw_x : 1-D array
+        Size ``40``, rows giving `u_{,x}`, `v_{,x}` and `w_{,x}` at the last
+        point given to :meth:`.update_Su_x`, :meth:`.update_Sv_x` and
+        :meth:`.update_Sw_x`.
+    Su_y, Sv_y, Sw_y : 1-D array
+        Size ``40``, rows giving `u_{,y}`, `v_{,y}` and `w_{,y}` at the last
+        point given to :meth:`.update_Su_y`, :meth:`.update_Sv_y` and
+        :meth:`.update_Sw_y`.
+    u : 1-D array
+        Size ``40``, element displacement vector, copied from the global
+        displacement vector by :func:`.update_KCNL`, :func:`.update_KG` and
+        :func:`.update_fint`. Dimension of length for `u`, `v`, `w`,
+        dimensionless for the first derivatives and of one over length for
+        `w_{,xy}`.
+
+    Notes
+    -----
+    The element and its theory are described in the Notes of
+    :mod:`bfsccylinder.bfsccylinder`. The arrays ``A11, ..., D66`` hold the
+    laminate stiffness matrices `[A]`, `[B]` and `[D]` of the constitutive
+    relation at each integration point, such that stiffnesses that vary over
+    the element, e.g. of a laminate whose fiber angles vary, are integrated
+    point by point. ``Bm`` and ``Bb`` are the operators `[B_m]` and `[B_b]`
+    of the linear membrane strains and of the curvatures, and ``Su``, ...,
+    ``Sw_y`` the rows of the interpolation of the displacements and of their
+    derivatives; the ``update_*`` functions of the module evaluate the same
+    operators at each integration point in local variables.
+
     """
     cdef public int n1, n2, n3, n4
     cdef public int c1, c2, c3, c4
     cdef public int init_k_KC0, init_k_KCNL, init_k_KG, init_k_M
+    cdef public int init_k_KCfollower
     cdef public double lex, ley, rho, h, R
     cdef public double [:, ::1] A11, A12, A16, A22, A26, A66
     cdef public double [:, ::1] B11, B12, B16, B22, B26, B66
@@ -63,9 +501,10 @@ cdef class BFSCCylinder(object):
         self.c3 = -1
         self.c4 = -1
         self.init_k_KC0 = 0
-        self.init_k_KC0 = 0
+        self.init_k_KCNL = 0
         self.init_k_KG = 0
         self.init_k_M = 0
+        self.init_k_KCfollower = 0
         self.A11 = np.zeros((nint, nint), dtype=DOUBLE)
         self.A12 = np.zeros((nint, nint), dtype=DOUBLE)
         self.A16 = np.zeros((nint, nint), dtype=DOUBLE)
@@ -103,6 +542,38 @@ cdef class BFSCCylinder(object):
         self.u = np.zeros(num_nodes*DOF, dtype=DOUBLE)
 
     cpdef void update_Bm(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Bm`` at a natural coordinate point
+
+        The rows of ``Bm`` are computed at ``xi``, ``eta`` from ``lex``,
+        ``ley`` and ``R``. Their products with an element displacement
+        vector, e.g. ``u``, give at that point the linear membrane strains
+        `\varepsilon_{xx}`, `\varepsilon_{yy}` and `\gamma_{xy}` for the
+        rows ``0``, ``1`` and ``2``, dimensionless. Only the entries that
+        are not identically zero are written, the other entries keep the
+        zeros of the constructor. The functions of this module do not read
+        ``Bm``.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        With the rows of the interpolation of the Notes of
+        :mod:`bfsccylinder.bfsccylinder`, the rows of the Donnell-type linear
+        membrane strains are
+
+        .. math::
+
+            [B_m] = \begin{bmatrix} [S_{u,x}] \\ [S_{v,y}] + [S_w]/R \\
+            [S_{u,y}] + [S_{v,x}] \end{bmatrix}
+
+        such that `\{\varepsilon_L\} = \{u_{,x}, v_{,y} + w/R, u_{,y} +
+        v_{,x}\}^T = [B_m]\{u_e\}`.
+
+        """
         cdef double lex, ley, R
         with nogil:
             lex = self.lex
@@ -174,6 +645,39 @@ cdef class BFSCCylinder(object):
             self.Bm[2, 35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Bb(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Bb`` at a natural coordinate point
+
+        The rows of ``Bb`` are computed at ``xi``, ``eta`` from ``lex`` and
+        ``ley``. Their products with an element displacement vector, e.g.
+        ``u``, give at that point the curvatures `\kappa_{xx}`, `\kappa_{yy}`
+        and `\kappa_{xy}` for the rows ``0``, ``1`` and ``2``, dimension of one
+        over length. Only the entries at the degrees of freedom `w`, `w_{,x}`,
+        `w_{,y}`, `w_{,xy}` of the nodes are written, the other entries keep
+        the zeros of the constructor. The functions of this module do not read
+        ``Bb``.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        With the rows `[S_w]` of the interpolation of `w` of the Notes of
+        :mod:`bfsccylinder.bfsccylinder`, the rows of the Donnell-type
+        curvatures are
+
+        .. math::
+
+            [B_b] = -\begin{bmatrix} [S_{w,xx}] \\ [S_{w,yy}] \\ 2 [S_{w,xy}]
+            \end{bmatrix}
+
+        such that `\{\kappa\} = \{-w_{,xx}, -w_{,yy}, -2 w_{,xy}\}^T =
+        [B_b]\{u_e\}`. They do not depend on ``R``: the curvatures are those
+        of a flat plate.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -228,6 +732,30 @@ cdef class BFSCCylinder(object):
             self.Bb[2, 39] = -8*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)**2)/(lex*ley)
 
     cpdef void update_Su(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Su`` at a natural coordinate point
+
+        ``Su`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        displacement `u` at that point, dimension of length. Only the entries
+        at the degrees of freedom `u`, `u_{,x}`, `u_{,y}` of the nodes, the
+        positions ``0, 1, 2`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries of node ``i``, from 1 to 4, at the positions
+        ``10*(i - 1) + 0``, ``10*(i - 1) + 1`` and ``10*(i - 1) + 2``, are
+        the Hermite functions `H_i`, `H_{xi}` and `H_{yi}` of the Notes
+        of :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
+        that `u = [S_u]\{u_e\}`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -246,6 +774,29 @@ cdef class BFSCCylinder(object):
             self.Su[32] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Su_x(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Su_x`` at a natural coordinate point
+
+        ``Su_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `u_{,x}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `u`, `u_{,x}`, `u_{,y}` of the nodes, the
+        positions ``0, 1, 2`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial x = (2/l_{ex})
+        \partial/\partial \xi` of those of
+        :meth:`.BFSCCylinder.update_Su`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -264,6 +815,29 @@ cdef class BFSCCylinder(object):
             self.Su_x[32] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Su_y(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Su_y`` at a natural coordinate point
+
+        ``Su_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `u_{,y}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `u`, `u_{,x}`, `u_{,y}` of the nodes, the
+        positions ``0, 1, 2`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial y = (2/l_{ey})
+        \partial/\partial \eta` of those of
+        :meth:`.BFSCCylinder.update_Su`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -282,6 +856,30 @@ cdef class BFSCCylinder(object):
             self.Su_y[32] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Sv(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Sv`` at a natural coordinate point
+
+        ``Sv`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        displacement `v` at that point, dimension of length. Only the entries
+        at the degrees of freedom `v`, `v_{,x}`, `v_{,y}` of the nodes, the
+        positions ``3, 4, 5`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries of node ``i``, from 1 to 4, at the positions
+        ``10*(i - 1) + 3``, ``10*(i - 1) + 4`` and ``10*(i - 1) + 5``, are
+        the Hermite functions `H_i`, `H_{xi}` and `H_{yi}` of the Notes
+        of :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
+        that `v = [S_v]\{u_e\}`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -300,6 +898,29 @@ cdef class BFSCCylinder(object):
             self.Sv[35] = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
 
     cpdef void update_Sv_x(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Sv_x`` at a natural coordinate point
+
+        ``Sv_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `v_{,x}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `v`, `v_{,x}`, `v_{,y}` of the nodes, the
+        positions ``3, 4, 5`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial x = (2/l_{ex})
+        \partial/\partial \xi` of those of
+        :meth:`.BFSCCylinder.update_Sv`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -318,6 +939,29 @@ cdef class BFSCCylinder(object):
             self.Sv_x[35] = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Sv_y(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Sv_y`` at a natural coordinate point
+
+        ``Sv_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `v_{,y}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `v`, `v_{,x}`, `v_{,y}` of the nodes, the
+        positions ``3, 4, 5`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial y = (2/l_{ey})
+        \partial/\partial \eta` of those of
+        :meth:`.BFSCCylinder.update_Sv`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -336,6 +980,31 @@ cdef class BFSCCylinder(object):
             self.Sv_y[35] = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
 
     cpdef void update_Sw(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Sw`` at a natural coordinate point
+
+        ``Sw`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        displacement `w` at that point, dimension of length. Only the entries
+        at the degrees of freedom `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}` of the
+        nodes, the positions ``6, 7, 8, 9`` plus ``0``, ``10``, ``20`` and
+        ``30``, are written, the other entries keep the zeros of the
+        constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries of node ``i``, from 1 to 4, at the positions
+        ``10*(i - 1) + 6`` to ``10*(i - 1) + 9``, are the Hermite functions
+        `H_i`, `H_{xi}`, `H_{yi}` and `H_{xyi}` of the Notes of
+        :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
+        that `w = [S_w]\{u_e\}`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -358,6 +1027,29 @@ cdef class BFSCCylinder(object):
             self.Sw[39] = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
 
     cpdef void update_Sw_x(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Sw_x`` at a natural coordinate point
+
+        ``Sw_x`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `w_{,x}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}` of the nodes,
+        the positions ``6, 7, 8, 9`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial x = (2/l_{ex})
+        \partial/\partial \xi` of those of
+        :meth:`.BFSCCylinder.update_Sw`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -380,6 +1072,29 @@ cdef class BFSCCylinder(object):
             self.Sw_x[39] = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
 
     cpdef void update_Sw_y(BFSCCylinder self, double xi, double eta):
+        r"""Update ``Sw_y`` at a natural coordinate point
+
+        ``Sw_y`` is computed at ``xi``, ``eta`` from ``lex`` and ``ley``. Its
+        product with an element displacement vector, e.g. ``u``, gives the
+        derivative `w_{,y}` at that point, dimensionless. Only the entries at
+        the degrees of freedom `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}` of the nodes,
+        the positions ``6, 7, 8, 9`` plus ``0``, ``10``, ``20`` and ``30``, are
+        written, the other entries keep the zeros of the constructor.
+
+        Parameters
+        ----------
+        xi, eta : double
+            Natural coordinates of the point, dimensionless, from ``-1`` to
+            ``1`` over the element, ``xi`` along `x` and ``eta`` along `y`.
+
+        Notes
+        -----
+        The entries are the derivatives `\partial/\partial y = (2/l_{ey})
+        \partial/\partial \eta` of those of
+        :meth:`.BFSCCylinder.update_Sw`, with the Hermite functions of
+        the Notes of :mod:`bfsccylinder.bfsccylinder`.
+
+        """
         cdef double lex, ley
         with nogil:
             lex = self.lex
@@ -409,22 +1124,67 @@ cpdef void update_KC0(BFSCCylinder shell,
                       long [::1] KC0c,
                       double [::1] KC0v,
                       ):
-    """Update sparse vectors for linear constitutive stiffness matrix KC0
+    r"""Update sparse vectors for linear constitutive stiffness matrix KC0
 
-    Properties
+    The element matrix, with ``40*40`` entries, is integrated with the
+    integration points and weights given by ``points`` and ``weights``,
+    from ``lex``, ``ley``, ``R`` and the stiffnesses ``A11, ..., D66`` of
+    ``shell``. All its entries are written: the global row and column
+    indices to ``KC0r`` and ``KC0c``, and the values added to ``KC0v``, at
+    the positions ``shell.init_k_KC0`` to ``shell.init_k_KC0 +
+    KC0_SPARSE_SIZE - 1``. Before this function is called, ``c1, c2, c3,
+    c4``, ``init_k_KC0``, ``lex``, ``ley``, ``R`` and the stiffnesses of
+    ``shell`` must be set.
+
+    Parameters
     ----------
-    shell : `.BFSCCylinder` object
+    shell : :class:`.BFSCCylinder` object
         The cylindrical shell element being added to KC0
     points : np.array
         Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
     weights : np.array
         Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
     KC0r : np.array
         Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KC0 + KC0_SPARSE_SIZE``.
     KC0c : np.array
         Array to store column positions of sparse values
+        Same type and size as ``KC0r``.
     KC0v : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KC0r``. The values are
+        added to the existing ones.
+        Dimension of force per unit length between the displacements `u`, `v`,
+        `w`, multiplied by a length for each of the row and the column that is
+        a first derivative, and by a length squared for each that is `w_{,xy}`.
+
+    See Also
+    --------
+    update_KCNL, update_KG
+
+    Notes
+    -----
+    KC0 is the Hessian of the strain energy of the Notes of
+    :mod:`bfsccylinder.bfsccylinder` with the linear strains only,
+    `\{\varepsilon\} = \{\varepsilon_L\}`:
+
+    .. math::
+
+        [K_{C0}] = \int_A \left( [B_m]^T [A] [B_m] + [B_m]^T [B] [B_b]
+                   + [B_b]^T [B] [B_m] + [B_b]^T [D] [B_b] \right) dA
+
+    with the rows `[B_m]` and `[B_b]` of :meth:`.BFSCCylinder.update_Bm` and
+    :meth:`.BFSCCylinder.update_Bb`, evaluated at each integration point as
+    the local variables ``Bm1_*``, ``Bm2_*``, ``Bm3_*``, ``Bb1_*``, ``Bb2_*``
+    and ``Bb3_*``, and the `[A]`, `[B]` and `[D]` of that point. KC0 does not
+    depend on the displacements: it is the stiffness matrix of a linear static
+    analysis and the tangent stiffness matrix at zero displacements.
 
     """
     cdef int c1, c2, c3, c4, nint, i, j, k
@@ -8601,8 +9361,64 @@ cpdef void update_KCNL(double [::1] u,
                        long [::1] KCNLc,
                        double [::1] KCNLv,
                        ):
-    """Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
+    r"""Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
 
+    The element matrix is integrated with the integration points and weights
+    given by ``points`` and ``weights``, from ``lex``, ``ley``, ``R``, the
+    stiffnesses ``A11, ..., B66`` of ``shell`` (the ``D`` stiffnesses are not
+    used) and the displacements of the nodes of the element, copied from ``u``
+    to ``shell.u``. The entries for which both the row and the column
+    correspond to the in-plane degrees of freedom `u`, `u_{,x}`, `u_{,y}`, `v`,
+    `v_{,x}`, `v_{,y}` are not written. The global row and column indices of
+    the other entries are written to ``KCNLr`` and ``KCNLc``, and their values
+    added to ``KCNLv``, at the positions ``shell.init_k_KCNL`` to
+    ``shell.init_k_KCNL + KCNL_SPARSE_SIZE - 1``. Before this function is
+    called, ``c1, c2, c3, c4``, ``init_k_KCNL``, ``lex``, ``ley``, ``R`` and
+    the stiffnesses of ``shell`` must be set. KC0 + KCNL + KG, computed with
+    :func:`.update_KC0`, this function and :func:`.update_KG` with the same
+    ``u``, ``points`` and ``weights``, is the tangent stiffness matrix of the
+    internal forces of :func:`.update_fint`.
+
+    Parameters
+    ----------
+    u : np.array
+        Global displacement vector
+        1-D array of ``DOUBLE`` with ``DOF`` entries per node of the model, in
+        the order of the degrees of freedom of a node given in the module
+        documentation. The entries of the nodes of ``shell`` are read at the
+        positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
+        ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
+        for the first derivatives and of one over length for `w_{,xy}`.
+    shell : :class:`.BFSCCylinder` object
+        The shell element being added to K
+    points : np.array
+        Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
+    weights : np.array
+        Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
+    KCNLr : np.array
+        Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KCNL + KCNL_SPARSE_SIZE``.
+    KCNLc : np.array
+        Array to store column positions of sparse values
+        Same type and size as ``KCNLr``.
+    KCNLv : np.array
+        Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KCNLr``. The values are
+        added to the existing ones, with the dimensions given for ``KC0v``
+        in :func:`.update_KC0`.
+
+    See Also
+    --------
+    update_KC0, update_KG, update_fint
+
+    Notes
+    -----
     Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL
 
     The first three groups are the constitutive terms coupling the linear and
@@ -8619,22 +9435,28 @@ cpdef void update_KCNL(double [::1] u,
     is the exact Jacobian of the vector assembled by update_fint, so a
     Newton-Raphson built on these three converges quadratically.
 
-    Properties
-    ----------
-    u : np.array
-        Global displacement vector
-    shell : `.BFSCylinder` object
-        The shell element being added to K
-    points : np.array
-        Integration poins
-    weights : np.array
-        Integration weights
-    KCNLr : np.array
-        Array to store row positions of sparse values
-    KCNLc : np.array
-        Array to store column positions of sparse values
-    KCNLv : np.array
-        Array to store sparse values
+    With the operators of the Notes of :mod:`bfsccylinder.bfsccylinder`,
+    evaluated at each integration point with the slopes ``w_x`` and ``w_y``
+    of the element displacements ``shell.u``:
+
+    .. math::
+
+        [K_{C0L}] = \int_A \left( [B_m]^T [A] + [B_b]^T [B] \right) [B_{mL}] dA,
+        \qquad
+        [K_{CL0}] = \int_A [B_{mL}]^T \left( [A] [B_m] + [B] [B_b] \right) dA
+
+    .. math::
+
+        [K_{CLL}] = \int_A [B_{mL}]^T [A] [B_{mL}] dA, \qquad
+        [K_{GNL}] = \int_A [G]^T \begin{bmatrix} N_{NLxx} & N_{NLxy} \\
+        N_{NLxy} & N_{NLyy} \end{bmatrix} [G] dA
+
+    with `\{N_{NLxx}, N_{NLyy}, N_{NLxy}\}^T = [A]\{\varepsilon_{NL}\} =
+    [A]\{w_{,x}^2/2, w_{,y}^2/2, w_{,x} w_{,y}\}^T`. KC0L and KCL0 are linear
+    in the displacements, KCLL and KGNL quadratic, and KCNL vanishes at zero
+    displacements. Since `[B_{mL}]` and `[G]` have entries only at the
+    degrees of freedom of `w`, the block of the in-plane degrees of freedom
+    is zero.
 
     """
     cdef double *ue
@@ -14023,8 +14845,64 @@ cpdef void update_KG(double [::1] u,
                      long [::1] KGc,
                      double [::1] KGv,
                      ):
-    """Update sparse vectors for geometric stiffness matrix KG
+    r"""Update sparse vectors for geometric stiffness matrix KG
 
+    The element matrix is integrated with the integration points and weights
+    given by ``points`` and ``weights``, from ``lex``, ``ley`` and ``R`` of
+    ``shell``. At each integration point the membrane stress resultants
+    ``Nxx``, ``Nyy`` and ``Nxy`` are computed from the stiffnesses
+    ``A11, ..., B66`` of ``shell`` and from the displacements of the nodes of
+    the element, copied from ``u`` to ``shell.u``. Only the entries for which
+    both the row and the column correspond to the degrees of freedom `w`,
+    `w_{,x}`, `w_{,y}`, `w_{,xy}` are written: the global row and column
+    indices to ``KGr`` and ``KGc``, and the values added to ``KGv``, at the
+    positions ``shell.init_k_KG`` to ``shell.init_k_KG + KG_SPARSE_SIZE - 1``.
+    Before this function is called, ``c1, c2, c3, c4``, ``init_k_KG``, ``lex``,
+    ``ley``, ``R`` and the stiffnesses of ``shell`` must be set. ``Nxx``,
+    ``Nyy`` and ``Nxy`` are those of the linear strains, such that the values
+    are linear in ``u``; the corresponding term of the nonlinear strains is
+    in :func:`.update_KCNL`.
+
+    Parameters
+    ----------
+    u : np.array
+        Global displacement vector
+        1-D array of ``DOUBLE`` with ``DOF`` entries per node of the model, in
+        the order of the degrees of freedom of a node given in the module
+        documentation. The entries of the nodes of ``shell`` are read at the
+        positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
+        ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
+        for the first derivatives and of one over length for `w_{,xy}`.
+    shell : :class:`.BFSCCylinder` object
+        The cylindrical shell element being added to KG
+    points : np.array
+        Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
+    weights : np.array
+        Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
+    KGr : np.array
+        Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KG + KG_SPARSE_SIZE``.
+    KGc : np.array
+        Array to store column positions of sparse values
+        Same type and size as ``KGr``.
+    KGv : np.array
+        Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KGr``. The values are added
+        to the existing ones, with the dimensions given for ``KC0v`` in
+        :func:`.update_KC0`.
+
+    See Also
+    --------
+    update_KG_constant_stress, update_KCNL
+
+    Notes
+    -----
     Built from the membrane stress of the LINEAR strain alone, A*Bm*u +
     B*Bb*u, which keeps KG homogeneous of degree one in u. A linear buckling
     analysis needs exactly that, so that lambda*KG represents the stress
@@ -14034,22 +14912,23 @@ cpdef void update_KG(double [::1] u,
     here; update_KCNL carries it, so that KC0 + KCNL + KG is still the
     consistent tangent of update_fint.
 
-    Properties
-    ----------
-    u : np.array
-        Global displacement vector
-    shell : `.BFSCCylinder` object
-        The cylindrical shell element being added to KG
-    points : np.array
-        Integration poins
-    weights : np.array
-        Integration weights
-    KGr : np.array
-       Array to store row positions of sparse values
-    KGc : np.array
-       Array to store column positions of sparse values
-    KGv : np.array
-        Array to store sparse values
+    With the operators of the Notes of :mod:`bfsccylinder.bfsccylinder`,
+    at each integration point:
+
+    .. math::
+
+        [K_G] = \int_A [G]^T \begin{bmatrix} N_{xx} & N_{xy} \\ N_{xy} &
+        N_{yy} \end{bmatrix} [G] dA, \qquad
+        \begin{Bmatrix} N_{xx} \\ N_{yy} \\ N_{xy} \end{Bmatrix} =
+        [A][B_m]\{u_e\} + [B][B_b]\{u_e\}
+
+    with `[G]` the rows `[S_{w,x}]` and `[S_{w,y}]`, ``G1`` and ``G2``, such
+    that `[G]\{u_e\} = \{w_{,x}, w_{,y}\}^T`. It is the second derivative of
+    `\int_A \{N\}^T \{\varepsilon_{NL}\} dA` with respect to `\{u_e\}` for
+    `\{N\}` held fixed. In a linear buckling analysis, with ``u`` the linear
+    static solution for a reference load, the load multipliers `\lambda` and
+    the buckling modes `\{\phi\}` solve `([K_{C0}] + \lambda [K_G])\{\phi\} =
+    \{0\}`, with `[K_{C0}]` of :func:`.update_KC0`.
 
     """
     cdef double *ue
@@ -15551,22 +16430,59 @@ cpdef void update_KG_constant_stress(BFSCCylinder shell,
         ):
     """Update sparse vectors for geometric stiffness matrix KG
 
-    Properties
+    The same matrix as :func:`.update_KG`, with the membrane stress resultants
+    ``Nxx``, ``Nyy`` and ``Nxy`` given, constant over the element, instead of
+    computed from displacements. It is integrated with the integration points
+    and weights given by ``points`` and ``weights``, from ``lex`` and ``ley``
+    of ``shell``; the stiffnesses and ``shell.u`` are not used. The entries are
+    those of :func:`.update_KG`: the global row and column indices are written
+    to ``KGr`` and ``KGc``, and the values added to ``KGv``, at the positions
+    ``shell.init_k_KG`` to ``shell.init_k_KG + KG_SPARSE_SIZE - 1``. Before
+    this function is called, ``c1, c2, c3, c4``, ``init_k_KG``, ``lex`` and
+    ``ley`` of ``shell`` must be set.
+
+    Parameters
     ----------
-    shell : `.BFSCCylinder` object
+    shell : :class:`.BFSCCylinder` object
         The cylindrical shell element being added to KG
     points : np.array
         Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
     weights : np.array
         Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
     KGr : np.array
-       Array to store row positions of sparse values
+        Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KG + KG_SPARSE_SIZE``.
     KGc : np.array
-       Array to store column positions of sparse values
+        Array to store column positions of sparse values
+        Same type and size as ``KGr``.
     KGv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KGr``. The values are added
+        to the existing ones, with the dimensions given for ``KC0v`` in
+        :func:`.update_KC0`.
     Nxx, Nyy, Nxy : float
         Constant membrane stress state
+        Force per unit length, used at every integration point.
+
+    See Also
+    --------
+    update_KG
+
+    Notes
+    -----
+    The matrix is the `[K_G]` of the Notes of :func:`.update_KG` with the
+    given `N_{xx}`, `N_{yy}` and `N_{xy}`, and with the same rows `[G]`, which
+    do not depend on `R` in the Donnell-type kinematics. Since it is linear in
+    the given stress resultants, the load multipliers of a linear buckling
+    analysis multiply the given membrane state, which is assumed instead of
+    computed from a linear static solution, e.g. a uniform axial compression
+    without the effects of the boundary conditions on the membrane state.
 
     """
     cdef double *ue
@@ -16917,18 +17833,61 @@ cpdef void update_M(BFSCCylinder shell,
                     long [::1] Mc,
                     double [::1] Mv,
                     ):
-    """Update sparse vectors for mass matrix M
+    r"""Update sparse vectors for mass matrix M
 
-    Properties
+    The element mass matrix is computed from ``lex``, ``ley``, ``rho`` and
+    ``h`` of ``shell`` with closed-form expressions, without integration
+    points; ``R`` and the stiffnesses are not used. Only the entries that
+    couple the degrees of freedom `u`, `u_{,x}`, `u_{,y}` with themselves, `v`,
+    `v_{,x}`, `v_{,y}` with themselves, and `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}`
+    with themselves are written: the global row and column indices to ``Mr``
+    and ``Mc``, and the values added to ``Mv``, at the positions
+    ``shell.init_k_M`` to ``shell.init_k_M + M_SPARSE_SIZE - 1``. Before this
+    function is called, ``c1, c2, c3, c4``, ``init_k_M``, ``lex``, ``ley``,
+    ``rho`` and ``h`` of ``shell`` must be set.
+
+    Parameters
     ----------
-    shell : `.BFSCCylinder` object
+    shell : :class:`.BFSCCylinder` object
         The cylindrical shell element being added to M
     Mr : np.array
         Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_M + M_SPARSE_SIZE``.
     Mc : np.array
         Array to store column positions of sparse values
+        Same type and size as ``Mr``.
     Mv : np.array
         Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``Mr``. The values are added
+        to the existing ones.
+        Dimension of mass between the displacements `u`, `v`, `w`, multiplied
+        by a length for each of the row and the column that is a first
+        derivative, and by a length squared for each that is `w_{,xy}`.
+
+    Notes
+    -----
+    The consistent mass matrix of the interpolation of the Notes of
+    :mod:`bfsccylinder.bfsccylinder`, for a density `\rho` = ``rho`` uniform
+    over the thickness `h` = ``h``, with the Kirchhoff-Love displacements
+    `u - z w_{,x}`, `v - z w_{,y}` and `w` at the distance `z` from the
+    mid-surface:
+
+    .. math::
+
+        [M] = \int_A \rho \left( h \left( [S_u]^T [S_u] + [S_v]^T [S_v]
+              + [S_w]^T [S_w] \right) + \frac{h^3}{12} \left( [S_{w,x}]^T
+              [S_{w,x}] + [S_{w,y}]^T [S_{w,y}] \right) \right) dA
+
+    The terms in `h^3/12` are the rotary inertia of the rotations `-w_{,x}`
+    and `-w_{,y}` of the Donnell-type kinematics. There is no coupling
+    between the in-plane and the normal displacements, which corresponds to
+    a reference surface at the middle of the thickness, and the variation of
+    the area with `z` is neglected. The integrand is a polynomial and the
+    integral is exact. The matrix of
+    :func:`bfsccylinder.bfsccylinder_sanders.update_M` differs: its rotary
+    inertia uses the Sanders-type rotation `-w_{,y} + v/R`, which couples
+    `v` and `w`.
 
     """
     cdef int c1, c2, c3, c4, k
@@ -19675,20 +20634,75 @@ cpdef void update_fint(double [::1] u,
                        double [::1] weights,
                        double [::1] fint,
                        ):
-    """Update global internal force vector
+    r"""Update global internal force vector
 
-    Properties
+    The internal forces of the element are integrated with the integration
+    points and weights given by ``points`` and ``weights``, from ``lex``,
+    ``ley``, ``R``, the stiffnesses ``A11, ..., D66`` of ``shell`` and the
+    displacements of the nodes of the element, copied from ``u`` to
+    ``shell.u``, including the terms nonlinear in the displacements. They
+    are added to ``fint`` at the positions ``c1+i``, ``c2+i``, ``c3+i`` and
+    ``c4+i``, for ``i`` from ``0`` to ``9``. Before this function is called,
+    ``c1, c2, c3, c4``, ``lex``, ``ley``, ``R`` and the stiffnesses of
+    ``shell`` must be set.
+
+    Parameters
     ----------
     u : np.array
         Global displacement vector
-    shell : `.BFSCylinder` object
+        1-D array of ``DOUBLE`` with ``DOF`` entries per node of the model, in
+        the order of the degrees of freedom of a node given in the module
+        documentation. The entries of the nodes of ``shell`` are read at the
+        positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
+        ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
+        for the first derivatives and of one over length for `w_{,xy}`.
+    shell : :class:`.BFSCCylinder` object
         The shell element being added to fint
     points : np.array
         Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
     weights : np.array
         Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
     fint : np.array
         Global internal force array
+        1-D array of ``DOUBLE`` of the same size as ``u``. The values are
+        added to the existing ones. Dimension of force for `u`, `v`, `w`,
+        multiplied by a length for the first derivatives and by a length
+        squared for `w_{,xy}`.
+
+    See Also
+    --------
+    update_KCNL
+
+    Notes
+    -----
+    The internal forces are the gradient of the strain energy of the Notes of
+    :mod:`bfsccylinder.bfsccylinder`:
+
+    .. math::
+
+        \{f_{int}\} = \int_A \left( \left( [B_m] + [B_{mL}] \right)^T \{N\}
+                      + [B_b]^T \{M\} \right) dA
+
+    with the stress resultants of the total membrane strains,
+
+    .. math::
+
+        \{N\} = [A] \left( [B_m] + \frac{1}{2} [B_{mL}] \right) \{u_e\}
+                + [B][B_b]\{u_e\}, \qquad
+        \{M\} = [B] \left( [B_m] + \frac{1}{2} [B_{mL}] \right) \{u_e\}
+                + [D][B_b]\{u_e\}
+
+    ``Nxx``, ``Nyy``, ``Nxy`` and ``Mxx``, ``Myy``, ``Mxy`` in the code,
+    evaluated at each integration point with the slopes ``w_x`` and ``w_y``.
+    The tangent stiffness matrix `\partial \{f_{int}\}/\partial \{u_e\}` is
+    the sum of the matrices of :func:`.update_KC0`, :func:`.update_KCNL` and
+    :func:`.update_KG` computed with the same ``u``, ``points`` and
+    ``weights``. At equilibrium `\{f_{int}\}` balances the external forces.
 
     """
     cdef double *ue
@@ -19967,3 +20981,7225 @@ cpdef void update_fint(double [::1] u,
                 fint[7 + c4] += 0.25*lex*ley*weight*(Bb1_38*Mxx + Bb2_38*Myy + Bb3_38*Mxy + Bm2_38*Nyy + BmL1_38*Nxx + BmL2_38*Nyy + BmL3_38*Nxy)
                 fint[8 + c4] += 0.25*lex*ley*weight*(Bb1_39*Mxx + Bb2_39*Myy + Bb3_39*Mxy + Bm2_39*Nyy + BmL1_39*Nxx + BmL2_39*Nyy + BmL3_39*Nxy)
                 fint[9 + c4] += 0.25*lex*ley*weight*(Bb1_40*Mxx + Bb2_40*Myy + Bb3_40*Mxy + Bm2_40*Nyy + BmL1_40*Nxx + BmL2_40*Nyy + BmL3_40*Nxy)
+
+
+cpdef void update_fext_follower(double [::1] u,
+                                BFSCCylinder shell,
+                                double [::1] points,
+                                double [::1] weights,
+                                double [:, ::1] p,
+                                double [::1] fext,
+                                int quadratic=0,
+                                int reference=1,
+                                ):
+    r"""Update global external force vector of a follower pressure
+
+    The force vector of a pressure that follows the deformation of the
+    element, normal to its deformed mid-surface and acting on its deformed
+    area, is integrated with the integration points and weights given by
+    ``points`` and ``weights``, from ``lex``, ``ley`` and ``R`` of
+    ``shell``, the pressure ``p`` at the integration points and the
+    displacements of the nodes of the element, copied from ``u`` to
+    ``shell.u``. It is added to ``fext`` at the positions ``c1+i``,
+    ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from ``0`` to ``9``. Before
+    this function is called, ``c1, c2, c3, c4``, ``lex``, ``ley`` and ``R``
+    of ``shell`` must be set; the stiffnesses are not used.
+
+    Parameters
+    ----------
+    u : np.array
+        Global displacement vector
+        1-D array of ``DOUBLE`` with ``DOF`` entries per node of the model, in
+        the order of the degrees of freedom of a node given in the module
+        documentation. The entries of the nodes of ``shell`` are read at the
+        positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
+        ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
+        for the first derivatives and of one over length for `w_{,xy}`.
+    shell : :class:`.BFSCCylinder` object
+        The shell element being added to fext
+    points : np.array
+        Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
+    weights : np.array
+        Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
+    p : np.array
+        Pressure at the integration points
+        2-D array of ``DOUBLE`` of shape ``(nint, nint)``, the entry ``[i,
+        j]`` being used at the integration point ``xi = points[i]``, ``eta =
+        points[j]``, as the entries of ``A11`` of ``shell``. Force per unit
+        area of the undeformed mid-surface, already multiplied by the load
+        factor if there is one. A positive pressure pushes along `+z`,
+        outwards, away from the axis of the cylinder, the direction of a
+        positive `w`, such that an external pressure is negative.
+    fext : np.array
+        Global external force vector
+        1-D array of ``DOUBLE`` of the same size as ``u``. The values are
+        added to the existing ones. Dimension of force for `u`, `v`, `w`,
+        multiplied by a length for the first derivatives and by a length
+        squared for `w_{,xy}`.
+    quadratic : int, optional
+        ``0``, the default, to truncate the area vector of the deformed
+        mid-surface to its terms of order 0 and 1 in the displacement
+        gradients, such that the force vector is affine in ``u``; ``1`` to
+        also include its terms of order 2, see the Notes.
+    reference : int, optional
+        ``1``, the default, to include the term of order 0 of the area
+        vector, which gives the dead pressure load of the undeformed
+        configuration `\{F_p(0)\}`; ``0`` to leave it out, which gives
+        `\{F_p(u_e)\} - \{F_p(0)\}`.
+
+    See Also
+    --------
+    update_KCfollower
+
+    Notes
+    -----
+    With `X = X_0 + u` the position of the deformed mid-surface, in the basis
+    of the undeformed mid-surface `e_x`, `e_y` and its normal `e_z`, the
+    virtual work of the pressure is
+
+    .. math::
+
+        \delta W_p = \int_A p \{a\}^T \{\delta u\} dA, \qquad
+        \{a\} = X_{,x} \times X_{,y}
+
+    where `\{a\}` is the area vector of the deformed mid-surface per unit
+    undeformed area, `\{\delta u\} = \{\delta u, \delta v, \delta w\}^T`
+    and, with `e_{y,y} = -e_z/R` and `e_{z,y} = e_y/R`,
+
+    .. math::
+
+        X_{,x} = \begin{Bmatrix} 1 + u_{,x} \\ v_{,x} \\ w_{,x}
+        \end{Bmatrix}, \qquad
+        X_{,y} = \begin{Bmatrix} u_{,y} \\ 1 + v_{,y} + w/R \\ w_{,y} - k_v v
+        \end{Bmatrix}
+
+    with `k_v = 0` for the Donnell-type kinematics, which neglect the term
+    `v/R` of the rotation of the normal as their strains do, and `k_v = 1/R`
+    for the Sanders-type kinematics, for which `X_{,x} \times X_{,y}` is
+    the exact area vector. Its parts of order 0, 1 and 2 in the displacement
+    gradients are
+
+    .. math::
+
+        \{a_0\} = \begin{Bmatrix} 0 \\ 0 \\ 1 \end{Bmatrix}, \qquad
+        \{a_1\} = \begin{Bmatrix} -w_{,x} \\ -w_{,y} + k_v v \\
+        u_{,x} + v_{,y} + w/R \end{Bmatrix}
+
+    .. math::
+
+        \{a_2\} = \begin{Bmatrix} v_{,x} (w_{,y} - k_v v)
+        - w_{,x} (v_{,y} + w/R) \\ w_{,x} u_{,y} - u_{,x} (w_{,y} - k_v v) \\
+        u_{,x} (v_{,y} + w/R) - v_{,x} u_{,y} \end{Bmatrix}
+
+    `\{a_0\}` gives the dead load, `\{a_1\}` the rotation of the normal and
+    the change of area. The force vector added to ``fext`` is
+
+    .. math::
+
+        \{F_p(u_e)\} = \int_A p \left( [S_u]^T a_x + [S_v]^T a_y + [S_w]^T a_z
+        \right) dA, \qquad \{a\} = r \{a_0\} + \{a_1\} + q \{a_2\}
+
+    with `r` = ``reference`` and `q` = ``quadratic``, `\{a\}` being ``ax``,
+    ``ay`` and ``az`` in the code, evaluated at each integration point with
+    the displacement gradients ``u_x``, ``u_y``, ``v_x``, ``v_y``, ``w``,
+    ``w_x`` and ``w_y`` of ``u``. With the ordering of the moderate rotations
+    of the strains of the Notes of :mod:`bfsccylinder.bfsccylinder`, `u_{,x}
+    \sim \epsilon` and `w_{,x} \sim \epsilon^{1/2}`, `\{a_0\} + \{a_1\}`
+    retains every term of `p \{a\}^T \{\delta u\}` up to the order `\epsilon
+    p \delta w` of the strains, and `\{a_2\}` adds terms of order
+    `\epsilon^2 p \delta w`, of the order of those that the strains neglect.
+    ``quadratic=0`` is therefore the consistent truncation, for which
+    `\{F_p\}` is affine in `\{u_e\}`, and ``quadratic=1`` gives the complete
+    area vector of the kinematics, e.g. to check the sensitivity of a result
+    to the truncation. At `\{u_e\} = \{0\}` the force vector is the dead load
+    `\int_A p [S_w]^T dA` for both truncations.
+
+    In a nonlinear analysis the follower pressure enters the residual
+    `\{f_{int}(u)\} - \{F_p(u)\}`, with `\{f_{int}\}` of :func:`.update_fint`,
+    whose Jacobian is the sum of the matrices of :func:`.update_KC0`,
+    :func:`.update_KCNL`, :func:`.update_KG` and :func:`.update_KCfollower`.
+    For a pressure `p = \lambda p_0` proportional to a load factor
+    `\lambda`, ``reference=0`` gives the part `\lambda (\{F_p(u)\} -
+    \{F_p(0)\})` that depends on the displacements, to be kept with the
+    internal forces, while the dead part `\lambda \{F_p(0)\}` can be given as
+    the external force vector of the load factor.
+
+    """
+    cdef double *ue
+    cdef int c1, c2, c3, c4, nint, i, j
+    cdef double Su1_01, Su1_02, Su1_03, Su1_11, Su1_12, Su1_13, Su1_21, Su1_22, Su1_23, Su1_31, Su1_32, Su1_33, Su2_01, Su2_02, Su2_03, Su2_11, Su2_12, Su2_13, Su2_21, Su2_22, Su2_23, Su2_31, Su2_32, Su2_33, Su3_01, Su3_02, Su3_03, Su3_11, Su3_12, Su3_13, Su3_21, Su3_22, Su3_23, Su3_31, Su3_32, Su3_33
+    cdef double Sv1_04, Sv1_05, Sv1_06, Sv1_14, Sv1_15, Sv1_16, Sv1_24, Sv1_25, Sv1_26, Sv1_34, Sv1_35, Sv1_36, Sv2_04, Sv2_05, Sv2_06, Sv2_14, Sv2_15, Sv2_16, Sv2_24, Sv2_25, Sv2_26, Sv2_34, Sv2_35, Sv2_36, Sv3_04, Sv3_05, Sv3_06, Sv3_14, Sv3_15, Sv3_16, Sv3_24, Sv3_25, Sv3_26, Sv3_34, Sv3_35, Sv3_36
+    cdef double Sw1_07, Sw1_08, Sw1_09, Sw1_10, Sw1_17, Sw1_18, Sw1_19, Sw1_20, Sw1_27, Sw1_28, Sw1_29, Sw1_30, Sw1_37, Sw1_38, Sw1_39, Sw1_40, Sw2_07, Sw2_08, Sw2_09, Sw2_10, Sw2_17, Sw2_18, Sw2_19, Sw2_20, Sw2_27, Sw2_28, Sw2_29, Sw2_30, Sw2_37, Sw2_38, Sw2_39, Sw2_40, Sw3_07, Sw3_08, Sw3_09, Sw3_10, Sw3_17, Sw3_18, Sw3_19, Sw3_20, Sw3_27, Sw3_28, Sw3_29, Sw3_30, Sw3_37, Sw3_38, Sw3_39, Sw3_40
+    cdef double R, lex, ley, qf, ref, pij
+    cdef double u_x, u_y, v_x, v_y, w, w_x, w_y
+    cdef double ax, ay, az
+    cdef double xi, eta, weight_xi, weight_eta, weight
+
+    with nogil:
+        lex = shell.lex
+        ley = shell.ley
+        R = shell.R
+        qf = 1. if quadratic else 0.
+        ref = 1. if reference else 0.
+
+        # positions the global matrices
+        c1 = shell.c1
+        c2 = shell.c2
+        c3 = shell.c3
+        c4 = shell.c4
+
+        for i in range(DOF):
+            shell.u[0*DOF + i] = u[c1 + i]
+        for i in range(DOF):
+            shell.u[1*DOF + i] = u[c2 + i]
+        for i in range(DOF):
+            shell.u[2*DOF + i] = u[c3 + i]
+        for i in range(DOF):
+            shell.u[3*DOF + i] = u[c4 + i]
+
+        ue = &shell.u[0]
+
+        nint = points.shape[0]
+
+        for i in range(nint):
+            xi = points[i]
+            weight_xi = weights[i]
+            for j in range(nint):
+                eta = points[j]
+                weight_eta = weights[j]
+                weight = weight_xi*weight_eta
+                pij = p[i, j]
+
+                Su1_01 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_02 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Su1_03 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_11 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_12 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Su1_13 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_21 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_22 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Su1_23 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_31 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_32 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Su1_33 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Su2_01 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_02 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_03 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_11 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_12 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_13 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_21 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_22 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_23 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_31 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su2_32 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su2_33 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su3_01 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_02 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Su3_03 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_11 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_12 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Su3_13 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_21 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_22 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Su3_23 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_31 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_32 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Su3_33 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+
+                Sv1_04 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_05 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sv1_06 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_14 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_15 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sv1_16 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_24 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_25 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sv1_26 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_34 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_35 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sv1_36 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv2_04 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_05 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_06 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_14 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_15 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_16 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_24 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_25 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_26 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_34 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv2_35 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv2_36 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv3_04 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_05 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sv3_06 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_14 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_15 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sv3_16 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_24 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_25 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sv3_26 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_34 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_35 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sv3_36 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+
+                Sw1_07 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_08 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_09 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_10 = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_17 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_18 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_19 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_20 = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_27 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_28 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_29 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_30 = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_37 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_38 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_39 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_40 = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw2_07 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_08 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_09 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_10 = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_17 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_18 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_19 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_27 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_28 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_29 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_30 = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_37 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_38 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_39 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_40 = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw3_07 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_08 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_09 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_10 = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_17 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_18 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_19 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_27 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_28 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_29 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_30 = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_37 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_38 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_39 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_40 = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+
+                # displacement gradients and area vector at the point
+                u_x = Su2_01*ue[0] + Su2_02*ue[1] + Su2_03*ue[2] + Su2_11*ue[10] + Su2_12*ue[11] + Su2_13*ue[12] + Su2_21*ue[20] + Su2_22*ue[21] + Su2_23*ue[22] + Su2_31*ue[30] + Su2_32*ue[31] + Su2_33*ue[32]
+                u_y = Su3_01*ue[0] + Su3_02*ue[1] + Su3_03*ue[2] + Su3_11*ue[10] + Su3_12*ue[11] + Su3_13*ue[12] + Su3_21*ue[20] + Su3_22*ue[21] + Su3_23*ue[22] + Su3_31*ue[30] + Su3_32*ue[31] + Su3_33*ue[32]
+                v_x = Sv2_04*ue[3] + Sv2_05*ue[4] + Sv2_06*ue[5] + Sv2_14*ue[13] + Sv2_15*ue[14] + Sv2_16*ue[15] + Sv2_24*ue[23] + Sv2_25*ue[24] + Sv2_26*ue[25] + Sv2_34*ue[33] + Sv2_35*ue[34] + Sv2_36*ue[35]
+                v_y = Sv3_04*ue[3] + Sv3_05*ue[4] + Sv3_06*ue[5] + Sv3_14*ue[13] + Sv3_15*ue[14] + Sv3_16*ue[15] + Sv3_24*ue[23] + Sv3_25*ue[24] + Sv3_26*ue[25] + Sv3_34*ue[33] + Sv3_35*ue[34] + Sv3_36*ue[35]
+                w = Sw1_07*ue[6] + Sw1_08*ue[7] + Sw1_09*ue[8] + Sw1_10*ue[9] + Sw1_17*ue[16] + Sw1_18*ue[17] + Sw1_19*ue[18] + Sw1_20*ue[19] + Sw1_27*ue[26] + Sw1_28*ue[27] + Sw1_29*ue[28] + Sw1_30*ue[29] + Sw1_37*ue[36] + Sw1_38*ue[37] + Sw1_39*ue[38] + Sw1_40*ue[39]
+                w_x = Sw2_07*ue[6] + Sw2_08*ue[7] + Sw2_09*ue[8] + Sw2_10*ue[9] + Sw2_17*ue[16] + Sw2_18*ue[17] + Sw2_19*ue[18] + Sw2_20*ue[19] + Sw2_27*ue[26] + Sw2_28*ue[27] + Sw2_29*ue[28] + Sw2_30*ue[29] + Sw2_37*ue[36] + Sw2_38*ue[37] + Sw2_39*ue[38] + Sw2_40*ue[39]
+                w_y = Sw3_07*ue[6] + Sw3_08*ue[7] + Sw3_09*ue[8] + Sw3_10*ue[9] + Sw3_17*ue[16] + Sw3_18*ue[17] + Sw3_19*ue[18] + Sw3_20*ue[19] + Sw3_27*ue[26] + Sw3_28*ue[27] + Sw3_29*ue[28] + Sw3_30*ue[29] + Sw3_37*ue[36] + Sw3_38*ue[37] + Sw3_39*ue[38] + Sw3_40*ue[39]
+                ax = qf*v_x*w_y - qf*v_y*w_x - w_x - qf*w*w_x/R
+                ay = -qf*u_x*w_y + qf*u_y*w_x - w_y
+                az = qf*u_x*v_y - qf*u_y*v_x + ref + u_x + v_y + qf*u_x*w/R + w/R
+
+                fext[0 + c1] += 0.25*Su1_01*ax*lex*ley*pij*weight
+                fext[1 + c1] += 0.25*Su1_02*ax*lex*ley*pij*weight
+                fext[2 + c1] += 0.25*Su1_03*ax*lex*ley*pij*weight
+                fext[3 + c1] += 0.25*Sv1_04*ay*lex*ley*pij*weight
+                fext[4 + c1] += 0.25*Sv1_05*ay*lex*ley*pij*weight
+                fext[5 + c1] += 0.25*Sv1_06*ay*lex*ley*pij*weight
+                fext[6 + c1] += 0.25*Sw1_07*az*lex*ley*pij*weight
+                fext[7 + c1] += 0.25*Sw1_08*az*lex*ley*pij*weight
+                fext[8 + c1] += 0.25*Sw1_09*az*lex*ley*pij*weight
+                fext[9 + c1] += 0.25*Sw1_10*az*lex*ley*pij*weight
+                fext[0 + c2] += 0.25*Su1_11*ax*lex*ley*pij*weight
+                fext[1 + c2] += 0.25*Su1_12*ax*lex*ley*pij*weight
+                fext[2 + c2] += 0.25*Su1_13*ax*lex*ley*pij*weight
+                fext[3 + c2] += 0.25*Sv1_14*ay*lex*ley*pij*weight
+                fext[4 + c2] += 0.25*Sv1_15*ay*lex*ley*pij*weight
+                fext[5 + c2] += 0.25*Sv1_16*ay*lex*ley*pij*weight
+                fext[6 + c2] += 0.25*Sw1_17*az*lex*ley*pij*weight
+                fext[7 + c2] += 0.25*Sw1_18*az*lex*ley*pij*weight
+                fext[8 + c2] += 0.25*Sw1_19*az*lex*ley*pij*weight
+                fext[9 + c2] += 0.25*Sw1_20*az*lex*ley*pij*weight
+                fext[0 + c3] += 0.25*Su1_21*ax*lex*ley*pij*weight
+                fext[1 + c3] += 0.25*Su1_22*ax*lex*ley*pij*weight
+                fext[2 + c3] += 0.25*Su1_23*ax*lex*ley*pij*weight
+                fext[3 + c3] += 0.25*Sv1_24*ay*lex*ley*pij*weight
+                fext[4 + c3] += 0.25*Sv1_25*ay*lex*ley*pij*weight
+                fext[5 + c3] += 0.25*Sv1_26*ay*lex*ley*pij*weight
+                fext[6 + c3] += 0.25*Sw1_27*az*lex*ley*pij*weight
+                fext[7 + c3] += 0.25*Sw1_28*az*lex*ley*pij*weight
+                fext[8 + c3] += 0.25*Sw1_29*az*lex*ley*pij*weight
+                fext[9 + c3] += 0.25*Sw1_30*az*lex*ley*pij*weight
+                fext[0 + c4] += 0.25*Su1_31*ax*lex*ley*pij*weight
+                fext[1 + c4] += 0.25*Su1_32*ax*lex*ley*pij*weight
+                fext[2 + c4] += 0.25*Su1_33*ax*lex*ley*pij*weight
+                fext[3 + c4] += 0.25*Sv1_34*ay*lex*ley*pij*weight
+                fext[4 + c4] += 0.25*Sv1_35*ay*lex*ley*pij*weight
+                fext[5 + c4] += 0.25*Sv1_36*ay*lex*ley*pij*weight
+                fext[6 + c4] += 0.25*Sw1_37*az*lex*ley*pij*weight
+                fext[7 + c4] += 0.25*Sw1_38*az*lex*ley*pij*weight
+                fext[8 + c4] += 0.25*Sw1_39*az*lex*ley*pij*weight
+                fext[9 + c4] += 0.25*Sw1_40*az*lex*ley*pij*weight
+
+
+cpdef void update_KCfollower(double [::1] u,
+                             BFSCCylinder shell,
+                             double [::1] points,
+                             double [::1] weights,
+                             double [:, ::1] p,
+                             long [::1] KCfollowerr,
+                             long [::1] KCfollowerc,
+                             double [::1] KCfollowerv,
+                             int quadratic=0,
+                             ):
+    r"""Update sparse vectors for the load stiffness matrix KCfollower
+
+    The load stiffness matrix of a follower pressure, minus the derivative
+    of the force vector of :func:`.update_fext_follower` with respect to the
+    element displacements, is integrated with the integration points and
+    weights given by ``points`` and ``weights``, from ``lex``, ``ley`` and
+    ``R`` of ``shell``, the pressure ``p`` at the integration points and the
+    displacements of the nodes of the element, copied from ``u`` to
+    ``shell.u``, which enter only with ``quadratic=1``. The matrix is unsymmetric in general
+    and is written in full, it must not be symmetrized. Only the entries that
+    are not identically zero for ``quadratic=1`` are written, for both values
+    of ``quadratic``: those for which the row corresponds to the degrees of
+    freedom `u`, `u_{,x}`, `u_{,y}` and the column to those of `v` or `w`,
+    the row to those of `v` and the column to those of `u` or `w`, and the
+    row to those of `w`, `w_{,x}`, `w_{,y}`, `w_{,xy}` and the column to any
+    degree of freedom. The entries between the degrees of freedom of `u` and
+    `v` are zero for ``quadratic=0``. The global row and column indices are
+    written to ``KCfollowerr`` and ``KCfollowerc``, and the values added to
+    ``KCfollowerv``, at the positions ``shell.init_k_KCfollower`` to
+    ``shell.init_k_KCfollower + KCfollower_SPARSE_SIZE - 1``. Before this
+    function is called, ``c1, c2, c3, c4``, ``init_k_KCfollower``, ``lex``,
+    ``ley`` and ``R`` of ``shell`` must be set; the stiffnesses are not used.
+    With ``quadratic=0`` the values do not depend on ``u``.
+
+    Parameters
+    ----------
+    u : np.array
+        Global displacement vector
+        1-D array of ``DOUBLE`` with ``DOF`` entries per node of the model, in
+        the order of the degrees of freedom of a node given in the module
+        documentation. The entries of the nodes of ``shell`` are read at the
+        positions ``c1+i``, ``c2+i``, ``c3+i`` and ``c4+i``, for ``i`` from
+        ``0`` to ``9``. Dimension of length for `u`, `v`, `w`, dimensionless
+        for the first derivatives and of one over length for `w_{,xy}`.
+    shell : :class:`.BFSCCylinder` object
+        The shell element being added to KCfollower
+    points : np.array
+        Integration poins
+        1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
+        constructor of ``shell``, with natural coordinates from ``-1`` to
+        ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
+        Used in both directions, for ``nint*nint`` integration points.
+    weights : np.array
+        Integration weights
+        1-D array of ``DOUBLE`` of the same size as ``points``.
+    p : np.array
+        Pressure at the integration points
+        2-D array of ``DOUBLE`` of shape ``(nint, nint)``, with the meaning,
+        indices, units and sign given in :func:`.update_fext_follower`.
+    KCfollowerr : np.array
+        Array to store row positions of sparse values
+        1-D array of integers (``INT``) of size at least
+        ``init_k_KCfollower + KCfollower_SPARSE_SIZE``.
+    KCfollowerc : np.array
+        Array to store column positions of sparse values
+        Same type and size as ``KCfollowerr``.
+    KCfollowerv : np.array
+        Array to store sparse values
+        1-D array of ``DOUBLE``, same size as ``KCfollowerr``. The values are
+        added to the existing ones, with the dimensions given for ``KC0v``
+        in :func:`.update_KC0`.
+    quadratic : int, optional
+        ``0``, the default, or ``1``, the truncation of the area vector of
+        :func:`.update_fext_follower`.
+
+    See Also
+    --------
+    update_fext_follower
+
+    Notes
+    -----
+    With the force vector `\{F_p(u_e)\}` and the area vector `\{a\}` of the
+    Notes of :func:`.update_fext_follower`, the load stiffness matrix is
+
+    .. math::
+
+        [K_{Cfollower}] = -\frac{\partial \{F_p\}}{\partial \{u_e\}} =
+        -\int_A p \left( [S_u]^T \frac{\partial a_x}{\partial \{u_e\}}
+        + [S_v]^T \frac{\partial a_y}{\partial \{u_e\}}
+        + [S_w]^T \frac{\partial a_z}{\partial \{u_e\}} \right) dA
+
+    where the derivatives of `\{a\}` are those of its displacement gradients,
+    e.g. `\partial u_{,x}/\partial \{u_e\} = [S_{u,x}]`, the local variables
+    ``Su2_*`` in the code, with ``Su1_*``, ``Su2_*`` and ``Su3_*`` the rows
+    `[S_u]`, `[S_{u,x}]` and `[S_{u,y}]` at the integration point, and
+    likewise ``Sv*`` and ``Sw*``. The term `\{a_0\}` does not contribute.
+    With ``quadratic=0`` the matrix is constant, the blocks being, per unit
+    `p`, `[S_u]^T [S_{w,x}]` between `u` and `w`, `[S_v]^T [S_{w,y}]`
+    between `v` and `w`, and `-[S_w]^T [S_{u,x}]`, `-[S_w]^T [S_{v,y}]`,
+    `-[S_w]^T [S_w]/R` between `w` and `u`, `v` and `w`; with
+    ``quadratic=1`` it is linear in `\{u_e\}`.
+
+    The tangent stiffness matrix of the residual `\{f_{int}(u)\} -
+    \{F_p(u)\}` is `[K_{C0}] + [K_{CNL}] + [K_G] + [K_{Cfollower}]`. For a
+    linear buckling analysis under a pressure `p = \lambda p_0`, with
+    ``u`` the linear static solution of `p_0` and `[K_G]` of
+    :func:`.update_KG`, the load multipliers and the buckling modes solve
+    `([K_{C0}] + \lambda ([K_G] + [K_{Cfollower}]))\{\phi\} = \{0\}`, with
+    `[K_{Cfollower}]` of `p_0` and ``quadratic=0``, an eigenvalue problem
+    that is unsymmetric in general. The conditions under which the assembled
+    matrix is symmetric are given in the Notes of
+    :mod:`bfsccylinder.bfsccylinder`; the matrix of one element is
+    unsymmetric.
+
+    """
+    cdef double *ue
+    cdef int c1, c2, c3, c4, i, j, k, nint
+    cdef double R, lex, ley, qf, pij
+    cdef double xi, eta, weight_xi, weight_eta, weight
+    cdef double Su1_01, Su1_02, Su1_03, Su1_11, Su1_12, Su1_13, Su1_21, Su1_22, Su1_23, Su1_31, Su1_32, Su1_33, Su2_01, Su2_02, Su2_03, Su2_11, Su2_12, Su2_13, Su2_21, Su2_22, Su2_23, Su2_31, Su2_32, Su2_33, Su3_01, Su3_02, Su3_03, Su3_11, Su3_12, Su3_13, Su3_21, Su3_22, Su3_23, Su3_31, Su3_32, Su3_33
+    cdef double Sv1_04, Sv1_05, Sv1_06, Sv1_14, Sv1_15, Sv1_16, Sv1_24, Sv1_25, Sv1_26, Sv1_34, Sv1_35, Sv1_36, Sv2_04, Sv2_05, Sv2_06, Sv2_14, Sv2_15, Sv2_16, Sv2_24, Sv2_25, Sv2_26, Sv2_34, Sv2_35, Sv2_36, Sv3_04, Sv3_05, Sv3_06, Sv3_14, Sv3_15, Sv3_16, Sv3_24, Sv3_25, Sv3_26, Sv3_34, Sv3_35, Sv3_36
+    cdef double Sw1_07, Sw1_08, Sw1_09, Sw1_10, Sw1_17, Sw1_18, Sw1_19, Sw1_20, Sw1_27, Sw1_28, Sw1_29, Sw1_30, Sw1_37, Sw1_38, Sw1_39, Sw1_40, Sw2_07, Sw2_08, Sw2_09, Sw2_10, Sw2_17, Sw2_18, Sw2_19, Sw2_20, Sw2_27, Sw2_28, Sw2_29, Sw2_30, Sw2_37, Sw2_38, Sw2_39, Sw2_40, Sw3_07, Sw3_08, Sw3_09, Sw3_10, Sw3_17, Sw3_18, Sw3_19, Sw3_20, Sw3_27, Sw3_28, Sw3_29, Sw3_30, Sw3_37, Sw3_38, Sw3_39, Sw3_40
+    cdef double u_x, u_y, v_x, v_y, w, w_x, w_y
+
+    with nogil:
+        R = shell.R
+        lex = shell.lex
+        ley = shell.ley
+        qf = 1. if quadratic else 0.
+
+        # positions the global matrices
+        c1 = shell.c1
+        c2 = shell.c2
+        c3 = shell.c3
+        c4 = shell.c4
+
+        for i in range(DOF):
+            shell.u[0*DOF + i] = u[c1 + i]
+        for i in range(DOF):
+            shell.u[1*DOF + i] = u[c2 + i]
+        for i in range(DOF):
+            shell.u[2*DOF + i] = u[c3 + i]
+        for i in range(DOF):
+            shell.u[3*DOF + i] = u[c4 + i]
+
+        ue = &shell.u[0]
+
+        nint = points.shape[0]
+
+        k = shell.init_k_KCfollower
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 0+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 1+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 2+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 3+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 4+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 5+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 6+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 7+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 8+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 9+c1
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 0+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 1+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 2+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 3+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 4+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 5+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 6+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 7+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 8+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 9+c2
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 0+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 1+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 2+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 3+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 4+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 5+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 6+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 7+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 8+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 9+c3
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 0+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 1+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 2+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 3+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 4+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 5+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 6+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 7+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 8+c4
+        KCfollowerc[k] = 9+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 0+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 1+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 2+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 3+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 4+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 5+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 6+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 7+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 8+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 9+c1
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 0+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 1+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 2+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 3+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 4+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 5+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 6+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 7+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 8+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 9+c2
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 0+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 1+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 2+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 3+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 4+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 5+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 6+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 7+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 8+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 9+c3
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 0+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 1+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 2+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 3+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 4+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 5+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 6+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 7+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 8+c4
+        k += 1
+        KCfollowerr[k] = 9+c4
+        KCfollowerc[k] = 9+c4
+
+        for i in range(nint):
+            xi = points[i]
+            weight_xi = weights[i]
+            for j in range(nint):
+                eta = points[j]
+                weight_eta = weights[j]
+                weight = weight_xi*weight_eta
+                pij = p[i, j]
+
+                Su1_01 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_02 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Su1_03 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_11 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_12 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Su1_13 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_21 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_22 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Su1_23 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Su1_31 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Su1_32 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Su1_33 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Su2_01 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_02 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_03 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Su2_11 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_12 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_13 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Su2_21 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_22 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_23 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Su2_31 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su2_32 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su2_33 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Su3_01 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_02 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Su3_03 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_11 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_12 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Su3_13 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_21 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_22 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Su3_23 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Su3_31 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Su3_32 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Su3_33 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+
+                Sv1_04 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_05 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sv1_06 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_14 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_15 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sv1_16 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_24 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_25 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sv1_26 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sv1_34 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv1_35 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sv1_36 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sv2_04 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_05 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_06 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sv2_14 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_15 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_16 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sv2_24 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_25 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_26 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sv2_34 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv2_35 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv2_36 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sv3_04 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_05 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sv3_06 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_14 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_15 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sv3_16 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_24 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_25 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sv3_26 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sv3_34 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sv3_35 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sv3_36 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+
+                Sw1_07 = 0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_08 = 0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_09 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_10 = 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_17 = 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_18 = -0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_19 = 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_20 = -0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_27 = 0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_28 = -0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_29 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(xi + 1)**2
+                Sw1_30 = 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(xi + 1)**2
+                Sw1_37 = 0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_38 = 0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw1_39 = -0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(xi - 1)**2
+                Sw1_40 = -0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(xi - 1)**2
+                Sw2_07 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_08 = 2*(0.03125*lex*(-eta - 2)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_09 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(-xi - 2)*(2*xi - 2) - 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_10 = 2*(0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(-xi - 1)*(2*xi - 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)**2)/lex
+                Sw2_17 = 2*(0.0625*(-eta - 2)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_18 = 2*(-0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(-eta - 2)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_19 = 2*(0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi - 2)*(2*xi + 2) + 0.03125*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi - 1)*(2*xi + 2) - 0.015625*lex*ley*(-eta - 1)*(eta - 1)**2*(xi + 1)**2)/lex
+                Sw2_27 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(xi - 2)*(2*xi + 2) + 0.0625*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_28 = 2*(-0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)*(2*xi + 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_29 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 2)*(2*xi + 2) - 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_30 = 2*(0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)*(2*xi + 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi + 1)**2)/lex
+                Sw2_37 = 2*(0.0625*(eta - 2)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) - 0.0625*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_38 = 2*(0.03125*lex*(eta - 2)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) - 0.03125*lex*(eta - 2)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_39 = 2*(-0.03125*ley*(eta - 1)*(eta + 1)**2*(-xi - 2)*(2*xi - 2) + 0.03125*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw2_40 = 2*(-0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(-xi - 1)*(2*xi - 2) + 0.015625*lex*ley*(eta - 1)*(eta + 1)**2*(xi - 1)**2)/lex
+                Sw3_07 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.0625*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_08 = 2*(0.03125*lex*(-eta - 2)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.03125*lex*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_09 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta - 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_10 = 2*(0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta - 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_17 = 2*(0.0625*(-eta - 2)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.0625*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_18 = 2*(-0.03125*lex*(-eta - 2)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.03125*lex*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_19 = 2*(0.03125*ley*(-eta - 1)*(2*eta - 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta - 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_20 = 2*(-0.015625*lex*ley*(-eta - 1)*(2*eta - 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta - 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_27 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 + 0.0625*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_28 = 2*(-0.03125*lex*(eta - 2)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 - 0.03125*lex*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_29 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(xi - 2)*(xi + 1)**2 - 0.03125*ley*(eta + 1)**2*(xi - 2)*(xi + 1)**2)/ley
+                Sw3_30 = 2*(0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(xi - 1)*(xi + 1)**2 + 0.015625*lex*ley*(eta + 1)**2*(xi - 1)*(xi + 1)**2)/ley
+                Sw3_37 = 2*(0.0625*(eta - 2)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 + 0.0625*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_38 = 2*(0.03125*lex*(eta - 2)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 + 0.03125*lex*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+                Sw3_39 = 2*(-0.03125*ley*(eta - 1)*(2*eta + 2)*(-xi - 2)*(xi - 1)**2 - 0.03125*ley*(eta + 1)**2*(-xi - 2)*(xi - 1)**2)/ley
+                Sw3_40 = 2*(-0.015625*lex*ley*(eta - 1)*(2*eta + 2)*(-xi - 1)*(xi - 1)**2 - 0.015625*lex*ley*(eta + 1)**2*(-xi - 1)*(xi - 1)**2)/ley
+
+                # displacement gradients at the point, multiplied by qf
+                u_x = Su2_01*ue[0] + Su2_02*ue[1] + Su2_03*ue[2] + Su2_11*ue[10] + Su2_12*ue[11] + Su2_13*ue[12] + Su2_21*ue[20] + Su2_22*ue[21] + Su2_23*ue[22] + Su2_31*ue[30] + Su2_32*ue[31] + Su2_33*ue[32]
+                u_y = Su3_01*ue[0] + Su3_02*ue[1] + Su3_03*ue[2] + Su3_11*ue[10] + Su3_12*ue[11] + Su3_13*ue[12] + Su3_21*ue[20] + Su3_22*ue[21] + Su3_23*ue[22] + Su3_31*ue[30] + Su3_32*ue[31] + Su3_33*ue[32]
+                v_x = Sv2_04*ue[3] + Sv2_05*ue[4] + Sv2_06*ue[5] + Sv2_14*ue[13] + Sv2_15*ue[14] + Sv2_16*ue[15] + Sv2_24*ue[23] + Sv2_25*ue[24] + Sv2_26*ue[25] + Sv2_34*ue[33] + Sv2_35*ue[34] + Sv2_36*ue[35]
+                v_y = Sv3_04*ue[3] + Sv3_05*ue[4] + Sv3_06*ue[5] + Sv3_14*ue[13] + Sv3_15*ue[14] + Sv3_16*ue[15] + Sv3_24*ue[23] + Sv3_25*ue[24] + Sv3_26*ue[25] + Sv3_34*ue[33] + Sv3_35*ue[34] + Sv3_36*ue[35]
+                w = Sw1_07*ue[6] + Sw1_08*ue[7] + Sw1_09*ue[8] + Sw1_10*ue[9] + Sw1_17*ue[16] + Sw1_18*ue[17] + Sw1_19*ue[18] + Sw1_20*ue[19] + Sw1_27*ue[26] + Sw1_28*ue[27] + Sw1_29*ue[28] + Sw1_30*ue[29] + Sw1_37*ue[36] + Sw1_38*ue[37] + Sw1_39*ue[38] + Sw1_40*ue[39]
+                w_x = Sw2_07*ue[6] + Sw2_08*ue[7] + Sw2_09*ue[8] + Sw2_10*ue[9] + Sw2_17*ue[16] + Sw2_18*ue[17] + Sw2_19*ue[18] + Sw2_20*ue[19] + Sw2_27*ue[26] + Sw2_28*ue[27] + Sw2_29*ue[28] + Sw2_30*ue[29] + Sw2_37*ue[36] + Sw2_38*ue[37] + Sw2_39*ue[38] + Sw2_40*ue[39]
+                w_y = Sw3_07*ue[6] + Sw3_08*ue[7] + Sw3_09*ue[8] + Sw3_10*ue[9] + Sw3_17*ue[16] + Sw3_18*ue[17] + Sw3_19*ue[18] + Sw3_20*ue[19] + Sw3_27*ue[26] + Sw3_28*ue[27] + Sw3_29*ue[28] + Sw3_30*ue[29] + Sw3_37*ue[36] + Sw3_38*ue[37] + Sw3_39*ue[38] + Sw3_40*ue[39]
+
+                k = shell.init_k_KCfollower
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_01*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_02*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_03*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_04*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_05*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_06*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_08*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_09*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_10*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_17*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_08*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_09*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_10*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_17*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_09*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_09*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_10*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_17*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_10*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_10*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_10*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_17*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_11*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_12*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_13*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_14*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_15*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_16*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_17*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_17*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_17*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_17*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_18*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_19*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_20*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_21*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_22*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_23*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_24*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_25*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_26*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_27*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_28*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_29*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_30*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_31*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_32*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_04*qf*w_y - Sv3_04*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_05*qf*w_y - Sv3_05*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_06*qf*w_y - Sv3_06*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_07*(-qf*v_y - 1 - qf*w/R) + Sw3_07*qf*v_x - Sw1_07*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_08*(-qf*v_y - 1 - qf*w/R) + Sw3_08*qf*v_x - Sw1_08*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_09*(-qf*v_y - 1 - qf*w/R) + Sw3_09*qf*v_x - Sw1_09*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_10*(-qf*v_y - 1 - qf*w/R) + Sw3_10*qf*v_x - Sw1_10*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_14*qf*w_y - Sv3_14*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_15*qf*w_y - Sv3_15*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_16*qf*w_y - Sv3_16*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_17*(-qf*v_y - 1 - qf*w/R) + Sw3_17*qf*v_x - Sw1_17*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_18*(-qf*v_y - 1 - qf*w/R) + Sw3_18*qf*v_x - Sw1_18*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_19*(-qf*v_y - 1 - qf*w/R) + Sw3_19*qf*v_x - Sw1_19*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_20*(-qf*v_y - 1 - qf*w/R) + Sw3_20*qf*v_x - Sw1_20*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_24*qf*w_y - Sv3_24*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_25*qf*w_y - Sv3_25*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_26*qf*w_y - Sv3_26*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_27*(-qf*v_y - 1 - qf*w/R) + Sw3_27*qf*v_x - Sw1_27*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_28*(-qf*v_y - 1 - qf*w/R) + Sw3_28*qf*v_x - Sw1_28*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_29*(-qf*v_y - 1 - qf*w/R) + Sw3_29*qf*v_x - Sw1_29*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_30*(-qf*v_y - 1 - qf*w/R) + Sw3_30*qf*v_x - Sw1_30*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_34*qf*w_y - Sv3_34*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_35*qf*w_y - Sv3_35*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sv2_36*qf*w_y - Sv3_36*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_37*(-qf*v_y - 1 - qf*w/R) + Sw3_37*qf*v_x - Sw1_37*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_38*(-qf*v_y - 1 - qf*w/R) + Sw3_38*qf*v_x - Sw1_38*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_39*(-qf*v_y - 1 - qf*w/R) + Sw3_39*qf*v_x - Sw1_39*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Su1_33*lex*ley*pij*weight*(Sw2_40*(-qf*v_y - 1 - qf*w/R) + Sw3_40*qf*v_x - Sw1_40*qf*w_x/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_34*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_35*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_01*qf*w_y + Su3_01*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_02*qf*w_y + Su3_02*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_03*qf*w_y + Su3_03*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_07*qf*u_y + Sw3_07*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_08*qf*u_y + Sw3_08*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_09*qf*u_y + Sw3_09*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_10*qf*u_y + Sw3_10*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_11*qf*w_y + Su3_11*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_12*qf*w_y + Su3_12*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_13*qf*w_y + Su3_13*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_17*qf*u_y + Sw3_17*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_18*qf*u_y + Sw3_18*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_19*qf*u_y + Sw3_19*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_20*qf*u_y + Sw3_20*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_21*qf*w_y + Su3_21*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_22*qf*w_y + Su3_22*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_23*qf*w_y + Su3_23*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_27*qf*u_y + Sw3_27*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_28*qf*u_y + Sw3_28*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_29*qf*u_y + Sw3_29*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_30*qf*u_y + Sw3_30*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_31*qf*w_y + Su3_31*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_32*qf*w_y + Su3_32*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(-Su2_33*qf*w_y + Su3_33*qf*w_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_37*qf*u_y + Sw3_37*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_38*qf*u_y + Sw3_38*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_39*qf*u_y + Sw3_39*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sv1_36*lex*ley*pij*weight*(Sw2_40*qf*u_y + Sw3_40*(-qf*u_x - 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*Sw1_37*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*Sw1_38*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*Sw1_39*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_01*(qf*v_y + 1 + qf*w/R) - Su3_01*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_02*(qf*v_y + 1 + qf*w/R) - Su3_02*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_03*(qf*v_y + 1 + qf*w/R) - Su3_03*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_04*qf*u_y + Sv3_04*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_05*qf*u_y + Sv3_05*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_06*qf*u_y + Sv3_06*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_07*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_08*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_09*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_10*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_11*(qf*v_y + 1 + qf*w/R) - Su3_11*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_12*(qf*v_y + 1 + qf*w/R) - Su3_12*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_13*(qf*v_y + 1 + qf*w/R) - Su3_13*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_14*qf*u_y + Sv3_14*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_15*qf*u_y + Sv3_15*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_16*qf*u_y + Sv3_16*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_17*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_18*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_19*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_20*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_21*(qf*v_y + 1 + qf*w/R) - Su3_21*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_22*(qf*v_y + 1 + qf*w/R) - Su3_22*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_23*(qf*v_y + 1 + qf*w/R) - Su3_23*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_24*qf*u_y + Sv3_24*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_25*qf*u_y + Sv3_25*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_26*qf*u_y + Sv3_26*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_27*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_28*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_29*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_30*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_31*(qf*v_y + 1 + qf*w/R) - Su3_31*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_32*(qf*v_y + 1 + qf*w/R) - Su3_32*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(Su2_33*(qf*v_y + 1 + qf*w/R) - Su3_33*qf*v_x)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_34*qf*u_y + Sv3_34*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_35*qf*u_y + Sv3_35*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40*lex*ley*pij*weight*(-Sv2_36*qf*u_y + Sv3_36*(qf*u_x + 1))
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_37*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_38*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_39*Sw1_40*lex*ley*pij*weight*(qf*u_x/R + 1/R)
+                k += 1
+                KCfollowerv[k] += -0.25*Sw1_40**2*lex*ley*pij*weight*(qf*u_x/R + 1/R)
