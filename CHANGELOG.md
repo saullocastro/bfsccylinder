@@ -50,6 +50,8 @@ The dates of the released versions are those of their tagged commits.
 
 ### Documentation
 
+- The documentation is built by the workflow `auto_doc.yml` for every pull request and deployed to the
+  `gh-pages` branch for every tag (or a manual run), with the packages of `requirements_doc.txt`.
 - D1: functional docstrings of the modules, of `BFSCCylinder` and
   `BFSCCylinderSanders` and of every public function.
 - D2: Notes and References of the theory: Hermite interpolation of the
