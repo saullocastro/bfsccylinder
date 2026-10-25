@@ -7,7 +7,8 @@ published tests: the skin is modelled with the elements of bfsccylinder and
 each blade stringer with the BFSC plate element of `bfscplate2d
 <https://github.com/saullocastro/bfscplate2d>`_. Both notebooks build their
 models with the module ``stiffened_cylinder.py`` of the same folder, below.
-Running them requires bfscplate2d, `composites
+Running them requires bfscplate2d 0.5.0 or newer, with the shape functions
+named ``Su``, ..., ``Sw_y``, `composites
 <https://github.com/saullocastro/composites>`_, `structsolve
 <https://saullocastro.github.io/structsolve/>`_ and Matplotlib, besides
 bfsccylinder.

@@ -183,7 +183,7 @@ def test_linear_buckling(plot=False):
             Nb = lam.B @ shell.Bm @ u + lam.D @ shell.Bb @ u
 
             displu = shell.Su @ u
-            displux = shell.Su_x @ u
+            u_x = shell.Su_x @ u
             displv = shell.Sv @ u
             displw = shell.Sw @ u
             stress.append(Nb[0])

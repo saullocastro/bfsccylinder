@@ -2,31 +2,6 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## Unreleased
-
-### Documentation
-
-- The shape functions are written `\boldsymbol{S}^u`, `\boldsymbol{S}^v`,
-  `\boldsymbol{S}^w` and their derivatives, e.g.
-  `\boldsymbol{S}^w_{,x}`, instead of `[S_u]`, `[S_{w,x}]`, ..., as in
-  pyfe3d. The names of the code are unchanged.
-- The tutorial module `doc/source/tutorials/stiffened_cylinder.py` and the
-  text of `stiffened_cylinder_buckling.ipynb` use `update_Sv_x`,
-  `update_Sv_y`, `Sv_x` and `Sv_y` of the BFSC plate element, the names of
-  bfscplate2d after its shape functions were renamed from `N` to `S`.
-
-### Derivations
-
-- The shape functions of the scripts of `deriving_equations/donnell/` and
-  of `deriving_equations/sanders/derive_bfsccylinder_M_sparse.py` renamed
-  from `N` to `S`, as in the other scripts; `regenerate.py` no longer looks
-  for operators named `Nu`, `Nv` and `Nw`.
-
-### Tests
-
-- The disabled plotting blocks of the `Z22` and `Z33` buckling tests use
-  `update_Su`, `Su`, ..., the names of the shape functions since 0.5.0.
-
 ## 0.7.0 (2026-10-24)
 
 ### Python versions
@@ -95,7 +70,21 @@ The dates of the released versions are those of their tagged commits.
   and axial buckling (Card and Jones, NASA TN D-3639, 1966) of
   stringer-stiffened cylinders, with the skin of `BFSCCylinderSanders`
   elements and blade stringers of the BFSC plate element of `bfscplate2d`,
-  compared with the published tests and theories.
+  compared with the published tests and theories. The tutorial module
+  `stiffened_cylinder.py` uses `update_Sv_x`, `update_Sv_y`, `Sv_x` and
+  `Sv_y` of `BFSCPlate2D`, and requires bfscplate2d 0.5.0 or newer, in which
+  its shape functions are renamed from `N` to `S`.
+- The shape functions are written `\boldsymbol{S}^u`, `\boldsymbol{S}^v`,
+  `\boldsymbol{S}^w` and their derivatives, e.g. `\boldsymbol{S}^w_{,x}`,
+  as in pyfe3d, instead of `[S_u]`, `[S_{w,x}]`, ...; the names of the code
+  are unchanged.
+
+### Derivations
+
+- The shape functions of the scripts of `deriving_equations/donnell/` and
+  of `deriving_equations/sanders/derive_bfsccylinder_M_sparse.py` renamed
+  from `N` to `S`, as in the other scripts; `regenerate.py` no longer looks
+  for operators named `Nu`, `Nv` and `Nw`.
 
 ### Tests
 
@@ -108,6 +97,14 @@ The dates of the released versions are those of their tagged commits.
 - New `tests/test_follower_pressure_structsolve.py`: the follower pressure
   on a cylinder with a free end with `structsolve.Analysis`, for both
   kinematics.
+- An underscore introduces a partial derivative in the names of the tests
+  and of the tutorial module: the keys `u_x`, ..., `w_xx`, `w_yy`, `w_xy`
+  of the fields of `test_follower_pressure_validation.py` (were `ux`, ...,
+  `wxy`) and the rows `Sv_x`, `Sv_y` of `stiffened_cylinder.py` (were
+  `Gvx`, `Gvy`).
+- The disabled plotting blocks of the `Z22` and `Z33` buckling tests use
+  `update_Su`, `Su`, `Su_x`, ..., the names of the shape functions since
+  0.5.0, and `u_x` (was `displux`).
 
 ## 0.6.1 (2026-09-25)
 

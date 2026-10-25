@@ -315,22 +315,22 @@ class StiffenedCylinder:
             return self._ops
         plate = self.str_elements[0]
         p, w = self.points, self.weights
-        Bm, Gvx, Gvy, wts = [], [], [], []
+        Bm, Sv_x, Sv_y, wts = [], [], [], []
         for i, xi in enumerate(p):
             for j, eta in enumerate(p):
                 plate.update_Bm(xi, eta)
                 plate.update_Sv_x(xi, eta)
                 plate.update_Sv_y(xi, eta)
                 Bm.append(np.array(plate.Bm))
-                Gvx.append(np.array(plate.Sv_x))
-                Gvy.append(np.array(plate.Sv_y))
+                Sv_x.append(np.array(plate.Sv_x))
+                Sv_y.append(np.array(plate.Sv_y))
                 wts.append(w[i]*w[j]*plate.lex*plate.ley/4)
         dofs = np.array([[pl.c1 + d for d in range(DOF)]
                          + [pl.c2 + d for d in range(DOF)]
                          + [pl.c3 + d for d in range(DOF)]
                          + [pl.c4 + d for d in range(DOF)]
                          for pl in self.str_elements])
-        self._ops = (np.array(Bm), np.array(Gvx), np.array(Gvy),
+        self._ops = (np.array(Bm), np.array(Sv_x), np.array(Sv_y),
                      np.array(wts), dofs)
         return self._ops
 
@@ -338,7 +338,7 @@ class StiffenedCylinder:
         """Membrane forces `N_{xx}, N_{yy}, N_{xy}` of the stringer elements
         at their integration points, shape ``(num_elements, nint**2, 3)``,
         from the displacements ``u`` of all the degrees of freedom"""
-        Bm, Gvx, Gvy, wts, dofs = self._stringer_operators()
+        Bm, Sv_x, Sv_y, wts, dofs = self._stringer_operators()
         A = self.str_prop.ABD[:3, :3]
         eps = np.einsum('pij,ej->epi', Bm, u[dofs])
         return eps @ A.T
@@ -356,12 +356,12 @@ class StiffenedCylinder:
         These terms, the counterpart of the terms of `w` of the skin, are
         not in the geometric stiffness matrix of the BFSC plate element,
         which has only the terms of its out-of-plane displacement `W`."""
-        Bm, Gvx, Gvy, wts, dofs = self._stringer_operators()
+        Bm, Sv_x, Sv_y, wts, dofs = self._stringer_operators()
         Nw = N*wts[None, :, None]
-        Ke = (np.einsum('ep,pi,pj->eij', Nw[:, :, 0], Gvx, Gvx)
-              + np.einsum('ep,pi,pj->eij', Nw[:, :, 1], Gvy, Gvy)
-              + np.einsum('ep,pi,pj->eij', Nw[:, :, 2], Gvx, Gvy)
-              + np.einsum('ep,pi,pj->eij', Nw[:, :, 2], Gvy, Gvx))
+        Ke = (np.einsum('ep,pi,pj->eij', Nw[:, :, 0], Sv_x, Sv_x)
+              + np.einsum('ep,pi,pj->eij', Nw[:, :, 1], Sv_y, Sv_y)
+              + np.einsum('ep,pi,pj->eij', Nw[:, :, 2], Sv_x, Sv_y)
+              + np.einsum('ep,pi,pj->eij', Nw[:, :, 2], Sv_y, Sv_x))
         r = np.repeat(dofs, dofs.shape[1], axis=1).ravel()
         c = np.tile(dofs, (1, dofs.shape[1])).ravel()
         return coo_matrix((Ke.ravel(), (r, c)),
