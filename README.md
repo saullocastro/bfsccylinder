@@ -51,7 +51,7 @@ History
 
 See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
 
-* version 0.7.0 (2026-10-24)
+* version 0.7.0 (2026-10-26)
     - Follower pressure, for both kinematics: `update_fext_follower` and
       `update_KCfollower`, the force vector and the unsymmetric load
       stiffness matrix of a pressure normal to the deformed mid-surface
