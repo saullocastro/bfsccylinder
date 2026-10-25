@@ -6,11 +6,12 @@ structsolve for both kinematics. The free end makes the load stiffness
 matrix unsymmetric. The callables of ``FollowerCallables`` receive the load
 factor ``inc``, which structsolve passes to the callables that declare it:
 
-- ``calc_fext`` gives the dead part `\lambda \{F_p(0)\}` of the pressure;
+- ``calc_fext`` gives the dead part `\lambda \boldsymbol{F}_p(\boldsymbol{0})` of the pressure;
 - ``calc_fint`` subtracts the part that depends on the displacements,
-  `\lambda (\{F_p(u)\} - \{F_p(0)\})`, of ``update_fext_follower`` with
-  ``reference=0``, such that the residual of structsolve is that of the
-  follower pressure, `\lambda \{F_p(u)\} - \{f_{int}(u)\}`;
+  `\lambda (\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))`, of ``update_fext_follower`` with
+  ``reference=0``, such that structsolve solves the equilibrium of the
+  follower pressure, `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
+  \boldsymbol{F}_p(\boldsymbol{u})`;
 - ``calc_kC`` adds the load stiffness matrix of the pressure `\lambda p`.
 
 The checks: the solution is in equilibrium with the whole follower

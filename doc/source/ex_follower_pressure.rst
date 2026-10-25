@@ -6,8 +6,8 @@ Follower pressure
 Residual and tangent stiffness matrix
 -------------------------------------
 
-The residual `\{f_{int}(u)\} - \{F_p(u)\}` and its Jacobian
-`[K_{C0}] + [K_{CNL}] + [K_G] + [K_{Cfollower}]` of one element, for both
+The residual `\boldsymbol{F}_{int}(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{u})` and its Jacobian
+`\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F` of one element, for both
 kinematics, the modules of :doc:`kinematics` being selected by the
 dictionary ``KINEMATICS``, with a pressure that varies over the element:
 
@@ -30,8 +30,9 @@ ring is modelled with one element along `x`, the mesh closed around the
 circumference, and symmetry planes that keep the modes with an even number
 of circumferential waves; see the docstring of
 ``tests/test_follower_pressure_validation.py``. The matrices of the model,
-with `[K_G]` of the linear static solution of the dead pressure load and
-`[K_{Cfollower}]` at `\{u\} = \{0\}`:
+with `\boldsymbol{K}_G` of the linear static solution of the dead pressure load and
+the load stiffness matrix `\boldsymbol{K}_{F_{ref}}` of the same pressure at
+`\boldsymbol{u} = \boldsymbol{0}`:
 
 .. literalinclude:: ../../tests/test_follower_pressure_validation.py
     :pyobject: cylinder_model
@@ -45,9 +46,9 @@ with `[K_G]` of the linear static solution of the dead pressure load and
 .. literalinclude:: ../../tests/test_follower_pressure_validation.py
     :pyobject: ring
 
-The linear buckling problem `([K_{C0}] + \lambda ([K_G] +
-[K_{Cfollower}]))\{\phi\} = \{0\}` of the follower pressure, or without
-`[K_{Cfollower}]` for the dead pressure, solved with ``structsolve.lb``,
+The linear buckling problem `(\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G +
+\boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}` of the follower pressure, or without
+`\boldsymbol{K}_{F_{ref}}` for the dead pressure, solved with ``structsolve.lb``,
 with the unsymmetric solvers for the follower pressure:
 
 .. literalinclude:: ../../tests/test_follower_pressure_validation.py

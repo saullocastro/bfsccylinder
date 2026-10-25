@@ -78,6 +78,26 @@ The dates of the released versions are those of their tagged commits.
   `\boldsymbol{S}^w` and their derivatives, e.g. `\boldsymbol{S}^w_{,x}`,
   as in pyfe3d, instead of `[S_u]`, `[S_{w,x}]`, ...; the names of the code
   are unchanged.
+- Notation of the book in the math of the docstrings, the user guide, the
+  test docstrings, the tutorial module and the markdown of the tutorials:
+  vectors bold lower case without braces, e.g. `\boldsymbol{u}_e`,
+  `\boldsymbol{\varepsilon}_L`, `\boldsymbol{a}` (were `\{u_e\}`,
+  `\{\varepsilon_L\}`, `\{a\}`), the force vectors and the residual upper
+  case, `\boldsymbol{F}_{int}`, `\boldsymbol{F}_{ext}`, `\boldsymbol{F}_p`,
+  `\boldsymbol{F}_k`, `\boldsymbol{R}` (were `\{f_{int}\}`, `\{f\}`,
+  `\{F_p\}`, `\{f_k\}`); matrices bold upper case without brackets, e.g.
+  `\boldsymbol{B}_m`, `\boldsymbol{K}_{C0}`, `\boldsymbol{K}_{CNL}`,
+  `\boldsymbol{K}_G`, `\boldsymbol{T}` (were `[B_m]`, `[K_{C0}]`,
+  `[K_{CNL}]`, `[K_G]`, `[T]`); the operator of the nonlinear strains
+  `\boldsymbol{B}_{NL}` (was `[B_{mL}]`, `BmL` in the code); the load
+  stiffness matrix `\boldsymbol{K}_F` (was `[K_{Cfollower}]`), and
+  `\boldsymbol{K}_{F_{ref}}` for the reference pressure `p_0` of a linear
+  buckling analysis; the position `\boldsymbol{X}` and the basis vectors
+  `\boldsymbol{e}_x`, ... in bold; the transpose `^\top` (was `^T`). The
+  residual is `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_{ext}`
+  throughout. Seven docstrings that now contain a backslash, or already did
+  (`update_KG_constant_stress` of `bfsccylinder_sanders`), are raw strings.
+  Code identifiers, plain-text comments and README.md are unchanged.
 
 ### Derivations
 

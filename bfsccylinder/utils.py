@@ -8,7 +8,7 @@ laminate to every integration point of an element.
 
 """
 def assign_constant_ABD(bfsccylinder, prop):
-    """Assign the same laminate stiffnesses to all integration points
+    r"""Assign the same laminate stiffnesses to all integration points
 
     Every entry of the arrays ``A11, A12, A16, A22, A26, A66``, ``B11, B12,
     B16, B22, B26, B66`` and ``D11, D12, D16, D22, D26, D66`` of the element,
@@ -33,7 +33,7 @@ def assign_constant_ABD(bfsccylinder, prop):
     Notes
     -----
     The attributes of ``prop`` are the entries of the laminate stiffness
-    matrices `[A]`, `[B]` and `[D]` of the constitutive relation of the Notes
+    matrices `\boldsymbol{A}`, `\boldsymbol{B}` and `\boldsymbol{D}` of the constitutive relation of the Notes
     of :mod:`bfsccylinder.bfsccylinder`, referred to the mid-surface, with
     `x` the axial and `y` the circumferential direction of the element. With
     the same values at every integration point, the laminate is uniform over

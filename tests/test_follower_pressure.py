@@ -1,9 +1,10 @@
 r"""Verification of the follower pressure of both kinematics
 
 A follower pressure stays normal to the deformed mid-surface and acts on its
-deformed area. Its force vector `F_p(u)` is added by
-``update_fext_follower`` and its load stiffness `-\partial F_p/\partial u`
-is written by ``update_KCfollower``, for the area vector truncated to the
+deformed area. Its force vector `\boldsymbol{F}_p(\boldsymbol{u})` is added by
+``update_fext_follower`` and its load stiffness `\boldsymbol{K}_F =
+-\partial \boldsymbol{F}_p/\partial \boldsymbol{u}` is written by
+``update_KCfollower``, for the area vector truncated to the
 terms of order 0 and 1 in the displacement gradients (``quadratic=0``) or
 complete (``quadratic=1``). The checks, for the Donnell-type and the
 Sanders-type kinematics and for both truncations:
@@ -11,14 +12,18 @@ Sanders-type kinematics and for both truncations:
 1. in the undeformed state the follower force equals the dead pressure load
    `\int p \boldsymbol{S}^w dA`, computed here independently, for a
    non-uniform `p`;
-2. `F_p(u)` against an independent reference, with cubic Hermite rows
-   written in ``test_mass_matrix.py`` and the area vector of ``np.cross``;
-3. directional Taylor test of `F_p` against `-K_p d`: the remainder is at
-   round-off for ``quadratic=0``, `F_p` being affine, and falls as `O(h)`
-   for ``quadratic=1``;
-4. ``reference=0`` gives `F_p(u) - F_p(0)`;
-5. ``KC0 + KCNL + KG + KCfollower`` is the Jacobian of the residual `f_{int}
-   - F_p`, by a Taylor test and by finite differences;
+2. `\boldsymbol{F}_p(\boldsymbol{u})` against an independent reference, with
+   cubic Hermite rows written in ``test_mass_matrix.py`` and the area vector
+   of ``np.cross``;
+3. directional Taylor test of `\boldsymbol{F}_p` against `-\boldsymbol{K}_F
+   \boldsymbol{d}`: the remainder is at round-off for ``quadratic=0``,
+   `\boldsymbol{F}_p` being affine, and falls as `O(h)` for
+   ``quadratic=1``;
+4. ``reference=0`` gives `\boldsymbol{F}_p(\boldsymbol{u}) -
+   \boldsymbol{F}_p(\boldsymbol{0})`;
+5. ``KC0 + KCNL + KG + KCfollower`` is the Jacobian of the residual
+   `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p`, by a Taylor
+   test and by finite differences;
 6. the sparse layout: every entry written once, ``KCfollower_SPARSE_SIZE``
    exact, the values independent of ``u`` for ``quadratic=0``, and the
    element matrix unsymmetric.
@@ -98,7 +103,7 @@ def KCfollower(mod, elem, points, weights, p, u, quadratic):
 
 def reference_force(kinematics, elem, points, weights, p, u, quadratic,
                     reference=1):
-    r"""`\int p \boldsymbol{S}^T a dA` with independent Hermite rows and
+    r"""`\int p \boldsymbol{S}^\top \boldsymbol{a} dA` with independent Hermite rows and
     ``np.cross``"""
     R = elem.R
     kv = 1/R if kinematics == 'sanders' else 0.

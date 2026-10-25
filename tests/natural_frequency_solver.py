@@ -11,7 +11,7 @@ vector, with a larger Krylov subspace, and the result is verified:
 - the relative residual of each eigenpair must be below ``rtol``;
 - no eigenvalue below the highest one returned may be missing: by
   Sylvester's law of inertia, the number of negative pivots of the
-  symmetric factorization of `[K] - s [M]`, for `s` slightly above the
+  symmetric factorization of `\boldsymbol{K} - s \boldsymbol{M}`, for `s` slightly above the
   highest eigenvalue returned, is the number of eigenvalues below `s`.
 """
 import numpy as np
@@ -21,7 +21,7 @@ from scipy.sparse.linalg import LinearOperator, eigs, splu
 
 def negative_pivots(A):
     r"""Number of negative eigenvalues of the symmetric sparse matrix ``A``,
-    from an `[L][D][L]^T` factorization with a symmetric permutation"""
+    from an `\boldsymbol{L}\boldsymbol{D}\boldsymbol{L}^\top` factorization with a symmetric permutation"""
     lu = splu(csc_matrix(A), permc_spec='MMD_AT_PLUS_A',
               diag_pivot_thresh=0., options=dict(SymmetricMode=True))
     assert np.array_equal(lu.perm_r, lu.perm_c), 'row interchange'
@@ -31,8 +31,8 @@ def negative_pivots(A):
 
 
 def lowest_frequencies(K, M, k, rtol=1e-8):
-    r"""The ``k`` lowest `\omega_n^2` and modes of `[K] \{u\} = \omega_n^2
-    [M] \{u\}`, ``K`` positive definite, verified"""
+    r"""The ``k`` lowest `\omega_n^2` and modes of `\boldsymbol{K} \boldsymbol{u} = \omega_n^2
+    \boldsymbol{M} \boldsymbol{u}`, ``K`` positive definite, verified"""
     # shift-invert with the shift -1, below the lowest eigenvalue: the
     # largest eigenvalues mu of ([K] + [M])^-1 [M] give omega_n**2 = 1/mu - 1
     lu = splu(csc_matrix(K + M))

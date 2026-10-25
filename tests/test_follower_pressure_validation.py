@@ -10,15 +10,16 @@ r"""Validation of the follower pressure against closed forms
    with `n` even. The linear buckling problem
 
    .. math::
-       ([K_{C0}] + \lambda ([K_G(u_0)] + [K_{Cfollower}]))\{\phi\} = \{0\}
+       (\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G(\boldsymbol{u}_0) + \boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}
 
-   with `u_0` the linear static solution of a unit external pressure, is
+   with `\boldsymbol{u}_0` the linear static solution of a unit external
+   pressure and `\boldsymbol{K}_{F_{ref}}` its load stiffness matrix, is
    solved with :func:`structsolve.lb` and the unsymmetric solvers, and
    compared with :func:`ring_closed_form`, the exact second variation of the
    ring with the same strains and load terms, for the mode `n = 2`: the
    Sanders-type and Donnell-type kinematics, with the follower pressure
    (first-order area vector) or with a pressure of constant direction (dead
-   load, `[K_{Cfollower}]` left out). In the inextensional limit, `p R^3/D =
+   load, `\boldsymbol{K}_{F_{ref}}` left out). In the inextensional limit, `p R^3/D =
    -3` (Sanders, follower), `-4` (dead) and `-16/5` (Donnell, follower).
 
 2. Finite cylinders with shear-diaphragm ends under a lateral or a

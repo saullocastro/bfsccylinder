@@ -26,8 +26,8 @@ used with the Donnell-type skin, whose kinematics neglect `v/R`. The
 derivatives `U_{,Y}` and `V_{,Y}` of the stringer, its in-plane shear and
 radial strains at the root, stay free. The 8 tied degrees of freedom of
 each root node are eliminated with the transformation
-`\{u\} = [T]\{u_r\}`, and the matrices of the reduced degrees of freedom
-`\{u_r\}` are `[T]^T [K] [T]`, `[T]^T [K_G] [T]` and `[T]^T [M] [T]`.
+`\boldsymbol{u} = \boldsymbol{T}\boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom
+`\boldsymbol{u}_r` are `\boldsymbol{T}^\top \boldsymbol{K} \boldsymbol{T}`, `\boldsymbol{T}^\top \boldsymbol{K}_G \boldsymbol{T}` and `\boldsymbol{T}^\top \boldsymbol{M} \boldsymbol{T}`.
 
 The model is the half of the cylinder `0 \le \theta \le \pi` with two
 planes of symmetry midway between two stringers, or the whole cylinder.
@@ -233,7 +233,7 @@ class StiffenedCylinder:
         return coo_matrix((v, (r, c)), shape=(self.N, self.N)).tocsr()
 
     def reduce(self, A):
-        """Matrix of the reduced degrees of freedom, `[T]^T [A] [T]`"""
+        r"""Matrix of the reduced degrees of freedom, `\boldsymbol{T}^\top \boldsymbol{A} \boldsymbol{T}`"""
         return (self.T.T @ A @ self.T).tocsr()
 
     def KC0(self):
