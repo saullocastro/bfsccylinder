@@ -9,7 +9,8 @@ complete (``quadratic=1``). The checks, for the Donnell-type and the
 Sanders-type kinematics and for both truncations:
 
 1. in the undeformed state the follower force equals the dead pressure load
-   `\int p S_w dA`, computed here independently, for a non-uniform `p`;
+   `\int p \boldsymbol{S}^w dA`, computed here independently, for a
+   non-uniform `p`;
 2. `F_p(u)` against an independent reference, with cubic Hermite rows
    written in ``test_mass_matrix.py`` and the area vector of ``np.cross``;
 3. directional Taylor test of `F_p` against `-K_p d`: the remainder is at
@@ -97,7 +98,8 @@ def KCfollower(mod, elem, points, weights, p, u, quadratic):
 
 def reference_force(kinematics, elem, points, weights, p, u, quadratic,
                     reference=1):
-    r"""`\int p S^T a dA` with independent Hermite rows and ``np.cross``"""
+    r"""`\int p \boldsymbol{S}^T a dA` with independent Hermite rows and
+    ``np.cross``"""
     R = elem.R
     kv = 1/R if kinematics == 'sanders' else 0.
     ex = np.array([1., 0., 0.])

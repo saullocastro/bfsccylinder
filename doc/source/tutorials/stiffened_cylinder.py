@@ -319,11 +319,11 @@ class StiffenedCylinder:
         for i, xi in enumerate(p):
             for j, eta in enumerate(p):
                 plate.update_Bm(xi, eta)
-                plate.update_Nv_x(xi, eta)
-                plate.update_Nv_y(xi, eta)
+                plate.update_Sv_x(xi, eta)
+                plate.update_Sv_y(xi, eta)
                 Bm.append(np.array(plate.Bm))
-                Gvx.append(np.array(plate.Nv_x))
-                Gvy.append(np.array(plate.Nv_y))
+                Gvx.append(np.array(plate.Sv_x))
+                Gvy.append(np.array(plate.Sv_y))
                 wts.append(w[i]*w[j]*plate.lex*plate.ley/4)
         dofs = np.array([[pl.c1 + d for d in range(DOF)]
                          + [pl.c2 + d for d in range(DOF)]

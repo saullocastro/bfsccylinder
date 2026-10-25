@@ -109,15 +109,15 @@ cross derivative, which is not a degree of freedom of `u` and `v`:
     v = \sum_{i=1}^{4} \left( H_i v_i + H_{xi} {v_{,x}}_i + H_{yi} {v_{,y}}_i
         \right)
 
-In row form `u = [S_u]\{u_e\}`, `v = [S_v]\{u_e\}` and `w =
-[S_w]\{u_e\}`, with `\{u_e\}` the element displacement vector ``u`` and the
-rows ``Su``, ``Sv`` and ``Sw`` of :meth:`.BFSCCylinder.update_Su`,
-:meth:`.BFSCCylinder.update_Sv` and :meth:`.BFSCCylinder.update_Sw`; the
-rows of the derivatives, e.g. ``Sw_x``, are their derivatives. Along an edge,
-`u`, `v`, `w` and their derivatives normal to the edge depend only on the
-degrees of freedom of the two nodes of that edge, such that `u`, `v`, `w`
-and their first derivatives are continuous between elements that share an
-edge.
+In row form `u = \boldsymbol{S}^u\{u_e\}`, `v = \boldsymbol{S}^v\{u_e\}` and
+`w = \boldsymbol{S}^w\{u_e\}`, with `\{u_e\}` the element displacement vector
+``u`` and the rows ``Su``, ``Sv`` and ``Sw`` of
+:meth:`.BFSCCylinder.update_Su`, :meth:`.BFSCCylinder.update_Sv` and
+:meth:`.BFSCCylinder.update_Sw`; the rows of the derivatives, e.g. ``Sw_x``,
+are their derivatives. Along an edge, `u`, `v`, `w` and their derivatives
+normal to the edge depend only on the degrees of freedom of the two nodes of
+that edge, such that `u`, `v`, `w` and their first derivatives are continuous
+between elements that share an edge.
 
 This interpolation of `u` and `v` with the Hermite functions is that of the
 BFSC plate element of Castro and Jansen [4]_, of which this element is the
@@ -148,17 +148,19 @@ and moderate rotations, and the curvatures `\{\kappa\} = \{\kappa_{xx},
 
     \{\varepsilon_{NL}\} = \begin{Bmatrix} w_{,x}^2/2 \\ w_{,y}^2/2 \\
     w_{,x} w_{,y} \end{Bmatrix} = \frac{1}{2} [B_{mL}]\{u_e\}, \qquad
-    [B_{mL}] = \begin{bmatrix} w_{,x} [S_{w,x}] \\ w_{,y} [S_{w,y}] \\
-    w_{,x} [S_{w,y}] + w_{,y} [S_{w,x}] \end{bmatrix}
+    [B_{mL}] = \begin{bmatrix} w_{,x} \boldsymbol{S}^w_{,x} \\
+    w_{,y} \boldsymbol{S}^w_{,y} \\
+    w_{,x} \boldsymbol{S}^w_{,y} + w_{,y} \boldsymbol{S}^w_{,x} \end{bmatrix}
 
 where `[B_m]` and `[B_b]` are the rows ``Bm`` and ``Bb`` of
 :meth:`.BFSCCylinder.update_Bm` and :meth:`.BFSCCylinder.update_Bb`, and
 `[B_{mL}]`, which depends on the slopes ``w_x`` and ``w_y`` of the current
 displacements, has the rows ``BmL1``, ``BmL2`` and ``BmL3`` of
-:func:`.update_KCNL` and :func:`.update_fint`, such that the variation of
-the nonlinear strains is `\delta\{\varepsilon_{NL}\} = [B_{mL}]\{\delta
-u_e\}`. The slopes are `\{w_{,x}, w_{,y}\}^T = [G]\{u_e\}`, with `[G]` of
-the rows `[S_{w,x}]` and `[S_{w,y}]`, ``G1`` and ``G2`` in the code.
+:func:`.update_KCNL` and :func:`.update_fint`, such that the variation of the
+nonlinear strains is `\delta\{\varepsilon_{NL}\} = [B_{mL}]\{\delta u_e\}`. The
+slopes are `\{w_{,x}, w_{,y}\}^T = [G]\{u_e\}`, with `[G]` of the rows
+`\boldsymbol{S}^w_{,x}` and `\boldsymbol{S}^w_{,y}`, ``G1`` and ``G2`` in the
+code.
 
 The in-plane displacements do not enter the curvatures and the rotations,
 which are those of a flat plate, and the curvature of the shell enters only
@@ -567,8 +569,9 @@ cdef class BFSCCylinder(object):
 
         .. math::
 
-            [B_m] = \begin{bmatrix} [S_{u,x}] \\ [S_{v,y}] + [S_w]/R \\
-            [S_{u,y}] + [S_{v,x}] \end{bmatrix}
+            [B_m] = \begin{bmatrix} \boldsymbol{S}^u_{,x} \\
+            \boldsymbol{S}^v_{,y} + \boldsymbol{S}^w/R \\
+            \boldsymbol{S}^u_{,y} + \boldsymbol{S}^v_{,x} \end{bmatrix}
 
         such that `\{\varepsilon_L\} = \{u_{,x}, v_{,y} + w/R, u_{,y} +
         v_{,x}\}^T = [B_m]\{u_e\}`.
@@ -664,14 +667,14 @@ cdef class BFSCCylinder(object):
 
         Notes
         -----
-        With the rows `[S_w]` of the interpolation of `w` of the Notes of
-        :mod:`bfsccylinder.bfsccylinder`, the rows of the Donnell-type
+        With the rows `\boldsymbol{S}^w` of the interpolation of `w` of the
+        Notes of :mod:`bfsccylinder.bfsccylinder`, the rows of the Donnell-type
         curvatures are
 
         .. math::
 
-            [B_b] = -\begin{bmatrix} [S_{w,xx}] \\ [S_{w,yy}] \\ 2 [S_{w,xy}]
-            \end{bmatrix}
+            [B_b] = -\begin{bmatrix} \boldsymbol{S}^w_{,xx} \\
+            \boldsymbol{S}^w_{,yy} \\ 2 \boldsymbol{S}^w_{,xy} \end{bmatrix}
 
         such that `\{\kappa\} = \{-w_{,xx}, -w_{,yy}, -2 w_{,xy}\}^T =
         [B_b]\{u_e\}`. They do not depend on ``R``: the curvatures are those
@@ -753,7 +756,7 @@ cdef class BFSCCylinder(object):
         ``10*(i - 1) + 0``, ``10*(i - 1) + 1`` and ``10*(i - 1) + 2``, are
         the Hermite functions `H_i`, `H_{xi}` and `H_{yi}` of the Notes
         of :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
-        that `u = [S_u]\{u_e\}`.
+        that `u = \boldsymbol{S}^u\{u_e\}`.
 
         """
         cdef double lex, ley
@@ -877,7 +880,7 @@ cdef class BFSCCylinder(object):
         ``10*(i - 1) + 3``, ``10*(i - 1) + 4`` and ``10*(i - 1) + 5``, are
         the Hermite functions `H_i`, `H_{xi}` and `H_{yi}` of the Notes
         of :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
-        that `v = [S_v]\{u_e\}`.
+        that `v = \boldsymbol{S}^v\{u_e\}`.
 
         """
         cdef double lex, ley
@@ -1002,7 +1005,7 @@ cdef class BFSCCylinder(object):
         ``10*(i - 1) + 6`` to ``10*(i - 1) + 9``, are the Hermite functions
         `H_i`, `H_{xi}`, `H_{yi}` and `H_{xyi}` of the Notes of
         :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
-        that `w = [S_w]\{u_e\}`.
+        that `w = \boldsymbol{S}^w\{u_e\}`.
 
         """
         cdef double lex, ley
@@ -14922,13 +14925,13 @@ cpdef void update_KG(double [::1] u,
         \begin{Bmatrix} N_{xx} \\ N_{yy} \\ N_{xy} \end{Bmatrix} =
         [A][B_m]\{u_e\} + [B][B_b]\{u_e\}
 
-    with `[G]` the rows `[S_{w,x}]` and `[S_{w,y}]`, ``G1`` and ``G2``, such
-    that `[G]\{u_e\} = \{w_{,x}, w_{,y}\}^T`. It is the second derivative of
-    `\int_A \{N\}^T \{\varepsilon_{NL}\} dA` with respect to `\{u_e\}` for
-    `\{N\}` held fixed. In a linear buckling analysis, with ``u`` the linear
-    static solution for a reference load, the load multipliers `\lambda` and
-    the buckling modes `\{\phi\}` solve `([K_{C0}] + \lambda [K_G])\{\phi\} =
-    \{0\}`, with `[K_{C0}]` of :func:`.update_KC0`.
+    with `[G]` the rows `\boldsymbol{S}^w_{,x}` and `\boldsymbol{S}^w_{,y}`,
+    ``G1`` and ``G2``, such that `[G]\{u_e\} = \{w_{,x}, w_{,y}\}^T`. It is the
+    second derivative of `\int_A \{N\}^T \{\varepsilon_{NL}\} dA` with respect
+    to `\{u_e\}` for `\{N\}` held fixed. In a linear buckling analysis, with
+    ``u`` the linear static solution for a reference load, the load multipliers
+    `\lambda` and the buckling modes `\{\phi\}` solve `([K_{C0}] + \lambda
+    [K_G])\{\phi\} = \{0\}`, with `[K_{C0}]` of :func:`.update_KC0`.
 
     """
     cdef double *ue
@@ -17875,9 +17878,12 @@ cpdef void update_M(BFSCCylinder shell,
 
     .. math::
 
-        [M] = \int_A \rho \left( h \left( [S_u]^T [S_u] + [S_v]^T [S_v]
-              + [S_w]^T [S_w] \right) + \frac{h^3}{12} \left( [S_{w,x}]^T
-              [S_{w,x}] + [S_{w,y}]^T [S_{w,y}] \right) \right) dA
+        [M] = \int_A \rho \left( h \left( (\boldsymbol{S}^u)^T \boldsymbol{S}^u
+              + (\boldsymbol{S}^v)^T \boldsymbol{S}^v
+              + (\boldsymbol{S}^w)^T \boldsymbol{S}^w \right)
+              + \frac{h^3}{12} \left( (\boldsymbol{S}^w_{,x})^T
+              \boldsymbol{S}^w_{,x} + (\boldsymbol{S}^w_{,y})^T
+              \boldsymbol{S}^w_{,y} \right) \right) dA
 
     The terms in `h^3/12` are the rotary inertia of the rotations `-w_{,x}`
     and `-w_{,y}` of the Donnell-type kinematics. There is no coupling
@@ -21101,8 +21107,9 @@ cpdef void update_fext_follower(double [::1] u,
 
     .. math::
 
-        \{F_p(u_e)\} = \int_A p \left( [S_u]^T a_x + [S_v]^T a_y + [S_w]^T a_z
-        \right) dA, \qquad \{a\} = r \{a_0\} + \{a_1\} + q \{a_2\}
+        \{F_p(u_e)\} = \int_A p \left( (\boldsymbol{S}^u)^T a_x
+        + (\boldsymbol{S}^v)^T a_y + (\boldsymbol{S}^w)^T a_z \right) dA,
+        \qquad \{a\} = r \{a_0\} + \{a_1\} + q \{a_2\}
 
     with `r` = ``reference`` and `q` = ``quadratic``, `\{a\}` being ``ax``,
     ``ay`` and ``az`` in the code, evaluated at each integration point with
@@ -21117,7 +21124,7 @@ cpdef void update_fext_follower(double [::1] u,
     `\{F_p\}` is affine in `\{u_e\}`, and ``quadratic=1`` gives the complete
     area vector of the kinematics, e.g. to check the sensitivity of a result
     to the truncation. At `\{u_e\} = \{0\}` the force vector is the dead load
-    `\int_A p [S_w]^T dA` for both truncations.
+    `\int_A p (\boldsymbol{S}^w)^T dA` for both truncations.
 
     In a nonlinear analysis the follower pressure enters the residual
     `\{f_{int}(u)\} - \{F_p(u)\}`, with `\{f_{int}\}` of :func:`.update_fint`,
@@ -21439,20 +21446,23 @@ cpdef void update_KCfollower(double [::1] u,
     .. math::
 
         [K_{Cfollower}] = -\frac{\partial \{F_p\}}{\partial \{u_e\}} =
-        -\int_A p \left( [S_u]^T \frac{\partial a_x}{\partial \{u_e\}}
-        + [S_v]^T \frac{\partial a_y}{\partial \{u_e\}}
-        + [S_w]^T \frac{\partial a_z}{\partial \{u_e\}} \right) dA
+        -\int_A p \left(
+        (\boldsymbol{S}^u)^T \frac{\partial a_x}{\partial \{u_e\}}
+        + (\boldsymbol{S}^v)^T \frac{\partial a_y}{\partial \{u_e\}}
+        + (\boldsymbol{S}^w)^T \frac{\partial a_z}{\partial \{u_e\}} \right) dA
 
     where the derivatives of `\{a\}` are those of its displacement gradients,
-    e.g. `\partial u_{,x}/\partial \{u_e\} = [S_{u,x}]`, the local variables
-    ``Su2_*`` in the code, with ``Su1_*``, ``Su2_*`` and ``Su3_*`` the rows
-    `[S_u]`, `[S_{u,x}]` and `[S_{u,y}]` at the integration point, and
-    likewise ``Sv*`` and ``Sw*``. The term `\{a_0\}` does not contribute.
-    With ``quadratic=0`` the matrix is constant, the blocks being, per unit
-    `p`, `[S_u]^T [S_{w,x}]` between `u` and `w`, `[S_v]^T [S_{w,y}]`
-    between `v` and `w`, and `-[S_w]^T [S_{u,x}]`, `-[S_w]^T [S_{v,y}]`,
-    `-[S_w]^T [S_w]/R` between `w` and `u`, `v` and `w`; with
-    ``quadratic=1`` it is linear in `\{u_e\}`.
+    e.g. `\partial u_{,x}/\partial \{u_e\} = \boldsymbol{S}^u_{,x}`, the local
+    variables ``Su2_*`` in the code, with ``Su1_*``, ``Su2_*`` and ``Su3_*``
+    the rows `\boldsymbol{S}^u`, `\boldsymbol{S}^u_{,x}` and
+    `\boldsymbol{S}^u_{,y}` at the integration point, and likewise ``Sv*`` and
+    ``Sw*``. The term `\{a_0\}` does not contribute. With ``quadratic=0`` the
+    matrix is constant, the blocks being, per unit `p`, `(\boldsymbol{S}^u)^T
+    \boldsymbol{S}^w_{,x}` between `u` and `w`, `(\boldsymbol{S}^v)^T
+    \boldsymbol{S}^w_{,y}` between `v` and `w`, and `-(\boldsymbol{S}^w)^T
+    \boldsymbol{S}^u_{,x}`, `-(\boldsymbol{S}^w)^T \boldsymbol{S}^v_{,y}`,
+    `-(\boldsymbol{S}^w)^T \boldsymbol{S}^w/R` between `w` and `u`, `v` and
+    `w`; with ``quadratic=1`` it is linear in `\{u_e\}`.
 
     The tangent stiffness matrix of the residual `\{f_{int}(u)\} -
     \{F_p(u)\}` is `[K_{C0}] + [K_{CNL}] + [K_G] + [K_{Cfollower}]`. For a

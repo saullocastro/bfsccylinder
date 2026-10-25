@@ -174,18 +174,18 @@ def test_linear_buckling(plot=False):
             yplot.append(y)
             shell.update_Bm(xi=0, eta=0)
             shell.update_Bb(xi=0, eta=0)
-            shell.update_Nu(xi=0, eta=0)
-            shell.update_Nu_x(xi=0, eta=0)
-            shell.update_Nv(xi=0, eta=0)
-            shell.update_Nw(xi=0, eta=0)
+            shell.update_Su(xi=0, eta=0)
+            shell.update_Su_x(xi=0, eta=0)
+            shell.update_Sv(xi=0, eta=0)
+            shell.update_Sw(xi=0, eta=0)
             u = np.asarray(shell.u)
             Nm = lam.A @ shell.Bm @ u + lam.B @ shell.Bb @ u
             Nb = lam.B @ shell.Bm @ u + lam.D @ shell.Bb @ u
 
-            displu = shell.Nu @ u
-            displux = shell.Nu_x @ u
-            displv = shell.Nv @ u
-            displw = shell.Nw @ u
+            displu = shell.Su @ u
+            displux = shell.Su_x @ u
+            displv = shell.Sv @ u
+            displw = shell.Sw @ u
             stress.append(Nb[0])
 
         import matplotlib

@@ -39,7 +39,7 @@ Sign
 
 A positive ``p`` pushes along `+z`, outwards, the direction of a positive
 `w`, such that an external pressure is negative. At `\{u\} = \{0\}` the
-force vector is the dead pressure load, `\int_A p [S_w]^T dA`, the
+force vector is the dead pressure load, `\int_A p (\boldsymbol{S}^w)^T dA`, the
 consistent load vector of a dead pressure, for both truncations below.
 
 

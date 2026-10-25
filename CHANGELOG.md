@@ -2,6 +2,31 @@
 
 The dates of the released versions are those of their tagged commits.
 
+## Unreleased
+
+### Documentation
+
+- The shape functions are written `\boldsymbol{S}^u`, `\boldsymbol{S}^v`,
+  `\boldsymbol{S}^w` and their derivatives, e.g.
+  `\boldsymbol{S}^w_{,x}`, instead of `[S_u]`, `[S_{w,x}]`, ..., as in
+  pyfe3d. The names of the code are unchanged.
+- The tutorial module `doc/source/tutorials/stiffened_cylinder.py` and the
+  text of `stiffened_cylinder_buckling.ipynb` use `update_Sv_x`,
+  `update_Sv_y`, `Sv_x` and `Sv_y` of the BFSC plate element, the names of
+  bfscplate2d after its shape functions were renamed from `N` to `S`.
+
+### Derivations
+
+- The shape functions of the scripts of `deriving_equations/donnell/` and
+  of `deriving_equations/sanders/derive_bfsccylinder_M_sparse.py` renamed
+  from `N` to `S`, as in the other scripts; `regenerate.py` no longer looks
+  for operators named `Nu`, `Nv` and `Nw`.
+
+### Tests
+
+- The disabled plotting blocks of the `Z22` and `Z33` buckling tests use
+  `update_Su`, `Su`, ..., the names of the shape functions since 0.5.0.
+
 ## 0.7.0 (2026-10-24)
 
 ### Python versions
