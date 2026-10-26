@@ -68,7 +68,7 @@ SOURCES = [
      ('point', 'matrix')),
 ]
 
-OPERATORS = ('Bm', 'BmL', 'Bb', 'G', 'Nu', 'Nv', 'Nw', 'Su', 'Sv', 'Sw')
+OPERATORS = ('Bm', 'BmL', 'Bb', 'G', 'Su', 'Sv', 'Sw')
 _assign = re.compile(r'^(%s)(\d)_(\d\d) = ' % '|'.join(OPERATORS))
 _stress = re.compile(r'^(Nxx|Nyy|Nxy|Mxx|Myy|Mxy) = ')
 _size = re.compile(r'^(\w+)_SPARSE_SIZE (\d+)$')

@@ -25,9 +25,9 @@ rigid-body motions of the stiffened cylinder give no strains; it is also
 used with the Donnell-type skin, whose kinematics neglect `v/R`. The
 derivatives `U_{,Y}` and `V_{,Y}` of the stringer, its in-plane shear and
 radial strains at the root, stay free. The 8 tied degrees of freedom of
-each root node are eliminated with the transformation
-`\{u\} = [T]\{u_r\}`, and the matrices of the reduced degrees of freedom
-`\{u_r\}` are `[T]^T [K] [T]`, `[T]^T [K_G] [T]` and `[T]^T [M] [T]`.
+each root node are eliminated with the constraint basis
+`\boldsymbol{u} = \boldsymbol{Z}\boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom
+`\boldsymbol{u}_r` are `\boldsymbol{Z}^\top \boldsymbol{K} \boldsymbol{Z}`, `\boldsymbol{Z}^\top \boldsymbol{K}_G \boldsymbol{Z}` and `\boldsymbol{Z}^\top \boldsymbol{M} \boldsymbol{Z}`.
 
 The model is the half of the cylinder `0 \le \theta \le \pi` with two
 planes of symmetry midway between two stringers, or the whole cylinder.
@@ -177,7 +177,7 @@ class StiffenedCylinder:
                     plate.ABD = self.str_prop.ABD
                     self.str_elements.append(plate)
 
-        # transformation u = T u_r
+        # constraint basis, u = Z u_r
         dependent = {}
         for s in range(nstr_model):
             for i in range(nx):
@@ -214,7 +214,7 @@ class StiffenedCylinder:
                 rows.append(d)
                 cols.append(red[d2])
                 vals.append(coef)
-        self.T = coo_matrix((vals, (rows, cols)), shape=(N, Nr)).tocsr()
+        self.Z = coo_matrix((vals, (rows, cols)), shape=(N, Nr)).tocsr()
 
     # assembly of the matrices of all the degrees of freedom
     def _assemble(self, skin_func, skin_size, str_func, str_size):
@@ -233,8 +233,8 @@ class StiffenedCylinder:
         return coo_matrix((v, (r, c)), shape=(self.N, self.N)).tocsr()
 
     def reduce(self, A):
-        """Matrix of the reduced degrees of freedom, `[T]^T [A] [T]`"""
-        return (self.T.T @ A @ self.T).tocsr()
+        r"""Matrix of the reduced degrees of freedom, `\boldsymbol{Z}^\top \boldsymbol{A} \boldsymbol{Z}`"""
+        return (self.Z.T @ A @ self.Z).tocsr()
 
     def KC0(self):
         """Linear stiffness matrix, all the degrees of freedom"""
@@ -315,22 +315,22 @@ class StiffenedCylinder:
             return self._ops
         plate = self.str_elements[0]
         p, w = self.points, self.weights
-        Bm, Gvx, Gvy, wts = [], [], [], []
+        Bm, Sv_x, Sv_y, wts = [], [], [], []
         for i, xi in enumerate(p):
             for j, eta in enumerate(p):
                 plate.update_Bm(xi, eta)
-                plate.update_Nv_x(xi, eta)
-                plate.update_Nv_y(xi, eta)
+                plate.update_Sv_x(xi, eta)
+                plate.update_Sv_y(xi, eta)
                 Bm.append(np.array(plate.Bm))
-                Gvx.append(np.array(plate.Nv_x))
-                Gvy.append(np.array(plate.Nv_y))
+                Sv_x.append(np.array(plate.Sv_x))
+                Sv_y.append(np.array(plate.Sv_y))
                 wts.append(w[i]*w[j]*plate.lex*plate.ley/4)
         dofs = np.array([[pl.c1 + d for d in range(DOF)]
                          + [pl.c2 + d for d in range(DOF)]
                          + [pl.c3 + d for d in range(DOF)]
                          + [pl.c4 + d for d in range(DOF)]
                          for pl in self.str_elements])
-        self._ops = (np.array(Bm), np.array(Gvx), np.array(Gvy),
+        self._ops = (np.array(Bm), np.array(Sv_x), np.array(Sv_y),
                      np.array(wts), dofs)
         return self._ops
 
@@ -338,7 +338,7 @@ class StiffenedCylinder:
         """Membrane forces `N_{xx}, N_{yy}, N_{xy}` of the stringer elements
         at their integration points, shape ``(num_elements, nint**2, 3)``,
         from the displacements ``u`` of all the degrees of freedom"""
-        Bm, Gvx, Gvy, wts, dofs = self._stringer_operators()
+        Bm, Sv_x, Sv_y, wts, dofs = self._stringer_operators()
         A = self.str_prop.ABD[:3, :3]
         eps = np.einsum('pij,ej->epi', Bm, u[dofs])
         return eps @ A.T
@@ -356,12 +356,12 @@ class StiffenedCylinder:
         These terms, the counterpart of the terms of `w` of the skin, are
         not in the geometric stiffness matrix of the BFSC plate element,
         which has only the terms of its out-of-plane displacement `W`."""
-        Bm, Gvx, Gvy, wts, dofs = self._stringer_operators()
+        Bm, Sv_x, Sv_y, wts, dofs = self._stringer_operators()
         Nw = N*wts[None, :, None]
-        Ke = (np.einsum('ep,pi,pj->eij', Nw[:, :, 0], Gvx, Gvx)
-              + np.einsum('ep,pi,pj->eij', Nw[:, :, 1], Gvy, Gvy)
-              + np.einsum('ep,pi,pj->eij', Nw[:, :, 2], Gvx, Gvy)
-              + np.einsum('ep,pi,pj->eij', Nw[:, :, 2], Gvy, Gvx))
+        Ke = (np.einsum('ep,pi,pj->eij', Nw[:, :, 0], Sv_x, Sv_x)
+              + np.einsum('ep,pi,pj->eij', Nw[:, :, 1], Sv_y, Sv_y)
+              + np.einsum('ep,pi,pj->eij', Nw[:, :, 2], Sv_x, Sv_y)
+              + np.einsum('ep,pi,pj->eij', Nw[:, :, 2], Sv_y, Sv_x))
         r = np.repeat(dofs, dofs.shape[1], axis=1).ravel()
         c = np.tile(dofs, (1, dofs.shape[1])).ravel()
         return coo_matrix((Ke.ravel(), (r, c)),

@@ -9,10 +9,10 @@ pressure, which keeps the direction of the undeformed normal and the
 undeformed area. Its force vector depends on the displacements. Two
 functions of each kinematics give it:
 
-- :func:`.update_fext_follower` adds the force vector `\{F_p(u)\}` of one
+- :func:`.update_fext_follower` adds the force vector `\boldsymbol{F}_p(\boldsymbol{u})` of one
   element to a global force vector;
 - :func:`.update_KCfollower` writes the load stiffness matrix
-  `[K_{Cfollower}] = -\partial \{F_p\}/\partial \{u\}` of one element in
+  `\boldsymbol{K}_F = -\partial \boldsymbol{F}_p/\partial \boldsymbol{u}` of one element in
   sparse arrays, at the position ``init_k_KCfollower``, with
   ``KCfollower_SPARSE_SIZE`` entries, see :doc:`assembling`.
 
@@ -38,8 +38,8 @@ Sign
 ----
 
 A positive ``p`` pushes along `+z`, outwards, the direction of a positive
-`w`, such that an external pressure is negative. At `\{u\} = \{0\}` the
-force vector is the dead pressure load, `\int_A p [S_w]^T dA`, the
+`w`, such that an external pressure is negative. At `\boldsymbol{u} = \boldsymbol{0}` the
+force vector is the dead pressure load, `\int_A p (\boldsymbol{S}^w)^\top dA`, the
 consistent load vector of a dead pressure, for both truncations below.
 
 
@@ -48,14 +48,14 @@ Truncation of the area vector
 
 ``quadratic=0``, the default, truncates the area vector to its terms of
 order 0 and 1 in the displacement gradients, the truncation consistent with
-the moderate rotations of the strains. `\{F_p\}` is then affine in the
-displacements and `[K_{Cfollower}]` constant, computed once for a fixed
+the moderate rotations of the strains. `\boldsymbol{F}_p` is then affine in the
+displacements and `\boldsymbol{K}_F` constant, computed once for a fixed
 pressure. ``quadratic=1`` adds the terms of order 2, e.g. to check that a
-result does not depend on the truncation; `[K_{Cfollower}]` then depends on
+result does not depend on the truncation; `\boldsymbol{K}_F` then depends on
 the displacements and is computed at each iteration.
 
 ``reference=0`` in :func:`.update_fext_follower` leaves out the dead part,
-giving `\{F_p(u)\} - \{F_p(0)\}`, which vanishes at `\{u\} = \{0\}`.
+giving `\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0})`, which vanishes at `\boldsymbol{u} = \boldsymbol{0}`.
 
 
 Residual and tangent stiffness matrix
@@ -66,26 +66,26 @@ the nonlinear static analysis of :doc:`analyses` and its Jacobian are
 
 .. math::
 
-    \{R(u)\} = \{f_{int}(u)\} - \{F_p(u)\}, \qquad
-    [K_T] = [K_{C0}] + [K_{CNL}(u)] + [K_G(u)] + [K_{Cfollower}]
+    \boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{u}), \qquad
+    \boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}) + \boldsymbol{K}_F
 
-with `\{F_p\}` and `[K_{Cfollower}]` of the same ``p = lambda*p0`` and
+with `\boldsymbol{F}_p` and `\boldsymbol{K}_F` of the same ``p = lambda*p0`` and
 ``quadratic``, see ``residual_and_tangent`` in :doc:`ex_follower_pressure`.
-A solver whose external force vector is fixed, `\lambda \{f\}`, takes the
-dead part `\{f\} = \{F_p(0)\}` of ``p0`` as external forces and the part
-``reference=0``, `\lambda(\{F_p(u)\} - \{F_p(0)\})`, with the internal
+A solver whose external force vector is fixed, `\lambda \boldsymbol{F}_{ext}`, takes the
+dead part `\boldsymbol{F}_{ext} = \boldsymbol{F}_p(\boldsymbol{0})` of ``p0`` as external forces and the part
+``reference=0``, `\lambda(\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))`, with the internal
 forces.
 
 A linear buckling analysis under a follower pressure `\lambda p_0` adds the
-load stiffness matrix of ``p0`` to `[K_G]` of the linear static solution of
+load stiffness matrix `\boldsymbol{K}_{F_{ref}}` of ``p0`` to `\boldsymbol{K}_G` of the linear static solution of
 ``p0``:
 
 .. math::
 
-    ([K_{C0}] + \lambda ([K_G] + [K_{Cfollower}]))\{\phi\} = \{0\}
+    (\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G + \boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}
 
 as in the validation tests of rings and cylinders, see
-:doc:`ex_follower_pressure`. Under a dead pressure `[K_{Cfollower}]` is left
+:doc:`ex_follower_pressure`. Under a dead pressure `\boldsymbol{K}_{F_{ref}}` is left
 out. With the Sanders-type kinematics and a dead pressure, a rigid rotation
 `v` = constant of a ring left free gives a spurious buckling mode at a
 vanishing load, which the follower load stiffness cancels, see the Notes of
@@ -95,7 +95,7 @@ vanishing load, which the follower load stiffness cancels, see the Notes of
 Unsymmetric load stiffness matrix
 ---------------------------------
 
-`[K_{Cfollower}]` is unsymmetric in general, a non-conservative load. For
+`\boldsymbol{K}_F` is unsymmetric in general, a non-conservative load. For
 the first-order area vector, ``quadratic=0``, it is symmetric, and the
 follower pressure conservative, if and only if the pressure is uniform
 over the loaded region and, at each point of the contour of the loaded

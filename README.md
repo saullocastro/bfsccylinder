@@ -51,7 +51,7 @@ History
 
 See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
 
-* version 0.7.0 (2026-10-24)
+* version 0.7.0 (2026-10-26)
     - Follower pressure, for both kinematics: `update_fext_follower` and
       `update_KCfollower`, the force vector and the unsymmetric load
       stiffness matrix of a pressure normal to the deformed mid-surface
@@ -65,7 +65,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
       of the analyses with `structsolve.Analysis` and tutorials of
       stringer-stiffened cylinders
     - The tests solve the nonlinear analyses with `structsolve.Analysis`,
-      requiring `structsolve>=0.9.0`
+      requiring `structsolve>=0.9.3`
     - Metadata in `pyproject.toml`; Python 3.10 to 3.14
 * version 0.6.1 (2026-09-25)
     - Cython compiler flags

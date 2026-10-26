@@ -14,8 +14,9 @@ kinematics, the class :class:`.BFSCCylinderSanders`, and the functions
 :func:`.update_KC0`, :func:`.update_KCNL`, :func:`.update_KG`,
 :func:`.update_KG_constant_stress` and :func:`.update_M`, that write the
 contributions of one element to the linear constitutive stiffness matrix
-KC0, the nonlinear constitutive stiffness matrix KCNL, the geometric
-stiffness matrix KG and the mass matrix M in sparse row, column and value
+KC0, the nonlinear stiffness matrix KCNL, the sum of the nonlinear
+constitutive and geometric stiffness matrices `\boldsymbol{K}_{CNL} +
+\boldsymbol{K}_{GNL}`, the geometric stiffness matrix KG and the mass matrix M in sparse row, column and value
 arrays, starting at the positions given by its ``init_k_*`` attributes, and
 :func:`.update_fint`, that adds its internal forces to a global internal
 force vector. For a pressure that follows the deformation of the shell,
@@ -63,42 +64,44 @@ statements made there on the number of integration points ``nint`` hold for
 this element too. Only the kinematics differ, and with them the rotary
 inertia of the mass matrix. Their linear part is
 the one of the thin shell theory of Sanders [1]_ and Koiter [2]_, with `w`
-positive outwards: the linear membrane strains `\{\varepsilon_L\} =
-[B_m]\{u_e\}` are those of the Donnell-type kinematics, and the curvatures
+positive outwards: the linear membrane strains `\boldsymbol{\varepsilon}_L =
+\boldsymbol{B}_m\boldsymbol{u}_e` are those of the Donnell-type kinematics, and the curvatures
 also have terms of `u` and `v` divided by `R`:
 
 .. math::
 
-    \{\kappa\} = \begin{Bmatrix} \kappa_{xx} \\ \kappa_{yy} \\ \kappa_{xy}
+    \boldsymbol{\kappa} = \begin{Bmatrix} \kappa_{xx} \\ \kappa_{yy} \\ \kappa_{xy}
     \end{Bmatrix} = \begin{Bmatrix} -w_{,xx} \\ -w_{,yy} + v_{,y}/R \\
     -2 w_{,xy} + \frac{3}{2R} v_{,x} - \frac{1}{2R} u_{,y} \end{Bmatrix}
-    = [B_b]\{u_e\}
+    = \boldsymbol{B}_b\boldsymbol{u}_e
 
-with `[B_b]` the rows ``Bb`` of :meth:`.BFSCCylinderSanders.update_Bb`.
+with `\boldsymbol{B}_b` the rows ``Bb`` of :meth:`.BFSCCylinderSanders.update_Bb`.
 With the rotations `\beta_x = -w_{,x}` and `\beta_y = -w_{,y} + v/R`, the
 nonlinear membrane strains are those of Sanders [3]_,
 
 .. math::
 
-    \{\varepsilon_{NL}\} = \begin{Bmatrix} \beta_x^2/2 \\ \beta_y^2/2 \\
+    \boldsymbol{\varepsilon}_{NL} = \begin{Bmatrix} \beta_x^2/2 \\ \beta_y^2/2 \\
     \beta_x \beta_y \end{Bmatrix} = \begin{Bmatrix} w_{,x}^2/2 \\
     (w_{,y} - v/R)^2/2 \\ w_{,x} (w_{,y} - v/R) \end{Bmatrix} = \frac{1}{2}
-    [B_{mL}]\{u_e\}
+    \boldsymbol{B}_{NL}\boldsymbol{u}_e
 
 .. math::
 
-    [B_{mL}] = \begin{bmatrix} w_{,x} [S_{w,x}] \\
-    (w_{,y} - v/R) \left( [S_{w,y}] - [S_v]/R \right) \\
-    w_{,x} \left( [S_{w,y}] - [S_v]/R \right) + (w_{,y} - v/R) [S_{w,x}]
+    \boldsymbol{B}_{NL} = \begin{bmatrix} w_{,x} \boldsymbol{S}^w_{,x} \\
+    (w_{,y} - v/R) \left( \boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R \right) \\
+    w_{,x} \left( \boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R \right)
+    + (w_{,y} - v/R) \boldsymbol{S}^w_{,x}
     \end{bmatrix}, \qquad
-    [G] = \begin{bmatrix} [S_{w,x}] \\ [S_{w,y}] - [S_v]/R \end{bmatrix}
+    \boldsymbol{G} = \begin{bmatrix} \boldsymbol{S}^w_{,x} \\
+    \boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R \end{bmatrix}
 
 where `v`, `w_{,x}` and `w_{,y}` are ``v``, ``w_x`` and ``w_y`` of the
 current displacements in :func:`.update_KCNL` and :func:`.update_fint`, the
-rows of `[B_{mL}]` are ``BmL1``, ``BmL2`` and ``BmL3`` and those of `[G]`
-are ``G1`` and ``G2``, such that `\delta\{\varepsilon_{NL}\} =
-[B_{mL}]\{\delta u_e\}` and `[G]\{u_e\} = \{w_{,x}, w_{,y} - v/R\}^T =
--\{\beta_x, \beta_y\}^T`. Only the rotations `\beta_x` and `\beta_y` of the
+rows of `\boldsymbol{B}_{NL}` are ``BmL1``, ``BmL2`` and ``BmL3`` and those of `\boldsymbol{G}`
+are ``G1`` and ``G2``, such that `\delta\boldsymbol{\varepsilon}_{NL} =
+\boldsymbol{B}_{NL}\delta \boldsymbol{u}_e` and `\boldsymbol{G}\boldsymbol{u}_e = \{w_{,x}, w_{,y} - v/R\}^\top =
+-\{\beta_x, \beta_y\}^\top`. Only the rotations `\beta_x` and `\beta_y` of the
 normal enter the nonlinear membrane strains; the rotation about the normal,
 `(v_{,x} - u_{,y}/R)/2`, enters only the linear twist `\kappa_{xy}`.
 
@@ -106,7 +109,7 @@ With the terms in `1/R`, the strains and the curvatures vanish for the
 small rigid-body translation `w = c \cos(y/R)`, `v = -c \sin(y/R)`, for
 which the Donnell-type curvatures do not, and the linear part is not
 restricted to displacements that vary over lengths small compared with `R`.
-Because of the term `-[S_v]/R` of `[G]`, KG, the matrix of
+Because of the term `-\boldsymbol{S}^v/R` of `\boldsymbol{G}`, KG, the matrix of
 :func:`.update_KG_constant_stress` and KCNL also have entries at the
 degrees of freedom of `v`. The rotary inertia of the mass matrix of
 :func:`.update_M` uses the rotations `\beta_x = -w_{,x}` and `\beta_y =
@@ -115,9 +118,9 @@ degrees of freedom of `v`. The rotary inertia of the mass matrix of
 The follower pressure of :func:`.update_fext_follower` and
 :func:`.update_KCfollower` is that of the Notes of
 :mod:`bfsccylinder.bfsccylinder`, with the Sanders-type rotation `\beta_y =
--w_{,y} + v/R`: the tangent vector `X_{,y}` of the deformed mid-surface has
-the component `w_{,y} - v/R` along the normal, such that `X_{,x} \times
-X_{,y}` is the exact area vector, and `\{a_1\}` has the term `v/R` in its
+-w_{,y} + v/R`: the tangent vector `\boldsymbol{X}_{,y}` of the deformed mid-surface has
+the component `w_{,y} - v/R` along the normal, such that `\boldsymbol{X}_{,x} \times
+\boldsymbol{X}_{,y}` is the exact area vector, and `\boldsymbol{a}_1` has the term `v/R` in its
 component along `y`. The skew part of the load stiffness matrix, and the
 conditions under which it is symmetric, are those of the Donnell-type
 kinematics, the results of Hibbitt [4]_ and of Schweizerhof and Ramm [5]_
@@ -465,9 +468,10 @@ cdef class BFSCCylinderSanders(object):
 
         .. math::
 
-            [B_b] = \begin{bmatrix} -[S_{w,xx}] \\ -[S_{w,yy}] + [S_{v,y}]/R
-            \\ -2 [S_{w,xy}] + \frac{3}{2R} [S_{v,x}] - \frac{1}{2R}
-            [S_{u,y}] \end{bmatrix}
+            \boldsymbol{B}_b = \begin{bmatrix} -\boldsymbol{S}^w_{,xx} \\
+            -\boldsymbol{S}^w_{,yy} + \boldsymbol{S}^v_{,y}/R \\
+            -2 \boldsymbol{S}^w_{,xy} + \frac{3}{2R} \boldsymbol{S}^v_{,x}
+            - \frac{1}{2R} \boldsymbol{S}^u_{,y} \end{bmatrix}
 
         those of :meth:`bfsccylinder.bfsccylinder.BFSCCylinder.update_Bb`
         plus the terms in `1/R`.
@@ -585,7 +589,7 @@ cdef class BFSCCylinderSanders(object):
         ``10*(i - 1) + 0``, ``10*(i - 1) + 1`` and ``10*(i - 1) + 2``, are
         the Hermite functions `H_i`, `H_{xi}` and `H_{yi}` of the Notes
         of :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
-        that `u = [S_u]\{u_e\}`.
+        that `u = \boldsymbol{S}^u\boldsymbol{u}_e`.
 
         """
         cdef double lex, ley
@@ -709,7 +713,7 @@ cdef class BFSCCylinderSanders(object):
         ``10*(i - 1) + 3``, ``10*(i - 1) + 4`` and ``10*(i - 1) + 5``, are
         the Hermite functions `H_i`, `H_{xi}` and `H_{yi}` of the Notes
         of :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
-        that `v = [S_v]\{u_e\}`.
+        that `v = \boldsymbol{S}^v\boldsymbol{u}_e`.
 
         """
         cdef double lex, ley
@@ -834,7 +838,7 @@ cdef class BFSCCylinderSanders(object):
         ``10*(i - 1) + 6`` to ``10*(i - 1) + 9``, are the Hermite functions
         `H_i`, `H_{xi}`, `H_{yi}` and `H_{xyi}` of the Notes of
         :mod:`bfsccylinder.bfsccylinder` evaluated at ``xi``, ``eta``, such
-        that `w = [S_w]\{u_e\}`.
+        that `w = \boldsymbol{S}^w\boldsymbol{u}_e`.
 
         """
         cdef double lex, ley
@@ -956,7 +960,7 @@ cpdef void update_KC0(BFSCCylinderSanders shell,
                       long [::1] KC0c,
                       double [::1] KC0v,
                       ):
-    """Update sparse vectors for linear constitutive stiffness matrix KC0
+    r"""Update sparse vectors for linear constitutive stiffness matrix KC0
 
     The element matrix, with ``40*40`` entries, is integrated with the
     integration points and weights given by ``points`` and ``weights``,
@@ -1003,7 +1007,7 @@ cpdef void update_KC0(BFSCCylinderSanders shell,
     Notes
     -----
     The matrix of the Notes of :func:`bfsccylinder.bfsccylinder.update_KC0`,
-    with the rows `[B_b]` of the Sanders-type curvatures of
+    with the rows `\boldsymbol{B}_b` of the Sanders-type curvatures of
     :meth:`.BFSCCylinderSanders.update_Bb`.
 
     """
@@ -9218,7 +9222,7 @@ cpdef void update_KCNL(double [::1] u,
                        long [::1] KCNLc,
                        double [::1] KCNLv,
                        ):
-    r"""Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
+    r"""Update sparse vectors for nonlinear stiffness matrix KCNL
 
     The element matrix is integrated with the integration points and weights
     given by ``points`` and ``weights``, from ``lex``, ``ley``, ``R``, the
@@ -9276,7 +9280,13 @@ cpdef void update_KCNL(double [::1] u,
 
     Notes
     -----
-    Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL
+    Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL, that is
+    `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}`: the nonlinear constitutive
+    stiffness matrix `\boldsymbol{K}_{CNL} = \boldsymbol{K}_{C0L} +
+    \boldsymbol{K}_{CL0} + \boldsymbol{K}_{CLL}` of the terms of
+    `\boldsymbol{B}_{NL}` and the geometric stiffness matrix
+    `\boldsymbol{K}_{GNL}` of the membrane stress resultants of the
+    nonlinear strains.
 
     The first three groups are the constitutive terms coupling the linear and
     the nonlinear parts of the membrane strain. KGNL is the geometric term
@@ -9294,12 +9304,12 @@ cpdef void update_KCNL(double [::1] u,
 
     The four terms are those of the Notes of
     :func:`bfsccylinder.bfsccylinder.update_KCNL`, with the Sanders-type
-    `[B_b]`, `[B_{mL}]` and `[G]` of the Notes of
+    `\boldsymbol{B}_b`, `\boldsymbol{B}_{NL}` and `\boldsymbol{G}` of the Notes of
     :mod:`bfsccylinder.bfsccylinder_sanders`, evaluated at each integration
     point with ``v``, ``w_x`` and ``w_y`` of the element displacements
-    ``shell.u``, and with `\{N_{NLxx}, N_{NLyy}, N_{NLxy}\}^T =
-    [A]\{w_{,x}^2/2, (w_{,y} - v/R)^2/2, w_{,x} (w_{,y} - v/R)\}^T`. Since
-    `[B_{mL}]` and `[G]` have entries at the degrees of freedom of `v` and
+    ``shell.u``, and with `\{N_{NLxx}, N_{NLyy}, N_{NLxy}\}^\top =
+    \boldsymbol{A}\{w_{,x}^2/2, (w_{,y} - v/R)^2/2, w_{,x} (w_{,y} - v/R)\}^\top`. Since
+    `\boldsymbol{B}_{NL}` and `\boldsymbol{G}` have entries at the degrees of freedom of `v` and
     `w`, only the block of the degrees of freedom of `u` is zero.
 
     """
@@ -16991,11 +17001,12 @@ cpdef void update_KG(double [::1] u,
     here; update_KCNL carries it, so that KC0 + KCNL + KG is still the
     consistent tangent of update_fint.
 
-    The matrix is the `[K_G]` of the Notes of
-    :func:`bfsccylinder.bfsccylinder.update_KG`, with the Sanders-type
-    `[B_b]` in the stress resultants and the rows of `[G]` of the Notes of
-    :mod:`bfsccylinder.bfsccylinder_sanders`, `[S_{w,x}]` and `[S_{w,y}] -
-    [S_v]/R`, such that `[G]\{u_e\} = \{w_{,x}, w_{,y} - v/R\}^T`.
+    The matrix is the `\boldsymbol{K}_G` of the Notes of
+    :func:`bfsccylinder.bfsccylinder.update_KG`, with the Sanders-type `\boldsymbol{B}_b`
+    in the stress resultants and the rows of `\boldsymbol{G}` of the Notes of
+    :mod:`bfsccylinder.bfsccylinder_sanders`, `\boldsymbol{S}^w_{,x}` and
+    `\boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R`, such that `\boldsymbol{G}\boldsymbol{u}_e =
+    \{w_{,x}, w_{,y} - v/R\}^\top`.
 
     """
     cdef double *ue
@@ -21185,7 +21196,7 @@ cpdef void update_KG_constant_stress(BFSCCylinderSanders shell,
                                      double [::1] KGv,
                                      double Nxx, double Nyy, double Nxy,
                                      ):
-    """Update sparse vectors for geometric stiffness matrix KG
+    r"""Update sparse vectors for geometric stiffness matrix KG
 
     The same matrix as :func:`.update_KG`, with the membrane stress resultants
     ``Nxx``, ``Nyy`` and ``Nxy`` given, constant over the element, instead of
@@ -21233,9 +21244,9 @@ cpdef void update_KG_constant_stress(BFSCCylinderSanders shell,
 
     Notes
     -----
-    The matrix is the `[K_G]` of the Notes of :func:`.update_KG` with the
+    The matrix is the `\boldsymbol{K}_G` of the Notes of :func:`.update_KG` with the
     given `N_{xx}`, `N_{yy}` and `N_{xy}`; ``R`` enters through the row
-    `[S_{w,y}] - [S_v]/R` of `[G]`. See the Notes of
+    `\boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R` of `\boldsymbol{G}`. See the Notes of
     :func:`bfsccylinder.bfsccylinder.update_KG_constant_stress` for its use in
     a linear buckling analysis.
 
@@ -25287,15 +25298,20 @@ cpdef void update_M(BFSCCylinderSanders shell,
 
     .. math::
 
-        [M] = \int_A \rho \left( h \left( [S_u]^T [S_u] + [S_v]^T [S_v]
-              + [S_w]^T [S_w] \right) + \frac{h^3}{12} \left( [S_{w,x}]^T
-              [S_{w,x}] + \left( [S_{w,y}] - [S_v]/R \right)^T \left(
-              [S_{w,y}] - [S_v]/R \right) \right) \right) dA
+        \boldsymbol{M} = \int_A \rho \left( h \left( (\boldsymbol{S}^u)^\top \boldsymbol{S}^u
+              + (\boldsymbol{S}^v)^\top \boldsymbol{S}^v
+              + (\boldsymbol{S}^w)^\top \boldsymbol{S}^w \right)
+              + \frac{h^3}{12} \left( (\boldsymbol{S}^w_{,x})^\top
+              \boldsymbol{S}^w_{,x}
+              + \left( \boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R \right)^\top
+              \left( \boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R \right)
+              \right) \right) dA
 
-    The terms in `h^3/12` are the rotary inertia of `\beta_x` and
-    `\beta_y`; the term `v/R` of `\beta_y` couples `v` and `w` and adds
-    `h^3/(12 R^2) [S_v]^T [S_v]` to the entries of `v`, which the matrix of
-    :func:`bfsccylinder.bfsccylinder.update_M`, with the rotations of the
+    The terms in `h^3/12` are the rotary inertia of `\beta_x` and `\beta_y`;
+    the term `v/R` of `\beta_y` couples `v` and `w` and adds `h^3/(12 R^2)
+    (\boldsymbol{S}^v)^\top \boldsymbol{S}^v` to the entries of `v`, which the
+    matrix of :func:`bfsccylinder.bfsccylinder.update_M`, with the rotations of
+    the
     Donnell-type kinematics, does not have. There is no coupling between `u`
     and the other displacements, which corresponds to a reference surface at
     the middle of the thickness, and the variation of the area with `z`, the
@@ -29928,7 +29944,7 @@ cpdef void update_fint(double [::1] u,
                        double [::1] weights,
                        double [::1] fint,
                        ):
-    """Update global internal force vector
+    r"""Update global internal force vector
 
     The internal forces of the element are integrated with the integration
     points and weights given by ``points`` and ``weights``, from ``lex``,
@@ -29976,7 +29992,7 @@ cpdef void update_fint(double [::1] u,
     -----
     The internal forces of the Notes of
     :func:`bfsccylinder.bfsccylinder.update_fint`, with the Sanders-type
-    `[B_b]` and `[B_{mL}]` of the Notes of
+    `\boldsymbol{B}_b` and `\boldsymbol{B}_{NL}` of the Notes of
     :mod:`bfsccylinder.bfsccylinder_sanders`, evaluated at each integration
     point with ``v``, ``w_x`` and ``w_y``. Their derivative is the sum of the
     matrices of :func:`.update_KC0`, :func:`.update_KCNL` and
@@ -30389,8 +30405,8 @@ cpdef void update_fext_follower(double [::1] u,
     reference : int, optional
         ``1``, the default, to include the term of order 0 of the area
         vector, which gives the dead pressure load of the undeformed
-        configuration `\{F_p(0)\}`; ``0`` to leave it out, which gives
-        `\{F_p(u_e)\} - \{F_p(0)\}`.
+        configuration `\boldsymbol{F}_p(\boldsymbol{0})`; ``0`` to leave it out, which gives
+        `\boldsymbol{F}_p(\boldsymbol{u}_e) - \boldsymbol{F}_p(\boldsymbol{0})`.
 
     See Also
     --------
@@ -30400,9 +30416,9 @@ cpdef void update_fext_follower(double [::1] u,
     -----
     The force vector of the Notes of
     :func:`bfsccylinder.bfsccylinder.update_fext_follower`, with `k_v = 1/R`:
-    the term `w_{,y} - v/R` of the tangent vector `X_{,y}` is minus the
+    the term `w_{,y} - v/R` of the tangent vector `\boldsymbol{X}_{,y}` is minus the
     Sanders-type rotation `\beta_y` of the Notes of
-    :mod:`bfsccylinder.bfsccylinder_sanders`, and `X_{,x} \times X_{,y}` is
+    :mod:`bfsccylinder.bfsccylinder_sanders`, and `\boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}` is
     the exact area vector of the deformed mid-surface. The area vector
     ``ax``, ``ay``, ``az`` is evaluated at each integration point with the
     displacement gradients ``u_x``, ``u_y``, ``v_x``, ``v_y``, ``v``, ``w``,
@@ -30713,12 +30729,13 @@ cpdef void update_KCfollower(double [::1] u,
     Notes
     -----
     The load stiffness matrix of the Notes of
-    :func:`bfsccylinder.bfsccylinder.update_KCfollower`, with the area
-    vector of :func:`.update_fext_follower`, `k_v = 1/R`. The term `v/R` of
-    `a_y` adds, with ``quadratic=0``, the block `-[S_v]^T [S_v]/R` per unit
-    `p` between `v` and `v`, which cancels the energy of the rigid rotation
+    :func:`bfsccylinder.bfsccylinder.update_KCfollower`, with the area vector
+    of :func:`.update_fext_follower`, `k_v = 1/R`. The term `v/R` of `a_y`
+    adds, with ``quadratic=0``, the block `-(\boldsymbol{S}^v)^\top
+    \boldsymbol{S}^v/R` per unit `p` between `v` and `v`, which cancels the
+    energy of the rigid rotation
     `v` = constant of a ring under the hoop prestress of the pressure in
-    :func:`.update_KG`, and the terms of `\{a_2\}` in `v` are added for
+    :func:`.update_KG`, and the terms of `\boldsymbol{a}_2` in `v` are added for
     ``quadratic=1``.
 
     """

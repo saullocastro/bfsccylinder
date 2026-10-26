@@ -142,14 +142,14 @@ A concentrated load is a value of the global force vector at a degree of
 freedom of a node, e.g. ``f[6::DOF][check] = fmid`` for a normal force, and
 an axial force at the nodes of an edge, e.g. ``fext[0::DOF][checkTopEdge] =
 -load/ny``, see :doc:`ex_nonlinear_static`. The force vector of a pressure
-is given by :func:`.update_fext_follower`, at `\{u\} = \{0\}` the dead
+is given by :func:`.update_fext_follower`, at `\boldsymbol{u} = \boldsymbol{0}` the dead
 pressure load, see :doc:`follower_pressure`.
 
 A prescribed displacement, e.g. the axial shortening of one end, is a known
 value ``uk = u[bk]`` of a constrained degree of freedom, which moves to the
-right-hand side of the reduced system, `[K_{uu}]\{u_u\} = -[K_{uk}]\{u_k\}`,
-and whose reaction forces are `\{f_k\} = [K_{uk}]^T\{u_u\} +
-[K_{kk}]\{u_k\}`::
+right-hand side of the reduced system, `\boldsymbol{K}_{uu}\boldsymbol{u}_u = -\boldsymbol{K}_{uk}\bar{\boldsymbol{u}}_k`,
+and whose reaction forces are `\boldsymbol{F}_k = \boldsymbol{K}_{uk}^\top\boldsymbol{u}_u +
+\boldsymbol{K}_{kk}\bar{\boldsymbol{u}}_k`::
 
     Kuk = KC0[bu, :][:, bk]
     Kkk = KC0[bk, :][:, bk]

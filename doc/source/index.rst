@@ -13,18 +13,18 @@ the model, its boundary conditions and the solution of its equations are
 written by the user, with NumPy and SciPy. With ``bfsccylinder`` you can
 compute:
 
-* The linear constitutive stiffness matrix `[K_{C0}]`, for linear static
-  analyses, `[K_{C0}]\{u\} = \{f\}`
+* The linear constitutive stiffness matrix `\boldsymbol{K}_{C0}`, for linear static
+  analyses, `\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{F}_{ext}`
 
-* The geometric stiffness matrix `[K_G]`, for linear buckling analyses,
-  `([K_{C0}] + \lambda [K_G])\{u\} = \{0\}`, of the membrane stress
+* The geometric stiffness matrix `\boldsymbol{K}_G`, for linear buckling analyses,
+  `(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{u} = \boldsymbol{0}`, of the membrane stress
   resultants of a static solution or of a constant membrane stress state
 
-* The mass matrix `[M]`, for natural frequency analyses,
-  `([K_{C0}] - \omega^2 [M])\{u\} = \{0\}`
+* The mass matrix `\boldsymbol{M}`, for natural frequency analyses,
+  `(\boldsymbol{K}_{C0} - \omega^2 \boldsymbol{M})\boldsymbol{u} = \boldsymbol{0}`
 
-* The internal force vector `\{f_{int}\}` and the tangent stiffness matrix
-  `[K_{C0}] + [K_{CNL}] + [K_G]`, its exact Jacobian, for geometrically
+* The internal force vector `\boldsymbol{F}_{int}` and the tangent stiffness matrix
+  `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G`, its exact Jacobian, for geometrically
   nonlinear static analyses
 
 * The force vector and the load stiffness matrix of a follower pressure,

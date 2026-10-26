@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.7.0 (2026-10-24)
+## 0.7.0 (2026-10-26)
 
 ### Python versions
 
@@ -50,6 +50,8 @@ The dates of the released versions are those of their tagged commits.
 
 ### Documentation
 
+- The documentation is built by the workflow `auto_doc.yml` for every pull request and deployed to the
+  `gh-pages` branch for every tag (or a manual run), with the packages of `requirements_doc.txt`.
 - D1: functional docstrings of the modules, of `BFSCCylinder` and
   `BFSCCylinderSanders` and of every public function.
 - D2: Notes and References of the theory: Hermite interpolation of the
@@ -68,11 +70,55 @@ The dates of the released versions are those of their tagged commits.
   and axial buckling (Card and Jones, NASA TN D-3639, 1966) of
   stringer-stiffened cylinders, with the skin of `BFSCCylinderSanders`
   elements and blade stringers of the BFSC plate element of `bfscplate2d`,
-  compared with the published tests and theories.
+  compared with the published tests and theories. The tutorial module
+  `stiffened_cylinder.py` uses `update_Sv_x`, `update_Sv_y`, `Sv_x` and
+  `Sv_y` of `BFSCPlate2D`, and requires bfscplate2d 0.5.0 or newer, in which
+  its shape functions are renamed from `N` to `S`.
+- The shape functions are written `\boldsymbol{S}^u`, `\boldsymbol{S}^v`,
+  `\boldsymbol{S}^w` and their derivatives, e.g. `\boldsymbol{S}^w_{,x}`,
+  as in pyfe3d, instead of `[S_u]`, `[S_{w,x}]`, ...; the names of the code
+  are unchanged.
+- Notation of the book in the math of the docstrings, the user guide, the
+  test docstrings, the tutorial module and the markdown of the tutorials:
+  vectors bold lower case without braces, e.g. `\boldsymbol{u}_e`,
+  `\boldsymbol{\varepsilon}_L`, `\boldsymbol{a}` (were `\{u_e\}`,
+  `\{\varepsilon_L\}`, `\{a\}`), the force vectors and the residual upper
+  case, `\boldsymbol{F}_{int}`, `\boldsymbol{F}_{ext}`, `\boldsymbol{F}_p`,
+  `\boldsymbol{F}_k`, `\boldsymbol{R}` (were `\{f_{int}\}`, `\{f\}`,
+  `\{F_p\}`, `\{f_k\}`); matrices bold upper case without brackets, e.g.
+  `\boldsymbol{B}_m`, `\boldsymbol{K}_{C0}`, `\boldsymbol{K}_{CNL} +
+  \boldsymbol{K}_{GNL}`, `\boldsymbol{K}_G` (were `[B_m]`, `[K_{C0}]`,
+  `[K_{CNL}]`, `[K_G]`), the matrix KCNL of `update_KCNL` being the book's
+  nonlinear constitutive stiffness matrix `\boldsymbol{K}_{CNL}`, of the
+  terms of `\boldsymbol{B}_{NL}`, plus the geometric term
+  `\boldsymbol{K}_{GNL}`; the constraint basis of the tutorial,
+  `\boldsymbol{u} = \boldsymbol{Z} \boldsymbol{u}_r` (was `[T]`, and
+  `StiffenedCylinder.T` is `StiffenedCylinder.Z` in the tutorial module and
+  notebooks); the prescribed displacements `\bar{\boldsymbol{u}}_k` (were
+  `\{u_k\}`); the operator of the nonlinear strains
+  `\boldsymbol{B}_{NL}` (was `[B_{mL}]`, `BmL` in the code); the load
+  stiffness matrix `\boldsymbol{K}_F` (was `[K_{Cfollower}]`), and
+  `\boldsymbol{K}_{F_{ref}}` for the reference pressure `p_0` of a linear
+  buckling analysis; the position `\boldsymbol{X}` and the basis vectors
+  `\boldsymbol{e}_x`, ... in bold; the transpose `^\top` (was `^T`). The
+  residual is `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_{ext}`
+  throughout, and the examples with structsolve require structsolve 0.9.3
+  or newer, which has this residual and the Newton-Raphson corrections
+  `\boldsymbol{K}_T \Delta \boldsymbol{c} = -\boldsymbol{R}`. Seven docstrings that now contain a backslash, or already did
+  (`update_KG_constant_stress` of `bfsccylinder_sanders`), are raw strings.
+  The code identifiers of the package, plain-text comments and README.md
+  are unchanged.
+
+### Derivations
+
+- The shape functions of the scripts of `deriving_equations/donnell/` and
+  of `deriving_equations/sanders/derive_bfsccylinder_M_sparse.py` renamed
+  from `N` to `S`, as in the other scripts; `regenerate.py` no longer looks
+  for operators named `Nu`, `Nv` and `Nw`.
 
 ### Tests
 
-- `structsolve>=0.9.0`, with its module `structsolve.convergence`, is a
+- `structsolve>=0.9.3`, with its module `structsolve.convergence`, is a
   requirement of the tests, listed in
   `requirements.txt` and not in `install_requires`.
 - `tests/test_nonlinear_axial_compression.py` solves the non-linear static
@@ -81,6 +127,14 @@ The dates of the released versions are those of their tagged commits.
 - New `tests/test_follower_pressure_structsolve.py`: the follower pressure
   on a cylinder with a free end with `structsolve.Analysis`, for both
   kinematics.
+- An underscore introduces a partial derivative in the names of the tests
+  and of the tutorial module: the keys `u_x`, ..., `w_xx`, `w_yy`, `w_xy`
+  of the fields of `test_follower_pressure_validation.py` (were `ux`, ...,
+  `wxy`) and the rows `Sv_x`, `Sv_y` of `stiffened_cylinder.py` (were
+  `Gvx`, `Gvy`).
+- The disabled plotting blocks of the `Z22` and `Z33` buckling tests use
+  `update_Su`, `Su`, `Su_x`, ..., the names of the shape functions since
+  0.5.0, and `u_x` (was `displux`).
 
 ## 0.6.1 (2026-09-25)
 

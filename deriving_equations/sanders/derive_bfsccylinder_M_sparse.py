@@ -41,21 +41,21 @@ def main():
     # node 3 (+1, +1)
     # node 4 (-1, +1)
 
-    Nu = sympy.Matrix([[
+    Su = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0, 0, 0, 0,
         Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0, 0, 0, 0,
         Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0, 0, 0, 0,
         ]])
-    Nv = sympy.Matrix([[
+    Sv = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), 0, 0, 0, 0,
         0, 0, 0, Hi(+1, +1), Hxi(+1, +1), Hyi(+1, +1), 0, 0, 0, 0,
         0, 0, 0, Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), 0, 0, 0, 0,
         ]])
-    Nw = sympy.Matrix([[
+    Sw = sympy.Matrix([[
        #u, du/dx, du/dy, v, dv/dx, dv/dy, w, dw/dx, dw/dy, d2w/(dxdy)
         0, 0, 0, 0, 0, 0, Hi(-1, -1), Hxi(-1, -1), Hyi(-1, -1), Hxyi(-1, -1),
         0, 0, 0, 0, 0, 0, Hi(+1, -1), Hxi(+1, -1), Hyi(+1, -1), Hxyi(+1, -1),
@@ -63,17 +63,17 @@ def main():
         0, 0, 0, 0, 0, 0, Hi(-1, +1), Hxi(-1, +1), Hyi(-1, +1), Hxyi(-1, +1),
         ]])
     # bending
-    Nphix = -(2/lex)*Nw.diff(xi)
+    Sphix = -(2/lex)*Sw.diff(xi)
     # Sanders-type rotation of the normal about x, -w,y + v/R
-    Nphiy = -(2/ley)*Nw.diff(eta) + Nv/R
+    Sphiy = -(2/ley)*Sw.diff(eta) + Sv/R
 
     #TODO
     # - offset for monolithic
     # - multi-material laminated shells (sandwhich etc)
     # - properties per integration point
     Me = sympy.zeros(num_nodes*DOF, num_nodes*DOF)
-    Me[:, :] = (lex*ley)/4.*rho*(h*(Nu.T*Nu + Nv.T*Nv + Nw.T*Nw)
-          + h**3/12*(Nphix.T*Nphix + Nphiy.T*Nphiy))
+    Me[:, :] = (lex*ley)/4.*rho*(h*(Su.T*Su + Sv.T*Sv + Sw.T*Sw)
+          + h**3/12*(Sphix.T*Sphix + Sphiy.T*Sphiy))
 
     print('Integrating Me')
     integrands = []

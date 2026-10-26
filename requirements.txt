@@ -4,6 +4,6 @@ scipy
 cython
 tomli; python_version < "3.11"
 composites
-structsolve>=0.9.0
+structsolve>=0.9.3
 pytest
 pytest-cov
