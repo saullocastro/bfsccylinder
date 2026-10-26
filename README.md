@@ -65,7 +65,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
       of the analyses with `structsolve.Analysis` and tutorials of
       stringer-stiffened cylinders
     - The tests solve the nonlinear analyses with `structsolve.Analysis`,
-      requiring `structsolve>=0.9.0`
+      requiring `structsolve>=0.9.3`
     - Metadata in `pyproject.toml`; Python 3.10 to 3.14
 * version 0.6.1 (2026-09-25)
     - Cython compiler flags
