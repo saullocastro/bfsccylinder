@@ -86,7 +86,7 @@ Newton-Raphson method:
 .. math::
 
     \boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda \boldsymbol{F}_{ext}, \qquad
-    \boldsymbol{K}_T(\boldsymbol{u}) = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}), \qquad
+    \boldsymbol{K}_T(\boldsymbol{u}) = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}), \qquad
     \boldsymbol{K}_T \Delta \boldsymbol{u} = -\boldsymbol{R}
 
 with the load factor `\lambda` increased in steps and the tangent stiffness
@@ -97,10 +97,10 @@ same integration points as `\boldsymbol{F}_{int}`. `\boldsymbol{K}_T` is the exa
 quadratically; ``tests/test_tangent_consistency.py`` checks it for both
 kinematics with Taylor tests and finite differences. `\boldsymbol{K}_G` keeps only
 the part linear in the displacements, the one of the linear buckling
-analysis, and the rest of the geometric terms is in `\boldsymbol{K}_{CNL}`, see the
-Notes of :func:`.update_KCNL`.
+analysis, and the rest of the geometric terms is `\boldsymbol{K}_{GNL}`,
+computed with `\boldsymbol{K}_{CNL}` by :func:`.update_KCNL`, see its Notes.
 
-The value arrays of `\boldsymbol{K}_{CNL}` and `\boldsymbol{K}_G` are zeroed before each
+The value arrays of `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}` and `\boldsymbol{K}_G` are zeroed before each
 assembly, since the functions add to them, see :doc:`assembling`. The test
 of :doc:`ex_nonlinear_static` solves the iterations with structsolve, with
 the convergence criterion of the scaled norms of the residual and of the
@@ -131,13 +131,16 @@ element, of either kinematics, and assemble, see
 - ``calc_fint(c, silent=False)``, the internal forces of
   :func:`.update_fint` at the displacements ``c``;
 - ``calc_kC(c=None, NLgeom=False, silent=False)``, `\boldsymbol{K}_{C0}` with
-  ``NLgeom=False``, and `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{c})` with ``NLgeom=True``;
+  ``NLgeom=False``, and `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{c}) + \boldsymbol{K}_{GNL}(\boldsymbol{c})` with ``NLgeom=True``;
 - ``calc_kG(c=None, NLgeom=False, silent=False)``, `\boldsymbol{K}_G(\boldsymbol{c})` of
   :func:`.update_KG`, called with ``NLgeom=True``;
 
 such that ``calc_kC + calc_kG`` is the tangent stiffness matrix `\boldsymbol{K}_T` and
-structsolve solves the equilibrium `\boldsymbol{F}_{int}(\boldsymbol{c}) =
-\lambda \boldsymbol{F}_{ext}` of the residual above. The value arrays are zeroed in each call. The
+the residual of structsolve is the one above, `\boldsymbol{R} =
+\boldsymbol{F}_{int}(\boldsymbol{c}) - \lambda \boldsymbol{F}_{ext}`, with
+the Newton-Raphson corrections `\boldsymbol{K}_T \Delta \boldsymbol{c} =
+-\boldsymbol{R}`, the convention of structsolve 0.9.3 or newer, which
+the examples of bfsccylinder require, see :doc:`install`. The value arrays are zeroed in each call. The
 load factor goes from 0 to 1 in increments, the first one of size
 ``Analysis.initialInc`` and the next ones growing up to
 ``Analysis.maxInc``, each starting from a predictor extrapolated from the

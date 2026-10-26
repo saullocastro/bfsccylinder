@@ -147,9 +147,9 @@ pressure load, see :doc:`follower_pressure`.
 
 A prescribed displacement, e.g. the axial shortening of one end, is a known
 value ``uk = u[bk]`` of a constrained degree of freedom, which moves to the
-right-hand side of the reduced system, `\boldsymbol{K}_{uu}\boldsymbol{u}_u = -\boldsymbol{K}_{uk}\boldsymbol{u}_k`,
+right-hand side of the reduced system, `\boldsymbol{K}_{uu}\boldsymbol{u}_u = -\boldsymbol{K}_{uk}\bar{\boldsymbol{u}}_k`,
 and whose reaction forces are `\boldsymbol{F}_k = \boldsymbol{K}_{uk}^\top\boldsymbol{u}_u +
-\boldsymbol{K}_{kk}\boldsymbol{u}_k`::
+\boldsymbol{K}_{kk}\bar{\boldsymbol{u}}_k`::
 
     Kuk = KC0[bu, :][:, bk]
     Kkk = KC0[bk, :][:, bk]

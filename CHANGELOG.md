@@ -86,18 +86,28 @@ The dates of the released versions are those of their tagged commits.
   case, `\boldsymbol{F}_{int}`, `\boldsymbol{F}_{ext}`, `\boldsymbol{F}_p`,
   `\boldsymbol{F}_k`, `\boldsymbol{R}` (were `\{f_{int}\}`, `\{f\}`,
   `\{F_p\}`, `\{f_k\}`); matrices bold upper case without brackets, e.g.
-  `\boldsymbol{B}_m`, `\boldsymbol{K}_{C0}`, `\boldsymbol{K}_{CNL}`,
-  `\boldsymbol{K}_G`, `\boldsymbol{T}` (were `[B_m]`, `[K_{C0}]`,
-  `[K_{CNL}]`, `[K_G]`, `[T]`); the operator of the nonlinear strains
+  `\boldsymbol{B}_m`, `\boldsymbol{K}_{C0}`, `\boldsymbol{K}_{CNL} +
+  \boldsymbol{K}_{GNL}`, `\boldsymbol{K}_G` (were `[B_m]`, `[K_{C0}]`,
+  `[K_{CNL}]`, `[K_G]`), the matrix KCNL of `update_KCNL` being the book's
+  nonlinear constitutive stiffness matrix `\boldsymbol{K}_{CNL}`, of the
+  terms of `\boldsymbol{B}_{NL}`, plus the geometric term
+  `\boldsymbol{K}_{GNL}`; the constraint basis of the tutorial,
+  `\boldsymbol{u} = \boldsymbol{Z} \boldsymbol{u}_r` (was `[T]`, and
+  `StiffenedCylinder.T` is `StiffenedCylinder.Z` in the tutorial module and
+  notebooks); the prescribed displacements `\bar{\boldsymbol{u}}_k` (were
+  `\{u_k\}`); the operator of the nonlinear strains
   `\boldsymbol{B}_{NL}` (was `[B_{mL}]`, `BmL` in the code); the load
   stiffness matrix `\boldsymbol{K}_F` (was `[K_{Cfollower}]`), and
   `\boldsymbol{K}_{F_{ref}}` for the reference pressure `p_0` of a linear
   buckling analysis; the position `\boldsymbol{X}` and the basis vectors
   `\boldsymbol{e}_x`, ... in bold; the transpose `^\top` (was `^T`). The
   residual is `\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_{ext}`
-  throughout. Seven docstrings that now contain a backslash, or already did
+  throughout, and the examples with structsolve require structsolve 0.9.3
+  or newer, which has this residual and the Newton-Raphson corrections
+  `\boldsymbol{K}_T \Delta \boldsymbol{c} = -\boldsymbol{R}`. Seven docstrings that now contain a backslash, or already did
   (`update_KG_constant_stress` of `bfsccylinder_sanders`), are raw strings.
-  Code identifiers, plain-text comments and README.md are unchanged.
+  The code identifiers of the package, plain-text comments and README.md
+  are unchanged.
 
 ### Derivations
 

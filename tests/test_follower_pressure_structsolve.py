@@ -9,8 +9,9 @@ factor ``inc``, which structsolve passes to the callables that declare it:
 - ``calc_fext`` gives the dead part `\lambda \boldsymbol{F}_p(\boldsymbol{0})` of the pressure;
 - ``calc_fint`` subtracts the part that depends on the displacements,
   `\lambda (\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))`, of ``update_fext_follower`` with
-  ``reference=0``, such that structsolve solves the equilibrium of the
-  follower pressure, `\boldsymbol{F}_{int}(\boldsymbol{u}) = \lambda
+  ``reference=0``, such that the residual of structsolve (0.9.3 or newer)
+  is that of the follower pressure, `\boldsymbol{R} =
+  \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda
   \boldsymbol{F}_p(\boldsymbol{u})`;
 - ``calc_kC`` adds the load stiffness matrix of the pressure `\lambda p`.
 

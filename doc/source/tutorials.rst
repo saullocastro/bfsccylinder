@@ -25,6 +25,6 @@ Model of the stiffened cylinders
 
 The skin and the stringers are assembled as in :doc:`assembling`, with the
 degrees of freedom of the stringer nodes along the skin eliminated by the
-transformation described in the module docstring:
+constraint basis `\boldsymbol{Z}` described in the module docstring:
 
 .. literalinclude:: tutorials/stiffened_cylinder.py

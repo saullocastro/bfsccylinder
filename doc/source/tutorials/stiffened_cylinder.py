@@ -25,9 +25,9 @@ rigid-body motions of the stiffened cylinder give no strains; it is also
 used with the Donnell-type skin, whose kinematics neglect `v/R`. The
 derivatives `U_{,Y}` and `V_{,Y}` of the stringer, its in-plane shear and
 radial strains at the root, stay free. The 8 tied degrees of freedom of
-each root node are eliminated with the transformation
-`\boldsymbol{u} = \boldsymbol{T}\boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom
-`\boldsymbol{u}_r` are `\boldsymbol{T}^\top \boldsymbol{K} \boldsymbol{T}`, `\boldsymbol{T}^\top \boldsymbol{K}_G \boldsymbol{T}` and `\boldsymbol{T}^\top \boldsymbol{M} \boldsymbol{T}`.
+each root node are eliminated with the constraint basis
+`\boldsymbol{u} = \boldsymbol{Z}\boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom
+`\boldsymbol{u}_r` are `\boldsymbol{Z}^\top \boldsymbol{K} \boldsymbol{Z}`, `\boldsymbol{Z}^\top \boldsymbol{K}_G \boldsymbol{Z}` and `\boldsymbol{Z}^\top \boldsymbol{M} \boldsymbol{Z}`.
 
 The model is the half of the cylinder `0 \le \theta \le \pi` with two
 planes of symmetry midway between two stringers, or the whole cylinder.
@@ -177,7 +177,7 @@ class StiffenedCylinder:
                     plate.ABD = self.str_prop.ABD
                     self.str_elements.append(plate)
 
-        # transformation u = T u_r
+        # constraint basis, u = Z u_r
         dependent = {}
         for s in range(nstr_model):
             for i in range(nx):
@@ -214,7 +214,7 @@ class StiffenedCylinder:
                 rows.append(d)
                 cols.append(red[d2])
                 vals.append(coef)
-        self.T = coo_matrix((vals, (rows, cols)), shape=(N, Nr)).tocsr()
+        self.Z = coo_matrix((vals, (rows, cols)), shape=(N, Nr)).tocsr()
 
     # assembly of the matrices of all the degrees of freedom
     def _assemble(self, skin_func, skin_size, str_func, str_size):
@@ -233,8 +233,8 @@ class StiffenedCylinder:
         return coo_matrix((v, (r, c)), shape=(self.N, self.N)).tocsr()
 
     def reduce(self, A):
-        r"""Matrix of the reduced degrees of freedom, `\boldsymbol{T}^\top \boldsymbol{A} \boldsymbol{T}`"""
-        return (self.T.T @ A @ self.T).tocsr()
+        r"""Matrix of the reduced degrees of freedom, `\boldsymbol{Z}^\top \boldsymbol{A} \boldsymbol{Z}`"""
+        return (self.Z.T @ A @ self.Z).tocsr()
 
     def KC0(self):
         """Linear stiffness matrix, all the degrees of freedom"""

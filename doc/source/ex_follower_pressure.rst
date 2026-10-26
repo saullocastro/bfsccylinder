@@ -7,7 +7,7 @@ Residual and tangent stiffness matrix
 -------------------------------------
 
 The residual `\boldsymbol{F}_{int}(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{u})` and its Jacobian
-`\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F` of one element, for both
+`\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F` of one element, for both
 kinematics, the modules of :doc:`kinematics` being selected by the
 dictionary ``KINEMATICS``, with a pressure that varies over the element:
 

@@ -14,8 +14,9 @@ kinematics, the class :class:`.BFSCCylinderSanders`, and the functions
 :func:`.update_KC0`, :func:`.update_KCNL`, :func:`.update_KG`,
 :func:`.update_KG_constant_stress` and :func:`.update_M`, that write the
 contributions of one element to the linear constitutive stiffness matrix
-KC0, the nonlinear constitutive stiffness matrix KCNL, the geometric
-stiffness matrix KG and the mass matrix M in sparse row, column and value
+KC0, the nonlinear stiffness matrix KCNL, the sum of the nonlinear
+constitutive and geometric stiffness matrices `\boldsymbol{K}_{CNL} +
+\boldsymbol{K}_{GNL}`, the geometric stiffness matrix KG and the mass matrix M in sparse row, column and value
 arrays, starting at the positions given by its ``init_k_*`` attributes, and
 :func:`.update_fint`, that adds its internal forces to a global internal
 force vector. For a pressure that follows the deformation of the shell,
@@ -9221,7 +9222,7 @@ cpdef void update_KCNL(double [::1] u,
                        long [::1] KCNLc,
                        double [::1] KCNLv,
                        ):
-    r"""Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
+    r"""Update sparse vectors for nonlinear stiffness matrix KCNL
 
     The element matrix is integrated with the integration points and weights
     given by ``points`` and ``weights``, from ``lex``, ``ley``, ``R``, the
@@ -9279,7 +9280,13 @@ cpdef void update_KCNL(double [::1] u,
 
     Notes
     -----
-    Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL
+    Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL, that is
+    `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}`: the nonlinear constitutive
+    stiffness matrix `\boldsymbol{K}_{CNL} = \boldsymbol{K}_{C0L} +
+    \boldsymbol{K}_{CL0} + \boldsymbol{K}_{CLL}` of the terms of
+    `\boldsymbol{B}_{NL}` and the geometric stiffness matrix
+    `\boldsymbol{K}_{GNL}` of the membrane stress resultants of the
+    nonlinear strains.
 
     The first three groups are the constitutive terms coupling the linear and
     the nonlinear parts of the membrane strain. KGNL is the geometric term

@@ -14,8 +14,9 @@ kinematics, the class :class:`.BFSCCylinder`, and the functions
 :func:`.update_KC0`, :func:`.update_KCNL`, :func:`.update_KG`,
 :func:`.update_KG_constant_stress` and :func:`.update_M`, that write the
 contributions of one element to the linear constitutive stiffness matrix
-KC0, the nonlinear constitutive stiffness matrix KCNL, the geometric
-stiffness matrix KG and the mass matrix M in sparse row, column and value
+KC0, the nonlinear stiffness matrix KCNL, the sum of the nonlinear
+constitutive and geometric stiffness matrices `\boldsymbol{K}_{CNL} +
+\boldsymbol{K}_{GNL}`, the geometric stiffness matrix KG and the mass matrix M in sparse row, column and value
 arrays, starting at the positions given by its ``init_k_*`` attributes, and
 :func:`.update_fint`, that adds its internal forces to a global internal
 force vector. For a pressure that follows the deformation of the shell,
@@ -209,7 +210,7 @@ is split into
 .. math::
 
     \boldsymbol{K}_T = \frac{\partial^2 U}{\partial \boldsymbol{u}_e^2} = \boldsymbol{K}_{C0}
-            + \boldsymbol{K}_{CNL}(\boldsymbol{u}_e) + \boldsymbol{K}_G(\boldsymbol{u}_e)
+            + \boldsymbol{K}_{CNL}(\boldsymbol{u}_e) + \boldsymbol{K}_{GNL}(\boldsymbol{u}_e) + \boldsymbol{K}_G(\boldsymbol{u}_e)
 
 computed by :func:`.update_KC0`, :func:`.update_KCNL` and :func:`.update_KG`,
 whose Notes give each term. The mass matrix of :func:`.update_M` comes from
@@ -256,7 +257,7 @@ is negative.
 
 The force vector `\boldsymbol{F}_p(\boldsymbol{u})` of :func:`.update_fext_follower` enters the
 residual `\boldsymbol{R} = \boldsymbol{F}_{int}(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{u})`, whose Jacobian is `\boldsymbol{K}_{C0} +
-\boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with the load stiffness matrix
+\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`, with the load stiffness matrix
 `\boldsymbol{K}_F = -\partial \boldsymbol{F}_p/\partial \boldsymbol{u}` of
 :func:`.update_KCfollower`. For ``quadratic=0``, `\boldsymbol{F}_p` is affine in the
 displacements and `\boldsymbol{K}_F` is constant. The load stiffness matrix
@@ -9365,7 +9366,7 @@ cpdef void update_KCNL(double [::1] u,
                        long [::1] KCNLc,
                        double [::1] KCNLv,
                        ):
-    r"""Update sparse vectors for nonlinear constitutive stiffness matrix KCNL
+    r"""Update sparse vectors for nonlinear stiffness matrix KCNL
 
     The element matrix is integrated with the integration points and weights
     given by ``points`` and ``weights``, from ``lex``, ``ley``, ``R``, the
@@ -9423,7 +9424,13 @@ cpdef void update_KCNL(double [::1] u,
 
     Notes
     -----
-    Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL
+    Assuming that KCNL = KC0L + KCL0 + KCLL + KGNL, that is
+    `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}`: the nonlinear constitutive
+    stiffness matrix `\boldsymbol{K}_{CNL} = \boldsymbol{K}_{C0L} +
+    \boldsymbol{K}_{CL0} + \boldsymbol{K}_{CLL}` of the terms of
+    `\boldsymbol{B}_{NL}` and the geometric stiffness matrix
+    `\boldsymbol{K}_{GNL}` of the membrane stress resultants of the
+    nonlinear strains.
 
     The first three groups are the constitutive terms coupling the linear and
     the nonlinear parts of the membrane strain. KGNL is the geometric term
@@ -21468,7 +21475,7 @@ cpdef void update_KCfollower(double [::1] u,
     `w`; with ``quadratic=1`` it is linear in `\boldsymbol{u}_e`.
 
     The tangent stiffness matrix of the residual `\boldsymbol{R} = \boldsymbol{F}_{int}(\boldsymbol{u}) -
-    \boldsymbol{F}_p(\boldsymbol{u})` is `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`. For a
+    \boldsymbol{F}_p(\boldsymbol{u})` is `\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F`. For a
     linear buckling analysis under a pressure `p = \lambda p_0`, with
     ``u`` the linear static solution of `p_0` and `\boldsymbol{K}_G` of
     :func:`.update_KG`, the load multipliers and the buckling modes solve

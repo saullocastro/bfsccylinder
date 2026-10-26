@@ -67,7 +67,7 @@ the nonlinear static analysis of :doc:`analyses` and its Jacobian are
 .. math::
 
     \boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{u}), \qquad
-    \boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}) + \boldsymbol{K}_F
+    \boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}) + \boldsymbol{K}_F
 
 with `\boldsymbol{F}_p` and `\boldsymbol{K}_F` of the same ``p = lambda*p0`` and
 ``quadratic``, see ``residual_and_tangent`` in :doc:`ex_follower_pressure`.
