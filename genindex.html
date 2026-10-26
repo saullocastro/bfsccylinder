@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index &#8212; bfsccylinder 0.7.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfsccylinder 0.7.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The element and its degrees of freedom
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The element and its degrees of freedom
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none"></div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_utils.html#bfsccylinder.utils.assign_constant_ABD">assign_constant_ABD() (in module bfsccylinder.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    bfsccylinder
+
+      <ul>
+        <li><a href="api.html#module-bfsccylinder">module</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder">BFSCCylinder (class in bfsccylinder.bfsccylinder)</a>
+</li>
+      <li>
+    bfsccylinder.bfsccylinder
+
+      <ul>
+        <li><a href="api_bfsccylinder.html#module-bfsccylinder.bfsccylinder">module</a>
+</li>
+      </ul></li>
+      <li>
+    bfsccylinder.bfsccylinder_sanders
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#module-bfsccylinder.bfsccylinder_sanders">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    bfsccylinder.quadrature
+
+      <ul>
+        <li><a href="api_quadrature.html#module-bfsccylinder.quadrature">module</a>
+</li>
+      </ul></li>
+      <li>
+    bfsccylinder.sanders
+
+      <ul>
+        <li><a href="api_sanders.html#module-bfsccylinder.sanders">module</a>
+</li>
+      </ul></li>
+      <li>
+    bfsccylinder.utils
+
+      <ul>
+        <li><a href="api_utils.html#module-bfsccylinder.utils">module</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders">BFSCCylinderSanders (class in bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights">get_points_weights() (in module bfsccylinder.quadrature)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    module
+
+      <ul>
+        <li><a href="api.html#module-bfsccylinder">bfsccylinder</a>
+</li>
+        <li><a href="api_bfsccylinder.html#module-bfsccylinder.bfsccylinder">bfsccylinder.bfsccylinder</a>
+</li>
+        <li><a href="api_bfsccylinder_sanders.html#module-bfsccylinder.bfsccylinder_sanders">bfsccylinder.bfsccylinder_sanders</a>
+</li>
+        <li><a href="api_quadrature.html#module-bfsccylinder.quadrature">bfsccylinder.quadrature</a>
+</li>
+        <li><a href="api_sanders.html#module-bfsccylinder.sanders">bfsccylinder.sanders</a>
+</li>
+        <li><a href="api_utils.html#module-bfsccylinder.utils">bfsccylinder.utils</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Bb">update_Bb() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Bm">update_Bm() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bm">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower">update_fext_follower() (in module bfsccylinder.bfsccylinder)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_fext_follower">(in module bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint">update_fint() (in module bfsccylinder.bfsccylinder)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_fint">(in module bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0">update_KC0() (in module bfsccylinder.bfsccylinder)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_KC0">(in module bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCfollower">update_KCfollower() (in module bfsccylinder.bfsccylinder)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_KCfollower">(in module bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL">update_KCNL() (in module bfsccylinder.bfsccylinder)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_KCNL">(in module bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG">update_KG() (in module bfsccylinder.bfsccylinder)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_KG">(in module bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG_constant_stress">update_KG_constant_stress() (in module bfsccylinder.bfsccylinder)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_KG_constant_stress">(in module bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M">update_M() (in module bfsccylinder.bfsccylinder)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_M">(in module bfsccylinder.bfsccylinder_sanders)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Su">update_Su() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Su">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Su_x">update_Su_x() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Su_x">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Su_y">update_Su_y() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Su_y">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv">update_Sv() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Sv">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv_x">update_Sv_x() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Sv_x">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv_y">update_Sv_y() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Sv_y">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw">update_Sw() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Sw">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw_x">update_Sw_x() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Sw_x">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw_y">update_Sw_y() (bfsccylinder.bfsccylinder.BFSCCylinder method)</a>
+
+      <ul>
+        <li><a href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Sw_y">(bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

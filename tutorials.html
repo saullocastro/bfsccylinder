@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorials &#8212; bfsccylinder 0.7.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Natural frequencies of stringer-stiffened cylinders" href="tutorials/stiffened_cylinder_frequencies.html" />
+    <link rel="prev" title="Donnell-type and Sanders-type kinematics" href="ex_kinematics.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfsccylinder 0.7.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The element and its degrees of freedom
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    Tutorials
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The element and its degrees of freedom
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="tutorials/stiffened_cylinder_frequencies.html">Natural frequencies of stringer-stiffened cylinders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/stiffened_cylinder_buckling.html">Axial buckling of stringer-stiffened cylinders</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Tutorials</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Link to this heading">#</a></h1>
+<p>The tutorials are Jupyter notebooks, stored in <code class="docutils literal notranslate"><span class="pre">doc/source/tutorials/</span></code> with
+their outputs, which compare models of stringer-stiffened cylinders with
+published tests: the skin is modelled with the elements of bfsccylinder and
+each blade stringer with the BFSC plate element of <a class="reference external" href="https://github.com/saullocastro/bfscplate2d">bfscplate2d</a>. Both notebooks build their
+models with the module <code class="docutils literal notranslate"><span class="pre">stiffened_cylinder.py</span></code> of the same folder, below.
+Running them requires bfscplate2d 0.5.0 or newer, with the shape functions
+named <code class="docutils literal notranslate"><span class="pre">Su</span></code>, …, <code class="docutils literal notranslate"><span class="pre">Sw_y</span></code>, <a class="reference external" href="https://github.com/saullocastro/composites">composites</a>, <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a> and Matplotlib, besides
+bfsccylinder.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/stiffened_cylinder_frequencies.html">Natural frequencies of stringer-stiffened cylinders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/stiffened_cylinder_buckling.html">Axial buckling of stringer-stiffened cylinders</a></li>
+</ul>
+</div>
+<section id="model-of-the-stiffened-cylinders">
+<h2>Model of the stiffened cylinders<a class="headerlink" href="#model-of-the-stiffened-cylinders" title="Link to this heading">#</a></h2>
+<p>The skin and the stringers are assembled as in <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>, with the
+degrees of freedom of the stringer nodes along the skin eliminated by the
+constraint basis <span class="math notranslate nohighlight">\(\boldsymbol{Z}\)</span> described in the module docstring:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sa">r</span><span class="sd">"""Stringer-stiffened cylinder of BFSC elements</span>
+
+<span class="sd">The skin is modelled with the BFSC cylinder elements of ``bfsccylinder``,</span>
+<span class="sd">Sanders-type or Donnell-type, and each blade stringer with BFSC plate</span>
+<span class="sd">elements of ``bfscplate2d``, in the plane `(x, r)` of the stringer, from the</span>
+<span class="sd">middle surface of the skin to the tip of the stringer. The plate of a</span>
+<span class="sd">stringer has the local coordinates `X = x` and `Y = r - R`, positive</span>
+<span class="sd">outwards, and its displacements `U`, `V` and `W` are along `x`, along the</span>
+<span class="sd">outward radius and along the circumference, the direction of `v` of the</span>
+<span class="sd">skin.</span>
+
+<span class="sd">Along the line where a stringer meets the skin, `Y = 0`, the nodes of the</span>
+<span class="sd">stringer are tied to the nodes of the skin, the translations and the</span>
+<span class="sd">rotation about `x` being the same:</span>
+
+<span class="sd">.. math::</span>
+
+<span class="sd">    U = u, \quad V = w, \quad W = v, \quad W_{,Y} = \beta_y = -w_{,y} +</span>
+<span class="sd">    \frac{v}{R}</span>
+
+<span class="sd">and the derivatives of these relations along `x`: `U_{,X} = u_{,x}`,</span>
+<span class="sd">`V_{,X} = w_{,x}`, `W_{,X} = v_{,x}`, `W_{,XY} = -w_{,xy} + v_{,x}/R`. The</span>
+<span class="sd">rotation `\beta_y` is that of the Sanders-type kinematics, with which</span>
+<span class="sd">rigid-body motions of the stiffened cylinder give no strains; it is also</span>
+<span class="sd">used with the Donnell-type skin, whose kinematics neglect `v/R`. The</span>
+<span class="sd">derivatives `U_{,Y}` and `V_{,Y}` of the stringer, its in-plane shear and</span>
+<span class="sd">radial strains at the root, stay free. The 8 tied degrees of freedom of</span>
+<span class="sd">each root node are eliminated with the constraint basis</span>
+<span class="sd">`\boldsymbol{u} = \boldsymbol{Z}\boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom</span>
+<span class="sd">`\boldsymbol{u}_r` are `\boldsymbol{Z}^\top \boldsymbol{K} \boldsymbol{Z}`, `\boldsymbol{Z}^\top \boldsymbol{K}_G \boldsymbol{Z}` and `\boldsymbol{Z}^\top \boldsymbol{M} \boldsymbol{Z}`.</span>
+
+<span class="sd">The model is the half of the cylinder `0 \le \theta \le \pi` with two</span>
+<span class="sd">planes of symmetry midway between two stringers, or the whole cylinder.</span>
+<span class="sd">"""</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">coo_matrix</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">composites</span><span class="w"> </span><span class="kn">import</span> <span class="n">isotropic_plate</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bfsccylinder</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bfsccylinder.sanders</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.quadrature</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_points_weights</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">assign_constant_ABD</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bfscplate2d</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bfscplate2d</span><span class="w"> </span><span class="kn">import</span> <span class="n">BFSCPlate2D</span>
+
+<span class="n">DOF</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="c1"># positions of the degrees of freedom in a node</span>
+<span class="n">U</span><span class="p">,</span> <span class="n">U_X</span><span class="p">,</span> <span class="n">U_Y</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">V_X</span><span class="p">,</span> <span class="n">V_Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">W_X</span><span class="p">,</span> <span class="n">W_Y</span><span class="p">,</span> <span class="n">W_XY</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">StiffenedCylinder</span><span class="p">:</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Skin of BFSC cylinder elements with blade stringers of BFSC plate</span>
+<span class="sd">    elements</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    R, L, h : float</span>
+<span class="sd">        Radius of the middle surface, length and thickness of the skin.</span>
+<span class="sd">    E, nu, rho : float</span>
+<span class="sd">        Young's modulus, Poisson's ratio and density of the skin and of the</span>
+<span class="sd">        stringers.</span>
+<span class="sd">    nstringers : int</span>
+<span class="sd">        Number of stringers, equally spaced, even when ``half=True``.</span>
+<span class="sd">    bs, Hs : float</span>
+<span class="sd">        Thickness of a stringer and height of its plate, from the middle</span>
+<span class="sd">        surface of the skin to the tip.</span>
+<span class="sd">    side : str</span>
+<span class="sd">        ``'external'`` or ``'internal'``.</span>
+<span class="sd">    nx : int</span>
+<span class="sd">        Number of nodes along `x`.</span>
+<span class="sd">    nbay : int</span>
+<span class="sd">        Number of skin elements between two stringers, even.</span>
+<span class="sd">    nh : int</span>
+<span class="sd">        Number of stringer elements along the height.</span>
+<span class="sd">    kinematics : str</span>
+<span class="sd">        ``'sanders'`` or ``'donnell'``, of the skin elements.</span>
+<span class="sd">    half : bool</span>
+<span class="sd">        Half model with two planes of symmetry, or the whole cylinder.</span>
+<span class="sd">    free_axial : bool</span>
+<span class="sd">        With ``True``, the mean of `u` along the edge `x = 0` is tied to</span>
+<span class="sd">        zero, which removes the rigid-body axial translation of the boundary</span>
+<span class="sd">        conditions with `u` free at both ends.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">E</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">nstringers</span><span class="p">,</span> <span class="n">bs</span><span class="p">,</span> <span class="n">Hs</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span>
+                 <span class="n">nbay</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nh</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">kinematics</span><span class="o">=</span><span class="s1">'sanders'</span><span class="p">,</span> <span class="n">half</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">free_axial</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">nint</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">side</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'external'</span><span class="p">,</span> <span class="s1">'internal'</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">kinematics</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'sanders'</span><span class="p">,</span> <span class="s1">'donnell'</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">nbay</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">half</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">nstringers</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">R</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">h</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">E</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">E</span><span class="p">,</span> <span class="n">nu</span><span class="p">,</span> <span class="n">rho</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nstringers</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">side</span> <span class="o">=</span> <span class="n">nstringers</span><span class="p">,</span> <span class="n">bs</span><span class="p">,</span> <span class="n">Hs</span><span class="p">,</span> <span class="n">side</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nbay</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nh</span> <span class="o">=</span> <span class="n">nx</span><span class="p">,</span> <span class="n">nbay</span><span class="p">,</span> <span class="n">nh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kinematics</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">half</span> <span class="o">=</span> <span class="n">kinematics</span><span class="p">,</span> <span class="n">half</span>
+        <span class="k">if</span> <span class="n">kinematics</span> <span class="o">==</span> <span class="s1">'sanders'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="n">bfsccylinder</span><span class="o">.</span><span class="n">sanders</span>
+            <span class="n">Element</span> <span class="o">=</span> <span class="n">bfsccylinder</span><span class="o">.</span><span class="n">sanders</span><span class="o">.</span><span class="n">BFSCCylinderSanders</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="n">bfsccylinder</span>
+            <span class="n">Element</span> <span class="o">=</span> <span class="n">bfsccylinder</span><span class="o">.</span><span class="n">BFSCCylinder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">get_points_weights</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="n">nint</span><span class="p">)</span>
+
+        <span class="c1"># skin nodes, x varying slowest</span>
+        <span class="n">dtheta</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">nstringers</span><span class="o">/</span><span class="n">nbay</span>
+        <span class="n">ny_el</span> <span class="o">=</span> <span class="n">nstringers</span><span class="o">*</span><span class="n">nbay</span><span class="o">//</span><span class="mi">2</span> <span class="k">if</span> <span class="n">half</span> <span class="k">else</span> <span class="n">nstringers</span><span class="o">*</span><span class="n">nbay</span>
+        <span class="n">nyn</span> <span class="o">=</span> <span class="n">ny_el</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">half</span> <span class="k">else</span> <span class="n">ny_el</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nyn</span> <span class="o">=</span> <span class="n">nyn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nyn</span><span class="p">)</span><span class="o">*</span><span class="n">dtheta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span>
+        <span class="n">skin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="o">*</span><span class="n">nyn</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">nyn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skin_nodes</span> <span class="o">=</span> <span class="n">skin</span>
+        <span class="n">num_skin_nodes</span> <span class="o">=</span> <span class="n">nx</span><span class="o">*</span><span class="n">nyn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xlin</span><span class="p">,</span> <span class="n">nyn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">,</span> <span class="n">nx</span><span class="p">)</span><span class="o">*</span><span class="n">R</span>
+
+        <span class="c1"># stringers: positions midway between the planes of symmetry</span>
+        <span class="n">nstr_model</span> <span class="o">=</span> <span class="n">nstringers</span><span class="o">//</span><span class="mi">2</span> <span class="k">if</span> <span class="n">half</span> <span class="k">else</span> <span class="n">nstringers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">j_stringer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nstr_model</span><span class="p">)</span><span class="o">*</span><span class="n">nbay</span> <span class="o">+</span> <span class="n">nbay</span><span class="o">//</span><span class="mi">2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">theta_stringer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">theta</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">j_stringer</span><span class="p">]</span>
+        <span class="n">sign</span> <span class="o">=</span> <span class="mf">1.</span> <span class="k">if</span> <span class="n">side</span> <span class="o">==</span> <span class="s1">'external'</span> <span class="k">else</span> <span class="o">-</span><span class="mf">1.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Y</span> <span class="o">=</span> <span class="n">sign</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nh</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">Hs</span><span class="o">/</span><span class="n">nh</span>
+        <span class="n">str_nodes</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_skin_nodes</span>
+                     <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nstr_model</span><span class="o">*</span><span class="n">nx</span><span class="o">*</span><span class="p">(</span><span class="n">nh</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
+                         <span class="n">nstr_model</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">nh</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">str_nodes</span> <span class="o">=</span> <span class="n">str_nodes</span>
+        <span class="n">num_nodes</span> <span class="o">=</span> <span class="n">num_skin_nodes</span> <span class="o">+</span> <span class="n">str_nodes</span><span class="o">.</span><span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">num_nodes</span>
+
+        <span class="c1"># elements</span>
+        <span class="n">lex</span> <span class="o">=</span> <span class="n">L</span><span class="o">/</span><span class="p">(</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skin_elements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ny_el</span><span class="p">):</span>
+                <span class="n">jp</span> <span class="o">=</span> <span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">nyn</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">half</span> <span class="k">else</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">shell</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="n">nint</span><span class="p">)</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">n1</span> <span class="o">=</span> <span class="n">skin</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">n2</span> <span class="o">=</span> <span class="n">skin</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">n3</span> <span class="o">=</span> <span class="n">skin</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">jp</span><span class="p">]</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">n4</span> <span class="o">=</span> <span class="n">skin</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">jp</span><span class="p">]</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">c1</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">shell</span><span class="o">.</span><span class="n">n1</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">c2</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">shell</span><span class="o">.</span><span class="n">n2</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">c3</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">shell</span><span class="o">.</span><span class="n">n3</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">c4</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">shell</span><span class="o">.</span><span class="n">n4</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">R</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">lex</span> <span class="o">=</span> <span class="n">lex</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">ley</span> <span class="o">=</span> <span class="n">R</span><span class="o">*</span><span class="n">dtheta</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">h</span>
+                <span class="n">shell</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">skin_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shell</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">skin_prop</span> <span class="o">=</span> <span class="n">isotropic_plate</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="n">h</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="n">E</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="n">nu</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="n">rho</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">shell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skin_elements</span><span class="p">:</span>
+            <span class="n">assign_constant_ABD</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">skin_prop</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">str_prop</span> <span class="o">=</span> <span class="n">isotropic_plate</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="n">bs</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="n">E</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="n">nu</span><span class="p">,</span> <span class="n">rho</span><span class="o">=</span><span class="n">rho</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">str_elements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nstr_model</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nh</span><span class="p">):</span>
+                    <span class="c1"># node 1 at the smallest X and Y</span>
+                    <span class="n">k1</span><span class="p">,</span> <span class="n">k4</span> <span class="o">=</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">sign</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+                    <span class="n">plate</span> <span class="o">=</span> <span class="n">BFSCPlate2D</span><span class="p">()</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">n1</span> <span class="o">=</span> <span class="n">str_nodes</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">k1</span><span class="p">]</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">n2</span> <span class="o">=</span> <span class="n">str_nodes</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k1</span><span class="p">]</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">n3</span> <span class="o">=</span> <span class="n">str_nodes</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">k4</span><span class="p">]</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">n4</span> <span class="o">=</span> <span class="n">str_nodes</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">k4</span><span class="p">]</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">c1</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">plate</span><span class="o">.</span><span class="n">n1</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">c2</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">plate</span><span class="o">.</span><span class="n">n2</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">c3</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">plate</span><span class="o">.</span><span class="n">n3</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">c4</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">plate</span><span class="o">.</span><span class="n">n4</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">lex</span> <span class="o">=</span> <span class="n">lex</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">ley</span> <span class="o">=</span> <span class="n">Hs</span><span class="o">/</span><span class="n">nh</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="n">bs</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span>
+                    <span class="n">plate</span><span class="o">.</span><span class="n">ABD</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_prop</span><span class="o">.</span><span class="n">ABD</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">str_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">plate</span><span class="p">)</span>
+
+        <span class="c1"># constraint basis, u = Z u_r</span>
+        <span class="n">dependent</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nstr_model</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nx</span><span class="p">):</span>
+                <span class="n">c</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">skin</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">j_stringer</span><span class="p">[</span><span class="n">s</span><span class="p">]]</span>
+                <span class="n">b</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">str_nodes</span><span class="p">[</span><span class="n">s</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="n">dependent</span><span class="p">[</span><span class="n">b</span> <span class="o">+</span> <span class="n">U</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span> <span class="o">+</span> <span class="n">U</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)]</span>
+                <span class="n">dependent</span><span class="p">[</span><span class="n">b</span> <span class="o">+</span> <span class="n">U_X</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span> <span class="o">+</span> <span class="n">U_X</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)]</span>
+                <span class="n">dependent</span><span class="p">[</span><span class="n">b</span> <span class="o">+</span> <span class="n">V</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span> <span class="o">+</span> <span class="n">W</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)]</span>
+                <span class="n">dependent</span><span class="p">[</span><span class="n">b</span> <span class="o">+</span> <span class="n">V_X</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span> <span class="o">+</span> <span class="n">W_X</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)]</span>
+                <span class="n">dependent</span><span class="p">[</span><span class="n">b</span> <span class="o">+</span> <span class="n">W</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span> <span class="o">+</span> <span class="n">V</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)]</span>
+                <span class="n">dependent</span><span class="p">[</span><span class="n">b</span> <span class="o">+</span> <span class="n">W_X</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span> <span class="o">+</span> <span class="n">V_X</span><span class="p">,</span> <span class="mf">1.</span><span class="p">)]</span>
+                <span class="n">dependent</span><span class="p">[</span><span class="n">b</span> <span class="o">+</span> <span class="n">W_Y</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span> <span class="o">+</span> <span class="n">W_Y</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">),</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">V</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">R</span><span class="p">)]</span>
+                <span class="n">dependent</span><span class="p">[</span><span class="n">b</span> <span class="o">+</span> <span class="n">W_XY</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">c</span> <span class="o">+</span> <span class="n">W_XY</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.</span><span class="p">),</span> <span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">V_X</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">R</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">free_axial</span><span class="p">:</span>
+            <span class="c1"># trapezoidal weights of the edge x = 0</span>
+            <span class="n">wts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">nyn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">half</span><span class="p">:</span>
+                <span class="n">wts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">wts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+            <span class="n">c0</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">skin</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="n">dependent</span><span class="p">[</span><span class="n">c0</span> <span class="o">+</span> <span class="n">U</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">DOF</span><span class="o">*</span><span class="n">skin</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="n">U</span><span class="p">,</span> <span class="o">-</span><span class="n">wts</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">wts</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                                 <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nyn</span><span class="p">)]</span>
+        <span class="n">independent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">independent</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">dependent</span><span class="o">.</span><span class="n">keys</span><span class="p">())]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Nr</span> <span class="o">=</span> <span class="n">Nr</span> <span class="o">=</span> <span class="n">independent</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">red</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">red</span><span class="p">[</span><span class="n">independent</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">Nr</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">red</span> <span class="o">=</span> <span class="n">red</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">independent</span><span class="p">))</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">red</span><span class="p">[</span><span class="n">independent</span><span class="p">])</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">]</span><span class="o">*</span><span class="n">Nr</span>
+        <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">terms</span> <span class="ow">in</span> <span class="n">dependent</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">d2</span><span class="p">,</span> <span class="n">coef</span> <span class="ow">in</span> <span class="n">terms</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">red</span><span class="p">[</span><span class="n">d2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+                <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">red</span><span class="p">[</span><span class="n">d2</span><span class="p">])</span>
+                <span class="n">vals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Z</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">vals</span><span class="p">,</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">Nr</span><span class="p">))</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+
+    <span class="c1"># assembly of the matrices of all the degrees of freedom</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_assemble</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skin_func</span><span class="p">,</span> <span class="n">skin_size</span><span class="p">,</span> <span class="n">str_func</span><span class="p">,</span> <span class="n">str_size</span><span class="p">):</span>
+        <span class="n">nse</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">skin_elements</span><span class="p">)</span>
+        <span class="n">nst</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">str_elements</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">skin_size</span><span class="o">*</span><span class="n">nse</span> <span class="o">+</span> <span class="n">str_size</span><span class="o">*</span><span class="n">nst</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">init_k</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">shell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">skin_elements</span><span class="p">:</span>
+            <span class="n">skin_func</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">init_k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">init_k</span> <span class="o">+=</span> <span class="n">skin_size</span>
+        <span class="k">for</span> <span class="n">plate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_elements</span><span class="p">:</span>
+            <span class="n">str_func</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">init_k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+            <span class="n">init_k</span> <span class="o">+=</span> <span class="n">str_size</span>
+        <span class="k">return</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Matrix of the reduced degrees of freedom, `\boldsymbol{Z}^\top \boldsymbol{A} \boldsymbol{Z}`"""</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">A</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">Z</span><span class="p">)</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">KC0</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Linear stiffness matrix, all the degrees of freedom"""</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">skin</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KC0</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">update_KC0</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">stringer</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">plate</span><span class="o">.</span><span class="n">init_k_KC0</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">bfscplate2d</span><span class="o">.</span><span class="n">update_KC0</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble</span><span class="p">(</span><span class="n">skin</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KC0_SPARSE_SIZE</span><span class="p">,</span> <span class="n">stringer</span><span class="p">,</span>
+                              <span class="n">bfscplate2d</span><span class="o">.</span><span class="n">KC0_SPARSE_SIZE</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">M</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Mass matrix, all the degrees of freedom"""</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">skin</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_M</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">update_M</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">stringer</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">plate</span><span class="o">.</span><span class="n">init_k_M</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">bfscplate2d</span><span class="o">.</span><span class="n">update_M</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble</span><span class="p">(</span><span class="n">skin</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">M_SPARSE_SIZE</span><span class="p">,</span> <span class="n">stringer</span><span class="p">,</span>
+                              <span class="n">bfscplate2d</span><span class="o">.</span><span class="n">M_SPARSE_SIZE</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">KG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Geometric stiffness matrix of the displacements ``u`` of all the</span>
+<span class="sd">        degrees of freedom, with the in-plane terms of the stringers of</span>
+<span class="sd">        :meth:`KG_inplane`"""</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">skin</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KG</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">update_KG</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">stringer</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">plate</span><span class="o">.</span><span class="n">init_k_KG</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">bfscplate2d</span><span class="o">.</span><span class="n">update_KG</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="n">KG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble</span><span class="p">(</span><span class="n">skin</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KG_SPARSE_SIZE</span><span class="p">,</span> <span class="n">stringer</span><span class="p">,</span>
+                            <span class="n">bfscplate2d</span><span class="o">.</span><span class="n">KG_SPARSE_SIZE</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">KG</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">KG_inplane</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stringer_membrane_forces</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">KG_membrane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Geometric stiffness matrix of the uniform axial strain ``eps``</span>
+<span class="sd">        of the membrane pre-buckling state, `N_{xx} = E h \epsilon` in the</span>
+<span class="sd">        skin and `E b_s \epsilon` in the stringers, without hoop stress,</span>
+<span class="sd">        with the in-plane terms of the stringers of :meth:`KG_inplane`"""</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span>
+        <span class="n">Nskin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">E</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span><span class="o">*</span><span class="n">eps</span>
+        <span class="n">Nstr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">E</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">*</span><span class="n">eps</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">skin</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KG</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">update_KG_constant_stress</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">Nskin</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">stringer</span><span class="p">(</span><span class="n">plate</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+            <span class="n">plate</span><span class="o">.</span><span class="n">init_k_KG</span> <span class="o">=</span> <span class="n">k</span>
+            <span class="n">bfscplate2d</span><span class="o">.</span><span class="n">update_KG_cte_N</span><span class="p">(</span><span class="n">Nstr</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="n">plate</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="n">KG</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble</span><span class="p">(</span><span class="n">skin</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">KG_SPARSE_SIZE</span><span class="p">,</span> <span class="n">stringer</span><span class="p">,</span>
+                            <span class="n">bfscplate2d</span><span class="o">.</span><span class="n">KG_SPARSE_SIZE</span><span class="p">)</span>
+        <span class="n">nel</span><span class="p">,</span> <span class="n">npts</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">str_elements</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nel</span><span class="p">,</span> <span class="n">npts</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">N</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">Nstr</span>
+        <span class="k">return</span> <span class="n">KG</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">KG_inplane</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_stringer_operators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Interpolation rows of the stringer elements at the integration</span>
+<span class="sd">        points, the same for all the stringer elements"""</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_ops'</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ops</span>
+        <span class="n">plate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_elements</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">p</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span>
+        <span class="n">Bm</span><span class="p">,</span> <span class="n">Sv_x</span><span class="p">,</span> <span class="n">Sv_y</span><span class="p">,</span> <span class="n">wts</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">xi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">eta</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="n">plate</span><span class="o">.</span><span class="n">update_Bm</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+                <span class="n">plate</span><span class="o">.</span><span class="n">update_Sv_x</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+                <span class="n">plate</span><span class="o">.</span><span class="n">update_Sv_y</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">eta</span><span class="p">)</span>
+                <span class="n">Bm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">plate</span><span class="o">.</span><span class="n">Bm</span><span class="p">))</span>
+                <span class="n">Sv_x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">plate</span><span class="o">.</span><span class="n">Sv_x</span><span class="p">))</span>
+                <span class="n">Sv_y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">plate</span><span class="o">.</span><span class="n">Sv_y</span><span class="p">))</span>
+                <span class="n">wts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">w</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">plate</span><span class="o">.</span><span class="n">lex</span><span class="o">*</span><span class="n">plate</span><span class="o">.</span><span class="n">ley</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">dofs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">pl</span><span class="o">.</span><span class="n">c1</span> <span class="o">+</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">DOF</span><span class="p">)]</span>
+                         <span class="o">+</span> <span class="p">[</span><span class="n">pl</span><span class="o">.</span><span class="n">c2</span> <span class="o">+</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">DOF</span><span class="p">)]</span>
+                         <span class="o">+</span> <span class="p">[</span><span class="n">pl</span><span class="o">.</span><span class="n">c3</span> <span class="o">+</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">DOF</span><span class="p">)]</span>
+                         <span class="o">+</span> <span class="p">[</span><span class="n">pl</span><span class="o">.</span><span class="n">c4</span> <span class="o">+</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">DOF</span><span class="p">)]</span>
+                         <span class="k">for</span> <span class="n">pl</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_elements</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ops</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Bm</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Sv_x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Sv_y</span><span class="p">),</span>
+                     <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">wts</span><span class="p">),</span> <span class="n">dofs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ops</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">stringer_membrane_forces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Membrane forces `N_{xx}, N_{yy}, N_{xy}` of the stringer elements</span>
+<span class="sd">        at their integration points, shape ``(num_elements, nint**2, 3)``,</span>
+<span class="sd">        from the displacements ``u`` of all the degrees of freedom"""</span>
+        <span class="n">Bm</span><span class="p">,</span> <span class="n">Sv_x</span><span class="p">,</span> <span class="n">Sv_y</span><span class="p">,</span> <span class="n">wts</span><span class="p">,</span> <span class="n">dofs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stringer_operators</span><span class="p">()</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_prop</span><span class="o">.</span><span class="n">ABD</span><span class="p">[:</span><span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'pij,ej-&gt;epi'</span><span class="p">,</span> <span class="n">Bm</span><span class="p">,</span> <span class="n">u</span><span class="p">[</span><span class="n">dofs</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">eps</span> <span class="o">@</span> <span class="n">A</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">KG_inplane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Geometric stiffness matrix of the radial displacement `V` of the</span>
+<span class="sd">        stringers in their plane, for the membrane forces ``N`` of</span>
+<span class="sd">        :meth:`stringer_membrane_forces`:</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">            \int (N_{xx} V_{,X}^2 + 2 N_{xy} V_{,X} V_{,Y} + N_{yy}</span>
+<span class="sd">            V_{,Y}^2) \, dX \, dY</span>
+
+<span class="sd">        These terms, the counterpart of the terms of `w` of the skin, are</span>
+<span class="sd">        not in the geometric stiffness matrix of the BFSC plate element,</span>
+<span class="sd">        which has only the terms of its out-of-plane displacement `W`."""</span>
+        <span class="n">Bm</span><span class="p">,</span> <span class="n">Sv_x</span><span class="p">,</span> <span class="n">Sv_y</span><span class="p">,</span> <span class="n">wts</span><span class="p">,</span> <span class="n">dofs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stringer_operators</span><span class="p">()</span>
+        <span class="n">Nw</span> <span class="o">=</span> <span class="n">N</span><span class="o">*</span><span class="n">wts</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="n">Ke</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'ep,pi,pj-&gt;eij'</span><span class="p">,</span> <span class="n">Nw</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">Sv_x</span><span class="p">,</span> <span class="n">Sv_x</span><span class="p">)</span>
+              <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'ep,pi,pj-&gt;eij'</span><span class="p">,</span> <span class="n">Nw</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">Sv_y</span><span class="p">,</span> <span class="n">Sv_y</span><span class="p">)</span>
+              <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'ep,pi,pj-&gt;eij'</span><span class="p">,</span> <span class="n">Nw</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">Sv_x</span><span class="p">,</span> <span class="n">Sv_y</span><span class="p">)</span>
+              <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">'ep,pi,pj-&gt;eij'</span><span class="p">,</span> <span class="n">Nw</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">Sv_y</span><span class="p">,</span> <span class="n">Sv_x</span><span class="p">))</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">dofs</span><span class="p">,</span> <span class="n">dofs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">dofs</span><span class="p">,</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dofs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">Ke</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">c</span><span class="p">)),</span>
+                          <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">axial_force_membrane</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">eps</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Axial force of the whole cylinder for the membrane state of the</span>
+<span class="sd">        uniform axial strain ``eps``"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">E</span><span class="o">*</span><span class="n">eps</span><span class="o">*</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h</span>
+                           <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nstringers</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">bs</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">Hs</span><span class="p">)</span>
+
+    <span class="c1"># boundary conditions, as boolean arrays of the reduced dofs</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_mark</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bk</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">dofs</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dofs</span><span class="p">:</span>
+                <span class="n">rd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">red</span><span class="p">[</span><span class="n">DOF</span><span class="o">*</span><span class="n">n</span> <span class="o">+</span> <span class="n">d</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">rd</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">bk</span><span class="p">[</span><span class="n">rd</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">constrained</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ends</span><span class="o">=</span><span class="s1">'SS'</span><span class="p">):</span>
+<span class="w">        </span><span class="sa">r</span><span class="sd">"""Constrained reduced degrees of freedom</span>
+
+<span class="sd">        ``ends='SS'``: `v = w = 0` at both ends, `u` and `w_{,x}` free, and</span>
+<span class="sd">        `V = W = W_{,Y} = 0` along the end edges of the stringers.</span>
+<span class="sd">        ``ends='CC'``: `u = v = w = w_{,x} = 0` at both ends and the end</span>
+<span class="sd">        edges of the stringers clamped. The derivatives along the edges of</span>
+<span class="sd">        the constrained displacements are constrained as well. In the half</span>
+<span class="sd">        model, the planes `\theta = 0` and `\theta = \pi` are planes of</span>
+<span class="sd">        symmetry: `v = v_{,x} = u_{,y} = w_{,y} = w_{,xy} = 0`.</span>
+<span class="sd">        """</span>
+        <span class="n">bk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">skin</span><span class="p">,</span> <span class="n">strn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">skin_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">str_nodes</span>
+        <span class="n">ends_skin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">skin</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">skin</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]))</span>
+        <span class="n">ends_str</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">strn</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">strn</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ends</span> <span class="o">==</span> <span class="s1">'SS'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mark</span><span class="p">(</span><span class="n">bk</span><span class="p">,</span> <span class="n">ends_skin</span><span class="p">,</span> <span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V_Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">W_Y</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mark</span><span class="p">(</span><span class="n">bk</span><span class="p">,</span> <span class="n">ends_str</span><span class="p">,</span> <span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V_Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">W_Y</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">ends</span> <span class="o">==</span> <span class="s1">'CC'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mark</span><span class="p">(</span><span class="n">bk</span><span class="p">,</span> <span class="n">ends_skin</span><span class="p">,</span> <span class="p">[</span><span class="n">U</span><span class="p">,</span> <span class="n">U_Y</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">V_Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">W_Y</span><span class="p">,</span> <span class="n">W_X</span><span class="p">,</span> <span class="n">W_XY</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mark</span><span class="p">(</span><span class="n">bk</span><span class="p">,</span> <span class="n">ends_str</span><span class="p">,</span> <span class="p">[</span><span class="n">U</span><span class="p">,</span> <span class="n">U_Y</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="n">V_Y</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">W_Y</span><span class="p">,</span> <span class="n">W_X</span><span class="p">,</span> <span class="n">W_XY</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">ends</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">half</span><span class="p">:</span>
+            <span class="n">sym</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">skin</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">skin</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_mark</span><span class="p">(</span><span class="n">bk</span><span class="p">,</span> <span class="n">sym</span><span class="p">,</span> <span class="p">[</span><span class="n">V</span><span class="p">,</span> <span class="n">V_X</span><span class="p">,</span> <span class="n">U_Y</span><span class="p">,</span> <span class="n">W_Y</span><span class="p">,</span> <span class="n">W_XY</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">bk</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">axial_dofs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Reduced degrees of freedom of `u` and `U` of the cross-section of</span>
+<span class="sd">        index ``i`` along `x`, and of their derivatives along the edge"""</span>
+        <span class="n">bk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">skin_nodes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">str_nodes</span><span class="p">[:,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mark</span><span class="p">(</span><span class="n">bk</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="p">[</span><span class="n">U</span><span class="p">])</span>
+        <span class="n">bkd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">Nr</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mark</span><span class="p">(</span><span class="n">bkd</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="p">[</span><span class="n">U_Y</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">bk</span><span class="p">,</span> <span class="n">bkd</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">skin_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">dof</span><span class="o">=</span><span class="n">W</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Field of one degree of freedom of the skin, shape ``(nx, nyn)``,</span>
+<span class="sd">        from the displacements ``u`` of all the degrees of freedom"""</span>
+        <span class="k">return</span> <span class="n">u</span><span class="p">[</span><span class="n">DOF</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">skin_nodes</span> <span class="o">+</span> <span class="n">dof</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">wave_numbers</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">mmax</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">nmax</span><span class="o">=</span><span class="mi">40</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Axial half-waves `m` and circumferential waves `n` of the normal</span>
+<span class="sd">    displacement `w` of the skin, from the largest coefficient of its</span>
+<span class="sd">    expansion in `\sin(m \pi x/L) \cos(n \theta)` (`\theta` from a plane of</span>
+<span class="sd">    symmetry), for simply supported ends, or in `\cos(n \theta)` and the</span>
+<span class="sd">    number of sign changes along `x` of the dominant term, for other ends"""</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">skin_field</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">xlin</span>
+    <span class="n">th</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">theta</span>
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">half</span><span class="p">:</span>
+        <span class="c1"># even about theta = 0: cosine terms</span>
+        <span class="n">wy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">th</span><span class="p">)</span>
+        <span class="n">wy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">wy</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="n">ns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">Cn</span> <span class="o">=</span> <span class="p">(</span><span class="n">w</span><span class="o">*</span><span class="n">wy</span><span class="p">)</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">th</span><span class="p">,</span> <span class="n">ns</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Cn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))[:,</span> <span class="p">:</span><span class="n">nmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Cn</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)))</span>
+    <span class="n">wn</span> <span class="o">=</span> <span class="n">Cn</span><span class="p">[:,</span> <span class="n">n</span><span class="p">]</span>
+    <span class="n">wx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">wx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">wx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">ms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">mmax</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">Sm</span> <span class="o">=</span> <span class="p">(</span><span class="n">wn</span><span class="o">*</span><span class="n">wx</span><span class="p">)</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ms</span><span class="p">)</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="n">x</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ms</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">Sm</span><span class="p">))])</span>
+    <span class="k">return</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="ex_kinematics.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Donnell-type and Sanders-type kinematics</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tutorials/stiffened_cylinder_frequencies.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Natural frequencies of stringer-stiffened cylinders</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#model-of-the-stiffened-cylinders">Model of the stiffened cylinders</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/tutorials.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

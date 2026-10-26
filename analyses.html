@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Analyses &#8212; bfsccylinder 0.7.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+
+    <script src="_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'analyses';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Follower pressure" href="follower_pressure.html" />
+    <link rel="prev" title="Assembling a model" href="assembling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.0" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfsccylinder 0.7.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The element and its degrees of freedom
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The element and its degrees of freedom
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Analyses</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="analyses">
+<h1>Analyses<a class="headerlink" href="#analyses" title="Link to this heading">#</a></h1>
+<p>The matrices and vectors of <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>, restricted to the unknown
+degrees of freedom <code class="docutils literal notranslate"><span class="pre">bu</span></code>, give the systems of the analyses below, solved
+with SciPy as in the tests, or with structsolve, see <a class="reference internal" href="#id1">Solving with
+structsolve</a>. The functions are those of both kinematics, see
+<a class="reference internal" href="kinematics.html"><span class="doc">Donnell-type and Sanders-type kinematics</span></a>, and the theory of each matrix is in the Notes of its
+function.</p>
+<section id="linear-static-analysis">
+<h2>Linear static analysis<a class="headerlink" href="#linear-static-analysis" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{F}_{ext}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a> and the force vector or the
+prescribed displacements of <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>. The tests solve it with
+<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.spsolve</span></code> or with the conjugate gradient method of
+<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.cg</span></code>, with the matrix and the right-hand side scaled
+by a scalar, see <a class="reference internal" href="ex_linear_static.html"><span class="doc">Linear static analysis</span></a>.</p>
+</section>
+<section id="linear-buckling-analysis">
+<h2>Linear buckling analysis<a class="headerlink" href="#linear-buckling-analysis" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} = \boldsymbol{0}\]</div>
+<p>The critical loads are <span class="math notranslate nohighlight">\(\lambda\)</span> times the load that gives <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>, and
+<span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span> are the buckling modes. <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is computed in one of two ways:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, from the displacements <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> of the linear static
+solution of a reference load or prescribed displacement, such that the
+membrane stress resultants are those of the shell with its boundary
+conditions. Since <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is linear in <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, <span class="math notranslate nohighlight">\(\lambda\)</span> multiplies
+the reference load, e.g. the sum of the reaction forces of a prescribed
+shortening;</p></li>
+<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG_constant_stress" title="bfsccylinder.bfsccylinder.update_KG_constant_stress"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_constant_stress()</span></code></a>, from the membrane stress resultants
+<code class="docutils literal notranslate"><span class="pre">Nxx</span></code>, <code class="docutils literal notranslate"><span class="pre">Nyy</span></code> and <code class="docutils literal notranslate"><span class="pre">Nxy</span></code> given for each element, the last arguments
+of the function, without a static analysis: <span class="math notranslate nohighlight">\(\lambda\)</span> multiplies these
+resultants, e.g. <code class="docutils literal notranslate"><span class="pre">Nxx</span> <span class="pre">=</span> <span class="pre">-1</span></code> for an axial compression, of total force
+<span class="math notranslate nohighlight">\(-2 \pi R\)</span> along the circumference.</p></li>
+</ul>
+<p>The tests compute the lowest load multipliers with
+<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.lobpcg</span></code>, for the problem <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\boldsymbol{\phi} =
+\lambda (-\boldsymbol{K}_G)\boldsymbol{\phi}\)</span>, with an incomplete LU factorization of
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>, <code class="docutils literal notranslate"><span class="pre">spilu</span></code>, as preconditioner, see <a class="reference internal" href="ex_linear_buckling.html"><span class="doc">Linear buckling analysis</span></a>.
+The matrices can also be given to the linear buckling solver of
+<a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a>,
+<code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>, as in the validation tests of the follower pressure, see
+<a class="reference internal" href="ex_follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+</section>
+<section id="natural-frequencies">
+<h2>Natural frequencies<a class="headerlink" href="#natural-frequencies" title="Link to this heading">#</a></h2>
+<div class="math notranslate nohighlight">
+\[(\boldsymbol{K}_{C0} - \omega_n^2 \boldsymbol{M})\boldsymbol{\phi} = \boldsymbol{0}\]</div>
+<p>with the mass matrix <span class="math notranslate nohighlight">\(\boldsymbol{M}\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a>, which needs <code class="docutils literal notranslate"><span class="pre">lex</span></code>,
+<code class="docutils literal notranslate"><span class="pre">ley</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code> of each element, and <code class="docutils literal notranslate"><span class="pre">R</span></code> for the Sanders-type
+kinematics, and no integration points, and <span class="math notranslate nohighlight">\(\omega_n\)</span> the natural angular
+frequencies, in radians per unit time. The lowest frequencies of a cylinder
+are clustered; the tests use the function <code class="docutils literal notranslate"><span class="pre">lowest_frequencies</span></code> of
+<code class="docutils literal notranslate"><span class="pre">tests/natural_frequency_solver.py</span></code>, which solves the shift-inverted
+problem with ARPACK from a fixed starting vector and verifies the residual
+of each eigenpair and that no eigenvalue is missing, see
+<a class="reference internal" href="ex_natural_frequency.html"><span class="doc">Natural frequencies</span></a>.</p>
+</section>
+<section id="nonlinear-static-analysis">
+<h2>Nonlinear static analysis<a class="headerlink" href="#nonlinear-static-analysis" title="Link to this heading">#</a></h2>
+<p>For large displacements, with the nonlinear strains of the kinematics, the
+equilibrium of the internal forces of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> with the
+external forces is solved for the displacements, e.g. with the
+Newton-Raphson method:</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda \boldsymbol{F}_{ext}, \qquad
+\boldsymbol{K}_T(\boldsymbol{u}) = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}), \qquad
+\boldsymbol{K}_T \Delta \boldsymbol{u} = -\boldsymbol{R}\]</div>
+<p>with the load factor <span class="math notranslate nohighlight">\(\lambda\)</span> increased in steps and the tangent stiffness
+matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> and
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, all computed with the current displacements and the
+same integration points as <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>. <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is the exact Jacobian of
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>, such that the Newton-Raphson iterations converge
+quadratically; <code class="docutils literal notranslate"><span class="pre">tests/test_tangent_consistency.py</span></code> checks it for both
+kinematics with Taylor tests and finite differences. <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> keeps only
+the part linear in the displacements, the one of the linear buckling
+analysis, and the rest of the geometric terms is <span class="math notranslate nohighlight">\(\boldsymbol{K}_{GNL}\)</span>,
+computed with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span> by <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a>, see its Notes.</p>
+<p>The value arrays of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> are zeroed before each
+assembly, since the functions add to them, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>. The test
+of <a class="reference internal" href="ex_nonlinear_static.html"><span class="doc">Nonlinear static analysis</span></a> solves the iterations with structsolve, with
+the convergence criterion of the scaled norms of the residual and of the
+forces, see <a class="reference internal" href="#id1">Solving with structsolve</a> and <a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>.
+A follower pressure adds its force vector to the residual and its load
+stiffness matrix to <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span>, see <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+</section>
+<section id="solving-with-structsolve">
+<span id="id1"></span><h2>Solving with structsolve<a class="headerlink" href="#solving-with-structsolve" title="Link to this heading">#</a></h2>
+<p>The solvers of <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a>
+receive the matrices and vectors of the model, assembled by the user. It is
+used by the tests and the examples, and it is not a requirement of
+bfsccylinder, see <a class="reference internal" href="install.html"><span class="doc">Installing bfsccylinder</span></a>. The linear buckling problem above is
+solved by <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>, as in the validation tests of the follower
+pressure.</p>
+<p>The nonlinear static analysis is solved by <code class="docutils literal notranslate"><span class="pre">structsolve.Analysis</span></code>, with
+four callables that loop over the elements, call the functions of the
+element, of either kinematics, and assemble, see
+<a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_fext(inc=1.,</span> <span class="pre">silent=False)</span></code>, the external forces <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span> times
+the load factor <code class="docutils literal notranslate"><span class="pre">inc</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_fint(c,</span> <span class="pre">silent=False)</span></code>, the internal forces of
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> at the displacements <code class="docutils literal notranslate"><span class="pre">c</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_kC(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> with
+<code class="docutils literal notranslate"><span class="pre">NLgeom=False</span></code>, and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{c}) + \boldsymbol{K}_{GNL}(\boldsymbol{c})\)</span> with <code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_kG(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{c})\)</span> of
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, called with <code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
+</ul>
+<p>such that <code class="docutils literal notranslate"><span class="pre">calc_kC</span> <span class="pre">+</span> <span class="pre">calc_kG</span></code> is the tangent stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> and
+the residual of structsolve is the one above, <span class="math notranslate nohighlight">\(\boldsymbol{R} =
+\boldsymbol{F}_{int}(\boldsymbol{c}) - \lambda \boldsymbol{F}_{ext}\)</span>, with
+the Newton-Raphson corrections <span class="math notranslate nohighlight">\(\boldsymbol{K}_T \Delta \boldsymbol{c} =
+-\boldsymbol{R}\)</span>, the convention of structsolve 0.9.3 or newer, which
+the examples of bfsccylinder require, see <a class="reference internal" href="install.html"><span class="doc">Installing bfsccylinder</span></a>. The value arrays are zeroed in each call. The
+load factor goes from 0 to 1 in increments, the first one of size
+<code class="docutils literal notranslate"><span class="pre">Analysis.initialInc</span></code> and the next ones growing up to
+<code class="docutils literal notranslate"><span class="pre">Analysis.maxInc</span></code>, each starting from a predictor extrapolated from the
+previous increment, the linear solution of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> in the first one;
+<code class="docutils literal notranslate"><span class="pre">Analysis.static</span></code> returns the load factors and the solutions of the
+converged increments.</p>
+<p>structsolve imposes no boundary condition itself. The constrained degrees
+of freedom are removed in one of two ways:</p>
+<ul class="simple">
+<li><p>the partition of the free degrees of freedom, as in the tests: the
+callables receive <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">u[bu]</span></code> and return the vectors restricted to
+<code class="docutils literal notranslate"><span class="pre">bu</span></code> and the matrices to <code class="docutils literal notranslate"><span class="pre">bu</span></code> by <code class="docutils literal notranslate"><span class="pre">bu</span></code>, and the solutions are
+expanded with <code class="docutils literal notranslate"><span class="pre">u[bu]</span> <span class="pre">=</span> <span class="pre">c</span></code>;</p></li>
+<li><p>null rows and columns: the callables return the vectors and matrices of
+the whole model, with the rows and columns of the constrained degrees of
+freedom zeroed in all the matrices. The solvers remove them and return
+vectors with the size of the model, zero at these degrees of freedom.</p></li>
+</ul>
+<p>The convergence criterion is, by default, Crisfield’s: the residual and the
+reference forces, the external forces and the internal forces, are scaled
+with the diagonal of the linear stiffness matrix <code class="docutils literal notranslate"><span class="pre">calc_kC()</span></code> over the
+free degrees of freedom, and the iterations stop when their ratio is below
+<code class="docutils literal notranslate"><span class="pre">Analysis.relTOL</span> <span class="pre">=</span> <span class="pre">1e-9</span></code>. The scaled norm does not depend on the units of
+the degrees of freedom, which here mix displacements, their first
+derivatives and <span class="math notranslate nohighlight">\(w_{,xy}\)</span>, and leaves out the reactions at the constrained
+ones; <code class="docutils literal notranslate"><span class="pre">Analysis.convergence</span> <span class="pre">=</span> <span class="pre">'relative'</span></code> selects the Euclidean norm
+instead. With a consistent tangent the criterion is reached in a few
+iterations.</p>
+<p>A follower pressure <span class="math notranslate nohighlight">\(\lambda p\)</span>, see <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>, enters
+through the optional keyword argument <code class="docutils literal notranslate"><span class="pre">inc</span></code>, the load factor, which
+structsolve passes to the callables that declare it. The external forces
+are the dead part <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{0})\)</span> of <code class="docutils literal notranslate"><span class="pre">p</span></code>, <code class="docutils literal notranslate"><span class="pre">calc_fint</span></code> subtracts the part
+that depends on the displacements, <code class="docutils literal notranslate"><span class="pre">reference=0</span></code>, and <code class="docutils literal notranslate"><span class="pre">calc_kC</span></code> adds the
+load stiffness matrix of <span class="math notranslate nohighlight">\(\lambda p\)</span>, as in
+<code class="docutils literal notranslate"><span class="pre">tests/test_follower_pressure_structsolve.py</span></code>, see
+<a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">FollowerCallables</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""The callables of structsolve.Analysis for the ``elements`` of the</span>
+<span class="sd">    module ``mod`` under the follower pressures ``pressures``, one array of</span>
+<span class="sd">    shape ``(nint, nint)`` per element, times the load factor</span>
+
+<span class="sd">    They loop over the elements with the update functions and assemble, and</span>
+<span class="sd">    work on the unknown degrees of freedom ``bu`` only, the partition of the</span>
+<span class="sd">    free dofs of structsolve: the solution vector of the solvers is ``c =</span>
+<span class="sd">    u[bu]``, and the force vectors and matrices are restricted to ``bu``.</span>
+<span class="sd">    ``quadratic`` is the truncation of the area vector. ``calc_fint`` also</span>
+<span class="sd">    keeps the load factor and the internal forces of each iteration, for the</span>
+<span class="sd">    residual history.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">bu</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span>
+                 <span class="n">quadratic</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="n">mod</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">elements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bu</span> <span class="o">=</span> <span class="n">bu</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span> <span class="o">=</span> <span class="n">pressures</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span> <span class="o">=</span> <span class="n">quadratic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KC0</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">mod</span><span class="o">.</span><span class="n">update_KC0</span><span class="p">,</span> <span class="s1">'KC0'</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span>
+                            <span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">))</span>
+        <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">shell</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KCNL</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">mod</span><span class="o">.</span><span class="n">KCNL_SPARSE_SIZE</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KG</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">mod</span><span class="o">.</span><span class="n">KG_SPARSE_SIZE</span>
+            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KCfollower</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">mod</span><span class="o">.</span><span class="n">KCfollower_SPARSE_SIZE</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">KCNL_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">KG_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KGr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">KCfollower_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
+        <span class="c1"># the dead part of the pressure, the force vector at u = 0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fp0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">shell</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">pressures</span><span class="p">):</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">update_fext_follower</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">shell</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">fp0</span><span class="p">,</span> <span class="n">quadratic</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">"""The displacements of the model from those of the unknown dofs."""</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
+        <span class="n">u</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+        <span class="k">return</span> <span class="n">u</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_fext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">inc</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fp0</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_fint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="n">fint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">shell</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">):</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">update_fint</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">fint</span><span class="p">)</span>
+            <span class="c1"># minus the part of the follower pressure that depends on u</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">update_fext_follower</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+                                     <span class="o">-</span><span class="n">inc</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="n">fint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">inc</span><span class="p">,</span> <span class="n">fint</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">fint</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_kC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">bu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bu</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">NLgeom</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">KC0</span><span class="p">[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span> <span class="o">*=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span> <span class="o">*=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">shell</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">):</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">update_KCNL</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span><span class="p">)</span>
+            <span class="c1"># the load stiffness matrix of the pressure inc*p</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">update_KCfollower</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
+                                  <span class="n">inc</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span><span class="p">)</span>
+        <span class="n">KCNL</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">)),</span>
+                          <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
+        <span class="n">KCf</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span><span class="p">)),</span>
+                         <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KC0</span> <span class="o">+</span> <span class="n">KCNL</span> <span class="o">+</span> <span class="n">KCf</span><span class="p">)</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_kG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span> <span class="o">*=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">shell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+            <span class="n">mod</span><span class="o">.</span><span class="n">update_KG</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span>
+                          <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span><span class="p">)</span>
+        <span class="n">KG</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KGv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span><span class="p">)),</span>
+                        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">KG</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The tangent stiffness matrix is then unsymmetric in general, which the
+solvers of structsolve support with LU factorizations. For the arc-length methods, <code class="docutils literal notranslate"><span class="pre">Analysis.NL_method</span></code>, <code class="docutils literal notranslate"><span class="pre">calc_fext</span></code> also
+declares the configuration <code class="docutils literal notranslate"><span class="pre">c</span></code> and returns the follower force vector
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{c})\)</span> of <code class="docutils literal notranslate"><span class="pre">p</span></code>, minus the derivative of the
+residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda
+\boldsymbol{F}_p(\boldsymbol{c})\)</span> with respect to the load factor.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="assembling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Assembling a model</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="follower_pressure.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Follower pressure</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-static-analysis">Linear static analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-buckling-analysis">Linear buckling analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#natural-frequencies">Natural frequencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-static-analysis">Nonlinear static analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-with-structsolve">Solving with structsolve</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/analyses.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
