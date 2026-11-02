@@ -1,23 +1,54 @@
 r"""Linear buckling of a filament-wound cylinder under axial compression, Sanders-type kinematics
 
-A cylinder of ``R = 68`` mm and ``L = 300`` mm, with `E_{11} = 90` GPa,
-`E_{22} = 7` GPa, `\nu_{12} = 0.32` and `G_{12} = 4.4` GPa. Two plies
-`[\theta, -\theta]`, `\theta = 57.9` degrees, of 0.4 mm, the same laminate
-at every integration point. `u`, `v`, `w` and `w_{,x}` are constrained at
-the nodes of both ends, and the end `x = L` is compressed by a prescribed
-axial displacement. The linear static solution gives the geometric stiffness
-matrix of ``update_KG``, the lowest load multiplier is computed with
-``lobpcg``, and the critical load, the load multiplier times the sum of the
-reaction forces at `x = L`, is checked within 1 % against
--42719.877887017145 N, a result of the element of ``bfsccylinder.sanders``
-stored in the test.
+The cylinder CS of Wang et al. (2020), ``R = 68`` mm and ``L = 300`` mm,
+with `E_{11} = 90` GPa, `E_{22} = 7` GPa, `\nu_{12} = 0.32` and `G_{12} =
+4.4` GPa. Two plies `[\theta, -\theta]`, `\theta = 57.9` degrees, of 0.4 mm,
+the same laminate at every integration point. `u`, `v`, `w` and `w_{,x}` are
+constrained at the nodes of both ends, and the end `x = L` is compressed by
+a prescribed axial displacement. The linear static solution gives the
+geometric stiffness matrix of ``update_KG``, the lowest load multiplier is
+computed with ``lobpcg``, and the critical load, the load multiplier times
+the sum of the reaction forces at `x = L`, is checked within 1 % against
+-42719.877887017145 N, a regression value: a result of the element of
+``bfsccylinder.sanders`` stored in the test.
 
 Notes
 -----
-TODO(author): source of the cylinder, of the material and of the reference
-value (the former comments of the code read "our FW cylinders" and "our
-paper"; Wang et al. 2022, reference [6] of :mod:`bfsccylinder.bfsccylinder`,
-studies variable-angle filament-wound cylinders).
+The cylinder is the constant-stiffness design CS of [1]_: 300 mm long, 136
+mm in diameter, one angle-ply layer `\pm 57.9` degrees made of two plies of
+0.4 mm (Table 4 of [1]_). The material is that of Table 1 of [1]_, also used
+in [2]_. The element uses only the laminate stiffnesses `\mathbf{A}`,
+`\mathbf{B}` and `\mathbf{D}`, so the transverse shear moduli of Table 1 of
+[1]_ (`G_{13} = 4.4` GPa, `G_{23} = 1.8` GPa) play no role. The boundary
+conditions are those of the finite element model of [1]_: all the degrees of
+freedom are constrained at `x = 0`, and at `x = L` all but the axial
+displacement, which is the same at every node of that end.
+
+The stored value is a regression value of the element. For comparison, Table
+4 of [1]_ gives for CS the linear buckling load `F_{eig} = 40607` N,
+computed with ABAQUS S4R elements (152 elements along the length, 213 around
+the circumference); the stored value, 42720 N, is 5.2 % higher. The
+difference contains the discretisation error of the 40 nodes around the
+circumference of this test and the transverse shear flexibility of the S4R
+element, which the element does not have.
+
+TODO(author): [2]_ studies cylinders of radius 150 mm, while the cylinder,
+the angle and the reference load of this test match [1]_: confirm [1]_ as
+the source. [1]_ and [2]_ were checked against the submitted manuscripts,
+not the published papers: please confirm the table numbers and values.
+
+References
+----------
+.. [1] Wang, Z., Almeida Jr., J. H. S., St-Pierre, L., Wang, Z., and
+   Castro, S. G. P., Reliability-based buckling optimization with an
+   accelerated Kriging metamodel for filament-wound variable angle tow
+   composite cylinders, Composite Structures, 254, 112821, 2020,
+   doi:10.1016/j.compstruct.2020.112821.
+.. [2] Wang, Z., Almeida Jr., J. H. S., Ashok, A., Wang, Z., and Castro, S.
+   G. P., Lightweight design of variable-angle filament-wound cylinders
+   combining Kriging-based metamodels with particle swarm optimization,
+   Structural and Multidisciplinary Optimization, 65(5), 140, 2022,
+   doi:10.1007/s00158-022-03227-8.
 """
 import time
 import sys

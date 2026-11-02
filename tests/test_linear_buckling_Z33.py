@@ -7,20 +7,28 @@ node of the middle section. The ends are loaded by opposite axial forces of
 total 1000 N, the linear static solution gives the geometric stiffness
 matrix of ``update_KG``, the lowest load multiplier is computed with
 ``lobpcg``, and the critical load, the load multiplier times the applied
-force, is checked within 1 % against 201424 N, a result of the element of
-the ``bfsccylinder`` namespace stored in the test.
+force, is checked within 1 % against 201424 N, a regression value: a result
+of the element of the ``bfsccylinder`` namespace stored in the test.
 
 Notes
 -----
 The stacking sequence, from the inner to the outer surface, is that of the
 cylinder Z33 in Table 4 of [1]_. The elastic constants, `E_{11} = 145.5`
-GPa, `E_{22} = 8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa, are not
-those of the material Geier1997 of Table 3 of [1]_, the material that Table
-4 of [1]_ gives for Z33. TODO(author): source of these elastic constants
-(the former comment of the code named Geier 1997). The ends have `v = w =
-w_{,x} = 0`, the conditions CC2 of Table 1 of [1]_ (called SS2 in the former
-comment of the code), with `u` constrained at one node of the middle section
-to remove the rigid-body motions.
+GPa, `E_{22} = 8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa, are those
+of the cylinder Z33 in Table 1 of [2]_, except `E_{11}`, 142.5 GPa in Table
+1 of [2]_; Table 4 of [1]_ gives the material Geier1997 for Z33. The ends
+have `v = w = w_{,x} = 0`, the conditions CC2 of Table 1 of [1]_, with `u`
+constrained at one node of the middle section to remove the rigid-body
+motions.
+
+The stored value is a regression value of the element. For comparison, Table
+6 of [2]_ gives for Z33 the lowest linear buckling load 191.67 kN, computed
+with ABAQUS S8R5 elements (120 around the circumference) and clamped ends;
+the stored value, 201424 N, is 5.1 % higher. The difference contains the
+larger `E_{11}` of this test, the discretisation error of the 50 nodes
+around the circumference of this test and the transverse shear flexibility
+of the S8R5 element, which the element does not have, and the ends of this
+test are free to move axially (CC2).
 
 References
 ----------
@@ -29,6 +37,11 @@ References
    unstiffened laminated composite cylinders and cones under various loading
    and boundary conditions using semi-analytical models, Composite
    Structures, 118, 303-315, 2014, doi:10.1016/j.compstruct.2014.07.037.
+.. [2] Castro, S. G. P., Zimmermann, R., Arbelo, M. A., Khakimova, R.,
+   Hilburger, M. W., and Degenhardt, R., Geometric imperfections and
+   lower-bound methods used to calculate knock-down factors for axially
+   compressed composite cylindrical shells, Thin-Walled Structures, 74,
+   118-132, 2014, doi:10.1016/j.tws.2013.08.011.
 """
 import sys
 sys.path.append(r'..')
