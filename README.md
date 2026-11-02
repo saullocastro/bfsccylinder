@@ -49,8 +49,6 @@ The documentation is available on: https://saullocastro.github.io/bfsccylinder.
 History
 =======
 
-See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
-
 * version 0.7.0 (2026-10-26)
     - Follower pressure, for both kinematics: `update_fext_follower` and
       `update_KCfollower`, the force vector and the unsymmetric load

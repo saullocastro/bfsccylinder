@@ -54,20 +54,20 @@ User guide
     :maxdepth: 1
     :caption: Usage examples
 
-    notebooks/ex_linear_static
-    notebooks/ex_linear_buckling
-    notebooks/ex_natural_frequency
-    notebooks/ex_nonlinear_static
-    notebooks/ex_structsolve_nonlinear
-    notebooks/ex_follower_pressure
-    notebooks/ex_kinematics
+    notebooks/ex_linear_static.nblink
+    notebooks/ex_linear_buckling.nblink
+    notebooks/ex_natural_frequency.nblink
+    notebooks/ex_nonlinear_static.nblink
+    notebooks/ex_structsolve_nonlinear.nblink
+    notebooks/ex_follower_pressure.nblink
+    notebooks/ex_kinematics.nblink
 
 .. toctree::
     :maxdepth: 1
     :caption: Tutorials
 
-    notebooks/stiffened_cylinder_frequencies
-    notebooks/stiffened_cylinder_buckling
+    notebooks/stiffened_cylinder_frequencies.nblink
+    notebooks/stiffened_cylinder_buckling.nblink
 
 
 bfsccylinder API
