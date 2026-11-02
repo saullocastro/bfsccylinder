@@ -1,3 +1,24 @@
+r"""Linear buckling of a filament-wound cylinder under axial compression, Sanders-type kinematics
+
+A cylinder of ``R = 68`` mm and ``L = 300`` mm, with `E_{11} = 90` GPa,
+`E_{22} = 7` GPa, `\nu_{12} = 0.32` and `G_{12} = 4.4` GPa. Two plies
+`[\theta, -\theta]`, `\theta = 57.9` degrees, of 0.4 mm, the same laminate
+at every integration point. `u`, `v`, `w` and `w_{,x}` are constrained at
+the nodes of both ends, and the end `x = L` is compressed by a prescribed
+axial displacement. The linear static solution gives the geometric stiffness
+matrix of ``update_KG``, the lowest load multiplier is computed with
+``lobpcg``, and the critical load, the load multiplier times the sum of the
+reaction forces at `x = L`, is checked within 1 % against
+-42719.877887017145 N, a result of the element of ``bfsccylinder.sanders``
+stored in the test.
+
+Notes
+-----
+TODO(author): source of the cylinder, of the material and of the reference
+value (the former comments of the code read "our FW cylinders" and "our
+paper"; Wang et al. 2022, reference [6] of :mod:`bfsccylinder.bfsccylinder`,
+studies variable-angle filament-wound cylinders).
+"""
 import time
 import sys
 sys.path.append(r'..')
@@ -17,7 +38,7 @@ from bfsccylinder.utils import assign_constant_ABD
 
 def test_linear_buckling(plot=False):
     time0 = time.process_time()
-    # geometry our FW cylinders
+    # geometry of the filament-wound cylinder
     L = 0.3 # m
     R = 0.136/2 # m
     circ = 2*pi*R # m
@@ -29,7 +50,7 @@ def test_linear_buckling(plot=False):
         nx += 1
     print('nx, ny', nx, ny)
 
-    # material properties our paper
+    # material properties
     E11 = 90e9
     E22 = 7e9
     nu12 = 0.32
@@ -147,7 +168,7 @@ def test_linear_buckling(plot=False):
     KGuu = KG[bu, :][:, bu]
     print('geometric stiffness matrix OK')
 
-    # A * x[i] = lambda[i] * M * x[i]
+    # lowest load multipliers of the linear buckling problem
     num_eigvals = 2
     Nu = N - bk.sum()
     if True:

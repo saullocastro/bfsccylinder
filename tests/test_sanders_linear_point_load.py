@@ -1,3 +1,14 @@
+r"""Linear static analysis of a cylinder under a radial point load, Sanders-type kinematics
+
+An isotropic cylinder, ``R = 0.4``, ``L = 0.8``, ``h = 0.001``, ``E = 70e9``
+and ``nu = 0.33`` (SI units), with `u`, `v` and `w` constrained at the nodes
+of both ends, under a radial force of -100 N at the node at `x = L/2`, `y =
+\pi R`. The stiffness matrix is assembled with ``update_KC0`` and the system
+is solved with the conjugate gradient method. The test checks that the
+reduced force vector keeps the applied force, and the largest and smallest
+`w` within 0.1 % against 0.00023710782832362203 m and -0.0007098715355559141
+m, results of the element of ``bfsccylinder.sanders`` stored in the test.
+"""
 import sys
 sys.path.append(r'..')
 

@@ -1,3 +1,34 @@
+r"""Linear buckling of the laminated cylinder Z33 under a prescribed end shortening, Sanders-type kinematics
+
+The geometry and the stacking sequence of the cylinder Z33 of Castro et al.
+(2014), Table 4, ``R = 250`` mm, ``L = 510`` mm, ten plies of 0.125 mm. `u`,
+`v`, `w` and `w_{,x}` are constrained at the nodes of both ends, and the end
+`x = L` is compressed by a prescribed axial displacement. The linear static
+solution gives the geometric stiffness matrix of ``update_KG``, the lowest
+load multiplier is computed with ``lobpcg``, and the critical load, the load
+multiplier times the sum of the reaction forces at `x = L`, is checked
+within 1 % against -215237.14801264074 N, a result of the element of
+``bfsccylinder.sanders`` stored in the test.
+
+Notes
+-----
+The stacking sequence, from the inner to the outer surface, is that of the
+cylinder Z33 in Table 4 of [1]_. The elastic constants, `E_{11} = 145.5`
+GPa, `E_{22} = 8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa, are not
+those of the material Geier1997 of Table 3 of [1]_, the material that Table
+4 of [1]_ gives for Z33. TODO(author): source of these elastic constants
+(the former comment of the code named Geier 1997). The ends have `u = v = w
+= w_{,x} = 0`, the conditions CC1 of Table 1 of [1]_, `u` being prescribed
+at `x = L`.
+
+References
+----------
+.. [1] Castro, S. G. P., Mittelstedt, C., Monteiro, F. A. C., Arbelo, M. A.,
+   Ziegmann, G., and Degenhardt, R., Linear buckling predictions of
+   unstiffened laminated composite cylinders and cones under various loading
+   and boundary conditions using semi-analytical models, Composite
+   Structures, 118, 303-315, 2014, doi:10.1016/j.compstruct.2014.07.037.
+"""
 import sys
 sys.path.append(r'..')
 
@@ -15,7 +46,7 @@ from bfsccylinder.utils import assign_constant_ABD
 
 
 def test_linear_buckling(plot=False):
-    # geometry Z33 Castro 2014
+    # geometry of the cylinder Z33
     L = 0.510 # m
     R = 0.250 # m
     b = 2*pi*R # m
@@ -26,7 +57,7 @@ def test_linear_buckling(plot=False):
     if nx % 2 == 0:
         nx += 1
 
-    # material properties Geier 1997
+    # material properties
     E11 = 145.5e9
     E22 = 8.7e9
     nu12 = 0.28
@@ -103,7 +134,7 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
-    #clamped boundary conditions (Castro 2014)
+    # u, v, w and w_x constrained at both ends
     checkBC = isclose(x, 0) | isclose(x, L)
     bk[0::DOF] = checkBC
     #bk[1::DOF] = checkBC
@@ -196,7 +227,7 @@ def test_linear_buckling(plot=False):
         plt.show()
         raise
 
-    # A * x[i] = lambda[i] * M * x[i]
+    # lowest load multipliers of the linear buckling problem
     num_eigvals = 3
     Nu = N - bk.sum()
     if True:

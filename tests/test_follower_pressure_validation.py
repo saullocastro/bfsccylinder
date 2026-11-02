@@ -6,21 +6,14 @@ r"""Validation of the follower pressure against closed forms
    `u_{,y}`, `v_{,x}`, `w_{,x}` and `w_{,xy}` zero at every node, such that
    `\varepsilon_{xx} = 0` and the fields do not vary along `x`, and with
    symmetry planes at `y = 0, \pi R/2, \pi R, 3 \pi R/2` (`v = w_{,y} = 0`),
-   which remove the rigid-body motions and keep the modes `w = \cos(n y/R)`
-   with `n` even. The linear buckling problem
-
-   .. math::
-       (\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G(\boldsymbol{u}_0) + \boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}
-
-   with `\boldsymbol{u}_0` the linear static solution of a unit external
-   pressure and `\boldsymbol{K}_{F_{ref}}` its load stiffness matrix, is
-   solved with :func:`structsolve.lb` and the unsymmetric solvers, and
-   compared with :func:`ring_closed_form`, the exact second variation of the
-   ring with the same strains and load terms, for the mode `n = 2`: the
-   Sanders-type and Donnell-type kinematics, with the follower pressure
-   (first-order area vector) or with a pressure of constant direction (dead
-   load, `\boldsymbol{K}_{F_{ref}}` left out). In the inextensional limit, `p R^3/D =
-   -3` (Sanders, follower), `-4` (dead) and `-16/5` (Donnell, follower).
+   which remove the rigid-body motions and keep the modes with an even
+   number `n` of circumferential waves. The load multiplier of the linear
+   buckling problem of a unit external pressure, solved with
+   :func:`structsolve.lb` and the unsymmetric solvers, is compared with
+   :func:`ring_closed_form`, the exact second variation of the ring with the
+   same strains and load terms, for the mode `n = 2`: the Sanders-type and
+   Donnell-type kinematics, with the follower pressure (first-order area
+   vector) or with a pressure of constant direction (dead load).
 
 2. Finite cylinders with shear-diaphragm ends under a lateral or a
    hydrostatic pressure, with the membrane prestress of
@@ -31,6 +24,25 @@ r"""Validation of the follower pressure against closed forms
 Both closed forms are those of ``tests/tests_shell/
 test_follower_pressure_validation.py`` of the panels repository, with the
 same cases. Units: N, m, Pa.
+
+Notes
+-----
+The linear buckling problem of the rings is
+
+.. math::
+    (\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G(\boldsymbol{u}_0) + \boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}
+
+with `\boldsymbol{u}_0` the linear static solution of a unit external
+pressure and `\boldsymbol{K}_{F_{ref}}` its load stiffness matrix, left out
+for the dead load. The modes are `w = \cos(n y/R)`. In the inextensional
+limit the buckling pressures of the closed form are `p R^3/D = -3`
+(Sanders, follower), `-4` (dead) and `-16/5` (Donnell, follower).
+
+On a closed ring with `u = 0` at the ends the contour term of the skew part
+of the load stiffness matrix vanishes, such that the load stiffness matrix
+of the uniform pressure is symmetric
+(:func:`test_follower_load_stiffness_is_symmetric_for_the_ring`).
+
 """
 import sys
 sys.path.append(r'..')
@@ -63,8 +75,14 @@ def ring_closed_form(kinematics, load, n, A, D, R):
 
     The displacements are ``w = W cos(n y/R)`` and ``v = V sin(n y/R)``,
     the prestress is the membrane state ``Nyy = p R`` of the pressure ``p``
-    (positive outwards, an external pressure is negative), and the second
-    variation of the total potential is
+    (positive outwards, an external pressure is negative), and the pressure
+    of smallest modulus that makes the second variation ``U2`` of the total
+    potential singular is returned, for the ``kinematics`` ``'sanders'`` or
+    ``'donnell'`` and the ``load`` ``'follower'`` or ``'dead'``.
+
+    Notes
+    -----
+    The second variation of the total potential is::
 
         U2 = 1/2 int (A eyy**2 + D kyy**2 + Nyy byy**2) dy
              - 1/2 int p u.a1(u) dy
@@ -73,8 +91,7 @@ def ring_closed_form(kinematics, load, n, A, D, R):
     ``kv = 1/R`` (Sanders) or ``0`` (Donnell), and ``u.a1(u) = v (-w,y + kv
     v) + w (v,y + w/R)`` for the follower pressure or zero for the dead
     pressure. The integral over the circumference is ``pi R`` times the
-    products of the amplitudes, and the pressure of smallest modulus that
-    makes ``U2`` singular is returned.
+    products of the amplitudes.
 
     """
     k = n/R

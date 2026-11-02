@@ -32,9 +32,16 @@ def negative_pivots(A):
 
 def lowest_frequencies(K, M, k, rtol=1e-8):
     r"""The ``k`` lowest `\omega_n^2` and modes of `\boldsymbol{K} \boldsymbol{u} = \omega_n^2
-    \boldsymbol{M} \boldsymbol{u}`, ``K`` positive definite, verified"""
-    # shift-invert with the shift -1, below the lowest eigenvalue: the
-    # largest eigenvalues mu of ([K] + [M])^-1 [M] give omega_n**2 = 1/mu - 1
+    \boldsymbol{M} \boldsymbol{u}`, ``K`` positive definite, verified
+
+    Notes
+    -----
+    Shift-invert with the shift `-1`, below the lowest eigenvalue: the
+    largest eigenvalues `\mu` of `(\boldsymbol{K} + \boldsymbol{M})^{-1}
+    \boldsymbol{M}` give `\omega_n^2 = 1/\mu - 1`.
+
+    """
+    # shift-invert with the shift -1, below the lowest eigenvalue
     lu = splu(csc_matrix(K + M))
     op = LinearOperator(K.shape, matvec=lambda x: lu.solve(M @ x),
                         dtype=float)

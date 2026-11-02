@@ -1,3 +1,39 @@
+"""Linear buckling of the laminated cylinder Z22 under axial compression, Donnell-type kinematics
+
+The cylinder Z22 of Castro et al. (2014), Table 4, ``R = 250`` mm, ``L =
+510`` mm, six plies of 0.125 mm, with the material of Geier and Singh
+(1997). `v` and `w` are constrained at the nodes of both ends and `u` at two
+opposite nodes of the middle section. The ends are loaded by opposite axial
+forces of total 1 N, the linear static solution gives the geometric
+stiffness matrix of ``update_KG``, the lowest load multiplier is computed
+with ``lobpcg``, and the critical load, the load multiplier times the
+applied force, is checked within 1 % against 37189 N, a result of the
+element of the ``bfsccylinder`` namespace stored in the test.
+
+Notes
+-----
+The stacking sequence, from the inner to the outer surface, is that of the
+cylinder Z22 in Table 4 of [1]_, and the elastic constants are those of the
+material Geier1997 in Table 3 of [1]_, from [2]_, except `G_{12}`, 5.595 GPa
+here and 5.695 GPa in Table 3. TODO(author): is 5.595 GPa intended? The ends
+have `v = w = 0`, the conditions SS2 of Table 1 of [1]_, with `u`
+constrained at two nodes of the middle section to remove the rigid-body
+motions. For comparison, Table 6 of [1]_ gives for Z22, with the conditions
+SS2 and the classical laminated plate theory, 36.35 kN, and the test result
+34.4 kN of Geier et al.
+
+References
+----------
+.. [1] Castro, S. G. P., Mittelstedt, C., Monteiro, F. A. C., Arbelo, M. A.,
+   Ziegmann, G., and Degenhardt, R., Linear buckling predictions of
+   unstiffened laminated composite cylinders and cones under various loading
+   and boundary conditions using semi-analytical models, Composite
+   Structures, 118, 303-315, 2014, doi:10.1016/j.compstruct.2014.07.037.
+.. [2] Geier, B., and Singh, G., Some simple solutions for buckling loads of
+   thin and moderately thick cylindrical shells and panels made of laminated
+   composite material, Aerospace Science and Technology, 1(1), 47-63, 1997,
+   doi:10.1016/S1270-9638(97)90023-7.
+"""
 import sys
 sys.path.append(r'..')
 
@@ -14,7 +50,7 @@ from bfsccylinder.utils import assign_constant_ABD
 
 
 def test_linear_buckling(plot=False):
-    # geometry Z22 Castro 2014
+    # geometry of the cylinder Z22
     L = 0.510 # m
     R = 0.250 # m
     b = 2*pi*R # m
@@ -25,7 +61,7 @@ def test_linear_buckling(plot=False):
     if nx % 2 == 0:
         nx += 1
 
-    # material properties Geier 1997
+    # material properties
     E11 = 123.55e9
     E22 = 8.708e9
     nu12 = 0.319
@@ -102,7 +138,7 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
-    #SS2 boundary conditions (Castro 2014)
+    # v and w constrained at both ends
     checkBC = isclose(x, 0) | isclose(x, L)
     #bk[0::DOF] = checkBC
     #bk[1::DOF] = checkBC
@@ -200,7 +236,7 @@ def test_linear_buckling(plot=False):
         plt.show()
         raise
 
-    # A * x[i] = lambda[i] * M * x[i]
+    # lowest load multipliers of the linear buckling problem
     num_eigvals = 3
     Nu = N - bk.sum()
     if True:

@@ -1,3 +1,32 @@
+r"""Linear buckling of a variable-angle filament-wound cylinder under axial compression, Donnell-type kinematics
+
+A cylinder of ``R = 68`` mm and ``L = 300`` mm, with `E_{11} = 90` GPa,
+`E_{22} = 7` GPa, `\nu_{12} = 0.32` and `G_{12} = 4.4` GPa. Two plies
+`[\theta(x), -\theta(x)]` whose angle varies along the axis:
+``theta_VAT_P_x`` interpolates `\theta` with quadratic Lagrange polynomials
+through 45.4, 86.5 and 85.8 degrees at `x = 0`, `L/4` and `L/2`, symmetric
+about `x = L/2`, and the ply thickness is 0.4 mm divided by the cosine of
+`|\theta_{min} - \theta(x)|`, with `\theta_{min}` the smallest of the three
+angles. The laminate stiffnesses are computed at each integration point and
+set point by point in the arrays ``A11, ..., D66`` of the elements. `u`,
+`v`, `w` and `w_{,x}` are constrained at the nodes of both ends, and the end
+`x = L` is compressed by a prescribed axial displacement. The linear static
+solution gives the geometric stiffness matrix of ``update_KG``, the lowest
+load multiplier is computed with ``lobpcg``, and the critical load, the load
+multiplier times the sum of the reaction forces at `x = L`, is checked
+within 1 % against -55671 N, a result of the element of the ``bfsccylinder``
+namespace stored in the test.
+
+Notes
+-----
+TODO(author): source of the cylinder, of the material and of the reference
+value (the former comments of the code read "our FW cylinders" and "our
+paper"; Wang et al. 2022, reference [6] of :mod:`bfsccylinder.bfsccylinder`,
+studies variable-angle filament-wound cylinders). The ply thickness uses the
+smallest of the three interpolated angles instead of the minimum of
+`\theta(x)`, as kept for the verification against ABAQUS (comment of the
+code).
+"""
 import time
 import sys
 sys.path.append(r'..')
@@ -35,7 +64,7 @@ def theta_VAT_P_x(x, L, desvar):
 
 def test_linear_buckling(plot=False):
     time0 = time.process_time()
-    # geometry our FW cylinders
+    # geometry of the filament-wound cylinder
     L = 0.3 # m
     R = 0.136/2 # m
     circ = 2*pi*R # m
@@ -47,7 +76,7 @@ def test_linear_buckling(plot=False):
         nx += 1
     print('nx, ny', nx, ny)
 
-    # material properties our paper
+    # material properties
     E11 = 90e9
     E22 = 7e9
     nu12 = 0.32
@@ -218,7 +247,7 @@ def test_linear_buckling(plot=False):
     KGuu = KG[bu, :][:, bu]
     print('geometric stiffness matrix OK')
 
-    # A * x[i] = lambda[i] * M * x[i]
+    # lowest load multipliers of the linear buckling problem
     num_eigvals = 2
     #NOTE this works and seems to be the fastest option
 

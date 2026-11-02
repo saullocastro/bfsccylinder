@@ -37,7 +37,7 @@ def test_nonlinear_axial_compression_load_controlled():
 
     load = 50000. # N
 
-    # geometry our FW cylinders
+    # geometry of the filament-wound cylinder
     circ = 2*pi*R # m
 
     nx = int(1.5*ny*L/circ)
@@ -187,11 +187,21 @@ def test_nonlinear_axial_compression_load_controlled():
     # That is what buys quadratic convergence, now that KC0 + KCNL + KG is
     # the exact Jacobian of fint
     def scaling(vec, D):
-        """
-            A. Peano and R. Riccioni, Automated discretisatton error
-            control in finite element analysis. In Finite Elements m
-            the Commercial Enviror&ent (Editei by J. 26.  Robinson),
-            pp. 368-387. Robinson & Assoc., Verwood.  England (1978)
+        """Norm of ``vec`` weighted by the inverse of the absolute values
+        of ``D``
+
+        Notes
+        -----
+        The weighted norm of Peano and Riccioni [1]_.
+
+        References
+        ----------
+        .. [1] Peano, A., and Riccioni, R., Automated discretisation error
+           control in finite element analysis, in Robinson, J. (ed.), Finite
+           Elements in the Commercial Environment, Robinson and Associates,
+           Verwood, England, pp. 368-387, 1978. TODO(author): verify; the
+           former text of this reference had scanning errors.
+
         """
         return np.sqrt((vec*np.abs(1/D))@vec)
 
