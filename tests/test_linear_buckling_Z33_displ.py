@@ -2,39 +2,48 @@ r"""Linear buckling of the laminated cylinder Z33 under a prescribed end shorten
 
 The cylinder Z33 of Castro et al. (2014, Composite Structures), Table 4, ``R
 = 250`` mm, ``L = 510`` mm, ten plies of 0.125 mm, with the material of
-Castro et al. (2014, Thin-Walled Structures), Table 1. `u`, `v`, `w` and
-`w_{,x}` are constrained at the nodes of both ends, and the end `x = L` is
-compressed by a prescribed axial displacement. The linear static solution
-gives the geometric stiffness matrix of ``update_KG``, the lowest load
-multiplier is computed with ``lobpcg``, and the critical load, the load
-multiplier times the sum of the reaction forces at `x = L`, is checked
-within 12 % against -191670 N, the lowest linear buckling load of Z33 in
-Castro et al. (2014, Thin-Walled Structures), Table 6.
+Geier and Singh (1997). `u`, `v`, `w` and `w_{,x}` are constrained at the
+nodes of both ends, and the end `x = L` is compressed by a prescribed axial
+displacement. The linear static solution gives the geometric stiffness
+matrix of ``update_KG``, the lowest load multiplier is computed with
+``lobpcg``, and the critical load, the load multiplier times the sum of the
+reaction forces at `x = L`, is checked within 5 % against -192000 N, the
+buckling load of Z33 with built-in edges of Geier et al. (2002), Table 1.
 
 Notes
 -----
 The stacking sequence, from the inner to the outer surface, is that of the
-cylinder Z33 in Table 4 of [1]_. The elastic constants, `E_{11} = 142.5`
-GPa, `E_{22} = 8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa, are those
-of the cylinders Z07 and Z33 in Table 1 of [2]_. TODO(author): Table 4 of
-[1]_ gives instead the material Geier1997 for Z33; confirm the material of
-[2]_, which also gives the reference load below. The ends have `u = v = w =
+cylinder Z33 in Table 4 of [1]_, and the elastic constants, `E_{11} =
+123.55` GPa, `E_{22} = 8.708` GPa, `\nu_{12} = 0.319` and `G_{12} = 5.695`
+GPa, are those of the material Geier1997 that Table 4 of [1]_ gives for Z33
+(Table 3 of [1]_). They are the ply properties of the test cylinders of
+[3]_, Section V.4 (`E_L = 123550` MPa, `E_T = 8707.9` MPa, `\nu_{LT} =
+0.319`, `G_{LT} = 5696` MPa), and of Z33 in [4]_, Section 3 (`G = 5695`
+MPa, `\nu = 0.32`). The entries of the laminate stiffness matrices `A`,
+`B` and `D` of this test agree in magnitude with those printed for Z33 in
+Section 3 of [4]_, to their four digits, except `B_{66}` (4152 N here, 4125
+N there). The transverse shear moduli do not enter the element, which is
+based on the classical laminated plate theory. The ends have `u = v = w =
 w_{,x} = 0`, the conditions CC1 of Table 1 of [1]_, `u` being prescribed at
 `x = L`.
 
-The reference value is the lowest linear buckling load of Z33 in Table 6 of
-[2]_, 191.67 kN, computed with ABAQUS S8R5 elements (120 around the
-circumference) for the same geometry, laminate and material and clamped
-ends (Table 2 of [2]_); the negative sign is that of the reaction forces at
-`x = L`. With the 50 nodes around the circumference of this test the element
-gives 213739 N, 11.5 % above the reference. Of this, 2.8 % is the
-discretisation error: with 90 and 110 nodes around the circumference the
-element gives 207838 N and 207918 N. The converged result of the element is
-8.5 % above the reference; the transverse shear flexibility of the S8R5
-element, which the element does not have, lowers the reference. The
-tolerance of 12 % covers both parts. TODO(author): a published value closer
-to the theory of the element (classical laminated plate theory, clamped
-ends) would allow a tighter tolerance.
+The reference value is the buckling load of Z33 in Table 1 of [4]_, 192 kN,
+the result BACCUS-C4: built-in edges, deep shell theory, anisotropic
+material, perfect geometry and a linear homogeneous prebuckling state, for
+the geometry, laminate and material of this test; the negative sign is that
+of the reaction forces at `x = L`. The tests of [4]_ gave 173 kN and 184 kN.
+With the 50 nodes around the circumference of this test the element gives
+200268 N, 4.3 % above the reference. Of this, 2.5 % is the discretisation
+error: with 70, 90 and 110 nodes around the circumference the element gives
+196637 N, 195372 N and 195463 N. The converged result of the element is 1.8
+% above the reference; the two analyses differ in the prebuckling state,
+here the linear static solution with clamped ends, and in the radius, 250 mm
+here at the reference surface and in [4]_ at the inner surface. The
+tolerance of 5 % covers both parts and the rounding of the reference to
+three digits. For comparison, Table 6 of [2]_ gives for Z33 191.67 kN
+(ABAQUS S8R5 elements, clamped ends) with the elastic constants `E_{11} =
+142.5` GPa, `E_{22} = 8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa of
+its Table 1; the element gives 4.5 % more.
 
 References
 ----------
@@ -48,6 +57,14 @@ References
    lower-bound methods used to calculate knock-down factors for axially
    compressed composite cylindrical shells, Thin-Walled Structures, 74,
    118-132, 2014, doi:10.1016/j.tws.2013.08.011.
+.. [3] Geier, B., and Singh, G., Some simple solutions for buckling loads of
+   thin and moderately thick cylindrical shells and panels made of laminated
+   composite material, Aerospace Science and Technology, 1(1), 47-63, 1997,
+   doi:10.1016/S1270-9638(97)90023-7.
+.. [4] Geier, B., Meyer-Piening, H.-R., and Zimmermann, R., On the influence
+   of laminate stacking on buckling of composite cylindrical shells subjected
+   to axial compression, Composite Structures, 55(4), 467-474, 2002,
+   doi:10.1016/S0263-8223(01)00175-1.
 """
 import sys
 sys.path.append(r'..')
@@ -77,10 +94,10 @@ def test_linear_buckling(plot=False):
         nx += 1
 
     # material properties
-    E11 = 142.5e9
-    E22 = 8.7e9
-    nu12 = 0.28
-    G12 = 5.1e9
+    E11 = 123.55e9
+    E22 = 8.708e9
+    nu12 = 0.319
+    G12 = 5.695e9
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [0, 0, 19, -19, 37, -37, 45, -45, 51, -51]
@@ -291,7 +308,7 @@ def test_linear_buckling(plot=False):
     f[bk] = fk
     Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
-    assert isclose(Pcr, -191670, rtol=0.12)
+    assert isclose(Pcr, -192000, rtol=0.05)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
