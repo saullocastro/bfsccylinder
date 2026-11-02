@@ -7,7 +7,7 @@ opposite nodes of the middle section. The ends are loaded by opposite axial
 forces of total 1 N, the linear static solution gives the geometric
 stiffness matrix of ``update_KG``, the lowest load multiplier is computed
 with ``lobpcg``, and the critical load, the load multiplier times the
-applied force, is checked within 1 % against 37188.28747385046 N, a
+applied force, is checked within 1 % against 37618.88022321454 N, a
 regression value: a result of the element of ``bfsccylinder.sanders`` stored
 in the test.
 
@@ -15,14 +15,13 @@ Notes
 -----
 The stacking sequence, from the inner to the outer surface, is that of the
 cylinder Z22 in Table 4 of [1]_, and the elastic constants are those of the
-material Geier1997 in Table 3 of [1]_, from [2]_, except `G_{12}`, 5.595 GPa
-here, a typo for the 5.695 GPa of Table 3. The ends have `v = w = 0`, the
-conditions SS2 of Table 1 of [1]_, with `u` constrained at two nodes of the
-middle section to remove the rigid-body motions. The stored value is a
+material Geier1997 in Table 3 of [1]_, from [2]_. The ends have `v = w = 0`,
+the conditions SS2 of Table 1 of [1]_, with `u` constrained at two nodes of
+the middle section to remove the rigid-body motions. The stored value is a
 regression value of the element. For comparison, Table 6 of [1]_ gives for
 Z22, with the conditions SS2 and the classical laminated plate theory (model
 CLPT-BC2 of [1]_), 36.35 kN, and the test result 34.4 kN of Geier et al.;
-the stored value, 37188 N, is 2.3 % higher than 36.35 kN.
+the stored value, 37619 N, is 3.5 % higher than 36.35 kN.
 
 References
 ----------
@@ -68,7 +67,7 @@ def test_linear_buckling(plot=False):
     E11 = 123.55e9
     E22 = 8.708e9
     nu12 = 0.319
-    G12 = 5.595e9
+    G12 = 5.695e9
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [+49, -49, +36, -36, 0, 0]
@@ -282,7 +281,7 @@ def test_linear_buckling(plot=False):
     print('linear buckling analysis OK')
     Pcr = load_mult[0]*applied_force
     print('Pcr top=', Pcr)
-    assert isclose(Pcr, 37188.28747385046, rtol=0.01)
+    assert isclose(Pcr, 37618.88022321454, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
