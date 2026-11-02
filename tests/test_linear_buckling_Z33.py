@@ -1,34 +1,34 @@
 r"""Linear buckling of the laminated cylinder Z33 under axial compression, Donnell-type kinematics
 
-The geometry and the stacking sequence of the cylinder Z33 of Castro et al.
-(2014), Table 4, ``R = 250`` mm, ``L = 510`` mm, ten plies of 0.125 mm. `v`,
-`w` and `w_{,x}` are constrained at the nodes of both ends and `u` at one
-node of the middle section. The ends are loaded by opposite axial forces of
-total 1000 N, the linear static solution gives the geometric stiffness
-matrix of ``update_KG``, the lowest load multiplier is computed with
-``lobpcg``, and the critical load, the load multiplier times the applied
-force, is checked within 1 % against 201424 N, a regression value: a result
-of the element of the ``bfsccylinder`` namespace stored in the test.
+The cylinder Z33 of Castro et al. (2014, Composite Structures), Table 4, ``R
+= 250`` mm, ``L = 510`` mm, ten plies of 0.125 mm, with the material of
+Castro et al. (2014, Thin-Walled Structures), Table 1. `v`, `w` and `w_{,x}`
+are constrained at the nodes of both ends and `u` at one node of the middle
+section. The ends are loaded by opposite axial forces of total 1000 N, the
+linear static solution gives the geometric stiffness matrix of
+``update_KG``, the lowest load multiplier is computed with ``lobpcg``, and
+the critical load, the load multiplier times the applied force, is checked
+within 1 % against 199153 N, a regression value: a result of the element of
+the ``bfsccylinder`` namespace stored in the test.
 
 Notes
 -----
 The stacking sequence, from the inner to the outer surface, is that of the
-cylinder Z33 in Table 4 of [1]_. The elastic constants, `E_{11} = 145.5`
+cylinder Z33 in Table 4 of [1]_. The elastic constants, `E_{11} = 142.5`
 GPa, `E_{22} = 8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa, are those
-of the cylinder Z33 in Table 1 of [2]_, except `E_{11}`, 142.5 GPa in Table
-1 of [2]_; Table 4 of [1]_ gives the material Geier1997 for Z33. The ends
-have `v = w = w_{,x} = 0`, the conditions CC2 of Table 1 of [1]_, with `u`
-constrained at one node of the middle section to remove the rigid-body
-motions.
+of the cylinders Z07 and Z33 in Table 1 of [2]_. TODO(author): Table 4 of
+[1]_ gives instead the material Geier1997 for Z33; confirm the material of
+[2]_, which also gives the reference load below. The ends have `v = w =
+w_{,x} = 0`, the conditions CC2 of Table 1 of [1]_, with `u` constrained at
+one node of the middle section to remove the rigid-body motions.
 
 The stored value is a regression value of the element. For comparison, Table
 6 of [2]_ gives for Z33 the lowest linear buckling load 191.67 kN, computed
 with ABAQUS S8R5 elements (120 around the circumference) and clamped ends;
-the stored value, 201424 N, is 5.1 % higher. The difference contains the
-larger `E_{11}` of this test, the discretisation error of the 50 nodes
-around the circumference of this test and the transverse shear flexibility
-of the S8R5 element, which the element does not have, and the ends of this
-test are free to move axially (CC2).
+the stored value, 199153 N, is 3.9 % higher. The difference contains the
+discretisation error of the 50 nodes around the circumference of this test
+and the transverse shear flexibility of the S8R5 element, which the element
+does not have, and the ends of this test are free to move axially (CC2).
 
 References
 ----------
@@ -71,7 +71,7 @@ def test_linear_buckling(plot=False):
         nx += 1
 
     # material properties
-    E11 = 145.5e9
+    E11 = 142.5e9
     E22 = 8.7e9
     nu12 = 0.28
     G12 = 5.1e9
@@ -288,7 +288,7 @@ def test_linear_buckling(plot=False):
     print('linear buckling analysis OK')
     Pcr = load_mult[0]*applied_force
     print('Pcr top=', Pcr)
-    assert isclose(Pcr, 201424, rtol=0.01)
+    assert isclose(Pcr, 199153, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
