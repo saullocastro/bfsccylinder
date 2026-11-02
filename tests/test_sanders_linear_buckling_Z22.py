@@ -7,20 +7,22 @@ opposite nodes of the middle section. The ends are loaded by opposite axial
 forces of total 1 N, the linear static solution gives the geometric
 stiffness matrix of ``update_KG``, the lowest load multiplier is computed
 with ``lobpcg``, and the critical load, the load multiplier times the
-applied force, is checked within 1 % against 37188.28747385046 N, a result
-of the element of ``bfsccylinder.sanders`` stored in the test.
+applied force, is checked within 1 % against 37188.28747385046 N, a
+regression value: a result of the element of ``bfsccylinder.sanders`` stored
+in the test.
 
 Notes
 -----
 The stacking sequence, from the inner to the outer surface, is that of the
 cylinder Z22 in Table 4 of [1]_, and the elastic constants are those of the
 material Geier1997 in Table 3 of [1]_, from [2]_, except `G_{12}`, 5.595 GPa
-here and 5.695 GPa in Table 3. TODO(author): is 5.595 GPa intended? The ends
-have `v = w = 0`, the conditions SS2 of Table 1 of [1]_, with `u`
-constrained at two nodes of the middle section to remove the rigid-body
-motions. For comparison, Table 6 of [1]_ gives for Z22, with the conditions
-SS2 and the classical laminated plate theory, 36.35 kN, and the test result
-34.4 kN of Geier et al.
+here, a typo for the 5.695 GPa of Table 3. The ends have `v = w = 0`, the
+conditions SS2 of Table 1 of [1]_, with `u` constrained at two nodes of the
+middle section to remove the rigid-body motions. The stored value is a
+regression value of the element. For comparison, Table 6 of [1]_ gives for
+Z22, with the conditions SS2 and the classical laminated plate theory (model
+CLPT-BC2 of [1]_), 36.35 kN, and the test result 34.4 kN of Geier et al.;
+the stored value, 37188 N, is 2.3 % higher than 36.35 kN.
 
 References
 ----------
