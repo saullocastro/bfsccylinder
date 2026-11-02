@@ -43,11 +43,14 @@ User guide
 .. toctree::
     :maxdepth: 1
 
-    element.rst
     kinematics.rst
+    constitutive.rst
+    element.rst
+    matrices.rst
+    follower_pressure.rst
     assembling.rst
     analyses.rst
-    follower_pressure.rst
+    conventions.rst
 
 
 .. toctree::

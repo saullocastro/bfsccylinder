@@ -46,8 +46,9 @@ problems of ``tests/test_follower_pressure_validation.py``, see
 the documentation only: bfsccylinder does not import it, and it is not
 installed with bfsccylinder, not being in the ``dependencies`` of
 ``pyproject.toml``. The tests require a version of structsolve newer than 0.8.0,
-with Crisfield's convergence criterion as default. The examples of
-:doc:`analyses` require structsolve 0.9.3 or newer, whose residual is
+with Crisfield's convergence criterion as default. The nonlinear analyses
+with structsolve of :doc:`analyses` require structsolve 0.9.3 or newer,
+whose residual is
 `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_{ext}`, the
 convention of these pages.
 

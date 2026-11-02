@@ -3,52 +3,58 @@ Assembling a model
 
 .. currentmodule:: bfsccylinder.bfsccylinder
 
-``bfsccylinder`` computes the contributions of one element; the mesh, the
-global matrices, the boundary conditions and the loads are written by the
-user with NumPy and SciPy, as in the tests of the repository. The functions and the sizes below are those of
-the Donnell-type element; the module :mod:`bfsccylinder.bfsccylinder_sanders`,
-imported from ``bfsccylinder.sanders``, has the same names, see
-:doc:`kinematics`.
+The library computes the contributions of one element; the mesh, the global
+matrices, the boundary conditions and the loads are written by the user
+with NumPy and SciPy. This chapter describes the data structures that
+connect the element of :doc:`element` to the global systems of
+:doc:`analyses`. The names are those of the ``bfsccylinder`` namespace;
+:mod:`bfsccylinder.sanders` has the same names for the Sanders-type
+element, with its own sizes.
 
 
 Mesh of a closed cylinder
 -------------------------
 
-A cylinder of length `L` and radius `R` is divided into ``nx - 1`` elements
-along `x` and ``ny`` elements around the circumference, of sides ``lex =
-L/(nx - 1)`` and ``ley = 2*pi*R/ny``. The tests number ``nx`` by ``ny + 1``
-nodes with `x` varying slowest and close the cylinder by giving the last
-column of nodes the numbers of the first one, before taking the four nodes
-of each element from the corners of the array, in the order of
-:doc:`element`::
+The `C^1` continuity of the element requires a structured mesh of
+rectangles along `x` and `y`. A cylinder of length `L` is divided into
+``nx - 1`` elements along `x` and ``ny`` elements around the circumference,
+of sides ``lex = L/(nx - 1)`` and ``ley = 2*pi*R/ny``. A grid of ``nx`` by
+``ny + 1`` node numbers, `x` varying slowest, is closed around the
+circumference by giving the last column the numbers of the first one; the
+four nodes of each element are then taken from the corners of the grid in
+the order of :doc:`element`::
 
-    nids = 1 + np.arange(nx*(ny+1))
-    nids_mesh = nids.reshape(nx, ny+1)
+    nids_mesh = (1 + np.arange(nx*(ny+1))).reshape(nx, ny+1)
     nids_mesh[:, -1] = nids_mesh[:, 0]
-    nids = np.unique(nids_mesh)
-    nid_pos = dict(zip(nids, np.arange(len(nids))))
-
     n1s = nids_mesh[:-1, :-1].flatten()
     n2s = nids_mesh[1:, :-1].flatten()
     n3s = nids_mesh[1:, 1:].flatten()
     n4s = nids_mesh[:-1, 1:].flatten()
 
-with ``nid_pos`` mapping each node identification number to its index,
-such that ``c1 = DOF*nid_pos[n1]``, and so on, and the model has ``N =
-DOF*nx*ny`` degrees of freedom. The elements of the last column share their
-nodes 3 and 4 with the nodes 2 and 1 of the first column, and the
-continuity of the degrees of freedom closes the shell around the
-circumference.
+With the index ``i`` of each node in the sorted unique numbers, the
+positions are ``c1 = DOF*i`` for node 1, and likewise for the other nodes,
+and the model has ``N = DOF*nx*ny`` degrees of freedom. The elements of the
+last column share their nodes 3 and 4 with the nodes 2 and 1 of the first
+column: the continuity of the degrees of freedom of the shared nodes closes
+the shell, and no constraint is needed between `\theta = 0` and `\theta =
+2\pi`. An open panel has ``ny + 1`` distinct columns of nodes. Elements of
+different sizes along `x` or `y` are allowed as long as the grid stays
+structured, each element having its own ``lex`` and ``ley``.
+
+With ``c = DOF*i``, the slice ``u[6::DOF]`` of a global vector gives `w` at
+all the nodes, ``u[0::DOF]`` gives `u`, ``u[3::DOF]`` gives `v`, and so on
+for the ten degrees of freedom of :doc:`element`, which is how the boundary
+conditions, the loads and the results are addressed node by node.
 
 
-Element loop and sparse arrays
-------------------------------
+Sparse arrays
+-------------
 
 Each function ``update_K*`` and :func:`.update_M` writes the entries of one
 element in three 1-D arrays, the row indices, the column indices and the
 values, at the positions ``init_k`` to ``init_k + SPARSE_SIZE - 1``, with
 ``init_k`` the attribute of the element for that matrix and ``SPARSE_SIZE``
-the number of entries of one element:
+the number of entries per element of :doc:`matrices`:
 
 .. list-table::
     :header-rows: 1
@@ -72,90 +78,67 @@ the number of entries of one element:
       - ``init_k_KCfollower``
       - ``KCfollower_SPARSE_SIZE``
 
-The sizes of the Sanders-type element are larger for KCNL, KG, M and
-KCfollower, see :mod:`bfsccylinder.bfsccylinder_sanders`; the code is the
-same when the sizes are taken from the namespace of the element used. For
-``num_elements`` elements the arrays have ``SPARSE_SIZE*num_elements``
+For ``num_elements`` elements the arrays have ``SPARSE_SIZE*num_elements``
 entries, of type ``INT`` for the indices and ``DOUBLE`` for the values, and
-the element of index ``k`` gets ``init_k = k*SPARSE_SIZE``, e.g. by
-increasing a counter by ``SPARSE_SIZE`` in the element loop::
+the element of index ``k`` gets ``init_k = k*SPARSE_SIZE``. The global
+matrix is the sum of the element matrices, the assembly
 
-    nint = 4
-    points, weights = get_points_weights(nint=nint)
-    KC0r = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=INT)
-    KC0c = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=INT)
-    KC0v = np.zeros(KC0_SPARSE_SIZE*num_elements, dtype=DOUBLE)
-    init_k_KC0 = 0
-    for n1, n2, n3, n4 in zip(n1s, n2s, n3s, n4s):
-        shell = BFSCCylinder(nint)
-        shell.c1 = DOF*nid_pos[n1]
-        ...
-        shell.R = R
-        shell.lex = L/(nx-1)
-        shell.ley = 2*pi*R/ny
-        assign_constant_ABD(shell, prop)
-        shell.init_k_KC0 = init_k_KC0
-        update_KC0(shell, points, weights, KC0r, KC0c, KC0v)
-        init_k_KC0 += KC0_SPARSE_SIZE
+.. math::
+    :label: as-assembly
 
-    KC0 = coo_matrix((KC0v, (KC0r, KC0c)), shape=(N, N)).tocsc()
+    \boldsymbol{K} = \sum_{e} \boldsymbol{L}_e^\top \boldsymbol{K}_e
+    \boldsymbol{L}_e
 
-``scipy.sparse.coo_matrix`` sums the values at repeated positions, the
-entries of the nodes shared by several elements. ``INT``, ``DOUBLE``,
-``DOF`` and the sizes are given by the ``bfsccylinder`` and
-``bfsccylinder.sanders`` namespaces. The elements write the entries of both
-triangles of each matrix, not only an upper triangle, and the matrices that
-are symmetric come out symmetric after the sum.
+with `\boldsymbol{L}_e` the Boolean matrix that extracts the 40 degrees of
+freedom of the element from the global vector; it is obtained by gathering
+the three arrays in a sparse matrix of coordinate format, e.g. ``KC0 =
+coo_matrix((KC0v, (KC0r, KC0c)), shape=(N, N)).tocsc()``, which sums the
+values at repeated positions, the entries of the nodes shared by several
+elements. The elements write both triangles of each matrix, such that the
+symmetric matrices come out symmetric and the unsymmetric load stiffness
+matrix of a follower pressure is complete.
 
 The functions overwrite the indices but **add** the values to the existing
-ones. Arrays reused for a new configuration, e.g. KCNL and KG at each
-iteration of a nonlinear analysis, are zeroed first, ``KCNLv *= 0``; the
-indices do not change for a fixed mesh.
+ones. The value arrays reused for a new configuration, e.g. of
+`\boldsymbol{K}_{CNL}` and `\boldsymbol{K}_G` at each iteration of a
+nonlinear analysis, are zeroed first, e.g. ``KCNLv *= 0``; the indices do
+not change for a fixed mesh.
 
 The vectors are assembled without position attributes:
-:func:`.update_fint` and :func:`.update_fext_follower` add the vector of
-one element directly to a global vector of size ``N``, at the positions of
-its nodes, and the functions that depend on the displacements read them
-from a global vector ``u`` of size ``N``.
+:func:`.update_fint` and :func:`.update_fext_follower` add the vector of one
+element to a global vector of size ``N``, at the positions of its nodes, and
+the functions that depend on the displacements read them from a global
+vector of size ``N``, copying those of the element to its attribute ``u``.
 
 
 Boundary conditions and loads
 -----------------------------
 
-The tests constrain degrees of freedom by partitioning the global system: a
-boolean array ``bk`` marks the constrained degrees of freedom, selected with
-the slices of :doc:`element` and the coordinates of the nodes, and ``bu =
-~bk`` the unknown ones, e.g. for `u = v = w = 0` at the nodes of both
-ends::
+Boundary conditions are imposed on degrees of freedom, selected by the
+slices above and by the coordinates of the nodes, and the global system is
+partitioned into the unknown and the constrained ones, Eq.
+:eq:`an-partition`. Because the derivatives are degrees of freedom, a
+condition on a derivative is imposed directly, e.g. a clamped end `x` =
+constant has `w_{,x} = 0` in addition to the conditions of a simple
+support, and a prescribed axial shortening is a known nonzero `u` at the
+nodes of an end.
 
-    bk = np.zeros(N, dtype=bool)
-    checkSS = isclose(x, 0) | isclose(x, L)
-    bk[0::DOF] = checkSS
-    bk[3::DOF] = checkSS
-    bk[6::DOF] = checkSS
-    bu = ~bk
+The conditions are imposed at the nodes. Along an edge `x` = constant, `w`
+is the cubic of `w` and `w_{,y}` of the nodes of the edge, and the normal
+slope `w_{,x}` the cubic of `w_{,x}` and `w_{,xy}`, see :doc:`element`: `w
+= 0` holds along the whole edge only when `w_{,y}` is constrained with `w`,
+and `w_{,x} = 0` only when `w_{,xy}` is constrained with `w_{,x}`; likewise
+`u` and `v` with `u_{,y}` and `v_{,y}`. Constraining only the values at the
+nodes leaves the edge free to deform between them. A
+symmetry plane `y` = constant has the antisymmetric `v` zero and the
+symmetric fields with zero normal slope: `v = v_{,x} = 0` and `u_{,y} =
+w_{,y} = w_{,xy} = 0`.
 
-    Kuu = KC0[bu, :][:, bu]
-
-A concentrated load is a value of the global force vector at a degree of
-freedom of a node, e.g. ``f[6::DOF][check] = fmid`` for a normal force, and
-an axial force at the nodes of an edge, e.g. ``fext[0::DOF][checkTopEdge] =
--load/ny``. The force vector of a pressure
-is given by :func:`.update_fext_follower`, at `\boldsymbol{u} = \boldsymbol{0}` the dead
-pressure load, see :doc:`follower_pressure`.
-
-A prescribed displacement, e.g. the axial shortening of one end, is a known
-value ``uk = u[bk]`` of a constrained degree of freedom, which moves to the
-right-hand side of the reduced system, `\boldsymbol{K}_{uu}\boldsymbol{u}_u = -\boldsymbol{K}_{uk}\bar{\boldsymbol{u}}_k`,
-and whose reaction forces are `\boldsymbol{F}_k = \boldsymbol{K}_{uk}^\top\boldsymbol{u}_u +
-\boldsymbol{K}_{kk}\bar{\boldsymbol{u}}_k`::
-
-    Kuk = KC0[bu, :][:, bk]
-    Kkk = KC0[bk, :][:, bk]
-    fu = -Kuk*uk
-    ...
-    fk = Kuk.T*uu + Kkk*uk
-
-see ``tests/test_linear_buckling.py``. The solution of the reduced system is
-expanded to the size of the model, ``u[bu] = uu``, before it is given to the
-functions that depend on the displacements, e.g. :func:`.update_KG`.
+A concentrated force is a value of the global force vector at a degree of
+freedom, e.g. at the position of `w` of a node for a normal force, and an
+axial edge load is distributed over the nodes of the edge at the positions
+of `u`. The consistent force vector of a pressure is given by
+:func:`.update_fext_follower`, see :doc:`follower_pressure`. After the
+solution of the reduced system, the solution is expanded to the size of the
+model before it is given to the functions that depend on the displacements,
+e.g. :func:`.update_KG` or :func:`.update_fint`.
