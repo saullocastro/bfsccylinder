@@ -64,6 +64,15 @@ def get_points_weights(nint):
     :mod:`bfsccylinder.bfsccylinder` give the ``nint`` that integrates each
     element matrix exactly.
 
+    Examples
+    --------
+    >>> from bfsccylinder.quadrature import get_points_weights
+    >>> points, weights = get_points_weights(nint=2)
+    >>> points
+    array([-0.57735027,  0.57735027])
+    >>> weights
+    array([1., 1.])
+
     """
     points = [0]*nint
     weights = [0]*nint

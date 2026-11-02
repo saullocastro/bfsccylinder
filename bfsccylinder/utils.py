@@ -39,6 +39,18 @@ def assign_constant_ABD(bfsccylinder, prop):
     the same values at every integration point, the laminate is uniform over
     the element.
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from composites import isotropic_plate
+    >>> from bfsccylinder import BFSCCylinder
+    >>> from bfsccylinder.utils import assign_constant_ABD
+    >>> shell = BFSCCylinder(nint=4)
+    >>> prop = isotropic_plate(thickness=0.001, E=70e9, nu=0.3)
+    >>> assign_constant_ABD(shell, prop)
+    >>> print(np.all(np.asarray(shell.D66) == prop.D66))
+    True
+
     """
     bfsccylinder.A11[:] = prop.A11
     bfsccylinder.A12[:] = prop.A12
