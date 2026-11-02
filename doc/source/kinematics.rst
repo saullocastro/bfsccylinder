@@ -34,7 +34,7 @@ and::
 with the sizes of the sparse arrays taken from the same namespace, since
 those of KCNL, KG, M and KCfollower are larger for the Sanders-type
 element. The tests ``tests/test_sanders_*.py`` are the tests of the
-Donnell-type element with these imports, see :doc:`ex_kinematics`. The
+Donnell-type element with these imports. The
 nodes, the degrees of freedom, the interpolation, the constitutive relation
 and the integration points are the same, see :doc:`element`.
 
@@ -76,8 +76,10 @@ validation tests of the follower pressure, which buckle with two
 circumferential waves, show the difference: the inextensional buckling
 pressure `p R^3/D` is `-3` with the Sanders-type kinematics and `-16/5`
 with the Donnell-type kinematics, under a follower pressure, see
-:doc:`ex_follower_pressure`. For the laminated cylinder under axial compression of
-:doc:`ex_kinematics`, the reference critical loads asserted by the tests of
+``tests/test_follower_pressure_validation.py``. For the laminated cylinder
+under a constant axial compression of
+``tests/test_linear_buckling_Z33_constant_stress.py`` and
+``tests/test_sanders_linear_buckling_Z33_constant_stress.py``, the reference critical loads asserted by the tests of
 the two kinematics differ by about 0.7 %.
 
 The Sanders-type element has more entries per element, see

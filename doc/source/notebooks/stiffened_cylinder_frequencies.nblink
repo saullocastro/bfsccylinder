@@ -1,0 +1,6 @@
+{
+    "path": "../../../notebooks/stiffened_cylinder_frequencies.ipynb",
+    "extra-media": [
+        "../../../notebooks/stiffened_cylinder.py"
+    ]
+}

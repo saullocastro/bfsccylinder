@@ -70,7 +70,7 @@ the nonlinear static analysis of :doc:`analyses` and its Jacobian are
     \boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}) + \boldsymbol{K}_F
 
 with `\boldsymbol{F}_p` and `\boldsymbol{K}_F` of the same ``p = lambda*p0`` and
-``quadratic``, see ``residual_and_tangent`` in :doc:`ex_follower_pressure`.
+``quadratic``, see ``residual_and_tangent`` in ``tests/test_follower_pressure.py``.
 A solver whose external force vector is fixed, `\lambda \boldsymbol{F}_{ext}`, takes the
 dead part `\boldsymbol{F}_{ext} = \boldsymbol{F}_p(\boldsymbol{0})` of ``p0`` as external forces and the part
 ``reference=0``, `\lambda(\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))`, with the internal
@@ -84,8 +84,8 @@ load stiffness matrix `\boldsymbol{K}_{F_{ref}}` of ``p0`` to `\boldsymbol{K}_G`
 
     (\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G + \boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}
 
-as in the validation tests of rings and cylinders, see
-:doc:`ex_follower_pressure`. Under a dead pressure `\boldsymbol{K}_{F_{ref}}` is left
+as in the validation tests of rings and cylinders,
+``tests/test_follower_pressure_validation.py``. Under a dead pressure `\boldsymbol{K}_{F_{ref}}` is left
 out. With the Sanders-type kinematics and a dead pressure, a rigid rotation
 `v` = constant of a ring left free gives a spurious buckling mode at a
 vanishing load, which the follower load stiffness cancels, see the Notes of

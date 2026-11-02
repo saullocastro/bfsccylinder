@@ -43,6 +43,7 @@ extensions = [
     'numpydoc',
     'sphinx.ext.mathjax',
     'nbsphinx',
+    'nbsphinx_link',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -53,8 +54,9 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['**.ipynb_checkpoints']
 
-# the notebooks of the tutorials are stored with their outputs and are not
-# executed when the documentation is built
+# the notebooks are stored with their outputs and are not executed when the
+# documentation is built; each one is linked into the documentation by a
+# .nblink file of nbsphinx-link
 nbsphinx_execute = 'never'
 
 default_role = 'math'

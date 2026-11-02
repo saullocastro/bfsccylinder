@@ -50,28 +50,24 @@ User guide
     follower_pressure.rst
 
 
-Usage examples
---------------
+.. toctree::
+    :maxdepth: 1
+    :caption: Usage examples
+
+    notebooks/ex_linear_static
+    notebooks/ex_linear_buckling
+    notebooks/ex_natural_frequency
+    notebooks/ex_nonlinear_static
+    notebooks/ex_structsolve_nonlinear
+    notebooks/ex_follower_pressure
+    notebooks/ex_kinematics
 
 .. toctree::
     :maxdepth: 1
+    :caption: Tutorials
 
-    ex_linear_static.rst
-    ex_linear_buckling.rst
-    ex_natural_frequency.rst
-    ex_nonlinear_static.rst
-    ex_structsolve_nonlinear.rst
-    ex_follower_pressure.rst
-    ex_kinematics.rst
-
-
-Tutorials
----------
-
-.. toctree::
-    :maxdepth: 1
-
-    tutorials.rst
+    notebooks/stiffened_cylinder_frequencies
+    notebooks/stiffened_cylinder_buckling
 
 
 bfsccylinder API
@@ -92,11 +88,9 @@ Installing bfsccylinder
     install.rst
 
 
-Changelog
----------
-
 .. toctree::
     :maxdepth: 1
+    :caption: Changelog
 
     changelog.rst
 

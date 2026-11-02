@@ -5,8 +5,7 @@ Assembling a model
 
 ``bfsccylinder`` computes the contributions of one element; the mesh, the
 global matrices, the boundary conditions and the loads are written by the
-user with NumPy and SciPy, as in the tests of the repository, see
-:doc:`ex_linear_static`. The functions and the sizes below are those of
+user with NumPy and SciPy, as in the tests of the repository. The functions and the sizes below are those of
 the Donnell-type element; the module :mod:`bfsccylinder.bfsccylinder_sanders`,
 imported from ``bfsccylinder.sanders``, has the same names, see
 :doc:`kinematics`.
@@ -141,7 +140,7 @@ ends::
 A concentrated load is a value of the global force vector at a degree of
 freedom of a node, e.g. ``f[6::DOF][check] = fmid`` for a normal force, and
 an axial force at the nodes of an edge, e.g. ``fext[0::DOF][checkTopEdge] =
--load/ny``, see :doc:`ex_nonlinear_static`. The force vector of a pressure
+-load/ny``. The force vector of a pressure
 is given by :func:`.update_fext_follower`, at `\boldsymbol{u} = \boldsymbol{0}` the dead
 pressure load, see :doc:`follower_pressure`.
 
@@ -157,6 +156,6 @@ and whose reaction forces are `\boldsymbol{F}_k = \boldsymbol{K}_{uk}^\top\bolds
     ...
     fk = Kuk.T*uu + Kkk*uk
 
-see :doc:`ex_linear_buckling`. The solution of the reduced system is
+see ``tests/test_linear_buckling.py``. The solution of the reduced system is
 expanded to the size of the model, ``u[bu] = uu``, before it is given to the
 functions that depend on the displacements, e.g. :func:`.update_KG`.

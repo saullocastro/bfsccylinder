@@ -22,7 +22,7 @@ with `\boldsymbol{K}_{C0}` of :func:`.update_KC0` and the force vector or the
 prescribed displacements of :doc:`assembling`. The tests solve it with
 ``scipy.sparse.linalg.spsolve`` or with the conjugate gradient method of
 ``scipy.sparse.linalg.cg``, with the matrix and the right-hand side scaled
-by a scalar, see :doc:`ex_linear_static`.
+by a scalar, see ``tests/test_linear_point_load.py``.
 
 
 Linear buckling analysis
@@ -50,11 +50,11 @@ The critical loads are `\lambda` times the load that gives `\boldsymbol{K}_G`, a
 The tests compute the lowest load multipliers with
 ``scipy.sparse.linalg.lobpcg``, for the problem `\boldsymbol{K}_{C0}\boldsymbol{\phi} =
 \lambda (-\boldsymbol{K}_G)\boldsymbol{\phi}`, with an incomplete LU factorization of
-`\boldsymbol{K}_{C0}`, ``spilu``, as preconditioner, see :doc:`ex_linear_buckling`.
+`\boldsymbol{K}_{C0}`, ``spilu``, as preconditioner, see ``tests/test_linear_buckling.py``.
 The matrices can also be given to the linear buckling solver of
 `structsolve <https://saullocastro.github.io/structsolve/>`_,
-``structsolve.lb``, as in the validation tests of the follower pressure, see
-:doc:`ex_follower_pressure`.
+``structsolve.lb``, as in the validation tests of the follower pressure,
+``tests/test_follower_pressure_validation.py``.
 
 
 Natural frequencies
@@ -72,7 +72,7 @@ are clustered; the tests use the function ``lowest_frequencies`` of
 ``tests/natural_frequency_solver.py``, which solves the shift-inverted
 problem with ARPACK from a fixed starting vector and verifies the residual
 of each eigenpair and that no eigenvalue is missing, see
-:doc:`ex_natural_frequency`.
+``tests/test_natural_frequency.py``.
 
 
 Nonlinear static analysis
@@ -102,9 +102,9 @@ computed with `\boldsymbol{K}_{CNL}` by :func:`.update_KCNL`, see its Notes.
 
 The value arrays of `\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}` and `\boldsymbol{K}_G` are zeroed before each
 assembly, since the functions add to them, see :doc:`assembling`. The test
-of :doc:`ex_nonlinear_static` solves the iterations with structsolve, with
+``tests/test_nonlinear_axial_compression.py`` solves the iterations with structsolve, with
 the convergence criterion of the scaled norms of the residual and of the
-forces, see `Solving with structsolve`_ and :doc:`ex_structsolve_nonlinear`.
+forces, see `Solving with structsolve`_.
 A follower pressure adds its force vector to the residual and its load
 stiffness matrix to `\boldsymbol{K}_T`, see :doc:`follower_pressure`.
 
@@ -123,8 +123,8 @@ pressure.
 
 The nonlinear static analysis is solved by ``structsolve.Analysis``, with
 four callables that loop over the elements, call the functions of the
-element, of either kinematics, and assemble, see
-:doc:`ex_structsolve_nonlinear`:
+element, of either kinematics, and assemble, as in
+``tests/test_nonlinear_axial_compression.py``:
 
 - ``calc_fext(inc=1., silent=False)``, the external forces `\boldsymbol{F}_{ext}` times
   the load factor ``inc``;
@@ -177,8 +177,7 @@ structsolve passes to the callables that declare it. The external forces
 are the dead part `\boldsymbol{F}_p(\boldsymbol{0})` of ``p``, ``calc_fint`` subtracts the part
 that depends on the displacements, ``reference=0``, and ``calc_kC`` adds the
 load stiffness matrix of `\lambda p`, as in
-``tests/test_follower_pressure_structsolve.py``, see
-:doc:`ex_structsolve_nonlinear`:
+``tests/test_follower_pressure_structsolve.py``:
 
 .. literalinclude:: ../../tests/test_follower_pressure_structsolve.py
     :pyobject: FollowerCallables
