@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.8.0 (unreleased)
+## 0.7.1 (2026-11-03)
 
 ### Tutorials
 
