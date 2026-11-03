@@ -19,6 +19,7 @@ bfsccylinder.
     tutorials/stiffened_cylinder_frequencies.ipynb
     tutorials/stiffened_cylinder_buckling.ipynb
     tutorials/simo1990_cylinder_postbuckling.ipynb
+    tutorials/schweizerhof1984_cylinder_follower.ipynb
 
 
 Model of the stiffened cylinders
@@ -44,3 +45,21 @@ the module ``simo1990_cylinder.py`` of the same folder, also used by
 ``tests/test_simo1990_cylinder.py``:
 
 .. literalinclude:: tutorials/simo1990_cylinder.py
+
+
+Model of the cantilever cylinder under a follower pressure
+----------------------------------------------------------
+
+The tutorial :doc:`tutorials/schweizerhof1984_cylinder_follower` compares
+the linear buckling factors of the cantilever cylinders of Schweizerhof and
+Ramm (1984) under a dead and a follower external pressure, Table 4, and
+traces with the Riks method of structsolve 0.10.0 or newer the path of the
+imperfect shell 1 of Fig. 13, with the full, unsymmetric, load stiffness
+matrix of :func:`.update_KCfollower` and the count of the negative
+eigenvalues of the unsymmetric tangent stiffness matrix. The sectors of the
+paper are meshed with the Sanders-type element. It requires structsolve,
+composites and Matplotlib besides bfsccylinder, and builds its model with
+the module ``schweizerhof1984_cylinder.py`` of the same folder, also used
+by ``tests/test_schweizerhof1984_cylinder.py``:
+
+.. literalinclude:: tutorials/schweizerhof1984_cylinder.py

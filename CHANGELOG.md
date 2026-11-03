@@ -32,8 +32,43 @@ The dates of the released versions are those of their tagged commits.
   `branch_switching`, bifurcates at 0.824 at 0.0181 (0.833 at 0.0183 in
   Fig. 6.3.4(d)) and reaches a deflection of 0.04 on the bifurcated branch.
 
+- New tutorial `doc/source/tutorials/schweizerhof1984_cylinder_follower.ipynb`,
+  with its module `schweizerhof1984_cylinder.py`: the cantilever cylinders
+  of Schweizerhof and Ramm (1984), Section 6.4, under a dead and a follower
+  external pressure, upper edge free, lower edge hinged (B1) or with the
+  axial displacement restrained at one point (B2), with the sectors of
+  `180 deg/n` of the paper meshed with the Sanders-type element and the
+  full unsymmetric load stiffness matrix of `update_KCfollower`. With
+  64 x 8 elements the linear buckling factors of the three shells of Table 4
+  are reproduced within 0.3 % (shell 1, B1: `k_c = 10.90`, `k_f = 9.70`,
+  against 10.88 and 9.70); the symmetrizations of eqs. (63) to (65) of the
+  paper change `k_f` by +-0.2 %. The Donnell-type kinematics are 2 % to
+  3.4 % low for B1 with `n = 3` and 4 waves.
+- Riks analysis of shell 1 with an imperfection of 1 % of `t`, with
+  `inertia` and `inertia_num_eigvals` (unsymmetric tangent stiffness
+  matrix): with B1 a flat limit point at `k = 9.669`, 0.4 % below `k_f`, at
+  `w/t = 4.0`, where the count of negative eigenvalues goes from 0 to 1 with
+  the sign of the determinant; with B2 a path that still rises at `w/t =
+  8`, without negative eigenvalue. Fig. 13 of the paper, labelled B1 in its
+  text, matches the path of B2 (plateau 8.0 against 8.09 at `w/t = 3`,
+  perfect-shell line 8.06 against `k_f = 8.11`, and the current stiffness
+  parameter), not that of B1 (plateau 9.67).
+- The imperfection is added exactly as in the Simo, Fox and Rifai case,
+  which holds for the Sanders-type kinematics with the rows `Sw_y - Sv/R` of
+  the rotations; the follower force vector is that of `u + u0`, and
+  `calc_fext` declares the configuration `c` and returns the load vector of
+  the current configuration, which keeps the Riks iterations quadratic.
+  `CantileverModel.calc_KT` assembles `KC0 + KCNL + KG` vectorized with
+  NumPy, equal to the kernels to the round-off and about 7 times faster
+  than `update_KCNL` of the Sanders-type element.
+
 ### Tests
 
+- New `tests/test_schweizerhof1984_cylinder.py`, about 20 s: the identities
+  of the imperfect shell under the follower pressure for both kinematics,
+  `k_c` and `k_f` of shell 1, B1, within 0.5 % of Table 4 with `n = 3`, and
+  the Riks method through the limit point of B1 with the count of negative
+  eigenvalues and the sign of the determinant.
 - New `tests/test_simo1990_cylinder.py`, about 7 s: the identities of the
   imperfect shell, and the Riks method past the limit point of the cylinder
   with an imperfection of 10 % of the thickness, at the limit load of Fig.
