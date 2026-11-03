@@ -44,8 +44,7 @@ import sys
 
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                '..', 'doc', 'source', 'tutorials'))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schweizerhof1984_cylinder as sr # noqa: E402
 
 
