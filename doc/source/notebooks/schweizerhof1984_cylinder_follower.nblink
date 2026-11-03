@@ -1,6 +1,3 @@
 {
-    "path": "../../../notebooks/schweizerhof1984_cylinder_follower.ipynb",
-    "extra-media": [
-        "../../../tests/schweizerhof1984_cylinder.py"
-    ]
+    "path": "../../../notebooks/schweizerhof1984_cylinder_follower.ipynb"
 }

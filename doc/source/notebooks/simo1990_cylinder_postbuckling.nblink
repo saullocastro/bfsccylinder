@@ -1,6 +1,3 @@
 {
-    "path": "../../../notebooks/simo1990_cylinder_postbuckling.ipynb",
-    "extra-media": [
-        "../../../tests/simo1990_cylinder.py"
-    ]
+    "path": "../../../notebooks/simo1990_cylinder_postbuckling.ipynb"
 }

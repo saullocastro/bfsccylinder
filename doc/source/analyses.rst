@@ -189,6 +189,60 @@ entry of a stiffness matrix, as in the convergence test of Crisfield
 it also leaves out the reactions at the constrained ones.
 
 
+Limit points, bifurcations and imperfections
+--------------------------------------------
+
+In the Riks method [Riks1979]_ the load multiplier is an unknown, and the
+increment of `(\boldsymbol{u}, \lambda)` of each step is constrained to a
+prescribed arc length, such that the path is followed through the limit
+points of the load, where `\lambda` reaches a maximum or a minimum and load
+control fails. At a critical point of the path, a limit point or a
+bifurcation, `\boldsymbol{K}_T` is singular: one of its eigenvalues crosses
+zero. The number of negative eigenvalues of `\boldsymbol{K}_T` at the
+converged states therefore locates the critical points crossed: it is zero
+on a stable branch, increases by one at each limit point beyond which the
+branch is unstable and at each bifurcation crossed without branching, and
+the sign of the determinant of `\boldsymbol{K}_T` changes each time an odd
+number of eigenvalues crosses zero. For a symmetric `\boldsymbol{K}_T` the
+count is the number of negative pivots of a symmetric factorization; for
+the unsymmetric `\boldsymbol{K}_T` of a nonconservative follower pressure
+it is the number of negative real eigenvalues among those of smallest
+magnitude. A path that keeps a symmetry of the perfect shell, e.g. the
+axisymmetric path of an axially compressed cylinder, crosses bifurcations
+whose modes break that symmetry; the bifurcated branch is reached by
+switching to it along the critical eigenvector, after the change of the
+count of negative eigenvalues [WagnerWriggers1988]_.
+
+The element describes a perfect cylinder. An initial imperfection `w_0` of
+the normal displacement, with the degrees of freedom `\boldsymbol{u}_0`,
+can be added exactly when the non-linear membrane strains are quadratic
+forms of the rotations, as with the Donnell-type kinematics: the imperfect
+shell has the membrane strains `\boldsymbol{\varepsilon}(\boldsymbol{u} +
+\boldsymbol{u}_0) - \boldsymbol{\varepsilon}(\boldsymbol{u}_0)` and the
+curvatures `\boldsymbol{\kappa}(\boldsymbol{u})`, which gives
+
+.. math::
+    :label: an-imperfection
+
+    \boldsymbol{F}_{int,imp}(\boldsymbol{u}) =
+    \boldsymbol{F}_{int}(\boldsymbol{u} + \boldsymbol{u}_0) -
+    \boldsymbol{F}_{int}(\boldsymbol{u}_0) -
+    \boldsymbol{K}_G(\boldsymbol{N}_0) \boldsymbol{u}, \qquad
+    \boldsymbol{K}_{T,imp}(\boldsymbol{u}) =
+    \boldsymbol{K}_T(\boldsymbol{u} + \boldsymbol{u}_0) -
+    \boldsymbol{K}_G(\boldsymbol{N}_0)
+
+with `\boldsymbol{K}_G(\boldsymbol{N}_0)` the geometric stiffness matrix of
+the membrane resultants `\boldsymbol{N}_0` of the whole strains of
+`\boldsymbol{u}_0`, linear and non-linear. :func:`.update_KG` integrates
+the resultants of the linear strains only, such that the part of the
+non-linear strains of `\boldsymbol{u}_0` must be added to it, with the
+same integration points. The imperfect shell is stress free at
+`\boldsymbol{u} = \boldsymbol{0}`, and an imperfection in the shape of the
+lowest buckling mode turns the bifurcation of the perfect shell into a
+limit point.
+
+
 Solving with structsolve
 ------------------------
 
@@ -255,3 +309,11 @@ References
 .. [Crisfield1981] Crisfield, M. A., A fast incremental/iterative solution
    procedure that handles "snap-through", Computers & Structures, 13(1-3),
    55-62, 1981, doi:10.1016/0045-7949(81)90108-5.
+
+.. [Riks1979] Riks, E., An incremental approach to the solution of snapping
+   and buckling problems, International Journal of Solids and Structures,
+   15(7), 529-551, 1979, doi:10.1016/0020-7683(79)90081-7.
+
+.. [WagnerWriggers1988] Wagner, W., and Wriggers, P., A simple method for
+   the calculation of postcritical branches, Engineering Computations, 5(2),
+   103-109, 1988, doi:10.1108/eb023727.
