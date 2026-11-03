@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Post-buckling of an axially compressed cylinder with imperfections &#8212; bfsccylinder 0.7.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="../_static/documentation_options.js?v=5a057da9"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/simo1990_cylinder_postbuckling';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Cantilever cylinder under a follower pressure" href="schweizerhof1984_cylinder_follower.html" />
+    <link rel="prev" title="Axial buckling of stringer-stiffened cylinders" href="stiffened_cylinder_buckling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.1" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfsccylinder 0.7.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element.html">
+    The element and its degrees of freedom
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element.html">
+    The element and its degrees of freedom
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../tutorials.html">
+    Tutorials
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="stiffened_cylinder_frequencies.html">Natural frequencies of stringer-stiffened cylinders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stiffened_cylinder_buckling.html">Axial buckling of stringer-stiffened cylinders</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Post-buckling of an axially compressed cylinder with imperfections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schweizerhof1984_cylinder_follower.html">Cantilever cylinder under a follower pressure</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Post-buckling of an axially compressed cylinder with imperfections</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Post-buckling-of-an-axially-compressed-cylinder-with-imperfections">
+<h1>Post-buckling of an axially compressed cylinder with imperfections<a class="headerlink" href="#Post-buckling-of-an-axially-compressed-cylinder-with-imperfections" title="Link to this heading">#</a></h1>
+<p>Simo, Fox and Rifai [1], Section 6.3.4 (pp. 54-57, Fig. 6.3.4 on p. 56), traced the post-buckling path of a simply supported cylinder under axial compression, with and without an initial geometric imperfection, with the Riks method and their geometrically exact shell element: radius <span class="math notranslate nohighlight">\(R = 36\)</span>, length <span class="math notranslate nohighlight">\(L = 100\)</span>, thickness <span class="math notranslate nohighlight">\(t = 0.125\)</span>, <span class="math notranslate nohighlight">\(E = 10^7\)</span>, <span class="math notranslate nohighlight">\(\nu = 0.3\)</span>. As in Stanley [2], they modelled an <span class="math notranslate nohighlight">\(L/10 \times 15°\)</span> section of the cylinder, with symmetry conditions
+on the interior edges and a simple support on the loaded edge, with a <span class="math notranslate nohighlight">\(10 \times 10\)</span> mesh, such that the post-buckling path is that of the diamond mode of 5 axial half-waves and 12 circumferential waves. The imperfections, of 10 % and 50 % of the thickness, have the shape of the lowest linear buckling mode; the loads are normalized by the linear buckling load and plotted against the axial deflection of the loaded edge, its maximum in Fig. 6.3.4(a) and (d) and also its average in Fig.
+6.3.4(c). Fig. 6.3.4(a) also has the results of the 9-node ANS element of Stanley [2].</p>
+<p>Here the same section is meshed with the Donnell-type element <code class="docutils literal notranslate"><span class="pre">BFSCCylinder</span></code>, the imperfection is added exactly as described below, and the path is traced with the Riks method of <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a> (0.10.0 or newer) to an axial deflection of 0.04, the end of the axes of the figure. The model is in the module <code class="docutils literal notranslate"><span class="pre">simo1990_cylinder.py</span></code> of this folder, also used by <code class="docutils literal notranslate"><span class="pre">tests/test_simo1990_cylinder.py</span></code>.</p>
+<section id="The-section">
+<h2>The section<a class="headerlink" href="#The-section" title="Link to this heading">#</a></h2>
+<p>The section has <span class="math notranslate nohighlight">\(x\)</span> from 0, the loaded edge, to <span class="math notranslate nohighlight">\(a = L/10 = 10\)</span>, and <span class="math notranslate nohighlight">\(y\)</span> from 0 to <span class="math notranslate nohighlight">\(b = 15° \, R = 9.425\)</span>. With the degrees of freedom <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(u_{,x}\)</span>, <span class="math notranslate nohighlight">\(u_{,y}\)</span>, <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(v_{,x}\)</span>, <span class="math notranslate nohighlight">\(v_{,y}\)</span>, <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span>, <span class="math notranslate nohighlight">\(w_{,xy}\)</span> of the nodes, the edges are:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x = 0\)</span>, simply supported and loaded: <span class="math notranslate nohighlight">\(v = v_{,y} = w = w_{,y} = 0\)</span>, <span class="math notranslate nohighlight">\(u\)</span> free, with the consistent nodal forces of a uniform compressive force per unit length;</p></li>
+<li><p><span class="math notranslate nohighlight">\(x = a\)</span>, the middle of an axial half-wave of the diamond mode, a symmetry plane: <span class="math notranslate nohighlight">\(u = u_{,y} = v_{,x} = w_{,x} = w_{,xy} = 0\)</span>;</p></li>
+<li><p><span class="math notranslate nohighlight">\(y = 0\)</span> and <span class="math notranslate nohighlight">\(y = b\)</span>, the crest and the trough of a circumferential wave, symmetry planes: <span class="math notranslate nohighlight">\(u_{,y} = v = v_{,x} = w_{,y} = w_{,xy} = 0\)</span>.</p></li>
+</ul>
+<p>The derivatives along an edge of a prescribed displacement are prescribed with it. A 15° section is half of a circumferential wave of 12 waves, and <span class="math notranslate nohighlight">\(L/10\)</span> half of an axial half-wave of 5 half-waves. The axial deflection is the axial displacement <span class="math notranslate nohighlight">\(u\)</span> of the loaded edge, the shortening of the section, whose other end does not move axially.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">simo1990_cylinder</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">simo</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'classical buckling load N_cl = E t^2/(R sqrt(3 (1 - nu^2))) = </span><span class="si">%.1f</span><span class="s1">'</span>
+      <span class="o">%</span> <span class="n">simo</span><span class="o">.</span><span class="n">N_CL</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">16</span><span class="p">):</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">SectionModel</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">eigvals</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">ulin</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">linear_buckling</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%2d</span><span class="s1"> x </span><span class="si">%2d</span><span class="s1"> elements, </span><span class="si">%4d</span><span class="s1"> unknowns: N_cr/N_cl = </span><span class="si">%s</span><span class="s1">, '</span>
+          <span class="s1">'shortening at N_cl </span><span class="si">%.5f</span><span class="s1">'</span>
+          <span class="o">%</span> <span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">bu</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">eigvals</span><span class="p">[:</span><span class="mi">3</span><span class="p">],</span> <span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+             <span class="n">model</span><span class="o">.</span><span class="n">shortening</span><span class="p">(</span><span class="n">ulin</span><span class="p">)[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+classical buckling load N_cl = E t^2/(R sqrt(3 (1 - nu^2))) = 2626.9
+ 4 x  4 elements,  165 unknowns: N_cr/N_cl = [1.011   1.02163 1.02404], shortening at N_cl 0.02086
+ 6 x  6 elements,  367 unknowns: N_cr/N_cl = [1.006   1.01673 1.0196 ], shortening at N_cl 0.02086
+ 8 x  8 elements,  649 unknowns: N_cr/N_cl = [1.00491 1.01574 1.01862], shortening at N_cl 0.02086
+12 x 12 elements, 1453 unknowns: N_cr/N_cl = [1.00439 1.01534 1.01808], shortening at N_cl 0.02086
+16 x 16 elements, 2577 unknowns: N_cr/N_cl = [1.00427 1.01527 1.01793], shortening at N_cl 0.02086
+</pre></div></div>
+</div>
+<p>The lowest buckling load converges to <span class="math notranslate nohighlight">\(1.0043 N_{cl}\)</span>, with a pre-buckling state that is not quite the membrane one, the simple support restraining the radial expansion at the loaded edge, and two more modes within 1.5 % above it. Under the linear buckling load the section shortens by <span class="math notranslate nohighlight">\(1.0043 \times 0.020859 = 0.02095\)</span>, the abscissa at a load of 1 of the straight lines of Fig. 6.3.4, read as <span class="math notranslate nohighlight">\(0.0205 \pm 0.0003\)</span>; the membrane value is <span class="math notranslate nohighlight">\(N_{cl} a/(E t) = 0.02101\)</span>. The lowest
+mode, plotted below, is the diamond mode: one half-wave <span class="math notranslate nohighlight">\(\cos(\pi y/b)\)</span> around the circumference and, along <span class="math notranslate nohighlight">\(x\)</span>, the axial half-wave at <span class="math notranslate nohighlight">\(x = a\)</span> with a boundary layer at the simple support.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">SectionModel</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">eigvals</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">ulin</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">linear_buckling</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">modes</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+<span class="n">w</span> <span class="o">/=</span> <span class="n">w</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">w</span><span class="p">))]</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="n">cs</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span> <span class="n">model</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span> <span class="n">w</span><span class="p">,</span> <span class="mi">21</span><span class="p">,</span>
+                 <span class="n">cmap</span><span class="o">=</span><span class="s1">'RdBu_r'</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'$w/w_</span><span class="si">{max}</span><span class="s1">$'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'$x$, loaded edge at $x = 0$'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'$y$'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">'equal'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Lowest buckling mode, $N_</span><span class="si">{cr}</span><span class="s1">/N_</span><span class="si">{cl}</span><span class="s1">$ = </span><span class="si">%.5f</span><span class="s1">'</span> <span class="o">%</span> <span class="n">eigvals</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_simo1990_cylinder_postbuckling_3_0.png" src="../_images/tutorials_simo1990_cylinder_postbuckling_3_0.png" />
+</div>
+</div>
+</section>
+<section id="Initial-imperfection,-exactly-for-the-Donnell-type-kinematics">
+<h2>Initial imperfection, exactly for the Donnell-type kinematics<a class="headerlink" href="#Initial-imperfection,-exactly-for-the-Donnell-type-kinematics" title="Link to this heading">#</a></h2>
+<p>The element takes no initial geometric imperfection, but with the Donnell-type kinematics an imperfection <span class="math notranslate nohighlight">\(w_0\)</span> of the normal displacement can be added exactly. In the strains of a shallow imperfect shell the non-linear terms are <span class="math notranslate nohighlight">\((w_{,x}^2 + 2 w_{0,x} w_{,x})/2\)</span>, …, which are those of <span class="math notranslate nohighlight">\(\boldsymbol{u} + \boldsymbol{u}_0\)</span> minus those of <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, with <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> the vector of the degrees of freedom of <span class="math notranslate nohighlight">\(w_0\)</span> (<span class="math notranslate nohighlight">\(u = v = 0\)</span>,
+<span class="math notranslate nohighlight">\(w = w_0\)</span> with its derivatives); the linear membrane strains and the curvatures are linear, so that</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{\varepsilon}_{imp}(\boldsymbol{u}) =
+\boldsymbol{\varepsilon}(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{\varepsilon}(\boldsymbol{u}_0), \qquad
+\boldsymbol{\kappa}_{imp}(\boldsymbol{u}) =
+\boldsymbol{\kappa}(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{\kappa}(\boldsymbol{u}_0) = \boldsymbol{\kappa}(\boldsymbol{u})\]</div>
+<p>and the imperfect shell is stress free at <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span>. Its stress resultants are those of the perfect shell at <span class="math notranslate nohighlight">\(\boldsymbol{u} + \boldsymbol{u}_0\)</span> minus <span class="math notranslate nohighlight">\(\boldsymbol{N}_0\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{M}_0\)</span>, those of the state <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, and since <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}(\boldsymbol{u} + \boldsymbol{u}_0) =
+\boldsymbol{B}_{NL}(\boldsymbol{u}) + \boldsymbol{B}_{NL}(\boldsymbol{u}_0)\)</span> and <span class="math notranslate nohighlight">\(\int_A \boldsymbol{B}_{NL}(\boldsymbol{u})^\top \boldsymbol{N}_0 dA =
+\boldsymbol{K}_G(\boldsymbol{N}_0) \boldsymbol{u}\)</span>, the gradient of the strain energy of the imperfect shell is</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{F}_{int,imp}(\boldsymbol{u}) =
+\boldsymbol{F}_{int}(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{F}_{int}(\boldsymbol{u}_0) -
+\boldsymbol{K}_G(\boldsymbol{N}_0) \boldsymbol{u}, \qquad
+\boldsymbol{K}_{T,imp}(\boldsymbol{u}) =
+\boldsymbol{K}_T(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{K}_G(\boldsymbol{N}_0)\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} +
+\boldsymbol{K}_{GNL} + \boldsymbol{K}_G\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{N}_0)\)</span> the geometric stiffness matrix of the resultants <span class="math notranslate nohighlight">\(\boldsymbol{N}_0\)</span> of the <strong>whole</strong> strains of <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, linear and non-linear. The identities hold for the quadrature sums of the elements, for any number of integration points, when <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{N}_0)\)</span> is integrated with the same points.</p>
+<p><code class="docutils literal notranslate"><span class="pre">update_KG</span></code> builds its matrix from the resultants of the linear strains only, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{u}_0)\)</span>, which is linear in the displacements, see its Notes; the part of the non-linear strains, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{GNL,0}\)</span>, is computed by <code class="docutils literal notranslate"><span class="pre">SectionModel.calc_kG_N</span></code> from the resultants at the integration points, such that <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{N}_0) = \boldsymbol{K}_G(\boldsymbol{u}_0) +
+\boldsymbol{K}_{GNL,0}\)</span>. The callables of structsolve, in <code class="docutils literal notranslate"><span class="pre">ImperfectCylinder</span></code>, are then</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_fint</span></code>: <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{F}_{int}(\boldsymbol{u}_0) - \boldsymbol{K}_G(\boldsymbol{u}_0)
+\boldsymbol{u} - \boldsymbol{K}_{GNL,0} \boldsymbol{u}\)</span>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_kC</span></code>: <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u} +
+\boldsymbol{u}_0) + \boldsymbol{K}_{GNL}(\boldsymbol{u} + \boldsymbol{u}_0)
+- \boldsymbol{K}_{GNL,0}\)</span>, the matrix of <code class="docutils literal notranslate"><span class="pre">update_KCNL</span></code> minus <span class="math notranslate nohighlight">\(\boldsymbol{K}_{GNL,0}\)</span>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_kG</span></code>: <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{K}_G(\boldsymbol{u}_0) = \boldsymbol{K}_G(\boldsymbol{u})\)</span>, the geometric stiffness matrix of the perfect shell.</p></li>
+</ul>
+<p>The construction uses the Donnell-type element: <code class="docutils literal notranslate"><span class="pre">calc_kG_N</span></code> builds the geometric stiffness matrix with the rows of <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> of the Donnell-type kinematics. With the Sanders-type element the rotation is <span class="math notranslate nohighlight">\(-w_{,y} + v/R\)</span>, its geometric stiffness matrix has rows in <span class="math notranslate nohighlight">\(v\)</span>, and these identities, not verified here, would need that matrix for <span class="math notranslate nohighlight">\(\boldsymbol{N}_0\)</span>.</p>
+<p>The checks below, on a <span class="math notranslate nohighlight">\(4 \times 4\)</span> mesh: the internal forces vanish at <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span>; <code class="docutils literal notranslate"><span class="pre">calc_kG_N</span></code> with the resultants of the linear strains gives the matrix of <code class="docutils literal notranslate"><span class="pre">update_KG</span></code>; the tangent stiffness matrix is the Jacobian of the internal forces, by central differences; and the internal forces are the gradient of the strain energy of the strains <span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon}(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{\varepsilon}(\boldsymbol{u}_0)\)</span>, computed by <code class="docutils literal notranslate"><span class="pre">SectionModel.strain_energy</span></code> from the interpolation of the element at the integration points, independently of its kernels. The same gradient with <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{u}_0)\)</span> alone in place of <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{N}_0)\)</span> is off by orders of magnitude more than the error of the central differences, which decreases with <span class="math notranslate nohighlight">\(h^2\)</span>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">model</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">lbd_cr</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">normalized_model</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">bu</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">u</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="mf">1e-2</span><span class="p">)</span>
+<span class="n">KG</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">calc_KG</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="n">KGN</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">calc_kG_N</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">membrane_resultants</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">nonlinear</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'calc_kG_N(N_L(u)) vs. update_KG(u): rel. diff </span><span class="si">%.1e</span><span class="s1">'</span>
+      <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">KGN</span> <span class="o">-</span> <span class="n">KG</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">KG</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+<span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span>
+    <span class="n">u0</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">imperfection</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+    <span class="n">imp</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">ImperfectCylinder</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">u0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'imperfection </span><span class="si">%g</span><span class="s1"> t: |F_int,imp(0)| = </span><span class="si">%.1e</span><span class="s1">'</span> <span class="o">%</span>
+          <span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">calc_fint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)))))</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">u</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="o">//</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">u</span> <span class="o">*=</span> <span class="mf">0.3</span><span class="o">*</span><span class="n">simo</span><span class="o">.</span><span class="n">t</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">u</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="o">*</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="o">//</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">u</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="mi">10</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="o">*</span><span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N</span><span class="o">//</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="n">model</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
+    <span class="n">U</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">KT</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">calc_kC</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="n">imp</span><span class="o">.</span><span class="n">calc_kG</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">fv</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">calc_fint</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">@</span> <span class="n">v</span>
+    <span class="n">fv_L</span> <span class="o">=</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">calc_fint</span><span class="p">(</span><span class="n">U</span> <span class="o">+</span> <span class="n">u0</span><span class="p">)</span> <span class="o">-</span> <span class="n">imp</span><span class="o">.</span><span class="n">fint0</span> <span class="o">-</span> <span class="n">imp</span><span class="o">.</span><span class="n">KG0</span> <span class="o">@</span> <span class="n">U</span><span class="p">)[</span><span class="n">model</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">@</span> <span class="n">v</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">):</span>
+        <span class="n">dfd</span> <span class="o">=</span> <span class="p">(</span><span class="n">imp</span><span class="o">.</span><span class="n">calc_fint</span><span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">h</span><span class="o">*</span><span class="n">v</span><span class="p">)</span> <span class="o">-</span> <span class="n">imp</span><span class="o">.</span><span class="n">calc_fint</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">h</span><span class="o">*</span><span class="n">v</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+        <span class="n">dU</span> <span class="o">=</span> <span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">strain_energy</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span> <span class="o">+</span> <span class="n">h</span><span class="o">*</span><span class="n">v</span><span class="p">),</span> <span class="n">u0</span><span class="p">)</span>
+              <span class="o">-</span> <span class="n">model</span><span class="o">.</span><span class="n">strain_energy</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">h</span><span class="o">*</span><span class="n">v</span><span class="p">),</span> <span class="n">u0</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">h</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'  h = </span><span class="si">%.0e</span><span class="s1">: tangent </span><span class="si">%.1e</span><span class="s1">, energy gradient </span><span class="si">%.1e</span><span class="s1">, '</span>
+              <span class="s1">'with K_G(u0) alone </span><span class="si">%.1e</span><span class="s1">'</span>
+              <span class="o">%</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">dfd</span> <span class="o">-</span> <span class="n">KT</span> <span class="o">@</span> <span class="n">v</span><span class="p">)</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">KT</span> <span class="o">@</span> <span class="n">v</span><span class="p">),</span>
+                 <span class="nb">abs</span><span class="p">(</span><span class="n">dU</span> <span class="o">-</span> <span class="n">fv</span><span class="p">)</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">fv</span><span class="p">),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dU</span> <span class="o">-</span> <span class="n">fv_L</span><span class="p">)</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">fv</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+calc_kG_N(N_L(u)) vs. update_KG(u): rel. diff 5.2e-16
+imperfection 0.1 t: |F_int,imp(0)| = 0.0e+00
+  h = 1e-04: tangent 8.0e-09, energy gradient 2.8e-06, with K_G(u0) alone 3.3e-05
+  h = 1e-05: tangent 8.0e-11, energy gradient 2.8e-08, with K_G(u0) alone 3.6e-05
+imperfection 0.5 t: |F_int,imp(0)| = 0.0e+00
+  h = 1e-04: tangent 1.2e-08, energy gradient 4.0e-06, with K_G(u0) alone 1.5e-04
+  h = 1e-05: tangent 1.2e-10, energy gradient 4.0e-08, with K_G(u0) alone 1.4e-04
+</pre></div></div>
+</div>
+</section>
+<section id="Riks-analyses-with-the-imperfections">
+<h2>Riks analyses with the imperfections<a class="headerlink" href="#Riks-analyses-with-the-imperfections" title="Link to this heading">#</a></h2>
+<p>The imperfection is the <span class="math notranslate nohighlight">\(w\)</span> part of the lowest buckling mode, scaled to a largest <span class="math notranslate nohighlight">\(|w_0|\)</span> of 10 % or 50 % of <span class="math notranslate nohighlight">\(t\)</span>. Its sign does not matter: the section is symmetric about <span class="math notranslate nohighlight">\(y = b/2\)</span>, and <span class="math notranslate nohighlight">\(-\cos(\pi y/b) = \cos(\pi (b -
+y)/b)\)</span>. The reference load of each mesh is its own linear buckling load, such that the load factor of structsolve is the normalized load of the figure. The Riks method of structsolve starts with an increment of 0.1 of the load factor, limited to 0.1, and stops at the first converged increment with a maximum axial deflection of 0.04, with <code class="docutils literal notranslate"><span class="pre">stop_criterion</span> <span class="pre">=</span> <span class="pre">value_reached(...)</span></code> (<code class="docutils literal notranslate"><span class="pre">run_riks</span></code> of the module). Three meshes, the finest one, <span class="math notranslate nohighlight">\(12 \times 12\)</span>, being the one of the figures:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">runs</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">run_riks</span><span class="p">(</span><span class="n">xi</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+        <span class="n">runs</span><span class="p">[</span><span class="n">xi</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">an</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">'an'</span><span class="p">]</span>
+        <span class="n">fext</span> <span class="o">=</span> <span class="n">an</span><span class="o">.</span><span class="n">calc_fext</span><span class="p">()</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">an</span><span class="o">.</span><span class="n">calc_fint</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">-</span> <span class="n">lbd</span><span class="o">*</span><span class="n">fext</span><span class="p">)</span>
+                  <span class="k">for</span> <span class="n">lbd</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">an</span><span class="o">.</span><span class="n">increments</span><span class="p">,</span> <span class="n">an</span><span class="o">.</span><span class="n">cs</span><span class="p">))</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">fext</span><span class="p">)</span>
+        <span class="n">lbd_lim</span><span class="p">,</span> <span class="n">u_lim</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">limit_point</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'lbds'</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">'umax'</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%2d</span><span class="s1"> </span><span class="si">%%</span><span class="s1"> </span><span class="si">%2d</span><span class="s1"> x </span><span class="si">%2d</span><span class="s1">: N_cr/N_cl </span><span class="si">%.5f</span><span class="s1">, </span><span class="si">%3d</span><span class="s1"> increments, </span><span class="si">%5.1f</span><span class="s1"> s, '</span>
+              <span class="s1">'max. residual </span><span class="si">%.0e</span><span class="s1">, limit load </span><span class="si">%.4f</span><span class="s1"> at u_max </span><span class="si">%.5f</span><span class="s1">'</span>
+              <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'lbd_cr'</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">an</span><span class="o">.</span><span class="n">increments</span><span class="p">),</span> <span class="n">r</span><span class="p">[</span><span class="s1">'elapsed'</span><span class="p">],</span>
+                 <span class="n">res</span><span class="p">,</span> <span class="n">lbd_lim</span><span class="p">,</span> <span class="n">u_lim</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+10 %  4 x  4: N_cr/N_cl 1.01100, 102 increments,   9.9 s, max. residual 8e-11, limit load 0.7294 at u_max 0.01657
+10 %  8 x  8: N_cr/N_cl 1.00491, 101 increments,  38.9 s, max. residual 1e-10, limit load 0.7270 at u_max 0.01625
+10 % 12 x 12: N_cr/N_cl 1.00439, 100 increments,  89.1 s, max. residual 1e-10, limit load 0.7269 at u_max 0.01625
+50 %  4 x  4: N_cr/N_cl 1.01100,  65 increments,   6.6 s, max. residual 2e-10, limit load 0.3965 at u_max 0.01064
+50 %  8 x  8: N_cr/N_cl 1.00491,  64 increments,  26.0 s, max. residual 2e-10, limit load 0.3905 at u_max 0.01070
+50 % 12 x 12: N_cr/N_cl 1.00439,  64 increments,  44.7 s, max. residual 2e-10, limit load 0.3902 at u_max 0.01070
+</pre></div></div>
+</div>
+<p>The limit loads change by less than 0.001 from the <span class="math notranslate nohighlight">\(8 \times 8\)</span> to the <span class="math notranslate nohighlight">\(12
+\times 12\)</span> mesh; a <span class="math notranslate nohighlight">\(16 \times 16\)</span> mesh, not run here (77 s and 52 s), gives 0.7270 and 0.3902, at the same deflections within <span class="math notranslate nohighlight">\(10^{-5}\)</span>. The residual of every converged increment is below <span class="math notranslate nohighlight">\(10^{-9}\)</span> of the reference load vector.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot_fig</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">marker</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">marker</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mfc</span><span class="o">=</span><span class="s1">'none'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'k'</span><span class="p">,</span> <span class="n">mew</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">colors</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.1</span><span class="p">:</span> <span class="s1">'C0'</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">:</span> <span class="s1">'C3'</span><span class="p">}</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="o">/</span><span class="n">simo</span><span class="o">.</span><span class="n">FIG_LINEAR_U1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'0.6'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">ls</span><span class="p">,</span> <span class="n">lw</span> <span class="ow">in</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="s1">':'</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s1">'--'</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">runs</span><span class="p">[</span><span class="n">xi</span><span class="p">,</span> <span class="n">n</span><span class="p">]</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'umax'</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">'lbds'</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="n">lw</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">xi</span><span class="p">],</span>
+                <span class="n">label</span><span class="o">=</span><span class="s1">'</span><span class="si">%d</span><span class="s1"> </span><span class="si">%%</span><span class="s1">, </span><span class="si">%d</span><span class="s1"> x </span><span class="si">%d</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">xi</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+<span class="n">plot_fig</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_A_SIMO_10</span><span class="p">,</span> <span class="s1">'o'</span><span class="p">,</span> <span class="s1">'Simo et al., 10 %'</span><span class="p">)</span>
+<span class="n">plot_fig</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_A_SIMO_50</span><span class="p">,</span> <span class="s1">'s'</span><span class="p">,</span> <span class="s1">'Simo et al., 50 %'</span><span class="p">)</span>
+<span class="n">plot_fig</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_A_ANS_10</span><span class="p">,</span> <span class="s1">'^'</span><span class="p">,</span> <span class="s1">'Stanley, 9-ANS, 10 %'</span><span class="p">)</span>
+<span class="n">plot_fig</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_A_ANS_50</span><span class="p">,</span> <span class="s1">'D'</span><span class="p">,</span> <span class="s1">'Stanley, 9-ANS, 50 %'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Fig. 6.3.4(a): maximum axial deflection'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Axial load / linear buckling load'</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">runs</span><span class="p">[</span><span class="n">xi</span><span class="p">,</span> <span class="mi">12</span><span class="p">]</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'uavg'</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">'lbds'</span><span class="p">],</span> <span class="s1">'-'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">xi</span><span class="p">],</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">'</span><span class="si">%d</span><span class="s1"> </span><span class="si">%%</span><span class="s1">, average'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">xi</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'umax'</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">'lbds'</span><span class="p">],</span> <span class="s1">':'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">xi</span><span class="p">],</span>
+            <span class="n">label</span><span class="o">=</span><span class="s1">'</span><span class="si">%d</span><span class="s1"> </span><span class="si">%%</span><span class="s1">, maximum'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">xi</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Fig. 6.3.4(c): average and maximum, 12 x 12'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.042</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Axial deflection of the loaded edge'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">'upper right'</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_simo1990_cylinder_postbuckling_9_0.png" src="../_images/tutorials_simo1990_cylinder_postbuckling_9_0.png" />
+</div>
+</div>
+<p>The values of Simo et al. and of Stanley are read from Fig. 6.3.4 on the page rendered at 300 dpi with a grid of <span class="math notranslate nohighlight">\(0.001 \times 0.05\)</span> drawn over the axes, to about <span class="math notranslate nohighlight">\(\pm 0.0003\)</span> in the deflection and <span class="math notranslate nohighlight">\(\pm 0.01\)</span> in the load. The table compares the limit loads, the minimum loads after them and the loads at a maximum deflection of 0.04, of the <span class="math notranslate nohighlight">\(12 \times 12\)</span> mesh:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+    <span class="n">lbds</span><span class="p">,</span> <span class="n">u</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">'lbds'</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">'umax'</span><span class="p">]</span>
+    <span class="n">ilim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">lbds</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">imin</span> <span class="o">=</span> <span class="n">ilim</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">lbds</span><span class="p">[</span><span class="n">ilim</span><span class="p">:])</span>
+    <span class="n">p04</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">u</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:],</span> <span class="n">lbds</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="n">lbds</span><span class="p">[</span><span class="n">ilim</span><span class="p">],</span> <span class="n">u</span><span class="p">[</span><span class="n">ilim</span><span class="p">],</span> <span class="n">lbds</span><span class="p">[</span><span class="n">imin</span><span class="p">],</span> <span class="n">u</span><span class="p">[</span><span class="n">imin</span><span class="p">],</span> <span class="n">p04</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fig_summary</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">ilim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">imin</span> <span class="o">=</span> <span class="n">ilim</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="n">ilim</span><span class="p">:,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">p04</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">0.04</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-4</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">d</span><span class="p">[</span><span class="n">ilim</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="n">ilim</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="n">imin</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">d</span><span class="p">[</span><span class="n">imin</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">p04</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-26s</span><span class="s1"> </span><span class="si">%7s</span><span class="s1"> </span><span class="si">%8s</span><span class="s1"> </span><span class="si">%7s</span><span class="s1"> </span><span class="si">%8s</span><span class="s1"> </span><span class="si">%7s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">''</span><span class="p">,</span> <span class="s1">'P_lim'</span><span class="p">,</span> <span class="s1">'u_lim'</span><span class="p">,</span> <span class="s1">'P_min'</span><span class="p">,</span> <span class="s1">'u_min'</span><span class="p">,</span>
+                                     <span class="s1">'P(0.04)'</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">xi</span><span class="p">,</span> <span class="n">fsimo</span><span class="p">,</span> <span class="n">fans</span> <span class="ow">in</span> <span class="p">((</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_A_SIMO_10</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_A_ANS_10</span><span class="p">),</span>
+                        <span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_A_SIMO_50</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_A_ANS_50</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">((</span><span class="s1">'BFSC 12 x 12, </span><span class="si">%d</span><span class="s1"> </span><span class="si">%%</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="n">xi</span><span class="p">),</span> <span class="n">summary</span><span class="p">(</span><span class="n">runs</span><span class="p">[</span><span class="n">xi</span><span class="p">,</span> <span class="mi">12</span><span class="p">])),</span>
+                     <span class="p">(</span><span class="s1">'Simo et al., Fig. (a)'</span><span class="p">,</span> <span class="n">fig_summary</span><span class="p">(</span><span class="n">fsimo</span><span class="p">)),</span>
+                     <span class="p">(</span><span class="s1">'Stanley 9-ANS, Fig. (a)'</span><span class="p">,</span> <span class="n">fig_summary</span><span class="p">(</span><span class="n">fans</span><span class="p">))):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-26s</span><span class="s1"> </span><span class="si">%7.3f</span><span class="s1"> </span><span class="si">%8.4f</span><span class="s1"> </span><span class="si">%7.3f</span><span class="s1"> </span><span class="si">%8.4f</span><span class="s1"> </span><span class="si">%7.3f</span><span class="s1">'</span> <span class="o">%</span> <span class="p">((</span><span class="n">label</span><span class="p">,)</span> <span class="o">+</span> <span class="n">s</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+                             P_lim    u_lim   P_min    u_min P(0.04)
+BFSC 12 x 12, 10 %           0.727   0.0163   0.326   0.0203   0.441
+Simo et al., Fig. (a)        0.715   0.0168   0.326   0.0184   0.459
+Stanley 9-ANS, Fig. (a)      0.717   0.0159   0.319   0.0184     nan
+BFSC 12 x 12, 50 %           0.390   0.0107   0.324   0.0179   0.455
+Simo et al., Fig. (a)        0.411   0.0108   0.315   0.0150   0.449
+Stanley 9-ANS, Fig. (a)      0.402   0.0106   0.297   0.0175     nan
+</pre></div></div>
+</div>
+<p>The limit loads are 0.727 and 0.390, against 0.715 and 0.411 of Simo et al. and 0.717 and 0.402 of Stanley’s 9-ANS element, at deflections within 0.0006 of theirs. The differences, 0.012 and 0.021, are larger than the reading precision, and of the size of the differences between the two elements of the figure; the Donnell-type kinematics of this model and the geometrically exact shell of [1] differ in the terms of the order of the waves over the radius, and their <span class="math notranslate nohighlight">\(10 \times 10\)</span> mesh of a
+low-order element is coarser than the converged meshes here. The post-buckling path is that of the figure: the load drops at a decreasing, then increasing, deflection to a minimum of 0.326 (10 %) and 0.324 (50 %), against 0.326 and 0.315 of Simo et al., and both curves rise again to 0.44-0.46 at a deflection of 0.04 (0.459 and 0.449 in the figure). The average deflection, Fig. 6.3.4(c), is smaller than the maximum one beyond the limit point, the section shortening most at the inward lobe of the
+mode.</p>
+<p>The Riks analyses of a Ritz model of the same section with panels, in the benchmark <code class="docutils literal notranslate"><span class="pre">benchmarks/simo1990_cylinder.py</span></code> of structsolve, give 1.00415 <span class="math notranslate nohighlight">\(N_{cl}\)</span> for the buckling load, and limit loads of 0.727 at 0.0163 and 0.390 at 0.0107, the same as here to the digits given.</p>
+</section>
+<section id="The-perfect-cylinder,-branch-switching">
+<h2>The perfect cylinder, branch switching<a class="headerlink" href="#The-perfect-cylinder,-branch-switching" title="Link to this heading">#</a></h2>
+<p>Without imperfection the path is axisymmetric until a bifurcation. Fig. 6.3.4(d) traces it with a branch switching technique; [1] notes the difficulties of a multiplicity of clustered critical points near the first bifurcation, the solution process often changing paths. Here the Riks method of structsolve runs with <code class="docutils literal notranslate"><span class="pre">inertia=True</span></code> and SuperLU, whose sign of the determinant of the tangent stiffness matrix locates the critical points crossed, and with <code class="docutils literal notranslate"><span class="pre">branch_switching=3</span></code>, which switches to the
+bifurcated branch, along the critical eigenvector, at most three times. Increments of at most 0.03 avoid stepping over the clustered critical points. The <span class="math notranslate nohighlight">\(8 \times 8\)</span> mesh:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">r0</span> <span class="o">=</span> <span class="n">simo</span><span class="o">.</span><span class="n">run_riks</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">branch_switching</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">an0</span> <span class="o">=</span> <span class="n">r0</span><span class="p">[</span><span class="s1">'an'</span><span class="p">]</span>
+<span class="n">bp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">an0</span><span class="o">.</span><span class="n">branch_points</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%d</span><span class="s1"> increments, </span><span class="si">%.0f</span><span class="s1"> s, switched at the increments </span><span class="si">%s</span><span class="s1">, of load '</span>
+      <span class="s1">'factor </span><span class="si">%s</span><span class="s1">, maximum deflection </span><span class="si">%s</span><span class="s1">'</span>
+      <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">an0</span><span class="o">.</span><span class="n">increments</span><span class="p">),</span> <span class="n">r0</span><span class="p">[</span><span class="s1">'elapsed'</span><span class="p">],</span> <span class="n">bp</span><span class="p">,</span>
+         <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">r0</span><span class="p">[</span><span class="s1">'lbds'</span><span class="p">][</span><span class="n">bp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">precision</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+         <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">r0</span><span class="p">[</span><span class="s1">'umax'</span><span class="p">][</span><span class="n">bp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">)))</span>
+<span class="n">signs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">an0</span><span class="o">.</span><span class="n">det_signs</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'sign of the determinant: +1 up to the increment </span><span class="si">%d</span><span class="s1">, then </span><span class="si">%s</span><span class="s1">'</span>
+      <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">signs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">signs</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">signs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):])))</span>
+<span class="n">lbds0</span><span class="p">,</span> <span class="n">u0max</span> <span class="o">=</span> <span class="n">r0</span><span class="p">[</span><span class="s1">'lbds'</span><span class="p">],</span> <span class="n">r0</span><span class="p">[</span><span class="s1">'umax'</span><span class="p">]</span>
+<span class="n">ilim</span> <span class="o">=</span> <span class="n">bp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">imin</span> <span class="o">=</span> <span class="n">ilim</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">lbds0</span><span class="p">[</span><span class="n">ilim</span><span class="p">:])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'bifurcation </span><span class="si">%.4f</span><span class="s1"> at </span><span class="si">%.5f</span><span class="s1">; minimum </span><span class="si">%.4f</span><span class="s1"> at </span><span class="si">%.5f</span><span class="s1">; </span><span class="si">%.4f</span><span class="s1"> at 0.04'</span>
+      <span class="o">%</span> <span class="p">(</span><span class="n">lbds0</span><span class="p">[</span><span class="n">ilim</span><span class="p">],</span> <span class="n">u0max</span><span class="p">[</span><span class="n">ilim</span><span class="p">],</span> <span class="n">lbds0</span><span class="p">[</span><span class="n">imin</span><span class="p">],</span> <span class="n">u0max</span><span class="p">[</span><span class="n">imin</span><span class="p">],</span>
+         <span class="n">np</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="mf">0.04</span><span class="p">,</span> <span class="n">u0max</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:],</span> <span class="n">lbds0</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+461 increments, 125 s, switched at the increments [33], of load factor [0.8241], maximum deflection [0.01815]
+sign of the determinant: +1 up to the increment 32, then [-1  1]
+bifurcation 0.8241 at 0.01815; minimum 0.3272 at 0.02091; 0.4384 at 0.04
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.04</span><span class="o">/</span><span class="n">simo</span><span class="o">.</span><span class="n">FIG_LINEAR_U1</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'0.6'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">u0max</span><span class="p">,</span> <span class="n">lbds0</span><span class="p">,</span> <span class="s1">'-'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'C2'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">'perfect, 8 x 8, branch switching'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">u0max</span><span class="p">[</span><span class="n">bp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">lbds0</span><span class="p">[</span><span class="n">bp</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">'x'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'C2'</span><span class="p">,</span> <span class="n">ms</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">label</span><span class="o">=</span><span class="s1">'switched to the bifurcated branch'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">runs</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">12</span><span class="p">][</span><span class="s1">'umax'</span><span class="p">],</span> <span class="n">runs</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">12</span><span class="p">][</span><span class="s1">'lbds'</span><span class="p">],</span> <span class="s1">'--'</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'C0'</span><span class="p">,</span>
+        <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'10 %, 12 x 12'</span><span class="p">)</span>
+<span class="n">plot_fig</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">simo</span><span class="o">.</span><span class="n">FIG_D_SIMO</span><span class="p">,</span> <span class="s1">'o'</span><span class="p">,</span> <span class="s1">'Simo et al., Fig. (d)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.042</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'Maximum axial deflection of the loaded edge'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'Axial load / linear buckling load'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Fig. 6.3.4(d): perfect cylinder'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">'upper right'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/tutorials_simo1990_cylinder_postbuckling_14_0.png" src="../_images/tutorials_simo1990_cylinder_postbuckling_14_0.png" />
+</div>
+</div>
+<p>The sign of the determinant changes on the axisymmetric path between the increments 32 and 33, where the analysis switches to the bifurcated branch, at a load of 0.824 and a maximum deflection of 0.0181, against 0.833 and 0.0183 read from Fig. 6.3.4(d); the bifurcation is below the linear buckling load because of the non-linear axisymmetric pre-buckling state at the simple support. On the bifurcated branch the load first falls at an almost constant maximum deflection, 0.0179 to 0.0184, as in the
+figure, down to a limit point at 0.587, rises to another one at 0.748 and then falls with a decreasing maximum deflection, 0.0145 at a load of 0.45 (0.0149 at 0.457 in the figure), to the minimum, 0.327 at 0.0209 (0.334 at 0.020), and ends on the curve of the 10 % imperfection, 0.438 at 0.04 (0.480 in the figure). The sign of the determinant changes at each of these three limit points of the branch, such that the analysis crosses no other bifurcation than the first, and it needed one switch only
+of the three allowed, in about 460 increments. Between the bifurcation and the descent the figure has a drop to about 0.74 followed by a dotted excursion to a deflection of about 0.0195, of a path that, according to [1], changes branches near clustered critical points; this part of the path differs from the loop computed here, and only the bifurcation load, the descent, the minimum and the end of the curves are compared.</p>
+</section>
+<section id="References">
+<h2>References<a class="headerlink" href="#References" title="Link to this heading">#</a></h2>
+<p>[1] Simo, J. C., Fox, D. D., and Rifai, M. S., On a stress resultant geometrically exact shell model. Part III: Computational aspects of the nonlinear theory, Computer Methods in Applied Mechanics and Engineering, 79(1), 21-70, 1990, doi:10.1016/0045-7825(90)90094-3.</p>
+<p>[2] Stanley, G. M., Continuum-based shell elements, PhD thesis, Stanford University, 1985.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="stiffened_cylinder_buckling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Axial buckling of stringer-stiffened cylinders</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="schweizerhof1984_cylinder_follower.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Cantilever cylinder under a follower pressure</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#The-section">The section</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Initial-imperfection,-exactly-for-the-Donnell-type-kinematics">Initial imperfection, exactly for the Donnell-type kinematics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Riks-analyses-with-the-imperfections">Riks analyses with the imperfections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#The-perfect-cylinder,-branch-switching">The perfect cylinder, branch switching</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#References">References</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/tutorials/simo1990_cylinder_postbuckling.ipynb.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

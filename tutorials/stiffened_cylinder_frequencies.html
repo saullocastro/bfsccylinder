@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Natural frequencies of stringer-stiffened cylinders &#8212; bfsccylinder 0.7.0 documentation</title>
+    <title>Natural frequencies of stringer-stiffened cylinders &#8212; bfsccylinder 0.7.1 documentation</title>
   
   
   
@@ -26,19 +26,19 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=18bd87630a240e9c25be" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../_static/scripts/fontawesome.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="../_static/documentation_options.js?v=5a057da9"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.0" />
+  <meta name="docsearch:version" content="0.7.1" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -101,7 +101,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -121,7 +121,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.0 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.1 documentation</p>
   
 </a></div>
     
@@ -279,14 +279,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
       
@@ -306,7 +306,7 @@
   
 
   
-    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -320,7 +320,7 @@
       
       
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
@@ -461,14 +461,14 @@
 
 <div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
   <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
-    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
   </button>
   <ul class="dropdown-menu dropdown-menu-end">
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
-    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
   </ul>
 </div></div>
         
@@ -492,6 +492,8 @@
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Natural frequencies of stringer-stiffened cylinders</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stiffened_cylinder_buckling.html">Axial buckling of stringer-stiffened cylinders</a></li>
+<li class="toctree-l1"><a class="reference internal" href="simo1990_cylinder_postbuckling.html">Post-buckling of an axially compressed cylinder with imperfections</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schweizerhof1984_cylinder_follower.html">Cantilever cylinder under a follower pressure</a></li>
 </ul>
 </div>
 </nav></div>
@@ -529,7 +531,7 @@
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
-        <i class="fa-solid fa-home"></i>
+        <i class="fa-solid fa-house"></i>
       </a>
     </li>
     
@@ -567,8 +569,9 @@
 rotation <span class="math notranslate nohighlight">\(\beta_y = -w_{,y} + v/R\)</span> of the Sanders-type kinematics, see <a class="reference internal" href="../kinematics.html"><span class="doc">Donnell-type and Sanders-type kinematics</span></a>:</p>
 <div class="math notranslate nohighlight">
 \[U = u, \qquad V = w, \qquad W = v, \qquad W_{,Y} = -w_{,y} + \frac{v}{R}\]</div>
-<p>together with their derivatives along <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(U_{,X} = u_{,x}\)</span>, <span class="math notranslate nohighlight">\(V_{,X} = w_{,x}\)</span>, <span class="math notranslate nohighlight">\(W_{,X} = v_{,x}\)</span> and <span class="math notranslate nohighlight">\(W_{,XY} = -w_{,xy} + v_{,x}/R\)</span>. These 8 of the 10 degrees of freedom of a node of the stringer, see <a class="reference internal" href="../element.html"><span class="doc">The element and its degrees of freedom</span></a>, are eliminated with the constraint basis <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{Z}\boldsymbol{u}_r\)</span>, and the matrices of the model are <span class="math notranslate nohighlight">\(\boldsymbol{Z}^\top \boldsymbol{K}_{C0} \boldsymbol{Z}\)</span> and
-<span class="math notranslate nohighlight">\(\boldsymbol{Z}^\top \boldsymbol{M} \boldsymbol{Z}\)</span>. The derivatives <span class="math notranslate nohighlight">\(U_{,Y}\)</span> and <span class="math notranslate nohighlight">\(V_{,Y}\)</span> of the stringer, its in-plane shear and radial strains at the root, stay free. A stringer is a plate of thickness <span class="math notranslate nohighlight">\(b_s\)</span>, the width of the stringer, and of height <span class="math notranslate nohighlight">\(H_s = d_s + h/2\)</span>, from the middle surface of the skin to the tip of the stringer, <span class="math notranslate nohighlight">\(d_s\)</span> being the height of the stringer above the skin; the fillets at the root of the stringers are not modelled.</p>
+<p>together with their derivatives along <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(U_{,X} = u_{,x}\)</span>, <span class="math notranslate nohighlight">\(V_{,X} =
+w_{,x}\)</span>, <span class="math notranslate nohighlight">\(W_{,X} = v_{,x}\)</span> and <span class="math notranslate nohighlight">\(W_{,XY} = -w_{,xy} + v_{,x}/R\)</span>. These 8 of the 10 degrees of freedom of a node of the stringer, see <a class="reference internal" href="../element.html"><span class="doc">The element and its degrees of freedom</span></a>, are eliminated with the constraint basis <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{Z}\boldsymbol{u}_r\)</span>, and the matrices of the model are <span class="math notranslate nohighlight">\(\boldsymbol{Z}^\top \boldsymbol{K}_{C0} \boldsymbol{Z}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{Z}^\top \boldsymbol{M} \boldsymbol{Z}\)</span>. The derivatives <span class="math notranslate nohighlight">\(U_{,Y}\)</span> and
+<span class="math notranslate nohighlight">\(V_{,Y}\)</span> of the stringer, its in-plane shear and radial strains at the root, stay free. A stringer is a plate of thickness <span class="math notranslate nohighlight">\(b_s\)</span>, the width of the stringer, and of height <span class="math notranslate nohighlight">\(H_s = d_s + h/2\)</span>, from the middle surface of the skin to the tip of the stringer, <span class="math notranslate nohighlight">\(d_s\)</span> being the height of the stringer above the skin; the fillets at the root of the stringers are not modelled.</p>
 <p>A rigid-body translation perpendicular to the axis and a rigid-body rotation about the axis of the stiffened cylinder satisfy these relations and give no forces, which the cells below verify on a coarse model of the whole cylinder:</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
@@ -724,7 +727,8 @@ internal: H_s = 0.2887 in, area of the plate b_s H_s = 0.02887 in^2, A_s of Tabl
 <h2>Model and boundary conditions<a class="headerlink" href="#Model-and-boundary-conditions" title="Link to this heading">#</a></h2>
 <p>The tests supported the ends with sharp-edged rings inside and outside the skin, which restrain the normal displacement and let the cylinder move axially, with clips between the stringers against the rotation of the cylinder; the rings did not restrain the normal displacement of the skin between the stringers on the stiffened side [1]. The model has <span class="math notranslate nohighlight">\(v = w = 0\)</span> at both ends, <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(w_{,x}\)</span> free, and <span class="math notranslate nohighlight">\(V = W = W_{,Y} = 0\)</span> along the end edges of the stringers, the
 derivatives of the constrained displacements along the edges being constrained as well, see <code class="docutils literal notranslate"><span class="pre">StiffenedCylinder.constrained()</span></code> in <code class="docutils literal notranslate"><span class="pre">stiffened_cylinder.py</span></code>. The mean of <span class="math notranslate nohighlight">\(u\)</span> along the edge <span class="math notranslate nohighlight">\(x = 0\)</span> is tied to zero, <code class="docutils literal notranslate"><span class="pre">free_axial=True</span></code>, which removes the rigid-body axial translation.</p>
-<p>The half <span class="math notranslate nohighlight">\(0 \le \theta \le \pi\)</span> of the cylinder is modelled, with planes of symmetry midway between two stringers, <span class="math notranslate nohighlight">\(v = v_{,x} = u_{,y} = w_{,y} = w_{,xy} = 0\)</span>. With 60 equally spaced stringers, the modes with <span class="math notranslate nohighlight">\(n\)</span> circumferential waves, <span class="math notranslate nohighlight">\(n &lt; 30\)</span>, come in pairs of the same frequency, in <span class="math notranslate nohighlight">\(\cos n\theta\)</span> and <span class="math notranslate nohighlight">\(\sin n\theta\)</span>; the half model gives one mode of each pair, the one symmetric about <span class="math notranslate nohighlight">\(\theta = 0\)</span>.</p>
+<p>The half <span class="math notranslate nohighlight">\(0 \le \theta \le \pi\)</span> of the cylinder is modelled, with planes of symmetry midway between two stringers, <span class="math notranslate nohighlight">\(v = v_{,x} = u_{,y} = w_{,y} =
+w_{,xy} = 0\)</span>. With 60 equally spaced stringers, the modes with <span class="math notranslate nohighlight">\(n\)</span> circumferential waves, <span class="math notranslate nohighlight">\(n &lt; 30\)</span>, come in pairs of the same frequency, in <span class="math notranslate nohighlight">\(\cos n\theta\)</span> and <span class="math notranslate nohighlight">\(\sin n\theta\)</span>; the half model gives one mode of each pair, the one symmetric about <span class="math notranslate nohighlight">\(\theta = 0\)</span>.</p>
 <p>The mesh has <code class="docutils literal notranslate"><span class="pre">nx</span></code> nodes along <span class="math notranslate nohighlight">\(x\)</span>, <code class="docutils literal notranslate"><span class="pre">nbay</span></code> skin elements between two stringers and <code class="docutils literal notranslate"><span class="pre">nh</span></code> stringer elements along the height. The numbers of half-waves <span class="math notranslate nohighlight">\(m\)</span> and of waves <span class="math notranslate nohighlight">\(n\)</span> of each mode are those of the largest coefficient of the expansion of <span class="math notranslate nohighlight">\(w\)</span> of the skin in <span class="math notranslate nohighlight">\(\sin(m \pi x/L) \cos(n \theta)\)</span>, see <code class="docutils literal notranslate"><span class="pre">wave_numbers()</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -1064,7 +1068,7 @@ where the skin is thicker (figure 1 of [1]), nor the support rings of the tests,
             
             
               
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
@@ -1109,8 +1113,8 @@ where the skin is thicker (figure 1 of [1]), nor the support rings of the tests,
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=18bd87630a240e9c25be"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=18bd87630a240e9c25be"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1143,7 +1147,7 @@ where the skin is thicker (figure 1 of [1]), nor the support rings of the tests,
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.23.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
 </p></div>
       
     </div>
