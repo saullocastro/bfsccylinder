@@ -2,27 +2,60 @@ r"""Post-buckling of an axially compressed cylinder with an imperfection
 
 The ``L/10 x 15 deg`` section of the cylinder of Simo, Fox and Rifai (1990),
 Section 6.3.4, pp. 54-57, Fig. 6.3.4 on p. 56, meshed with the Donnell-type
-element, with an initial geometric imperfection added exactly by the model
-of ``doc/source/tutorials/simo1990_cylinder.py``, see the tutorial
-``simo1990_cylinder_postbuckling.ipynb``. Coarse meshes, about 10 s.
+element, with an initial geometric imperfection, built by the module
+``simo1990_cylinder`` of this folder. Coarse meshes, about 10 s.
 
 The checks:
 
-- the identities of the imperfect shell: the internal forces vanish at the
-  imperfect state, the tangent stiffness matrix is their Jacobian, and the
-  internal forces are the gradient of a strain energy of the strains
-  ``eps(u + u0) - eps(u0)`` computed independently of the kernels of the
-  element, which fails with the geometric stiffness matrix of
-  :func:`.update_KG` alone, of the resultants of the linear strains;
-- the Riks method of structsolve passes the limit point of the cylinder
-  with an imperfection of 10 % of the thickness, at the limit load of Fig.
-  6.3.4(a). The figure is read to about +-0.01 in the load and +-0.0003 in
-  the axial deflection; the converged limit loads of this model, 0.727 and
-  0.391 for 10 % and 50 %, differ from the curves of Simo et al., 0.715 and
-  0.411, by up to 0.02, more than the reading precision, which is the
-  difference between the Donnell-type kinematics and the geometrically
-  exact shell of the paper with its 10 x 10 mesh. The tolerances are 0.025
-  in the load and 0.001 in the deflection.
+- :func:`test_imperfection_identities`, the callables of
+  ``simo1990_cylinder.ImperfectCylinder``: the internal forces vanish at the
+  imperfect state, the tangent stiffness matrix is their Jacobian (central
+  differences), and the internal forces are the gradient of the strain
+  energy of the strains ``eps(u + u0) - eps(u0)``, computed by
+  ``SectionModel.strain_energy`` independently of the kernels of the
+  element; the same gradient check fails when the geometric stiffness
+  matrix of the imperfection is that of :func:`.update_KG` alone, of the
+  resultants of the linear strains. Without imperfection the callables give
+  the internal forces of the perfect shell;
+- :func:`test_riks_limit_point_imperfection_10`: the Riks method of
+  structsolve passes the limit point of the cylinder with an imperfection
+  of 10 % of the thickness, at the limit load of Fig. 6.3.4(a), and
+  continues into the post-buckling regime, with the residual of every
+  converged increment below ``1e-8`` of the reference load. The figure is
+  read to about +-0.01 in the load and +-0.0003 in the axial deflection;
+  the converged limit loads of this model, 0.727 and 0.391 for 10 % and 50
+  %, differ from the curves of Simo et al., 0.715 and 0.411, by up to
+  0.02, more than the reading precision. The tolerances are 0.025 in the
+  load and 0.001 in the deflection.
+
+Notes
+-----
+The imperfect shell has the membrane strains `\boldsymbol{\varepsilon}
+(\boldsymbol{u} + \boldsymbol{u}_0) - \boldsymbol{\varepsilon}
+(\boldsymbol{u}_0)` and the curvatures `\boldsymbol{\kappa}
+(\boldsymbol{u})`, with `\boldsymbol{u}_0` the degrees of freedom of the
+imperfection `w_0`. Its internal forces are the gradient of its strain
+energy only when the geometric stiffness matrix of the imperfection is
+built from the resultants `\boldsymbol{N}_0` of the whole strains of
+`\boldsymbol{u}_0`, linear and non-linear, see the Notes of
+``simo1990_cylinder``; the last check of
+:func:`test_imperfection_identities` shows that the resultants of the
+linear strains alone are not enough.
+
+The difference of up to 0.02 between the limit loads of this model and the
+curves of [1]_ is that between the Donnell-type kinematics and the
+geometrically exact shell of [1]_ with its `10 \times 10` mesh; the limit
+loads of this model change by less than 0.001 from an `8 \times 8` to a
+`12 \times 12` mesh. The section is that of Stanley [2]_.
+
+References
+----------
+.. [1] Simo, J. C., Fox, D. D., and Rifai, M. S., On a stress resultant
+   geometrically exact shell model. Part III: Computational aspects of the
+   nonlinear theory, Computer Methods in Applied Mechanics and Engineering,
+   79(1), 21-70, 1990, doi:10.1016/0045-7825(90)90094-3.
+.. [2] Stanley, G. M., Continuum-based shell elements, PhD thesis, Stanford
+   University, 1985.
 
 """
 import os
@@ -91,6 +124,6 @@ def test_riks_limit_point_imperfection_10():
     assert abs(lbd_lim - lbd_fig) < 0.025
     assert abs(u_lim - u_fig) < 0.001
     # deep into the post-buckling regime: the load drops to less than half
-    # of the limit load, Fig. 6.3.4(a), and the shortening still grows
+    # of the limit load, and the shortening still grows
     assert lbds[-1] < 0.5*lbd_lim
     assert umax[-1] >= 0.022
