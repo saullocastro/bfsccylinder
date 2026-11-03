@@ -76,6 +76,12 @@ The dates of the released versions are those of their tagged commits.
 - `structsolve>=0.10.0` in `requirements.txt` (was 0.9.3), and in the
   installation page.
 
+### Documentation
+
+- The documentation is deployed to the `gh-pages` branch from the release
+  tags only, as in panels: the manual run of `auto_doc.yml`, which deployed
+  from any branch, is removed. Pull requests still build it.
+
 ## 0.7.0 (2026-10-26)
 
 ### Python versions
