@@ -529,7 +529,9 @@ class FollowerCylinder(object):
     - ``calc_fint(c, inc) = fint(u + u0) - fint(u0) - KG(N0) u - inc*(fp(u +
       u0) - fp(u0))``, such that the residual of structsolve is that of the
       follower pressure, ``fint_imp(u) - inc*fp(u + u0)``;
-    - ``calc_kC(c, NLgeom=True, inc) = KC0 + KCNL(u + u0) - KGNL0 + inc*KF``;
+    - ``calc_kC(c, NLgeom=True, inc) = KC0 + KCNL(u + u0) - KGNL0 + inc*KF``,
+      and ``calc_kC()`` the linear stiffness matrix of the imperfect shell,
+      ``KC0 + KCNL(u0) - KGNL0 + KG(u0)``, without ``KF``;
     - ``calc_kG(c) = KG(u)``,
 
     see :class:`ImperfectCylinder` of ``simo1990_cylinder.py`` for the terms
@@ -577,7 +579,11 @@ class FollowerCylinder(object):
 
     def calc_kC(self, c=None, NLgeom=False, inc=1., silent=True):
         if c is None or not NLgeom:
-            K = self.K0uu
+            # the linear stiffness matrix of the imperfect shell, without
+            # load stiffness: structsolve uses it for the linear reference
+            # solution, the convergence weights and the scaling of the
+            # count of negative eigenvalues
+            return self.K0uu
         else:
             m = self.model
             u = m.expand(c)
