@@ -18,6 +18,7 @@ bfsccylinder.
 
     tutorials/stiffened_cylinder_frequencies.ipynb
     tutorials/stiffened_cylinder_buckling.ipynb
+    tutorials/simo1990_cylinder_postbuckling.ipynb
 
 
 Model of the stiffened cylinders
@@ -28,3 +29,18 @@ degrees of freedom of the stringer nodes along the skin eliminated by the
 constraint basis `\boldsymbol{Z}` described in the module docstring:
 
 .. literalinclude:: tutorials/stiffened_cylinder.py
+
+
+Model of the post-buckling of a cylinder
+----------------------------------------
+
+The tutorial :doc:`tutorials/simo1990_cylinder_postbuckling` traces with
+the Riks method of structsolve 0.10.0 or newer the post-buckling path of
+the axially compressed cylinder of Simo, Fox and Rifai (1990), an
+``L/10 x 15 deg`` section meshed with the Donnell-type element, with an
+initial geometric imperfection added exactly. It requires structsolve,
+composites and Matplotlib besides bfsccylinder, and builds its model with
+the module ``simo1990_cylinder.py`` of the same folder, also used by
+``tests/test_simo1990_cylinder.py``:
+
+.. literalinclude:: tutorials/simo1990_cylinder.py
