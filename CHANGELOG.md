@@ -2,6 +2,45 @@
 
 The dates of the released versions are those of their tagged commits.
 
+## 0.8.0 (unreleased)
+
+### Tutorials
+
+- New tutorial `doc/source/tutorials/simo1990_cylinder_postbuckling.ipynb`,
+  with its module `simo1990_cylinder.py`: the post-buckling of the axially
+  compressed cylinder of Simo, Fox and Rifai (1990), Section 6.3.4 and Fig.
+  6.3.4, traced with the Riks method of structsolve to an axial deflection of
+  0.04. The `L/10 x 15 deg` section of the paper is meshed with the
+  Donnell-type element, with symmetry conditions on the degrees of freedom of
+  the interior edges and a simple support on the loaded one; its lowest
+  buckling load converges to 1.0043 times the classical one (1.0049 with
+  8 x 8 elements).
+- An initial geometric imperfection is added exactly for the Donnell-type
+  kinematics, from the vector `u0` of its degrees of freedom:
+  `F_int(u + u0) - F_int(u0) - K_G(N0) u` and `K_T(u + u0) - K_G(N0)`, with
+  `K_G(N0)` the geometric stiffness matrix of the membrane resultants of the
+  linear and non-linear strains of `u0`. `update_KG` builds it from the
+  resultants of the linear strains only, and the part of the non-linear
+  strains is added by `SectionModel.calc_kG_N`. Verified against the
+  gradient of a strain energy computed independently of the kernels
+  (relative difference 4e-8 with central differences of step 1e-5, against
+  1e-4 with the matrix of `update_KG` alone).
+- Results of the 12 x 12 mesh: limit loads 0.727 at a maximum deflection of
+  0.0163 (10 % imperfection) and 0.390 at 0.0107 (50 %), against 0.715 at
+  0.0168 and 0.411 at 0.0108 read from Fig. 6.3.4(a) (to +-0.01 and
+  +-0.0003); the perfect cylinder, 8 x 8 elements, with `inertia` and
+  `branch_switching`, bifurcates at 0.824 at 0.0181 (0.833 at 0.0183 in
+  Fig. 6.3.4(d)) and reaches a deflection of 0.04 on the bifurcated branch.
+
+### Tests
+
+- New `tests/test_simo1990_cylinder.py`, about 7 s: the identities of the
+  imperfect shell, and the Riks method past the limit point of the cylinder
+  with an imperfection of 10 % of the thickness, at the limit load of Fig.
+  6.3.4(a) within 0.025.
+- `structsolve>=0.10.0` in `requirements.txt` (was 0.9.3), and in the
+  installation page.
+
 ## 0.7.0 (2026-10-26)
 
 ### Python versions
