@@ -1,22 +1,19 @@
 r"""Cantilever cylinder under a follower pressure, Schweizerhof and Ramm (1984)
 
-Model of the tutorial ``schweizerhof1984_cylinder_follower.ipynb`` and of
-``tests/test_schweizerhof1984_cylinder.py``: Section 6.4 of Schweizerhof and
-Ramm (1984), "Cylindrical cantilever shell under uniform pressure", Fig. 12
-on p. 1110, Table 4 on p. 1111 and Fig. 13 on p. 1112. A cylinder of radius
+Model of ``tests/test_schweizerhof1984_cylinder.py``: Section 6.4 of
+Schweizerhof and Ramm (1984), "Cylindrical cantilever shell under uniform
+pressure", Fig. 12 on p. 1110, Table 4 on p. 1111 and Fig. 13 on p. 1112. A
+cylinder of radius
 ``R``, length ``L`` and thickness ``t``, of an isotropic material with ``E =
 2.1e6`` and ``mu = 0.3``, upper edge free, lower edge hinged, under a
 uniform external pressure, either of constant direction (dead, index ``c``
 of the paper) or normal to the deformed surface (follower, index ``f``).
 The three shells of the paper are given by :data:`SHELLS`, with the number
-``n`` of circumferential waves of their buckling mode. The pressure is
-normalized by eq. (60) of the paper,
-
-``p = k E/(12 (1 - mu**2)) (t/R)**3``
-
-and the reference pressure of the models is that of ``k = 1``, such that the
-load multipliers are the factors ``k`` of Table 4 and the load ``K`` of
-Fig. 13. Here ``R = 100``, the factors do not depend on it.
+``n`` of circumferential waves of their buckling mode. The reference
+pressure of the models is that of ``k = 1`` in the normalization of eq.
+(60) of the paper, :func:`p_ref`, such that the load multipliers are the
+factors ``k`` of Table 4 and the load ``K`` of Fig. 13. Here ``R = 100``,
+the factors do not depend on it.
 
 As in the paper, a sector of the angle ``180 deg/n`` (60, 45 and 30 deg for
 the shells 1, 2 and 3) is modelled, with ``x`` from ``0``, the lower edge, to
@@ -36,28 +33,79 @@ cylinder instead, with every ``n``. The degrees of freedom of a node are
 - ``x = L``: free.
 
 The element is the Sanders-type :class:`.BFSCCylinderSanders` by default,
-``kinematics='donnell'`` gives the Donnell-type :class:`.BFSCCylinder`. With
-``n = 3`` circumferential waves over a length of six radii the Donnell-type
-kinematics are not accurate, see the tutorial. The follower pressure is that
-of :func:`.update_fext_follower` with the first-order area vector
-(``quadratic=0``), with its full, unsymmetric, load stiffness matrix of
-:func:`.update_KCfollower`: on the free edge the axial displacement is not
-restrained, which makes the pressure nonconservative.
+``kinematics='donnell'`` gives the Donnell-type :class:`.BFSCCylinder`. The
+follower pressure is that of :func:`.update_fext_follower` with the
+first-order area vector (``quadratic=0``), with its full, unsymmetric, load
+stiffness matrix of :func:`.update_KCfollower`.
 
 The initial geometric imperfection ``u0``, of the dofs of `w` only, is added
-exactly as in ``simo1990_cylinder.py``: the membrane strains of the
-imperfect shell are ``eps(u + u0) - eps(u0)`` and its curvatures
-``kappa(u)``, which gives
+by :class:`FollowerCylinder` as in ``simo1990_cylinder.py`` of this folder,
+for both kinematics; the pressure acts on the imperfect surface.
+:func:`run_riks` traces the path with the Riks method of structsolve,
+recording the count of negative eigenvalues of the unsymmetric tangent
+stiffness matrix. The constants ``TABLE4``, ``TABLE4_CLAMPED`` and
+``FIG13_*`` are values of Table 4 and Fig. 13 of the paper.
 
-``fint_imp(u) = fint(u + u0) - fint(u0) - KG(N0) u``
+Notes
+-----
+The pressure is normalized by eq. (60) of [1]_,
 
-with ``KG(N0)`` the geometric stiffness matrix of the membrane resultants
-``N0`` of the strains of ``u0``. The derivation holds for both kinematics,
-whose non-linear membrane strains are quadratic forms of the rotations
-``G u``, with ``G`` of the rows ``Sw_x`` and ``Sw_y`` (Donnell) or ``Sw_x``
-and ``Sw_y - Sv/R`` (Sanders), see :meth:`CantileverModel.calc_kG_N`. The
-pressure acts on the imperfect surface: the follower force vector is that of
-the displacements ``u + u0``.
+.. math::
+    p = k \frac{E}{12 (1 - \mu^2)} \left(\frac{t}{R}\right)^3
+
+On the free edge the axial displacement is not restrained, which makes the
+pressure nonconservative and its load stiffness matrix unsymmetric. With
+``n = 3`` circumferential waves over a length of six radii the Donnell-type
+kinematics are not accurate: they underestimate the B1 factors of shell 1
+by 3.4 % (``k_c``) and 2.2 % (``k_f``), the terms in `1/R` of the
+Sanders-type curvatures and rotations being significant.
+
+The imperfect shell has the membrane strains `\boldsymbol{\varepsilon}
+(\boldsymbol{u} + \boldsymbol{u}_0) - \boldsymbol{\varepsilon}
+(\boldsymbol{u}_0)` and the curvatures `\boldsymbol{\kappa}
+(\boldsymbol{u})`, which gives
+
+.. math::
+    \boldsymbol{F}_{int,imp}(\boldsymbol{u}) =
+    \boldsymbol{F}_{int}(\boldsymbol{u} + \boldsymbol{u}_0) -
+    \boldsymbol{F}_{int}(\boldsymbol{u}_0) -
+    \boldsymbol{K}_G(\boldsymbol{N}_0) \boldsymbol{u}
+
+with `\boldsymbol{K}_G(\boldsymbol{N}_0)` the geometric stiffness matrix of
+the membrane resultants `\boldsymbol{N}_0` of the strains of
+`\boldsymbol{u}_0`. The derivation holds for both kinematics, whose
+non-linear membrane strains are quadratic forms of the rotations
+`\boldsymbol{G} \boldsymbol{u}`, with the rows `\boldsymbol{S}^w_{,x}` and
+`\boldsymbol{S}^w_{,y}` (Donnell) or `\boldsymbol{S}^w_{,x}` and
+`\boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R` (Sanders) of `\boldsymbol{G}`,
+see :meth:`CantileverModel.calc_kG_N`. The follower force vector is that of
+the displacements `\boldsymbol{u} + \boldsymbol{u}_0`, and the residual is
+
+.. math::
+    \boldsymbol{R} = \boldsymbol{F}_{int,imp}(\boldsymbol{u}) - k
+    \boldsymbol{F}_p(\boldsymbol{u} + \boldsymbol{u}_0)
+
+Table 4 was read on the page image of [1]_, p. 1111; the `k_f` of B2 are
+those of the load stiffness matrix symmetrized by eqs. (63), (64) and (65),
+and the paper gives a single `k_f` for B1 (none for shell 3). Fig. 13, p.
+1112, imperfect shell 1 under the follower pressure, imperfection of 1 % of
+`t` in the shape of the linear buckling mode, was read on the page rendered
+at 300 dpi, from the centre line of the thick curve, with the axes
+calibrated on their ticks: 87.0 px per unit of `K` and 268 px per unit of
+`w/t`. The curve is about 6 px thick, the reading precision is about `\pm
+0.05` in `K` and `\pm 0.01` in `w/t` (`\pm 0.003` below `w/t = 0.2`, where
+the curve is steep). The dashed curve of the current stiffness parameter of
+Bergan [2]_ is read on the dashes to about `\pm 0.02` in the parameter
+and `\pm 0.05` in `K`.
+
+References
+----------
+.. [1] Schweizerhof, K., and Ramm, E., Displacement dependent pressure
+   loads in nonlinear finite element analyses, Computers & Structures,
+   18(6), 1099-1114, 1984, doi:10.1016/0045-7949(84)90154-8.
+.. [2] Bergan, P. G., Automated incremental-iterative solution schemes, in
+   Numerical Methods for Nonlinear Problems, edited by C. Taylor, E. Hinton
+   and D. R. J. Owen, Pineridge Press, Swansea, 1980 (ref. [7] of [1]_).
 
 """
 import time
@@ -85,9 +133,7 @@ KINEMATICS = {
     'sanders': (bfsccylinder.sanders, 'BFSCCylinderSanders'),
 }
 
-# Table 4 of Schweizerhof and Ramm (1984), p. 1111, read on the page image.
-# The k_f of B2 are those of the load stiffness matrix symmetrized by eqs.
-# (63), (64) and (65); the paper gives a single k_f for B1 (none for shell 3).
+# Table 4, k_f of B2 with the symmetrized load stiffness matrices
 #: ``TABLE4[(shell, bc)] = (k_c, k_f)``, ``k_f`` a tuple of (63), (64), (65)
 TABLE4 = {
     (1, 'B2'): (9.11, (8.10, 8.09, 8.12)),
@@ -100,13 +146,7 @@ TABLE4 = {
 #: Table 4, clamped-free shells, k_f of refs [36] and [15] of the paper
 TABLE4_CLAMPED = {1: (9.85, 10.51), 2: (19.97, 21.01), 3: (None, 46.98)}
 
-# Fig. 13 of Schweizerhof and Ramm (1984), p. 1112, imperfect shell 1,
-# follower pressure, imperfection of 1 % of t in the shape of the linear
-# buckling mode. Read on the page rendered at 300 dpi, from the centre line
-# of the thick curve, with the axes calibrated on their ticks: 87.0 px per
-# unit of K and 268 px per unit of w/t. The curve is about 6 px thick, the
-# reading precision is about +-0.05 in K and +-0.01 in w/t (+-0.003 below
-# w/t = 0.2, where the curve is steep). Pairs (w/t, K).
+# Fig. 13, imperfect shell 1, follower pressure, pairs (w/t, K)
 #: Fig. 13, imperfect shell, maximum displacement against K
 FIG13_IMPERFECT = [
     (0.058, 6.72), (0.095, 7.19), (0.133, 7.41), (0.170, 7.54),
@@ -116,7 +156,7 @@ FIG13_IMPERFECT = [
 #: Fig. 13, horizontal line of the perfect shell, K
 FIG13_PERFECT = 8.06
 #: Fig. 13, dashed curve, current stiffness parameter of Bergan, pairs
-#: (CS, K), read on the dashes to about +-0.02 in CS and +-0.05 in K
+#: (CS, K)
 FIG13_CS = [
     (0.97, 0.98), (0.948, 1.44), (0.93, 1.90), (0.88, 2.36), (0.81, 2.82),
     (0.747, 3.28), (0.667, 3.74), (0.57, 4.20), (0.475, 4.66),
@@ -131,7 +171,8 @@ def shell_geometry(shell):
 
 
 def p_ref(t):
-    """Pressure of ``k = 1`` in eq. (60), positive"""
+    """Pressure of ``k = 1`` in eq. (60) of the paper, positive, for the
+    thickness ``t``"""
     return E/(12*(1 - MU**2))*(t/R)**3
 
 
@@ -361,9 +402,21 @@ class CantileverModel(object):
 
     def calc_kG_N(self, N):
         r"""Geometric stiffness matrix of the membrane resultants ``N`` given
-        at the integration points, shape ``(num_elements, num_points, 3)``:
-        `\int_A \boldsymbol{G}^\top [N_{xx}\ N_{xy};\ N_{xy}\ N_{yy}]
-        \boldsymbol{G} dA`, all dofs, with ``G`` of the kinematics"""
+        at the integration points, shape ``(num_elements, num_points, 3)``,
+        all dofs, with ``G`` of the kinematics
+
+        Notes
+        -----
+        The matrix is
+
+        .. math::
+            \int_A \boldsymbol{G}^\top \begin{bmatrix} N_{xx} & N_{xy} \\
+            N_{xy} & N_{yy} \end{bmatrix} \boldsymbol{G} \, dA
+
+        with the rows of `\boldsymbol{G}` of the module Notes, evaluated
+        with the weights and points of the elements.
+
+        """
         Nw = N*self.wp[None, :, None]
         Gx, Gy = self.Gx, self.Gy
         ke = (np.einsum('ep,pi,pj->eij', Nw[..., 0], Gx, Gx)
@@ -377,14 +430,31 @@ class CantileverModel(object):
 
     def calc_KT(self, u):
         r"""Tangent stiffness matrix at ``u``, all dofs, ``KC0 + KCNL(u) +
-        KG(u)``, vectorized over the elements with NumPy: the Hessian of
-        :meth:`strain_energy` with ``u0 = 0``, the integral of ``B.T A B +
-        B.T B Bb + Bb.T B B + Bb.T D Bb + G.T N G``, ``B = Bm + BNL(u)``, with
-        the quadrature of the elements. It gives the matrix of the kernels
-        :func:`.update_KC0`, :func:`.update_KCNL` and :func:`.update_KG` to
-        the round-off, see ``tests/test_schweizerhof1984_cylinder.py``, in
-        a fraction of the time of ``update_KCNL`` of the Sanders-type
-        element"""
+        KG(u)``, vectorized over the elements with NumPy
+
+        It gives the matrix of the kernels :func:`.update_KC0`,
+        :func:`.update_KCNL` and :func:`.update_KG` to the round-off, as
+        checked by ``tests/test_schweizerhof1984_cylinder.py``, in a fraction
+        of the time of ``update_KCNL`` of the Sanders-type element.
+
+        Notes
+        -----
+        The matrix is the Hessian of :meth:`strain_energy` with
+        `\boldsymbol{u}_0 = \boldsymbol{0}`,
+
+        .. math::
+            \int_A \left( \boldsymbol{B}^\top \boldsymbol{A} \boldsymbol{B}
+            + \boldsymbol{B}^\top \boldsymbol{B}_c \boldsymbol{B}_b
+            + \boldsymbol{B}_b^\top \boldsymbol{B}_c \boldsymbol{B}
+            + \boldsymbol{B}_b^\top \boldsymbol{D} \boldsymbol{B}_b
+            + \boldsymbol{G}^\top \boldsymbol{N} \boldsymbol{G} \right) dA,
+            \qquad \boldsymbol{B} = \boldsymbol{B}_m +
+            \boldsymbol{B}_{NL}(\boldsymbol{u})
+
+        with `\boldsymbol{B}_c` the coupling matrix ``B`` of the laminate,
+        integrated with the quadrature of the elements.
+
+        """
         ue = u[self.edofs]
         gx = np.einsum('pj,ej->ep', self.Gx, ue)
         gy = np.einsum('pj,ej->ep', self.Gy, ue)
@@ -436,11 +506,25 @@ def symmetrized_KF(model, variant):
     r"""Load stiffness matrix symmetrized by eq. (63), (64) or (65) of the
     paper, ``variant`` ``63``, ``64`` or ``65``, all dofs
 
-    With the skew part ``S = (KF - KF.T)/2``, which couples the in-plane
-    dofs (``u, ..., v_y``, block ``a``) with those of `w` (block ``b``),
-    ``S = [[0, Kh], [-Kh.T, 0]]``, eq. (62a), the substitute ``[[0, Kh],
-    [Kh.T, 0]]``, eq. (62b), is added (64) or subtracted (65) to the
-    symmetric part ``(KF + KF.T)/2`` (63).
+    ``63`` returns the symmetric part of ``model.KF``, ``64`` and ``65`` add
+    and subtract the substitute of its skew part.
+
+    Notes
+    -----
+    The skew part `\boldsymbol{S} = (\boldsymbol{K}_F -
+    \boldsymbol{K}_F^\top)/2` couples the in-plane dofs (`u, ..., v_{,y}`,
+    block `a`) with those of `w` (block `b`), `\boldsymbol{S} =
+    [\boldsymbol{0}\ \hat{\boldsymbol{K}};\ -\hat{\boldsymbol{K}}^\top\
+    \boldsymbol{0}]`, eq. (62a) of [1]_; the substitute
+    `[\boldsymbol{0}\ \hat{\boldsymbol{K}};\ \hat{\boldsymbol{K}}^\top\
+    \boldsymbol{0}]`, eq. (62b), is added (64) or subtracted (65) to the
+    symmetric part `(\boldsymbol{K}_F + \boldsymbol{K}_F^\top)/2` (63).
+
+    References
+    ----------
+    .. [1] Schweizerhof, K., and Ramm, E., Displacement dependent pressure
+       loads in nonlinear finite element analyses, Computers & Structures,
+       18(6), 1099-1114, 1984, doi:10.1016/0045-7949(84)90154-8.
 
     """
     KF = csc_matrix(model.KF)
@@ -459,13 +543,25 @@ def symmetrized_KF(model, variant):
 
 def linear_buckling(model, load='follower', num_eigvalues=4, KF=None):
     r"""Buckling factors ``k`` and modes, all dofs, of the linear buckling
-    problem ``(KC0 + k (KG(u_lin) + KF)) phi = 0``
+    problem of the dead or of the follower pressure
 
-    ``u_lin`` is the linear static solution of the dead load of ``k = 1``;
-    ``load='dead'`` leaves out ``KF``, ``'follower'`` adds the unsymmetric
-    load stiffness matrix of the model or the matrix ``KF`` given, e.g. of
-    :func:`symmetrized_KF`. Returns the real parts of the load multipliers
-    and of the modes, and ``u_lin``.
+    ``load='dead'`` leaves out the load stiffness matrix, ``'follower'``
+    adds the unsymmetric load stiffness matrix of the model or the matrix
+    ``KF`` given, e.g. of :func:`symmetrized_KF`. Returns the real parts of
+    the load multipliers and of the modes, and the linear static solution
+    ``u_lin`` of the dead load of ``k = 1``.
+
+    Notes
+    -----
+    The eigenvalue problem, solved by :func:`structsolve.lb`, is
+
+    .. math::
+        \left(\boldsymbol{K}_{C0} + k \left(\boldsymbol{K}_G
+        (\boldsymbol{u}_{lin}) + \boldsymbol{K}_F\right)\right)
+        \boldsymbol{\phi} = \boldsymbol{0}
+
+    on the unknown dofs, unsymmetric with the load stiffness matrix of the
+    model.
 
     """
     KC0uu = model.restrict(model.KC0)
@@ -524,8 +620,8 @@ class FollowerCylinder(object):
     - ``calc_fext(inc) = inc*fp(u0)``, the force vector of the pressure on the
       imperfect shell, and ``calc_fext(inc, c) = inc*fp(u + u0)``, the
       load vector of the current configuration, ``-dR/dk``, which
-      structsolve uses in the predictors and in the constraint of the
-      arc-length methods when ``calc_fext`` declares ``c``;
+      structsolve uses in the arc-length methods when ``calc_fext``
+      declares ``c``;
     - ``calc_fint(c, inc) = fint(u + u0) - fint(u0) - KG(N0) u - inc*(fp(u +
       u0) - fp(u0))``, such that the residual of structsolve is that of the
       follower pressure, ``fint_imp(u) - inc*fp(u + u0)``;
@@ -534,12 +630,38 @@ class FollowerCylinder(object):
       ``KC0 + KCNL(u0) - KGNL0 + KG(u0)``, without ``KF``;
     - ``calc_kG(c) = KG(u)``,
 
-    see :class:`ImperfectCylinder` of ``simo1990_cylinder.py`` for the terms
-    of the imperfection. ``load='dead'`` leaves out the terms of ``fp(u)``
-    and ``KF``. With ``vectorized=True``, the default, ``KC0 + KCNL(u +
-    u0)`` is computed as ``KT(u + u0) - KG(u + u0)`` with
+    with the terms of the imperfection of ``ImperfectCylinder`` of
+    ``simo1990_cylinder.py``. ``load='dead'`` leaves out the terms of
+    ``fp(u)`` and ``KF``. With ``vectorized=True``, the default, ``KC0 +
+    KCNL(u + u0)`` is computed as ``KT(u + u0) - KG(u + u0)`` with
     :meth:`CantileverModel.calc_KT`, the same matrix in a fraction of the
     time of ``update_KCNL``; ``False`` calls the kernel.
+
+    Parameters
+    ----------
+    model : :class:`CantileverModel`
+    u0 : array or None
+        Degrees of freedom of the imperfection, all dofs; ``None`` for the
+        perfect shell.
+    load : str
+        ``'follower'`` or ``'dead'``.
+    vectorized : bool
+        Computes the constitutive matrices with
+        :meth:`CantileverModel.calc_KT`.
+
+    Notes
+    -----
+    The residual of structsolve, ``calc_fint(c, inc) - calc_fext(inc)``, is
+    that of the follower pressure on the imperfect shell, `\boldsymbol{R} =
+    \boldsymbol{F}_{int,imp}(\boldsymbol{u}) - k \boldsymbol{F}_p
+    (\boldsymbol{u} + \boldsymbol{u}_0)`, and ``calc_kC + calc_kG`` is its
+    Jacobian. With the first-order area vector, `\boldsymbol{F}_p` is affine
+    in the displacements and `\boldsymbol{K}_F` constant. The load vector
+    of the current configuration, `\boldsymbol{F}_p(\boldsymbol{u} +
+    \boldsymbol{u}_0) = -\partial \boldsymbol{R}/\partial k`, returned by
+    ``calc_fext`` when it receives ``c``, gives the bordered system of the
+    arc-length methods the derivative with respect to the load factor; with
+    the constant reference vector instead the iterations converge linearly.
 
     """
     def __init__(self, model, u0=None, load='follower', vectorized=True):
@@ -560,6 +682,9 @@ class FollowerCylinder(object):
                                + self.KG0)
 
     def calc_fext(self, inc=1., c=None, silent=True):
+        """Force vector of the pressure of the load factor ``inc``, unknown
+        dofs, on the imperfect shell or, with ``c``, at the current
+        configuration"""
         if c is None or not self.follower:
             return inc*self.fextuu
         # the load vector of the current configuration, -dR/dk, for the
@@ -568,6 +693,8 @@ class FollowerCylinder(object):
         return inc*m.calc_fp(m.expand(c) + self.u0)[m.bu]
 
     def calc_fint(self, c, inc=1., silent=True):
+        """Internal forces of the imperfect shell minus the part of the
+        follower force that depends on ``c``, unknown dofs"""
         m = self.model
         u = m.expand(c)
         f = (m.calc_fint(u + self.u0) - self.fint0 - self.KG0 @ u
@@ -578,6 +705,8 @@ class FollowerCylinder(object):
         return f[m.bu]
 
     def calc_kC(self, c=None, NLgeom=False, inc=1., silent=True):
+        """Constitutive part of the tangent stiffness matrix with the load
+        stiffness matrix of the load factor ``inc``, unknown dofs"""
         if c is None or not NLgeom:
             # the linear stiffness matrix of the imperfect shell, without
             # load stiffness: structsolve uses it for the linear reference
@@ -599,6 +728,7 @@ class FollowerCylinder(object):
         return K
 
     def calc_kG(self, c=None, NLgeom=False, silent=True):
+        """``KG(u)`` of :func:`.update_KG`, unknown dofs"""
         m = self.model
         return m.restrict(m.calc_KG(m.expand(c)))
 
@@ -615,11 +745,28 @@ def run_riks(shell=1, bc='B1', nx=16, ny=4, xi=0.01, load='follower',
     ``ks``, the largest ``|w|/t`` ``wt``, from the unloaded state, the
     current stiffness parameter ``cs_param`` of each increment, ``dk/|du|``
     over its value of the first increment, with the Euclidean norm of the
-    increment of the unknown dofs (after Bergan, ref. [7] of the paper),
+    increment of the unknown dofs (after Bergan, 1980),
     the counts of negative eigenvalues ``neg`` and the determinant signs
     ``det``, of the converged increments, the linear buckling factor
     ``k_lin``, the run time ``elapsed``, the analysis ``an``, the model and
     the imperfection ``u0``.
+
+    Notes
+    -----
+    With ``inertia=True``, ``linear_solver='splu'`` and
+    ``inertia_num_eigvals``, structsolve factorizes the tangent stiffness
+    matrix of every converged increment with SuperLU and records the sign
+    of its determinant and, since the matrix is unsymmetric, the number of
+    negative real eigenvalues among the ``inertia_num_eigvals`` of smallest
+    magnitude, by shift-invert with ARPACK on the LU factorization. The
+    count increases by one at a limit point of the load beyond which the
+    path is unstable. The Riks method follows Riks [1]_.
+
+    References
+    ----------
+    .. [1] Riks, E., An incremental approach to the solution of snapping and
+       buckling problems, International Journal of Solids and Structures,
+       15(7), 529-551, 1979, doi:10.1016/0020-7683(79)90081-7.
 
     """
     model = CantileverModel(shell, bc, nx, ny, kinematics)

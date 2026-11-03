@@ -1,15 +1,14 @@
 r"""Axially compressed cylinder of Simo, Fox and Rifai (1990), with imperfections
 
-Model of the tutorial ``simo1990_cylinder_postbuckling.ipynb`` and of
-``tests/test_simo1990_cylinder.py``: Section 6.3.4 of Simo, Fox and Rifai
-(1990), "Post-buckling analysis of a simply-supported cylinder; effect of
-initial imperfections", pp. 54-57, Fig. 6.3.4 on p. 56. A cylinder of radius
-``R = 36``, length ``L = 100`` and thickness ``t = 0.125``, of an isotropic
-material with ``E = 1e7`` and ``nu = 0.3``, under axial compression. As in
-the paper, after Stanley (1985), an ``L/10 x 15 deg`` section is modelled,
-with symmetry conditions on its interior edges and a simple support on the
-loaded edge, such that the diamond mode of 5 axial half-waves and 12
-circumferential waves is the lowest buckling mode.
+Model of ``tests/test_simo1990_cylinder.py``: Section 6.3.4 of Simo, Fox and
+Rifai (1990), "Post-buckling analysis of a simply-supported cylinder; effect
+of initial imperfections", pp. 54-57, Fig. 6.3.4 on p. 56. A cylinder of
+radius ``R = 36``, length ``L = 100`` and thickness ``t = 0.125``, of an
+isotropic material with ``E = 1e7`` and ``nu = 0.3``, under axial
+compression. As in the paper, after Stanley (1985), an ``L/10 x 15 deg``
+section is modelled, with symmetry conditions on its interior edges and a
+simple support on the loaded edge, such that the diamond mode of 5 axial
+half-waves and 12 circumferential waves is the lowest buckling mode.
 
 The section is meshed with the Donnell-type element :class:`.BFSCCylinder`,
 with ``x`` from ``0``, the loaded edge, to ``a = L/10``, and ``y`` from ``0``
@@ -22,25 +21,64 @@ to ``b = 15 deg x R``:
 - ``y = 0`` and ``y = b``, symmetry planes of the circumferential waves:
   ``u_y = v = v_x = w_y = w_xy = 0``.
 
-The elements take no initial geometric imperfection. For the Donnell-type
-kinematics it is added exactly by :class:`ImperfectCylinder`, from the
-vector ``u0`` of the degrees of freedom of the imperfection ``w0``. The
-membrane strains of the imperfect shell are ``eps(u + u0) - eps(u0)`` and
-its curvatures ``kappa(u)``, see the tutorial, which gives
+The elements take no initial geometric imperfection. :class:`ImperfectCylinder`
+adds one, from the vector ``u0`` of the degrees of freedom of the
+imperfection ``w0``, and gives the callables of
+:class:`structsolve.Analysis`; :func:`run_riks` traces the path with the
+Riks method of structsolve. The module is restricted to the Donnell-type
+element. The constants ``FIG_*`` are values read from Fig. 6.3.4 of the
+paper, as pairs (maximum axial deflection, load normalized by the linear
+buckling load).
 
-``fint_imp(u) = fint(u + u0) - fint(u0) - KG(N0) u``
+Notes
+-----
+The imperfect shell has the membrane strains `\boldsymbol{\varepsilon}
+(\boldsymbol{u} + \boldsymbol{u}_0) - \boldsymbol{\varepsilon}
+(\boldsymbol{u}_0)` and the curvatures `\boldsymbol{\kappa}
+(\boldsymbol{u})`: with the Donnell-type kinematics the non-linear membrane
+strains are quadratic in `w_{,x}` and `w_{,y}`, and those of a shallow
+imperfect shell, `(w_{,x}^2 + 2 w_{0,x} w_{,x})/2`, ..., are those of
+`\boldsymbol{u} + \boldsymbol{u}_0` minus those of `\boldsymbol{u}_0`. The
+imperfect shell is stress free at `\boldsymbol{u} = \boldsymbol{0}`, and the
+gradient and the Hessian of its strain energy are
 
-``KT_imp(u) = KT(u + u0) - KG(N0)``
+.. math::
+    \boldsymbol{F}_{int,imp}(\boldsymbol{u}) =
+    \boldsymbol{F}_{int}(\boldsymbol{u} + \boldsymbol{u}_0) -
+    \boldsymbol{F}_{int}(\boldsymbol{u}_0) -
+    \boldsymbol{K}_G(\boldsymbol{N}_0) \boldsymbol{u}, \qquad
+    \boldsymbol{K}_{T,imp}(\boldsymbol{u}) =
+    \boldsymbol{K}_T(\boldsymbol{u} + \boldsymbol{u}_0) -
+    \boldsymbol{K}_G(\boldsymbol{N}_0)
 
-with ``KG(N0)`` the geometric stiffness matrix of the membrane resultants
-``N0`` of the whole non-linear strains of ``u0``. :func:`.update_KG` builds
-its matrix from the resultants of the linear strains only, ``KG(u0)``, so
-the non-linear part ``KGNL0`` is added by :meth:`SectionModel.calc_kG_N`,
-with the rows of ``w_x`` and ``w_y`` of the Donnell-type kinematics. The model
-is therefore restricted to the Donnell-type element: with the Sanders-type
-element of :mod:`bfsccylinder.bfsccylinder_sanders` the rotation is ``-w_y +
-v/R``, ``KG(N0)`` has rows in ``v``, and the construction, not verified here,
-would need that matrix.
+with `\boldsymbol{K}_G(\boldsymbol{N}_0)` the geometric stiffness matrix of
+the membrane resultants `\boldsymbol{N}_0` of the whole strains of
+`\boldsymbol{u}_0`, linear and non-linear, integrated with the same points
+as the elements. :func:`.update_KG` builds its matrix from the resultants of
+the linear strains only, `\boldsymbol{K}_G(\boldsymbol{u}_0)`; the part of
+the non-linear strains, `\boldsymbol{K}_{GNL,0}`, is added by
+:meth:`SectionModel.calc_kG_N`, with the rows of `w_{,x}` and `w_{,y}` of
+the Donnell-type kinematics, such that `\boldsymbol{K}_G(\boldsymbol{N}_0)
+= \boldsymbol{K}_G(\boldsymbol{u}_0) + \boldsymbol{K}_{GNL,0}`. With the
+Sanders-type element the rotation is `-w_{,y} + v/R`,
+`\boldsymbol{K}_G(\boldsymbol{N}_0)` has rows in `v`, and the
+construction, not verified here, would need that matrix.
+
+The values ``FIG_*`` were read from Fig. 6.3.4 of [1]_, on the page
+rendered at 300 dpi with a grid of `0.001 \times 0.05` drawn over the axes,
+to about `\pm 0.0003` in the axial deflection and `\pm 0.01` in the load;
+they are the readings of the benchmark ``simo1990_cylinder.py`` of
+structsolve, checked against the figure. The triangles and diamonds of Fig.
+6.3.4(a) are the results of the 9-node ANS element of [2]_.
+
+References
+----------
+.. [1] Simo, J. C., Fox, D. D., and Rifai, M. S., On a stress resultant
+   geometrically exact shell model. Part III: Computational aspects of the
+   nonlinear theory, Computer Methods in Applied Mechanics and Engineering,
+   79(1), 21-70, 1990, doi:10.1016/0045-7825(90)90094-3.
+.. [2] Stanley, G. M., Continuum-based shell elements, PhD thesis, Stanford
+   University, 1985.
 
 """
 import time
@@ -71,12 +109,8 @@ B_SEC = R*np.pi/12.
 #: classical buckling load per unit length of the circumference
 N_CL = E*t**2/(R*np.sqrt(3*(1 - nu**2)))
 
-# Values read from Fig. 6.3.4 of Simo, Fox and Rifai (1990), p. 56, on the
-# page rendered at 300 dpi with a grid of 0.001 x 0.05 drawn over the axes
-# (readings of the benchmark simo1990_cylinder.py of structsolve, checked
-# against the figure). Reading precision about +-0.0003 in the axial
-# deflection and +-0.01 in the load normalized by the linear buckling load.
-# Pairs (maximum axial deflection, load).
+# Values read from Fig. 6.3.4, pairs (maximum axial deflection, load
+# normalized by the linear buckling load)
 #: Fig. (a), solid line, Simo et al., 10 % imperfection
 FIG_A_SIMO_10 = [
     (0.0125, 0.575), (0.0150, 0.675), (0.0168, 0.715), (0.0158, 0.642),
@@ -88,14 +122,14 @@ FIG_A_SIMO_50 = [
     (0.0108, 0.411), (0.0116, 0.366), (0.0126, 0.335), (0.0141, 0.319),
     (0.0150, 0.315), (0.0200, 0.315), (0.0250, 0.344), (0.0300, 0.370),
     (0.0350, 0.401), (0.0400, 0.449)]
-#: Fig. (a), triangles, 9-ANS element of Stanley (1985), 10 % imperfection
+#: Fig. (a), triangles, 9-ANS element, 10 % imperfection
 FIG_A_ANS_10 = [
     (0.0071, 0.331), (0.0095, 0.445), (0.0125, 0.570), (0.0148, 0.666),
     (0.0159, 0.717), (0.0166, 0.713), (0.0163, 0.693), (0.0157, 0.653),
     (0.0152, 0.619), (0.0148, 0.580), (0.0144, 0.532), (0.0141, 0.487),
     (0.0140, 0.430), (0.0143, 0.382), (0.0157, 0.346), (0.0184, 0.319),
     (0.0218, 0.324), (0.0296, 0.349), (0.0353, 0.395)]
-#: Fig. (a), diamonds, 9-ANS element of Stanley (1985), 50 % imperfection
+#: Fig. (a), diamonds, 9-ANS element, 50 % imperfection
 FIG_A_ANS_50 = [
     (0.0055, 0.229), (0.0066, 0.273), (0.0077, 0.310), (0.0084, 0.342),
     (0.0089, 0.366), (0.0094, 0.383), (0.0098, 0.397), (0.0106, 0.402),
@@ -141,6 +175,14 @@ class SectionModel(object):
         Global degrees of freedom of each element.
     loaded : array of int
         Node indices of the loaded edge ``x = 0``, in increasing ``y``.
+
+    Notes
+    -----
+    The consistent nodal forces of the uniform force per unit length along
+    the edge ``x = 0`` are the integrals of the Hermite functions along an
+    element side of length `l_y`: `l_y/2` for the values of `u` and `\pm
+    l_y^2/12` for the derivatives `u_{,y}`, which cancel between neighbours
+    and fall on the constrained `u_{,y}` of the corners.
 
     """
     def __init__(self, nx=8, ny=8, nint=4, load=N_CL):
@@ -208,11 +250,7 @@ class SectionModel(object):
         self.loaded = self.loaded[np.argsort(y[self.loaded])]
 
         # consistent nodal forces of the uniform force per unit length
-        # ``load`` along the edge x = 0, compressive, pointing to +x: the
-        # integrals of the Hermite functions along an element side of length
-        # ley are ley/2 for the values and +-ley**2/12 for the derivatives
-        # u_y, which cancel between neighbours and fall on the constrained
-        # u_y of the corners
+        # ``load`` along the edge x = 0, compressive, pointing to +x
         self.fext = np.zeros(N, dtype=DOUBLE)
         for na, nb in zip(self.loaded[:-1], self.loaded[1:]):
             self.fext[DOF*na + 0] += load*self.ley/2
@@ -308,9 +346,22 @@ class SectionModel(object):
 
     def calc_kG_N(self, N):
         r"""Geometric stiffness matrix of the membrane resultants ``N`` given
-        at the integration points, shape ``(num_elements, num_points, 3)``:
-        `\int_A \boldsymbol{G}^\top [N_{xx}\ N_{xy};\ N_{xy}\ N_{yy}]
-        \boldsymbol{G} dA`, all dofs, with the quadrature of the elements"""
+        at the integration points, shape ``(num_elements, num_points, 3)``,
+        all dofs, with the quadrature of the elements
+
+        Notes
+        -----
+        The matrix is
+
+        .. math::
+            \int_A \boldsymbol{G}^\top \begin{bmatrix} N_{xx} & N_{xy} \\
+            N_{xy} & N_{yy} \end{bmatrix} \boldsymbol{G} \, dA
+
+        with the rows `\boldsymbol{S}^w_{,x}` and `\boldsymbol{S}^w_{,y}` of
+        `\boldsymbol{G}`, the rotations of the Donnell-type kinematics,
+        evaluated with the weights and points of the elements.
+
+        """
         Nw = N*self.wp[None, :, None]
         Gx, Gy = self.Gx, self.Gy
         ke = (np.einsum('ep,pi,pj->eij', Nw[..., 0], Gx, Gx)
@@ -366,13 +417,27 @@ class ImperfectCylinder(object):
     - ``calc_kC(c, NLgeom=True) = KC0 + KCNL(u + u0) - KGNL0``
     - ``calc_kG(c, NLgeom=True) = KG(u + u0) - KG(u0) = KG(u)``
 
-    with ``KG`` of :func:`.update_KG`, which is linear in ``u``, and
-    ``KGNL0`` the geometric stiffness matrix of the membrane resultants of
-    the non-linear strains of ``u0``, such that ``KG(u0) + KGNL0 = KG(N0)``.
-    ``calc_kC + calc_kG`` is the Jacobian of ``calc_fint``, and ``calc_kG``
-    keeps the meaning of the geometric stiffness matrix of the perfect
-    shell. ``calc_kC()``, without ``NLgeom``, gives the linear stiffness
-    matrix of the imperfect shell, ``KC0 + KCNL(u0) - KGNL0 + KG(u0)``.
+    with ``KG`` of :func:`.update_KG` and ``KGNL0`` the geometric stiffness
+    matrix of the membrane resultants of the non-linear strains of ``u0``.
+    ``calc_kC()``, without ``NLgeom``, gives the linear stiffness matrix of
+    the imperfect shell, ``KC0 + KCNL(u0) - KGNL0 + KG(u0)``.
+
+    Parameters
+    ----------
+    model : :class:`SectionModel`
+    u0 : array or None
+        Degrees of freedom of the imperfection, all dofs; ``None`` for the
+        perfect shell.
+
+    Notes
+    -----
+    ``KG`` of :func:`.update_KG` is linear in ``u``, so that ``KG(u + u0) -
+    KG(u0) = KG(u)``, and ``KG(u0) + KGNL0 = KG(N0)``, the geometric
+    stiffness matrix of the resultants of the whole strains of ``u0``. The
+    callables are then the internal forces and the tangent stiffness matrix
+    of the imperfect shell of the module Notes: ``calc_kC + calc_kG`` is the
+    Jacobian of ``calc_fint``, and ``calc_kG`` keeps the meaning of the
+    geometric stiffness matrix of the perfect shell.
 
     """
     def __init__(self, model, u0=None):
@@ -389,9 +454,11 @@ class ImperfectCylinder(object):
         self.fextuu = m.fext[m.bu]
 
     def calc_fext(self, inc=1., silent=True):
+        """External forces of the load factor ``inc``, unknown dofs"""
         return inc*self.fextuu
 
     def calc_fint(self, c, silent=True):
+        """Internal forces of the imperfect shell, unknown dofs"""
         m = self.model
         u = m.expand(c)
         f = (m.calc_fint(u + self.u0) - self.fint0 - self.KG0 @ u
@@ -399,6 +466,7 @@ class ImperfectCylinder(object):
         return f[m.bu]
 
     def calc_kC(self, c=None, NLgeom=False, silent=True):
+        """Constitutive part of the tangent stiffness matrix, unknown dofs"""
         if c is None or not NLgeom:
             return self.K0uu
         m = self.model
@@ -406,14 +474,32 @@ class ImperfectCylinder(object):
         return m.restrict(m.KC0 + m.calc_KCNL(u + self.u0) - self.KGNL0)
 
     def calc_kG(self, c=None, NLgeom=False, silent=True):
+        """``KG(u)`` of :func:`.update_KG`, unknown dofs"""
         m = self.model
         u = m.expand(c)
         return m.restrict(m.calc_KG(u))
 
 
 def linear_buckling(model, num_eigvalues=4):
-    """Linear buckling load factors of the reference load of ``model`` and
-    the modes, all dofs, from the linear static solution"""
+    r"""Linear buckling load factors of the reference load of ``model`` and
+    the modes, all dofs, from the linear static solution
+
+    Returns the real parts of the load factors and of the modes, and the
+    linear static solution, all dofs.
+
+    Notes
+    -----
+    The eigenvalue problem solved by :func:`structsolve.lb` is
+
+    .. math::
+        \left(\boldsymbol{K}_{C0} + \lambda
+        \boldsymbol{K}_G(\boldsymbol{u}_{lin})\right) \boldsymbol{\phi} =
+        \boldsymbol{0}
+
+    with `\boldsymbol{u}_{lin}` the linear static solution of the reference
+    load, on the unknown dofs.
+
+    """
     KC0uu = model.restrict(model.KC0)
     clin = solve(KC0uu, model.fext[model.bu], silent=True)
     KGuu = model.restrict(model.calc_KG(model.expand(clin)))
@@ -456,7 +542,25 @@ def run_riks(xi, nx=8, ny=8, nint=4, umax=0.04, branch_switching=0,
     average shortenings ``umax`` and ``uavg``, the largest ``|w|``
     ``wmax``, starting from the unloaded state, the linear buckling load
     ``lbd_cr`` in units of ``N_CL``, the run time ``elapsed`` and the
-    analysis ``an``.
+    analysis ``an``, the model ``model`` and the imperfection ``u0``.
+
+    Notes
+    -----
+    With ``xi = 0`` the path is axisymmetric until a bifurcation. With
+    ``inertia=True`` structsolve records at every converged increment the
+    sign of the determinant of the tangent stiffness matrix, from its LU
+    factorization with SuperLU, which changes when a critical point is
+    crossed; with ``branch_switching = n`` the analysis switches to the
+    bifurcated branch, along the critical eigenvector, at most ``n`` times.
+    Increments of at most 0.03 of the load factor avoid stepping over the
+    clustered critical points of the cylinder. The Riks method follows
+    Riks [1]_.
+
+    References
+    ----------
+    .. [1] Riks, E., An incremental approach to the solution of snapping and
+       buckling problems, International Journal of Solids and Structures,
+       15(7), 529-551, 1979, doi:10.1016/0020-7683(79)90081-7.
 
     """
     model, mode, lbd_cr = normalized_model(nx, ny, nint)
