@@ -14,7 +14,8 @@ The checks:
   callables of the imperfect shell under the follower pressure have the
   Jacobian of their residual as tangent stiffness matrix, and the internal
   forces are the gradient of a strain energy computed independently of the
-  kernels (central differences, errors of order ``h**2``); the load
+  kernels (central differences of fourth order, exact up to the round-off
+  for the cubic internal forces and the quartic strain energy); the load
   stiffness matrix is unsymmetric, the free edge making the pressure
   nonconservative;
 - the linear buckling factors of the dead (``k_c``) and of the follower
@@ -75,19 +76,24 @@ def test_identities():
         c = u[model.bu]
         v = rng.standard_normal(n)
         v /= np.abs(v).max()
-        h = 1e-6
+        h = 1e-5
         inc = 5.
         KT = cb.calc_kC(c, NLgeom=True, inc=inc) + cb.calc_kG(c, NLgeom=True)
         KTk = (sr.FollowerCylinder(model, u0, vectorized=False).calc_kC(
                c, NLgeom=True, inc=inc) + cb.calc_kG(c, NLgeom=True))
         assert abs(KT - KTk).max() < 1e-13*abs(KTk).max()
-        dfd = (cb.calc_fint(c + h*v, inc=inc)
-               - cb.calc_fint(c - h*v, inc=inc))/(2*h)
-        assert np.linalg.norm(dfd - KT @ v) < 1e-8*np.linalg.norm(KT @ v)
-        dU = (model.strain_energy(model.expand(c + h*v), u0)
-              - model.strain_energy(model.expand(c - h*v), u0))/(2*h)
+
+        def central(f):
+            # fourth order: the error of second order, of order h**2, was
+            # 1e-7 for some imperfections
+            return (8*(f(c + h*v) - f(c - h*v))
+                    - (f(c + 2*h*v) - f(c - 2*h*v)))/(12*h)
+
+        dfd = central(lambda x: cb.calc_fint(x, inc=inc))
+        assert np.linalg.norm(dfd - KT @ v) < 1e-9*np.linalg.norm(KT @ v)
+        dU = central(lambda x: model.strain_energy(model.expand(x), u0))
         fv = dead.calc_fint(c) @ v
-        assert abs(dU - fv) < 1e-7*abs(fv)
+        assert abs(dU - fv) < 1e-9*abs(fv)
         # the residual of structsolve is that of the follower pressure on
         # the imperfect shell
         r = cb.calc_fint(c, inc=inc) - cb.calc_fext(inc)
