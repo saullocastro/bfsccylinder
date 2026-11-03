@@ -45,12 +45,12 @@ problems of ``tests/test_follower_pressure_validation.py``, see
 :doc:`analyses`. It is a requirement of the tests and of the examples of
 the documentation only: bfsccylinder does not import it, and it is not
 installed with bfsccylinder, not being in the ``dependencies`` of
-``pyproject.toml``. The tests require a version of structsolve newer than 0.8.0,
-with Crisfield's convergence criterion as default. The nonlinear analyses
-with structsolve of :doc:`analyses` require structsolve 0.9.3 or newer,
-whose residual is
+``pyproject.toml``. The tests and the examples require structsolve 0.10.0
+or newer: Crisfield's convergence criterion as default, the residual
 `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_{ext}`, the
-convention of these pages.
+convention of these pages, and the Riks method with a stop criterion on a
+displacement, the inertia of the tangent stiffness matrix and branch
+switching.
 
 ``setup.py`` compiles with ``/O2`` on Windows and with ``-O3
 -fno-math-errno`` on Linux and macOS, without flags that change the

@@ -71,6 +71,8 @@ User guide
 
     notebooks/stiffened_cylinder_frequencies.nblink
     notebooks/stiffened_cylinder_buckling.nblink
+    notebooks/simo1990_cylinder_postbuckling.nblink
+    notebooks/schweizerhof1984_cylinder_follower.nblink
 
 
 bfsccylinder API
@@ -108,7 +110,7 @@ License
 Citing this library
 -------------------
 
-Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.0). https://github.com/saullocastro/bfsccylinder.
+Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.1). https://github.com/saullocastro/bfsccylinder.
 
 In BibTeX:
 
@@ -118,7 +120,7 @@ In BibTeX:
       author  = {Castro, Saullo G. P.},
       title   = {Implementation of the BFSC cylinder finite element},
       year    = {2026},
-      version = {0.7.0},
+      version = {0.7.1},
       url     = {https://github.com/saullocastro/bfsccylinder}
     }
 

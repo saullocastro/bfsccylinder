@@ -37,7 +37,7 @@ tutorials model the stringers of stiffened cylinders with
 Citing this library
 ===================
 
-Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.0). https://github.com/saullocastro/bfsccylinder.
+Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.1). https://github.com/saullocastro/bfsccylinder.
 
 
 Documentation
@@ -49,6 +49,14 @@ The documentation is available on: https://saullocastro.github.io/bfsccylinder.
 History
 =======
 
+* version 0.7.1 (2026-11-03)
+    - Tutorial and tests of the Riks method deep into the post-buckling of
+      the axially compressed cylinder of Simo, Fox and Rifai (1990)
+    - Tutorial and tests of the cantilever cylinders of Schweizerhof and
+      Ramm (1984) under a follower external pressure: linear buckling with
+      the unsymmetric load stiffness matrix, Table 4, and Riks with the
+      inertia count
+    - Requires `structsolve>=0.10.0`
 * version 0.7.0 (2026-10-26)
     - Follower pressure, for both kinematics: `update_fext_follower` and
       `update_KCfollower`, the force vector and the unsymmetric load
