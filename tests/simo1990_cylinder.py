@@ -111,13 +111,13 @@ N_CL = E*t**2/(R*np.sqrt(3*(1 - nu**2)))
 
 # Values read from Fig. 6.3.4, pairs (maximum axial deflection, load
 # normalized by the linear buckling load)
-#: Fig. (a), solid line, Simo et al., 10 % imperfection
+#: Fig. (a), solid line of the paper, 10 % imperfection
 FIG_A_SIMO_10 = [
     (0.0125, 0.575), (0.0150, 0.675), (0.0168, 0.715), (0.0158, 0.642),
     (0.0151, 0.580), (0.0146, 0.512), (0.0142, 0.445), (0.0143, 0.399),
     (0.0148, 0.366), (0.0158, 0.343), (0.0184, 0.326), (0.0200, 0.330),
     (0.0250, 0.344), (0.0300, 0.372), (0.0350, 0.406), (0.0400, 0.459)]
-#: Fig. (a), solid line, Simo et al., 50 % imperfection
+#: Fig. (a), solid line of the paper, 50 % imperfection
 FIG_A_SIMO_50 = [
     (0.0108, 0.411), (0.0116, 0.366), (0.0126, 0.335), (0.0141, 0.319),
     (0.0150, 0.315), (0.0200, 0.315), (0.0250, 0.344), (0.0300, 0.370),
@@ -136,7 +136,7 @@ FIG_A_ANS_50 = [
     (0.0109, 0.385), (0.0112, 0.367), (0.0118, 0.354), (0.0122, 0.332),
     (0.0132, 0.312), (0.0151, 0.300), (0.0175, 0.297), (0.0204, 0.300),
     (0.0237, 0.318), (0.0265, 0.349), (0.0363, 0.420)]
-#: Fig. (d), solid line, Simo et al., perfect cylinder, branch switching
+#: Fig. (d), solid line of the paper, perfect cylinder, branch switching
 FIG_D_SIMO = [
     (0.0183, 0.833), (0.0182, 0.742), (0.0171, 0.695), (0.0160, 0.599),
     (0.0151, 0.530), (0.0149, 0.457), (0.0160, 0.360), (0.0190, 0.335),
