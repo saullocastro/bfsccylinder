@@ -269,9 +269,9 @@ kinematics and assemble:
 
 such that ``calc_kC + calc_kG`` is `\boldsymbol{K}_T` of Eq.
 :eq:`an-tangent` and the residual of structsolve is Eq.
-:eq:`an-residual`, the convention of structsolve 0.9.3 or newer. The value
-arrays of the sparse matrices are zeroed in each call, since the functions
-add to them. ``Analysis.static`` increases the load factor from 0 to 1, the
+:eq:`an-residual`. The value arrays of the sparse matrices are zeroed in
+each call, since the functions add to them. ``Analysis.static`` increases
+the load factor from 0 to 1, the
 first increment of size ``Analysis.initialInc`` and the next ones growing up
 to ``Analysis.maxInc``, and returns the load factors and the solutions of
 the converged increments. ``Analysis.NL_method`` selects the

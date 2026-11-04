@@ -44,6 +44,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'nbsphinx',
     'nbsphinx_link',
+    'matplotlib.sphinxext.plot_directive',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -60,6 +61,17 @@ exclude_patterns = ['**.ipynb_checkpoints']
 nbsphinx_execute = 'never'
 
 default_role = 'math'
+
+# equations numbered per chapter of the numbered user guide, e.g. (3.2)
+numfig = True
+math_numfig = True
+math_eqref_format = '({number})'
+
+# figures drawn by the scripts of _scripts/ during the build, sources hidden
+plot_include_source = False
+plot_html_show_source_link = False
+plot_html_show_formats = False
+plot_formats = [('png', 150)]
 
 # the methods of the element class are documented by autodoc, with
 # ``:members:``, and its attributes in the docstring of the class

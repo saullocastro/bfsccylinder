@@ -7,7 +7,7 @@ node of the middle section. The geometric stiffness matrix of
 ``update_KG_constant_stress`` is that of the constant membrane force ``Nxx =
 -1`` N/m, without a static analysis, the lowest load multiplier is computed
 with ``lobpcg``, and the critical load, the load multiplier times ``Nxx``
-times `2 \pi R`, is checked within 1 % against -35858 N, a regression value:
+times `2 \pi R`, is checked within 1 % against -36266 N, a regression value:
 a result of the element of the ``bfsccylinder`` namespace stored in the
 test.
 
@@ -15,14 +15,15 @@ Notes
 -----
 The stacking sequence, from the inner to the outer surface, is that of the
 cylinder Z22 in Table 4 of [1]_, and the elastic constants are those of the
-material Geier1997 in Table 3 of [1]_, from [2]_, except `G_{12}`, 5.595 GPa
-here, a typo for the 5.695 GPa of Table 3. The ends have `v = w = 0`, the
-conditions SS2 of Table 1 of [1]_, with `u` constrained at one node of the
-middle section to remove the rigid-body motions. The stored value is a
-regression value of the element. For comparison, Table 6 of [1]_ gives for
-Z22, with the conditions SS2 and the classical laminated plate theory (model
-CLPT-BC2 of [1]_), 36.35 kN, and the test result 34.4 kN of Geier et al.;
-the stored value, 35858 N, is 1.4 % lower than 36.35 kN. Here the geometric
+material Geier1997 in Table 3 of [1]_, from [2]_. The ends have `v = w = 0`,
+the conditions SS2 of Table 1 of [1]_, with `u` constrained at one node of
+the middle section `x = L/2` to remove the rigid-body motions; the number
+of nodes along the axis is made odd, so that a row of nodes lies at `x =
+L/2`. The stored value is a regression value of the element. For
+comparison, Table 6 of [1]_ gives for Z22, with the conditions SS2 and the
+classical laminated plate theory (model CLPT-BC2 of [1]_), 36.35 kN, and
+the test result 34.4 kN of Geier et al.;
+the stored value, 36266 N, is 0.2 % lower than 36.35 kN. Here the geometric
 stiffness matrix is that of a uniform membrane force, without the
 prebuckling solution of the static analysis.
 
@@ -69,7 +70,7 @@ def test_linear_buckling(plot=False):
     E11 = 123.55e9
     E22 = 8.708e9
     nu12 = 0.319
-    G12 = 5.595e9
+    G12 = 5.695e9
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [+49, -49, +36, -36, 0, 0]
@@ -217,7 +218,7 @@ def test_linear_buckling(plot=False):
     Pcr = load_mult[0]*Nxx*2*np.pi*R
     print('load_mult[0]', load_mult[0])
     print('Pcr top=', Pcr)
-    assert np.isclose(Pcr, -35858, rtol=0.01)
+    assert np.isclose(Pcr, -36266, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)

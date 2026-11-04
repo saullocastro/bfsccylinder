@@ -270,7 +270,7 @@ of the two kinematics coincide, Eq. :eq:`mat-KG`, and the difference comes
 only from the curvatures in `\boldsymbol{K}_{C0}`: for a laminated cylinder
 of ten plies with `R/h = 200` and `L/R \approx 2`, clamped at both ends and
 under a constant axial membrane force, the critical loads of the two
-elements differ by about 0.7 %.
+elements differ by about 0.6 %.
 
 
 How to choose

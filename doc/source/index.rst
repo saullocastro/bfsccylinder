@@ -37,11 +37,14 @@ Code repository
 https://github.com/saullocastro/bfsccylinder
 
 
+.. _user-guide:
+
 User guide
 ----------
 
 .. toctree::
     :maxdepth: 1
+    :numbered:
 
     kinematics.rst
     constitutive.rst
@@ -55,7 +58,7 @@ User guide
 
 .. toctree::
     :maxdepth: 1
-    :caption: Usage examples
+    :caption: Worked examples
 
     notebooks/ex_linear_static.nblink
     notebooks/ex_linear_buckling.nblink
@@ -71,6 +74,8 @@ User guide
 
     notebooks/stiffened_cylinder_frequencies.nblink
     notebooks/stiffened_cylinder_buckling.nblink
+    notebooks/abramovich2003_stiffened_panels.nblink
+    notebooks/lanzi2003_stiffened_cylinder.nblink
     notebooks/simo1990_cylinder_postbuckling.nblink
     notebooks/schweizerhof1984_cylinder_follower.nblink
     notebooks/sewall1968_stiffened_cylinder_frequencies.nblink
@@ -100,6 +105,13 @@ Installing bfsccylinder
     :caption: Changelog
 
     changelog.rst
+
+
+.. toctree::
+    :maxdepth: 1
+    :caption: About this documentation
+
+    documentation_levels.rst
 
 
 License

@@ -93,4 +93,4 @@ References
 ----------
 
 .. [Reddy2003] Reddy, J. N., Mechanics of Laminated Composite Plates and
-   Shells, CRC Press, 2003, doi:10.1201/b12409.
+   Shells: Theory and Analysis, 2nd ed., CRC Press, 2003, doi:10.1201/b12409.

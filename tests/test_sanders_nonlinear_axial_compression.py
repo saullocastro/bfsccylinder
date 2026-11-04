@@ -192,15 +192,17 @@ def test_nonlinear_axial_compression_load_controlled():
 
         Notes
         -----
-        The weighted norm of Peano and Riccioni [1]_.
+        The scaled norm `(g^T D^{-1} g)^{1/2}` of a vector `g` of the
+        convergence criterion of [1]_, Eqs. (27) and (28), `D` being the
+        diagonal matrix of the leading diagonal entries of the tangent
+        stiffness matrix at the beginning of the load increment. The
+        absolute value guards against negative diagonal entries.
 
         References
         ----------
-        .. [1] Peano, A., and Riccioni, R., Automated discretisation error
-           control in finite element analysis, in Robinson, J. (ed.), Finite
-           Elements in the Commercial Environment, Robinson and Associates,
-           Verwood, England, pp. 368-387, 1978. TODO(author): verify; the
-           former text of this reference had scanning errors.
+        .. [1] Crisfield, M. A., A fast incremental/iterative solution
+           procedure that handles "snap-through", Computers & Structures,
+           13(1-3), 55-62, 1981, doi:10.1016/0045-7949(81)90108-5.
 
         """
         return np.sqrt((vec*np.abs(1/D))@vec)

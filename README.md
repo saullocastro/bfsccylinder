@@ -49,6 +49,8 @@ The documentation is available on: https://saullocastro.github.io/bfsccylinder.
 History
 =======
 
+See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
+
 * version 0.7.1 (2026-11-03)
     - Tutorial and tests of the Riks method deep into the post-buckling of
       the axially compressed cylinder of Simo, Fox and Rifai (1990)
