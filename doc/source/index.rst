@@ -74,6 +74,8 @@ User guide
 
     notebooks/stiffened_cylinder_frequencies.nblink
     notebooks/stiffened_cylinder_buckling.nblink
+    notebooks/abramovich2003_stiffened_panels.nblink
+    notebooks/lanzi2003_stiffened_cylinder.nblink
     notebooks/simo1990_cylinder_postbuckling.nblink
     notebooks/schweizerhof1984_cylinder_follower.nblink
 
