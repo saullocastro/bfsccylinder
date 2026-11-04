@@ -73,6 +73,8 @@ User guide
     notebooks/stiffened_cylinder_buckling.nblink
     notebooks/simo1990_cylinder_postbuckling.nblink
     notebooks/schweizerhof1984_cylinder_follower.nblink
+    notebooks/sewall1968_stiffened_cylinder_frequencies.nblink
+    notebooks/card1966_stiffened_cylinder_buckling.nblink
 
 
 bfsccylinder API
