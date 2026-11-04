@@ -1,0 +1,7 @@
+{
+    "path": "../../../notebooks/lanzi2003_stiffened_cylinder.ipynb",
+    "extra-media": [
+        "../../../notebooks/composite_stiffened_shell.py",
+        "../../../notebooks/lanzi2003_mesh_convergence.json"
+    ]
+}
