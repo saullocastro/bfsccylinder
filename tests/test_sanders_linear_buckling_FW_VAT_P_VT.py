@@ -9,14 +9,15 @@ symmetric about `x = L/2`, and the ply thickness is 0.4 mm divided by the
 cosine of `|\theta_{min} - \theta(x)|`, with `\theta_{min}` the smallest of
 the three angles. The laminate stiffnesses are computed at each integration
 point and set point by point in the arrays ``A11, ..., D66`` of the
-elements. `u`, `v`, `w` and `w_{,x}` are constrained at the nodes of both
-ends, and the end `x = L` is compressed by a prescribed axial displacement.
-The linear static solution gives the geometric stiffness matrix of
-``update_KG``, the lowest load multiplier is computed with ``lobpcg``, and
-the critical load, the load multiplier times the sum of the reaction forces
-at `x = L`, is checked within 1 % against -55143.66050193604 N, a regression
-value: a result of the element of ``bfsccylinder.sanders`` stored in the
-test.
+elements. `u`, `v`, `w` and `w_{,x}` and their derivatives along the edge,
+`u_{,y}`, `v_{,y}`, `w_{,y}` and `w_{,xy}`, are constrained at the nodes of
+both ends, and the end `x = L` is compressed by a prescribed axial
+displacement. The linear static solution gives the geometric stiffness
+matrix of ``update_KG``, the lowest load multiplier is computed with
+``lobpcg``, and the critical load, the load multiplier times the sum of the
+reaction forces at `x = L`, is checked within 1 % against -55155.3130129089
+N, a regression value: a result of the element of ``bfsccylinder.sanders``
+stored in the test.
 
 Notes
 -----
@@ -33,12 +34,16 @@ Table 1 of [1]_; [2]_ uses the same `E_{11}`, `E_{22}`, `\nu_{12}`, `G_{12}`
 and tow thickness, 0.4 mm. The boundary conditions are those of the finite
 element model of [1]_: all the degrees of freedom are constrained at `x =
 0`, and at `x = L` all but the axial displacement, which is the same at
-every node of that end.
+every node of that end. The derivatives along the edge are constrained with
+them because the element interpolates `w` along an edge `x` = constant from
+`w` and `w_{,y}` of its nodes, and `w_{,x}` from `w_{,x}` and `w_{,xy}`
+(likewise `u` and `v`): with the values alone the conditions hold only at
+the nodes.
 
 The stored value is a regression value of the element. For comparison, Table
 4 of [1]_ gives for VAT-P-VT the linear buckling load `F_{eig} = 49576` N,
 computed with ABAQUS S4R elements (152 elements along the length, 213 around
-the circumference); the stored value, 55144 N, is 11.2 % higher. The
+the circumference); the stored value, 55155 N, is 11.3 % higher. The
 difference contains the discretisation error of the 40 nodes around the
 circumference of this test and the transverse shear flexibility of the S4R
 element, which the element does not have.
@@ -221,12 +226,17 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
-    # clamped
+    # clamped: u, v, w and w_x, with their derivatives along the edge
+    # u_y, v_y, w_y and w_xy
     checkSS = isclose(x, 0) | isclose(x, L)
     bk[0::DOF] = checkSS
     bk[3::DOF] = checkSS
     bk[6::DOF] = checkSS
     bk[7::DOF] = checkSS
+    bk[2::DOF] = checkSS
+    bk[5::DOF] = checkSS
+    bk[8::DOF] = checkSS
+    bk[9::DOF] = checkSS
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
     # axial compression applied at x=L
@@ -311,7 +321,7 @@ def test_linear_buckling(plot=False):
     f[bk] = fk
     Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
-    assert isclose(Pcr, -55143.66050193604, rtol=0.01)
+    assert isclose(Pcr, -55155.3130129089, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)

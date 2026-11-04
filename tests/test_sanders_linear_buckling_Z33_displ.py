@@ -2,12 +2,13 @@ r"""Linear buckling of the laminated cylinder Z33 under a prescribed end shorten
 
 The cylinder Z33 of Castro et al. (2014, Composite Structures), Table 4, ``R
 = 250`` mm, ``L = 510`` mm, ten plies of 0.125 mm, with the material of
-Geier and Singh (1997). `u`, `v`, `w` and `w_{,x}` are constrained at the
-nodes of both ends, and the end `x = L` is compressed by a prescribed axial
-displacement. The linear static solution gives the geometric stiffness
+Geier and Singh (1997). `u`, `v`, `w` and `w_{,x}` and their derivatives
+along the edge, `u_{,y}`, `v_{,y}`, `w_{,y}` and `w_{,xy}`, are constrained
+at the nodes of both ends, and the end `x = L` is compressed by a prescribed
+axial displacement. The linear static solution gives the geometric stiffness
 matrix of ``update_KG``, the lowest load multiplier is computed with
 ``lobpcg``, and the critical load, the load multiplier times the sum of the
-reaction forces at `x = L`, is checked within 1 % against -199036.5507307123
+reaction forces at `x = L`, is checked within 1 % against -199867.3050694425
 N, a regression value: a result of the element of ``bfsccylinder.sanders``
 stored in the test.
 
@@ -19,25 +20,28 @@ cylinder Z33 in Table 4 of [1]_, and the elastic constants, `E_{11} =
 GPa, are those of the material Geier1997 that Table 4 of [1]_ gives for Z33
 (Table 3 of [1]_). They are the ply properties of the test cylinders of
 [3]_, Section V.4 (`E_L = 123550` MPa, `E_T = 8707.9` MPa, `\nu_{LT} =
-0.319`, `G_{LT} = 5696` MPa), and of Z33 in [4]_, Section 3 (`G = 5695`
-MPa, `\nu = 0.32`). The entries of the laminate stiffness matrices `A`,
-`B` and `D` of this test agree in magnitude with those printed for Z33 in
-Section 3 of [4]_, to their four digits, except `B_{66}` (4152 N here, 4125
-N there). The transverse shear moduli do not enter the element, which is
-based on the classical laminated plate theory. The ends have `u = v = w =
-w_{,x} = 0`, the conditions CC1 of Table 1 of [1]_, `u` being prescribed at
-`x = L`.
+0.319`, `G_{LT} = 5696` MPa), and of Z33 in [4]_, Section 3 (`G = 5695` MPa,
+`\nu = 0.32`). The entries of the laminate stiffness matrices `A`, `B` and
+`D` of this test agree in magnitude with those printed for Z33 in Section 3
+of [4]_, to their four digits, except `B_{66}` (4152 N here, 4125 N there).
+The transverse shear moduli do not enter the element, which is based on the
+classical laminated plate theory. The ends have `u = v = w = w_{,x} = 0`,
+the conditions CC1 of Table 1 of [1]_, `u` being prescribed at `x = L`. The
+derivatives along the edge are constrained with them because the element
+interpolates `w` along an edge `x` = constant from `w` and `w_{,y}` of its
+nodes, and `w_{,x}` from `w_{,x}` and `w_{,xy}` (likewise `u` and `v`): with
+the values alone the conditions hold only at the nodes.
 
 The stored value is a regression value of the element. For comparison, Table
 1 of [4]_ gives for Z33 192 kN with built-in edges, deep shell theory and a
 homogeneous membrane prebuckling state (BACCUS-C4), and the test results 173
-kN and 184 kN; the stored value, 199037 N, is 3.7 % higher than 192 kN.
+kN and 184 kN; the stored value, 199867 N, is 4.1 % higher than 192 kN.
 Table 6 of [2]_ gives 191.67 kN, computed with ABAQUS S8R5 elements and
 clamped ends, but with the elastic constants `E_{11} = 142.5` GPa, `E_{22} =
 8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa of its Table 1; the
-stored value is 3.8 % higher. The difference to 192 kN contains the
+stored value is 4.3 % higher. The difference to 192 kN contains the
 discretisation error of the 50 nodes around the circumference of this test:
-with 110 nodes the element gives 194325 N, 1.2 % above 192 kN.
+with 110 nodes the element gives 194364 N, 1.2 % above 192 kN.
 
 References
 ----------
@@ -165,18 +169,19 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
-    # u, v, w and w_x constrained at both ends
+    # u, v, w and w_x constrained at both ends, with their derivatives
+    # along the edge u_y, v_y, w_y and w_xy
     checkBC = isclose(x, 0) | isclose(x, L)
     bk[0::DOF] = checkBC
     #bk[1::DOF] = checkBC
-    #bk[2::DOF] = checkBC
+    bk[2::DOF] = checkBC
     bk[3::DOF] = checkBC
     #bk[4::DOF] = checkBC
-    #bk[5::DOF] = checkBC
+    bk[5::DOF] = checkBC
     bk[6::DOF] = checkBC
     bk[7::DOF] = checkBC
-    #bk[8::DOF] = checkBC
-    #bk[9::DOF] = checkBC
+    bk[8::DOF] = checkBC
+    bk[9::DOF] = checkBC
 
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
@@ -304,7 +309,7 @@ def test_linear_buckling(plot=False):
     Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
 
-    assert np.isclose(Pcr, -199036.5507307123, rtol=0.01)
+    assert np.isclose(Pcr, -199867.3050694425, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
