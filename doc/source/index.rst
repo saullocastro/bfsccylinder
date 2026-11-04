@@ -37,11 +37,14 @@ Code repository
 https://github.com/saullocastro/bfsccylinder
 
 
+.. _user-guide:
+
 User guide
 ----------
 
 .. toctree::
     :maxdepth: 1
+    :numbered:
 
     kinematics.rst
     constitutive.rst
@@ -55,7 +58,7 @@ User guide
 
 .. toctree::
     :maxdepth: 1
-    :caption: Usage examples
+    :caption: Worked examples
 
     notebooks/ex_linear_static.nblink
     notebooks/ex_linear_buckling.nblink
@@ -98,6 +101,13 @@ Installing bfsccylinder
     :caption: Changelog
 
     changelog.rst
+
+
+.. toctree::
+    :maxdepth: 1
+    :caption: About this documentation
+
+    documentation_levels.rst
 
 
 License
