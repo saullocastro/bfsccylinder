@@ -128,9 +128,25 @@ is the cubic of `w` and `w_{,y}` of the nodes of the edge, and the normal
 slope `w_{,x}` the cubic of `w_{,x}` and `w_{,xy}`, see :doc:`element`: `w
 = 0` holds along the whole edge only when `w_{,y}` is constrained with `w`,
 and `w_{,x} = 0` only when `w_{,xy}` is constrained with `w_{,x}`; likewise
-`u` and `v` with `u_{,y}` and `v_{,y}`. Constraining only the values at the
-nodes leaves the edge free to deform between them. A
-symmetry plane `y` = constant has the antisymmetric `v` zero and the
+`u` and `v` with `u_{,y}` and `v_{,y}`. With only the values constrained,
+the edge deforms between the nodes, as the figure shows for `w` along three
+elements of an edge whose nodes have `w = 0` and `w_{,y} = \cos(9 y/R)`,
+with ``ley`` the side of the elements along `y`.
+
+.. plot:: _scripts/edge_interpolation.py
+
+The deviation is a discretisation error and vanishes with mesh refinement.
+In the linear buckling of the laminated cylinders Z22 and Z33 under axial
+compression, it is small for a simple support: with `v = w = 0` at the
+nodes, the largest `w` along the ends between the nodes is below 1 % of the
+largest `w` of the mode, and constraining `v_{,y}` and `w_{,y}` too changes
+the buckling load by less than 0.01 %. For a clamped end, `u = v = w =
+w_{,x} = 0` at the nodes, it is larger on coarse meshes: about 5 % of the
+largest `w` with 50 nodes around the circumference, and constraining
+`u_{,y}`, `v_{,y}`, `w_{,y}` and `w_{,xy}` too changes the buckling load by
+0.2 to 1.3 %; with 90 nodes the deviation falls below 0.4 %.
+
+A symmetry plane `y` = constant has the antisymmetric `v` zero and the
 symmetric fields with zero normal slope: `v = v_{,x} = 0` and `u_{,y} =
 w_{,y} = w_{,xy} = 0`.
 
