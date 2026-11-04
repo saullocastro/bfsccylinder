@@ -234,7 +234,10 @@ class StiffenedShell:
         displacement and a rotation about the axis, with `w = 0` and
         `w_{,x} = 0` (unless ``rotation_free``) of the skin, and for the
         blades `U` uniform, `V = 0`, `W = (R + Y) \phi`, `W_{,Y} = \phi`
-        and `W_{,X} = 0`, with `\phi` the rotation of the ring. Returns the
+        and `W_{,X} = 0`, with `\phi` the rotation of the ring; the
+        derivatives along the edge follow: `u_{,y} = v_{,y} = w_{,y} = 0`
+        and `U_{,Y} = V_{,Y} = 0`, with `w_{,xy} = W_{,XY} = 0` when `w_{,x}`
+        and `W_{,X}` are constrained. Returns the
         master degrees of freedom of the axial displacement and of the
         circumferential displacement `R \phi` of the ring, those of `u` and
         `v` of the first node of the section of the skin"""
@@ -258,7 +261,8 @@ class StiffenedShell:
 
     def support_side(self, j, clamped=False):
         """Unloaded straight edge ``j`` (``0`` or ``-1``) of an open panel:
-        `w = 0` (and `w_{,y} = 0` when ``clamped``), `u` and `v` free"""
+        `w = 0` and its derivative along the edge, `w_{,x} = 0` (and `w_{,y}
+        = w_{,xy} = 0` when ``clamped``), `u` and `v` free"""
         dofs = [W, W_X] + ([W_Y, W_XY] if clamped else [])
         self.fix(self.skin_nodes[:, j], dofs)
 
