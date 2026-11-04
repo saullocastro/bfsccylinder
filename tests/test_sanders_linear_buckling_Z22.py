@@ -17,10 +17,12 @@ The stacking sequence, from the inner to the outer surface, is that of the
 cylinder Z22 in Table 4 of [1]_, and the elastic constants are those of the
 material Geier1997 in Table 3 of [1]_, from [2]_. The ends have `v = w = 0`,
 the conditions SS2 of Table 1 of [1]_, with `u` constrained at two nodes of
-the middle section to remove the rigid-body motions. The stored value is a
-regression value of the element. For comparison, Table 6 of [1]_ gives for
-Z22, with the conditions SS2 and the classical laminated plate theory (model
-CLPT-BC2 of [1]_), 36.35 kN, and the test result 34.4 kN of Geier et al.;
+the middle section `x = L/2` to remove the rigid-body motions; the number
+of nodes along the axis is made odd, so that a row of nodes lies at `x =
+L/2`. The stored value is a regression value of the element. For
+comparison, Table 6 of [1]_ gives for Z22, with the conditions SS2 and the
+classical laminated plate theory (model CLPT-BC2 of [1]_), 36.35 kN, and
+the test result 34.4 kN of Geier et al.;
 the stored value, 37619 N, is 3.5 % higher than 36.35 kN.
 
 References
