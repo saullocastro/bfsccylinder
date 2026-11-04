@@ -16,13 +16,12 @@ Notes
 -----
 The cylinder is the constant-stiffness design CS of [1]_: 300 mm long, 136
 mm in diameter, one angle-ply layer `\pm 57.9` degrees made of two plies of
-0.4 mm (Table 4 of [1]_). The material is that of Table 1 of [1]_, also used
-in [2]_. The element uses only the laminate stiffnesses `\mathbf{A}`,
-`\mathbf{B}` and `\mathbf{D}`, so the transverse shear moduli of Table 1 of
-[1]_ (`G_{13} = 4.4` GPa, `G_{23} = 1.8` GPa) play no role. The boundary
-conditions are those of the finite element model of [1]_: all the degrees of
-freedom are constrained at `x = 0`, and at `x = L` all but the axial
-displacement, which is the same at every node of that end.
+0.4 mm (Table 4 of [1]_; the text of [1]_ gives 57.8 degrees). The material
+is that of Table 1 of [1]_; [2]_ uses the same `E_{11}`, `E_{22}`,
+`\nu_{12}`, `G_{12}` and tow thickness, 0.4 mm. The boundary conditions are
+those of the finite element model of [1]_: all the degrees of freedom are
+constrained at `x = 0`, and at `x = L` all but the axial displacement, which
+is the same at every node of that end.
 
 The stored value is a regression value of the element. For comparison, Table
 4 of [1]_ gives for CS the linear buckling load `F_{eig} = 40607` N,
@@ -31,11 +30,6 @@ the circumference); the stored value, 42720 N, is 5.2 % higher. The
 difference contains the discretisation error of the 40 nodes around the
 circumference of this test and the transverse shear flexibility of the S4R
 element, which the element does not have.
-
-TODO(author): [2]_ studies cylinders of radius 150 mm, while the cylinder,
-the angle and the reference load of this test match [1]_: confirm [1]_ as
-the source. [1]_ and [2]_ were checked against the submitted manuscripts,
-not the published papers: please confirm the table numbers and values.
 
 References
 ----------
