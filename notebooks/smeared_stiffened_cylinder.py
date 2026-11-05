@@ -56,7 +56,7 @@ References
 ----------
 .. [1] Block, D. L., Card, M. F., and Mikulas, M. M., Jr., "Buckling of
    eccentrically stiffened orthotropic cylinders", NASA TN D-2960, August
-   1965.
+   1965. https://ntrs.nasa.gov/citations/19650021133
 
 .. [2] Card, M. F., and Jones, R. M., "Experimental and theoretical results
    for buckling of eccentrically stiffened cylinders", NASA TN D-3639,
