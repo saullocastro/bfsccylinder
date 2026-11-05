@@ -79,6 +79,7 @@ User guide
     notebooks/simo1990_cylinder_postbuckling.nblink
     notebooks/schweizerhof1984_cylinder_follower.nblink
     notebooks/sewall1968_stiffened_cylinder_frequencies.nblink
+    notebooks/egle1968_few_stringer_cylinder_frequencies.nblink
     notebooks/card1966_stiffened_cylinder_buckling.nblink
 
 
