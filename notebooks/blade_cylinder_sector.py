@@ -51,7 +51,7 @@ stringers.
 """
 import numpy as np
 from numpy import pi
-from scipy.sparse import coo_matrix
+from scipy.sparse import coo_matrix, diags
 from scipy.sparse.linalg import LinearOperator, eigs, splu, spsolve
 
 from composites import isotropic_plate
@@ -99,14 +99,20 @@ class BladeCylinderSector:
         Number of stringer elements along the height.
     nint : int
         Number of Gauss-Legendre points per direction.
-    Dy_factor : float
+    Dy_factor : float or array of ``nbay`` floats
         Factor of the circumferential bending stiffness `D_{22}` of the
-        skin, `D_y/D`, 1 for the isotropic skin.
+        skin, `D_y/D`, 1 for the isotropic skin; an array gives one factor
+        per column of skin elements across the sector, from `\theta = 0`
+        to `\theta = \phi`.
+    skin_inplane_inertia : bool
+        ``False`` removes the inertia of the in-surface displacements `u`,
+        `v` of the skin (their rows and columns of the mass matrix); the
+        stringer keeps all its inertia.
     """
 
     def __init__(self, R, L, h, E, nu, rho, nstringers, nx, nbay=4,
                  bs=None, Hs=None, side='external', nh=4, nint=4,
-                 Dy_factor=1.):
+                 Dy_factor=1., skin_inplane_inertia=True):
         assert nbay % 2 == 0
         assert side in ('external', 'internal')
         self.R, self.L, self.h = R, L, h
@@ -116,6 +122,8 @@ class BladeCylinderSector:
         self.nx, self.nbay, self.nh = nx, nbay, nh
         self.bs, self.Hs, self.side = bs, Hs, side
         self.stiffened = bs is not None
+        self.skin_inplane_inertia = skin_inplane_inertia
+        Dy = np.broadcast_to(np.asarray(Dy_factor, dtype=float), (nbay,))
         self.points, self.weights = get_points_weights(nint=nint)
 
         # skin nodes: (nx, nbay + 1), the last column on the edge theta = phi
@@ -153,7 +161,7 @@ class BladeCylinderSector:
                 shell.h = h
                 shell.rho = rho
                 assign_constant_ABD(shell, self.skin_prop)
-                np.asarray(shell.D22)[:] *= Dy_factor
+                np.asarray(shell.D22)[:] *= Dy[j]
                 self.skin_elements.append(shell)
         self.str_elements = []
         if self.stiffened:
@@ -343,8 +351,14 @@ class BladeCylinderSector:
             plate.init_k_M = k
             bfscplate2d.update_M(plate, r, c, v)
 
-        return self._assemble(skin, sanders.M_SPARSE_SIZE, stringer,
-                              bfscplate2d.M_SPARSE_SIZE)
+        M = self._assemble(skin, sanders.M_SPARSE_SIZE, stringer,
+                           bfscplate2d.M_SPARSE_SIZE)
+        if not self.skin_inplane_inertia:
+            keep = np.ones(self.N)
+            for d in (U, U_X, U_Y, V, V_X, V_Y):
+                keep[DOF*self.skin_nodes.ravel() + d] = 0.
+            M = (diags(keep) @ M @ diags(keep)).tocsr()
+        return M
 
     def KG_membrane(self, eps):
         r"""Geometric stiffness matrix of the membrane state of the uniform
@@ -591,3 +605,20 @@ def axial_nodes(model, mode, tol=0.02):
     f = np.real(w[:, j])
     f = f[np.abs(f) > tol*np.abs(f).max()]
     return int(np.sum(np.sign(f[1:]) != np.sign(f[:-1])))
+
+
+def axial_nodes_lines(model, mode, tol=0.02):
+    """Number of sign changes along `x` of the normal displacement `w` of
+    the skin on each line of nodes `0 \\le \\theta < \\phi` of the sector,
+    each line multiplied by the unit complex number that makes its largest
+    entry real and positive, values below ``tol`` times the largest one of
+    the line ignored; returns the numbers and the mean square of `w` of
+    each line"""
+    w = model.skin_field(mode, W)[:, :-1]
+    counts, msq = [], []
+    for j in range(w.shape[1]):
+        f = np.real(normalize_phase(w[:, j]))
+        msq.append(np.mean(np.abs(w[:, j])**2))
+        f = f[np.abs(f) > tol*np.abs(f).max()]
+        counts.append(int(np.sum(np.sign(f[1:]) != np.sign(f[:-1]))))
+    return np.array(counts), np.array(msq)
