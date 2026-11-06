@@ -21,7 +21,10 @@ tied to the skin nodes of the line `\theta = \phi/2`:
 
 with the derivatives of these relations along `x`, the rotation about `x`
 being that of the Sanders-type kinematics, as in the module
-``stiffened_cylinder.py`` of the notebooks of this repository.
+``stiffened_cylinder.py`` of the notebooks of this repository. With
+``kinematics='donnell'`` the skin is meshed with the element of
+Donnell-type kinematics, :class:`bfsccylinder.BFSCCylinder`, and the tie of
+the rotation is that of the Donnell-type kinematics, `W_{,Y} = -w_{,y}`.
 
 Cyclic symmetry
 ---------------
@@ -55,6 +58,7 @@ from scipy.sparse import coo_matrix, diags
 from scipy.sparse.linalg import LinearOperator, eigs, splu, spsolve
 
 from composites import isotropic_plate
+import bfsccylinder
 import bfsccylinder.sanders as sanders
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
@@ -108,12 +112,24 @@ class BladeCylinderSector:
         ``False`` removes the inertia of the in-surface displacements `u`,
         `v` of the skin (their rows and columns of the mass matrix); the
         stringer keeps all its inertia.
+    kinematics : str
+        ``'sanders'`` (default) or ``'donnell'``, the kinematics of the
+        skin element and of the tie of the rotation of the stringer root.
+    str_D66_factor : float
+        Factor of the twisting stiffness `D_{66}` of the stringer plate, 1
+        for the isotropic plate, 0 to remove the twisting stiffness `4
+        D_{66} H_s = G H_s b_s^3/3` of the stringer.
     """
 
     def __init__(self, R, L, h, E, nu, rho, nstringers, nx, nbay=4,
                  bs=None, Hs=None, side='external', nh=4, nint=4,
-                 Dy_factor=1., skin_inplane_inertia=True):
+                 Dy_factor=1., skin_inplane_inertia=True,
+                 kinematics='sanders', str_D66_factor=1.):
         assert nbay % 2 == 0
+        assert kinematics in ('sanders', 'donnell')
+        self.kinematics = kinematics
+        sk = sanders if kinematics == 'sanders' else bfsccylinder
+        self._sk = sk
         assert side in ('external', 'internal')
         self.R, self.L, self.h = R, L, h
         self.E, self.nu, self.rho = E, nu, rho
@@ -146,7 +162,9 @@ class BladeCylinderSector:
         self.skin_elements = []
         for i in range(nx - 1):
             for j in range(nbay):
-                shell = sanders.BFSCCylinderSanders(nint)
+                shell = (sanders.BFSCCylinderSanders(nint)
+                         if kinematics == 'sanders'
+                         else bfsccylinder.BFSCCylinder(nint))
                 shell.n1 = skin[i, j]
                 shell.n2 = skin[i + 1, j]
                 shell.n3 = skin[i + 1, j + 1]
@@ -167,6 +185,8 @@ class BladeCylinderSector:
         if self.stiffened:
             self.str_prop = isotropic_plate(thickness=bs, E=E, nu=nu,
                                             rho=rho)
+            str_ABD = np.array(self.str_prop.ABD, dtype=float)
+            str_ABD[5, 5] *= str_D66_factor
             for i in range(nx - 1):
                 for k in range(nh):
                     # node 1 at the smallest X and Y
@@ -184,7 +204,7 @@ class BladeCylinderSector:
                     plate.ley = Hs/nh
                     plate.h = bs
                     plate.rho = rho
-                    plate.ABD = self.str_prop.ABD
+                    plate.ABD = str_ABD
                     self.str_elements.append(plate)
 
     # ------------------------------------------------------------------
@@ -223,8 +243,12 @@ class BladeCylinderSector:
                 dependent[b + V_X] = [(c + W_X, 1.)]
                 dependent[b + W] = [(c + V, 1.)]
                 dependent[b + W_X] = [(c + V_X, 1.)]
-                dependent[b + W_Y] = [(c + W_Y, -1.), (c + V, 1/R)]
-                dependent[b + W_XY] = [(c + W_XY, -1.), (c + V_X, 1/R)]
+                if self.kinematics == 'sanders':
+                    dependent[b + W_Y] = [(c + W_Y, -1.), (c + V, 1/R)]
+                    dependent[b + W_XY] = [(c + W_XY, -1.), (c + V_X, 1/R)]
+                else:
+                    dependent[b + W_Y] = [(c + W_Y, -1.)]
+                    dependent[b + W_XY] = [(c + W_XY, -1.)]
         if free_axial and n == 0:
             c0 = DOF*skin[0, 0]
             dependent[c0 + U] = [(DOF*skin[0, j] + U, -1.)
@@ -304,7 +328,7 @@ class BladeCylinderSector:
     def _assemble(self, skin_func, skin_size, str_func, str_size):
         nse = len(self.skin_elements)
         nst = len(self.str_elements)
-        r = np.zeros(skin_size*nse + str_size*nst, dtype=sanders.INT)
+        r = np.zeros(skin_size*nse + str_size*nst, dtype=self._sk.INT)
         c = np.zeros_like(r)
         v = np.zeros(r.shape[0], dtype=float)
         k = 0
@@ -333,25 +357,25 @@ class BladeCylinderSector:
 
         def skin(shell, k, r, c, v):
             shell.init_k_KC0 = k
-            sanders.update_KC0(shell, p, w, r, c, v)
+            self._sk.update_KC0(shell, p, w, r, c, v)
 
         def stringer(plate, k, r, c, v):
             plate.init_k_KC0 = k
             bfscplate2d.update_KC0(plate, p, w, r, c, v)
 
-        return self._assemble(skin, sanders.KC0_SPARSE_SIZE, stringer,
+        return self._assemble(skin, self._sk.KC0_SPARSE_SIZE, stringer,
                               bfscplate2d.KC0_SPARSE_SIZE)
 
     def _M_assemble(self):
         def skin(shell, k, r, c, v):
             shell.init_k_M = k
-            sanders.update_M(shell, r, c, v)
+            self._sk.update_M(shell, r, c, v)
 
         def stringer(plate, k, r, c, v):
             plate.init_k_M = k
             bfscplate2d.update_M(plate, r, c, v)
 
-        M = self._assemble(skin, sanders.M_SPARSE_SIZE, stringer,
+        M = self._assemble(skin, self._sk.M_SPARSE_SIZE, stringer,
                            bfscplate2d.M_SPARSE_SIZE)
         if not self.skin_inplane_inertia:
             keep = np.ones(self.N)
@@ -360,25 +384,30 @@ class BladeCylinderSector:
             M = (diags(keep) @ M @ diags(keep)).tocsr()
         return M
 
-    def KG_membrane(self, eps):
+    def KG_membrane(self, eps, lateral=True):
         r"""Geometric stiffness matrix of the membrane state of the uniform
         axial strain ``eps``, `N_{xx} = E h \epsilon` in the skin and `E b_s
         \epsilon` in the stringer, without hoop stress, with the in-plane
-        terms of the stringer of :meth:`KG_inplane`"""
+        terms of the stringer of :meth:`KG_inplane`; ``lateral=False``
+        leaves out the geometric stiffness of the BFSC plate elements of the
+        stringer, the terms of its out-of-plane displacement `W` (the
+        circumferential displacement of the stringer section)"""
         p, w = self.points, self.weights
         Nskin = self.E*self.h*eps
         Nstr = self.E*self.bs*eps if self.stiffened else 0.
 
         def skin(shell, k, r, c, v):
             shell.init_k_KG = k
-            sanders.update_KG_constant_stress(shell, p, w, r, c, v, Nskin,
+            self._sk.update_KG_constant_stress(shell, p, w, r, c, v, Nskin,
                                               0., 0.)
 
         def stringer(plate, k, r, c, v):
+            if not lateral:
+                return
             plate.init_k_KG = k
             bfscplate2d.update_KG_cte_N(Nstr, 0., 0., plate, p, w, r, c, v)
 
-        KG = self._assemble(skin, sanders.KG_SPARSE_SIZE, stringer,
+        KG = self._assemble(skin, self._sk.KG_SPARSE_SIZE, stringer,
                             bfscplate2d.KG_SPARSE_SIZE)
         if not self.stiffened:
             return KG
@@ -394,13 +423,13 @@ class BladeCylinderSector:
 
         def skin(shell, k, r, c, v):
             shell.init_k_KG = k
-            sanders.update_KG(u, shell, p, w, r, c, v)
+            self._sk.update_KG(u, shell, p, w, r, c, v)
 
         def stringer(plate, k, r, c, v):
             plate.init_k_KG = k
             bfscplate2d.update_KG(u, plate, p, w, r, c, v)
 
-        KG = self._assemble(skin, sanders.KG_SPARSE_SIZE, stringer,
+        KG = self._assemble(skin, self._sk.KG_SPARSE_SIZE, stringer,
                             bfscplate2d.KG_SPARSE_SIZE)
         if not self.stiffened:
             return KG
@@ -540,16 +569,18 @@ def frequencies(model, ends, n, k=8):
     return f, modes
 
 
-def buckling_membrane(model, ends, n, k=6):
+def buckling_membrane(model, ends, n, k=6, lateral=True):
     r"""Linear buckling of the harmonic ``n`` with the membrane pre-buckling
     state of a uniform axial strain; returns the critical average axial
-    force per unit circumference `\bar{N} = P/(2 \pi R)` and the modes"""
+    force per unit circumference `\bar{N} = P/(2 \pi R)` and the modes;
+    ``lateral``: see :meth:`BladeCylinderSector.KG_membrane`"""
     eps = -1e-3
-    if not hasattr(model, '_KG_membrane'):
-        model._KG_membrane = model.KG_membrane(eps)
+    key = '_KG_membrane' if lateral else '_KG_membrane_nolateral'
+    if not hasattr(model, key):
+        setattr(model, key, model.KG_membrane(eps, lateral=lateral))
     Zn = model.Z(n, free_axial=(ends == 'SS'))
     K = (Zn.conj().T @ model.KC0() @ Zn).tocsr()
-    KG = (Zn.conj().T @ model._KG_membrane @ Zn).tocsr()
+    KG = (Zn.conj().T @ getattr(model, key) @ Zn).tocsr()
     bu = ~model.constrained(ends)
     lam, X = lowest_eigenpairs(K[bu][:, bu], -KG[bu][:, bu], k)
     ur = np.zeros((model.Nr, X.shape[1]), dtype=X.dtype)
