@@ -81,6 +81,8 @@ User guide
     notebooks/sewall1968_stiffened_cylinder_frequencies.nblink
     notebooks/egle1968_few_stringer_cylinder_frequencies.nblink
     notebooks/card1966_stiffened_cylinder_buckling.nblink
+    notebooks/weller1977_stiffened_cylinder_buckling.nblink
+    notebooks/peterson1959_stiffened_cylinder_buckling.nblink
 
 
 bfsccylinder API
