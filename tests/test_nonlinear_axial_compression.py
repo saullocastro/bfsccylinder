@@ -112,7 +112,7 @@ def test_nonlinear_axial_compression_load_controlled():
 
     load = 50000. # N
 
-    # geometry our FW cylinders
+    # geometry of the filament-wound cylinder
     circ = 2*pi*R # m
 
     nx = int(1.5*ny*L/circ)

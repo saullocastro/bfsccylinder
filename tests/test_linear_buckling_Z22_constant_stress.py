@@ -1,3 +1,44 @@
+r"""Linear buckling of the laminated cylinder Z22 under a constant axial membrane force, Donnell-type kinematics
+
+The cylinder Z22 of Castro et al. (2014), Table 4, ``R = 250`` mm, ``L =
+510`` mm, six plies of 0.125 mm, with the material of Geier and Singh
+(1997). `v` and `w` are constrained at the nodes of both ends and `u` at one
+node of the middle section. The geometric stiffness matrix of
+``update_KG_constant_stress`` is that of the constant membrane force ``Nxx =
+-1`` N/m, without a static analysis, the lowest load multiplier is computed
+with ``lobpcg``, and the critical load, the load multiplier times ``Nxx``
+times `2 \pi R`, is checked within 1 % against -36266 N, a regression value:
+a result of the element of the ``bfsccylinder`` namespace stored in the
+test.
+
+Notes
+-----
+The stacking sequence, from the inner to the outer surface, is that of the
+cylinder Z22 in Table 4 of [1]_, and the elastic constants are those of the
+material Geier1997 in Table 3 of [1]_, from [2]_. The ends have `v = w = 0`,
+the conditions SS2 of Table 1 of [1]_, with `u` constrained at one node of
+the middle section `x = L/2` to remove the rigid-body motions; the number
+of nodes along the axis is made odd, so that a row of nodes lies at `x =
+L/2`. The stored value is a regression value of the element. For
+comparison, Table 6 of [1]_ gives for Z22, with the conditions SS2 and the
+classical laminated plate theory (model CLPT-BC2 of [1]_), 36.35 kN, and
+the test result 34.4 kN of Geier et al.;
+the stored value, 36266 N, is 0.2 % lower than 36.35 kN. Here the geometric
+stiffness matrix is that of a uniform membrane force, without the
+prebuckling solution of the static analysis.
+
+References
+----------
+.. [1] Castro, S. G. P., Mittelstedt, C., Monteiro, F. A. C., Arbelo, M. A.,
+   Ziegmann, G., and Degenhardt, R., Linear buckling predictions of
+   unstiffened laminated composite cylinders and cones under various loading
+   and boundary conditions using semi-analytical models, Composite
+   Structures, 118, 303-315, 2014, doi:10.1016/j.compstruct.2014.07.037.
+.. [2] Geier, B., and Singh, G., Some simple solutions for buckling loads of
+   thin and moderately thick cylindrical shells and panels made of laminated
+   composite material, Aerospace Science and Technology, 1(1), 47-63, 1997,
+   doi:10.1016/S1270-9638(97)90023-7.
+"""
 import sys
 sys.path.append(r'..')
 
@@ -14,7 +55,7 @@ from bfsccylinder.utils import assign_constant_ABD
 
 
 def test_linear_buckling(plot=False):
-    # geometry Z22 Castro 2014
+    # geometry of the cylinder Z22
     L = 0.510 # m
     R = 0.250 # m
     b = 2*pi*R # m
@@ -25,11 +66,11 @@ def test_linear_buckling(plot=False):
     if nx % 2 == 0:
         nx += 1
 
-    # material properties Geier 1997
+    # material properties
     E11 = 123.55e9
     E22 = 8.708e9
     nu12 = 0.319
-    G12 = 5.595e9
+    G12 = 5.695e9
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [+49, -49, +36, -36, 0, 0]
@@ -134,7 +175,7 @@ def test_linear_buckling(plot=False):
 
     print('structural matrices OK')
 
-    # A * x[i] = lambda[i] * M * x[i]
+    # lowest load multipliers of the linear buckling problem
     num_eigvals = 3
     Nu = N - bk.sum()
     if True:
@@ -177,7 +218,7 @@ def test_linear_buckling(plot=False):
     Pcr = load_mult[0]*Nxx*2*np.pi*R
     print('load_mult[0]', load_mult[0])
     print('Pcr top=', Pcr)
-    assert np.isclose(Pcr, -35858, rtol=0.01)
+    assert np.isclose(Pcr, -36266, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)

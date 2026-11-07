@@ -1,3 +1,12 @@
+"""Linear static analysis of a cylinder under a prescribed end shortening, Donnell-type kinematics
+
+An isotropic cylinder, ``R = 0.4``, ``L = 0.8``, ``h = 0.001``, ``E = 70e9``
+and ``nu = 0.33`` (SI units), with `u`, `v` and `w` constrained at the nodes
+of both ends and the end `x = L` compressed by a prescribed axial
+displacement of 1 mm. The stiffness matrix is assembled with ``update_KC0``,
+and the test checks only that the conjugate gradient method converges; the
+extreme values of `w` are printed, not checked.
+"""
 import sys
 sys.path.append(r'..')
 

@@ -273,6 +273,15 @@ cdef class BFSCCylinderSanders(object):
     operator of the Sanders-type curvatures of the Notes of
     :mod:`bfsccylinder.bfsccylinder_sanders`.
 
+    Examples
+    --------
+    >>> from bfsccylinder.sanders import BFSCCylinderSanders
+    >>> shell = BFSCCylinderSanders(nint=4)
+    >>> shell.A11.shape
+    (4, 4)
+    >>> shell.c1
+    -1
+
     """
     cdef public int n1, n2, n3, n4
     cdef public int c1, c2, c3, c4

@@ -37,7 +37,7 @@ def test_nonlinear_axial_compression_load_controlled():
 
     load = 50000. # N
 
-    # geometry our FW cylinders
+    # geometry of the filament-wound cylinder
     circ = 2*pi*R # m
 
     nx = int(1.5*ny*L/circ)
@@ -187,11 +187,23 @@ def test_nonlinear_axial_compression_load_controlled():
     # That is what buys quadratic convergence, now that KC0 + KCNL + KG is
     # the exact Jacobian of fint
     def scaling(vec, D):
-        """
-            A. Peano and R. Riccioni, Automated discretisatton error
-            control in finite element analysis. In Finite Elements m
-            the Commercial Enviror&ent (Editei by J. 26.  Robinson),
-            pp. 368-387. Robinson & Assoc., Verwood.  England (1978)
+        """Norm of ``vec`` weighted by the inverse of the absolute values
+        of ``D``
+
+        Notes
+        -----
+        The scaled norm `(g^T D^{-1} g)^{1/2}` of a vector `g` of the
+        convergence criterion of [1]_, Eqs. (27) and (28), `D` being the
+        diagonal matrix of the leading diagonal entries of the tangent
+        stiffness matrix at the beginning of the load increment. The
+        absolute value guards against negative diagonal entries.
+
+        References
+        ----------
+        .. [1] Crisfield, M. A., A fast incremental/iterative solution
+           procedure that handles "snap-through", Computers & Structures,
+           13(1-3), 55-62, 1981, doi:10.1016/0045-7949(81)90108-5.
+
         """
         return np.sqrt((vec*np.abs(1/D))@vec)
 

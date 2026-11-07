@@ -1,3 +1,70 @@
+r"""Linear buckling of the laminated cylinder Z33 under axial compression, Sanders-type kinematics
+
+The cylinder Z33 of Castro et al. (2014, Composite Structures), Table 4, ``R
+= 250`` mm, ``L = 510`` mm, ten plies of 0.125 mm, with the material of
+Geier and Singh (1997). `v`, `w` and `w_{,x}` and their derivatives along
+the edge, `v_{,y}`, `w_{,y}` and `w_{,xy}`, are constrained at the nodes of
+both ends and `u` at one node of the middle section. The ends are loaded by
+opposite axial forces of total 1000 N, the linear static solution gives the
+geometric stiffness matrix of ``update_KG``, the lowest load multiplier is
+computed with ``lobpcg``, and the critical load, the load multiplier times
+the applied force, is checked within 1 % against 185864.20600249665 N, a
+regression value: a result of the element of ``bfsccylinder.sanders`` stored
+in the test.
+
+Notes
+-----
+The stacking sequence, from the inner to the outer surface, is that of the
+cylinder Z33 in Table 4 of [1]_, and the elastic constants, `E_{11} =
+123.55` GPa, `E_{22} = 8.708` GPa, `\nu_{12} = 0.319` and `G_{12} = 5.695`
+GPa, are those of the material Geier1997 that Table 4 of [1]_ gives for Z33
+(Table 3 of [1]_). They are the ply properties of the test cylinders of
+[3]_, Section V.4 (`E_L = 123550` MPa, `E_T = 8707.9` MPa, `\nu_{LT} =
+0.319`, `G_{LT} = 5696` MPa), and of Z33 in [4]_, Section 3 (`G = 5695` MPa,
+`\nu = 0.32`). The entries of the laminate stiffness matrices `A`, `B` and
+`D` of this test agree in magnitude with those printed for Z33 in Section 3
+of [4]_, to their four digits, except `B_{66}` (4152 N here, 4125 N there).
+The transverse shear moduli do not enter the element, which is based on the
+classical laminated plate theory. The ends have `v = w = w_{,x} = 0`, the
+conditions CC2 of Table 1 of [1]_, with `u` constrained at one node of the
+middle section `x = L/2` to remove the rigid-body motions; the number of
+nodes along the axis is made odd, so that a row of nodes lies at `x = L/2`.
+The derivatives along the edge are constrained with them because the element
+interpolates `w` along an edge `x` = constant from `w` and `w_{,y}` of its
+nodes, and `w_{,x}` from `w_{,x}` and `w_{,xy}` (likewise `u` and `v`): with
+the values alone the conditions hold only at the nodes.
+
+The stored value is a regression value of the element. For comparison, Table
+1 of [4]_ gives for Z33 192 kN with built-in edges, deep shell theory and a
+homogeneous membrane prebuckling state (BACCUS-C4), and the test results 173
+kN and 184 kN; the stored value, 185864 N, is 3.2 % lower than 192 kN. Table
+6 of [2]_ gives 191.67 kN, computed with ABAQUS S8R5 elements and clamped
+ends, but with the elastic constants `E_{11} = 142.5` GPa, `E_{22} = 8.7`
+GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa of its Table 1; the stored
+value is 3.0 % lower. Unlike the built-in edges of BACCUS-C4, the ends of
+this test are free to move axially (CC2).
+
+References
+----------
+.. [1] Castro, S. G. P., Mittelstedt, C., Monteiro, F. A. C., Arbelo, M. A.,
+   Ziegmann, G., and Degenhardt, R., Linear buckling predictions of
+   unstiffened laminated composite cylinders and cones under various loading
+   and boundary conditions using semi-analytical models, Composite
+   Structures, 118, 303-315, 2014, doi:10.1016/j.compstruct.2014.07.037.
+.. [2] Castro, S. G. P., Zimmermann, R., Arbelo, M. A., Khakimova, R.,
+   Hilburger, M. W., and Degenhardt, R., Geometric imperfections and
+   lower-bound methods used to calculate knock-down factors for axially
+   compressed composite cylindrical shells, Thin-Walled Structures, 74,
+   118-132, 2014, doi:10.1016/j.tws.2013.08.011.
+.. [3] Geier, B., and Singh, G., Some simple solutions for buckling loads of
+   thin and moderately thick cylindrical shells and panels made of laminated
+   composite material, Aerospace Science and Technology, 1(1), 47-63, 1997,
+   doi:10.1016/S1270-9638(97)90023-7.
+.. [4] Geier, B., Meyer-Piening, H.-R., and Zimmermann, R., On the influence
+   of laminate stacking on buckling of composite cylindrical shells subjected
+   to axial compression, Composite Structures, 55(4), 467-474, 2002,
+   doi:10.1016/S0263-8223(01)00175-1.
+"""
 import sys
 sys.path.append(r'..')
 
@@ -15,7 +82,7 @@ from bfsccylinder.utils import assign_constant_ABD
 
 
 def test_linear_buckling(plot=False):
-    # geometry Z33 Castro 2014
+    # geometry of the cylinder Z33
     L = 0.510 # m
     R = 0.250 # m
     b = 2*pi*R # m
@@ -26,11 +93,11 @@ def test_linear_buckling(plot=False):
     if nx % 2 == 0:
         nx += 1
 
-    # material properties Geier 1997
-    E11 = 145.5e9
-    E22 = 8.7e9
-    nu12 = 0.28
-    G12 = 5.1e9
+    # material properties
+    E11 = 123.55e9
+    E22 = 8.708e9
+    nu12 = 0.319
+    G12 = 5.695e9
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [0, 0, 19, -19, 37, -37, 45, -45, 51, -51]
@@ -103,18 +170,19 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
-    #SS2 boundary conditions (Castro 2014)
+    # v, w and w_x constrained at both ends, with their derivatives
+    # along the edge v_y, w_y and w_xy
     checkBC = isclose(x, 0) | isclose(x, L)
     #bk[0::DOF] = checkBC
     #bk[1::DOF] = checkBC
     #bk[2::DOF] = checkBC
     bk[3::DOF] = checkBC
     #bk[4::DOF] = checkBC
-    #bk[5::DOF] = checkBC
+    bk[5::DOF] = checkBC
     bk[6::DOF] = checkBC
     bk[7::DOF] = checkBC
-    #bk[8::DOF] = checkBC
-    #bk[9::DOF] = checkBC
+    bk[8::DOF] = checkBC
+    bk[9::DOF] = checkBC
 
     checkBC = isclose(x, L/2) & isclose(y, 0)
     bk[0::DOF] = checkBC
@@ -201,7 +269,7 @@ def test_linear_buckling(plot=False):
         plt.show()
         raise
 
-    # A * x[i] = lambda[i] * M * x[i]
+    # lowest load multipliers of the linear buckling problem
     num_eigvals = 3
     Nu = N - bk.sum()
     if True:
@@ -244,7 +312,7 @@ def test_linear_buckling(plot=False):
     print('linear buckling analysis OK')
     Pcr = load_mult[0]*applied_force
     print('Pcr top=', Pcr)
-    assert isclose(Pcr, 197792.78702484356, rtol=0.01)
+    assert isclose(Pcr, 185864.20600249665, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)

@@ -1,0 +1,6 @@
+{
+    "path": "../../../notebooks/abramovich2003_stiffened_panels.ipynb",
+    "extra-media": [
+        "../../../notebooks/composite_stiffened_shell.py"
+    ]
+}

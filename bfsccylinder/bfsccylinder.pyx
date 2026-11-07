@@ -474,6 +474,15 @@ cdef class BFSCCylinder(object):
     derivatives; the ``update_*`` functions of the module evaluate the same
     operators at each integration point in local variables.
 
+    Examples
+    --------
+    >>> from bfsccylinder import BFSCCylinder
+    >>> shell = BFSCCylinder(nint=4)
+    >>> shell.A11.shape
+    (4, 4)
+    >>> shell.c1
+    -1
+
     """
     cdef public int n1, n2, n3, n4
     cdef public int c1, c2, c3, c4
@@ -1190,6 +1199,32 @@ cpdef void update_KC0(BFSCCylinder shell,
     and ``Bb3_*``, and the `\boldsymbol{A}`, `\boldsymbol{B}` and `\boldsymbol{D}` of that point. KC0 does not
     depend on the displacements: it is the stiffness matrix of a linear static
     analysis and the tangent stiffness matrix at zero displacements.
+
+    Examples
+    --------
+    One element of an isotropic cylinder, its nodes at the first positions
+    of the global vectors:
+
+    >>> import numpy as np
+    >>> from scipy.sparse import coo_matrix
+    >>> from composites import isotropic_plate
+    >>> from bfsccylinder import (BFSCCylinder, update_KC0, DOF, INT, DOUBLE,
+    ...                           KC0_SPARSE_SIZE)
+    >>> from bfsccylinder.quadrature import get_points_weights
+    >>> from bfsccylinder.utils import assign_constant_ABD
+    >>> points, weights = get_points_weights(nint=4)
+    >>> shell = BFSCCylinder(4)
+    >>> shell.c1, shell.c2, shell.c3, shell.c4 = 0, DOF, 2*DOF, 3*DOF
+    >>> shell.lex, shell.ley, shell.R = 0.1, 0.1, 1.
+    >>> prop = isotropic_plate(thickness=0.001, E=70e9, nu=0.3)
+    >>> assign_constant_ABD(shell, prop)
+    >>> KC0r = np.zeros(KC0_SPARSE_SIZE, dtype=INT)
+    >>> KC0c = np.zeros(KC0_SPARSE_SIZE, dtype=INT)
+    >>> KC0v = np.zeros(KC0_SPARSE_SIZE, dtype=DOUBLE)
+    >>> update_KC0(shell, points, weights, KC0r, KC0c, KC0v)
+    >>> KC0 = coo_matrix((KC0v, (KC0r, KC0c)), shape=(4*DOF, 4*DOF)).toarray()
+    >>> np.allclose(KC0, KC0.T)
+    True
 
     """
     cdef int c1, c2, c3, c4, nint, i, j, k
@@ -14941,6 +14976,34 @@ cpdef void update_KG(double [::1] u,
     `\lambda` and the buckling modes `\boldsymbol{\phi}` solve `(\boldsymbol{K}_{C0} + \lambda
     \boldsymbol{K}_G)\boldsymbol{\phi} = \boldsymbol{0}`, with `\boldsymbol{K}_{C0}` of :func:`.update_KC0`.
 
+    Examples
+    --------
+    One element of an isotropic cylinder, its nodes at the first positions
+    of the global vectors, with nodes 2 and 3 displaced by ``u = -1e-5``:
+
+    >>> import numpy as np
+    >>> from scipy.sparse import coo_matrix
+    >>> from composites import isotropic_plate
+    >>> from bfsccylinder import (BFSCCylinder, update_KG, DOF, INT, DOUBLE,
+    ...                           KG_SPARSE_SIZE)
+    >>> from bfsccylinder.quadrature import get_points_weights
+    >>> from bfsccylinder.utils import assign_constant_ABD
+    >>> points, weights = get_points_weights(nint=4)
+    >>> shell = BFSCCylinder(4)
+    >>> shell.c1, shell.c2, shell.c3, shell.c4 = 0, DOF, 2*DOF, 3*DOF
+    >>> shell.lex, shell.ley, shell.R = 0.1, 0.1, 1.
+    >>> prop = isotropic_plate(thickness=0.001, E=70e9, nu=0.3)
+    >>> assign_constant_ABD(shell, prop)
+    >>> u = np.zeros(4*DOF)
+    >>> u[DOF] = u[2*DOF] = -1e-5
+    >>> KGr = np.zeros(KG_SPARSE_SIZE, dtype=INT)
+    >>> KGc = np.zeros(KG_SPARSE_SIZE, dtype=INT)
+    >>> KGv = np.zeros(KG_SPARSE_SIZE, dtype=DOUBLE)
+    >>> update_KG(u, shell, points, weights, KGr, KGc, KGv)
+    >>> KG = coo_matrix((KGv, (KGr, KGc)), shape=(4*DOF, 4*DOF)).toarray()
+    >>> np.allclose(KG, KG.T)
+    True
+
     """
     cdef double *ue
     cdef int c1, c2, c3, c4, i, j, k, nint
@@ -17903,6 +17966,34 @@ cpdef void update_M(BFSCCylinder shell,
     inertia uses the Sanders-type rotation `-w_{,y} + v/R`, which couples
     `v` and `w`.
 
+    Examples
+    --------
+    One element of an isotropic cylinder, its nodes at the first positions
+    of the global vectors; the entries between the degrees of freedom `u` of
+    the nodes sum to the mass ``rho*h*lex*ley`` of the element:
+
+    >>> import numpy as np
+    >>> from scipy.sparse import coo_matrix
+    >>> from composites import isotropic_plate
+    >>> from bfsccylinder import (BFSCCylinder, update_M, DOF, INT, DOUBLE,
+    ...                           M_SPARSE_SIZE)
+    >>> from bfsccylinder.quadrature import get_points_weights
+    >>> from bfsccylinder.utils import assign_constant_ABD
+    >>> points, weights = get_points_weights(nint=4)
+    >>> shell = BFSCCylinder(4)
+    >>> shell.c1, shell.c2, shell.c3, shell.c4 = 0, DOF, 2*DOF, 3*DOF
+    >>> shell.lex, shell.ley, shell.R = 0.1, 0.1, 1.
+    >>> prop = isotropic_plate(thickness=0.001, E=70e9, nu=0.3)
+    >>> assign_constant_ABD(shell, prop)
+    >>> shell.rho, shell.h = 2.7e3, 0.001
+    >>> Mr = np.zeros(M_SPARSE_SIZE, dtype=INT)
+    >>> Mc = np.zeros(M_SPARSE_SIZE, dtype=INT)
+    >>> Mv = np.zeros(M_SPARSE_SIZE, dtype=DOUBLE)
+    >>> update_M(shell, Mr, Mc, Mv)
+    >>> M = coo_matrix((Mv, (Mr, Mc)), shape=(4*DOF, 4*DOF)).toarray()
+    >>> print(round(M[0::DOF, 0::DOF].sum(), 6))
+    0.027
+
     """
     cdef int c1, c2, c3, c4, k
     cdef double lex, ley, h, rho
@@ -20717,6 +20808,31 @@ cpdef void update_fint(double [::1] u,
     the sum of the matrices of :func:`.update_KC0`, :func:`.update_KCNL` and
     :func:`.update_KG` computed with the same ``u``, ``points`` and
     ``weights``. At equilibrium `\boldsymbol{F}_{int}` balances the external forces.
+
+    Examples
+    --------
+    One element of an isotropic cylinder, its nodes at the first positions
+    of the global vectors, with nodes 2 and 3 displaced by ``u = -1e-5``:
+
+    >>> import numpy as np
+    >>> from scipy.sparse import coo_matrix
+    >>> from composites import isotropic_plate
+    >>> from bfsccylinder import (BFSCCylinder, update_fint, DOF, INT, DOUBLE,
+    ...                           KC0_SPARSE_SIZE)
+    >>> from bfsccylinder.quadrature import get_points_weights
+    >>> from bfsccylinder.utils import assign_constant_ABD
+    >>> points, weights = get_points_weights(nint=4)
+    >>> shell = BFSCCylinder(4)
+    >>> shell.c1, shell.c2, shell.c3, shell.c4 = 0, DOF, 2*DOF, 3*DOF
+    >>> shell.lex, shell.ley, shell.R = 0.1, 0.1, 1.
+    >>> prop = isotropic_plate(thickness=0.001, E=70e9, nu=0.3)
+    >>> assign_constant_ABD(shell, prop)
+    >>> u = np.zeros(4*DOF)
+    >>> u[DOF] = u[2*DOF] = -1e-5
+    >>> fint = np.zeros(4*DOF)
+    >>> update_fint(u, shell, points, weights, fint)
+    >>> print(round(fint[0], 3))
+    461.538
 
     """
     cdef double *ue
