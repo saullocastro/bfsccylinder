@@ -83,6 +83,7 @@ User guide
     notebooks/card1966_stiffened_cylinder_buckling.nblink
     notebooks/weller1977_stiffened_cylinder_buckling.nblink
     notebooks/peterson1959_stiffened_cylinder_buckling.nblink
+    notebooks/singer1971_stiffened_cylinder_buckling.nblink
 
 
 bfsccylinder API
