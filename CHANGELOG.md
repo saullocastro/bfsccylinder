@@ -2,6 +2,22 @@
 
 The dates of the released versions are those of their tagged commits.
 
+## Unreleased
+
+### Tests
+
+- New `tests/test_peterson1959_z_stiffened.py`, about 20 s, with its module
+  `tests/z_cylinder_sector.py`: one stringer pitch with cyclic symmetry of
+  a cylinder with Z-section stringers made of three plates (the attached
+  flange in a two-layer laminate of the skin, the web and the free flange
+  as `BFSCPlate2D` plates of bfscplate2d), clamped ends and the membrane
+  pre-buckling state. Cylinders 1 and 2 of NASA Memo 2-12-59L (120
+  internal stringers, `R` = 23.74 in) buckle at 2128.4 and 3196.1 lb/in
+  with 12 and 13 circumferential waves; the measured loads, 270 and 413
+  kips, are 85.1 and 86.6 % of these (checked between 70 and 100 %). The
+  test is skipped when bfscplate2d is not installed. The module is also
+  used by the notebook `peterson1959_stiffened_cylinder_buckling.ipynb`.
+
 ## 0.7.1 (2026-11-03)
 
 ### Tutorials
