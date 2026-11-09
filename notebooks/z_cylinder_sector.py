@@ -1,9 +1,9 @@
 r"""Periodic sector of a cylinder with Z-section stringers made of three plates
 
-Model of ``tests/test_peterson1959_z_stiffened.py``. A circular cylinder
-with ``nstringers`` identical Z-section stringers, equally spaced, is
-modelled by one stringer pitch, the sector `0 \le \theta \le \phi`, `\phi =
-2 \pi/n_s`, with cyclic symmetry, one harmonic `n` at a time. The skin is
+A circular cylinder with ``nstringers`` identical Z-section stringers,
+equally spaced, is modelled by one stringer pitch, the sector `0 \le \theta
+\le \phi`, `\phi = 2 \pi/n_s`, with cyclic symmetry, one harmonic `n` at a
+time. The skin is
 meshed with :class:`bfsccylinder.sanders.BFSCCylinderSanders`; the Z is
 assembled from three plates of the same thickness `t_z`, with the
 dimensions of their middle lines (:func:`z_midlines`):
