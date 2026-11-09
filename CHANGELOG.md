@@ -14,7 +14,7 @@ The dates of the released versions are those of their tagged commits.
   simply supported ends and the membrane pre-buckling state. Cylinders 1
   and 2 of NASA Memo 2-12-59L (120 internal stringers, `R` = 23.74 in)
   buckle at 2128.4 and 3196.1 lb/in with 12 and 13 circumferential waves
-  (coarse mesh); the measured loads, 270 and 413 kips, are 85.1 and 86.6 %
+  (coarse mesh); the measured loads, 270 and 413 kips, are 85.0 and 86.6 %
   of these, inside the range of the tests of NASA TN D-3639, Table I,
   against their clamped smeared theory (71 to 96 %). No test of this
   repository imports bfscplate2d.
