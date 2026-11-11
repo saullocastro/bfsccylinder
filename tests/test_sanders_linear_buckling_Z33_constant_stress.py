@@ -6,11 +6,16 @@ Geier and Singh (1997). `u`, `v`, `w` and `w_{,x}` and their derivatives
 along the edge, `u_{,y}`, `v_{,y}`, `w_{,y}` and `w_{,xy}`, are constrained
 at the nodes of both ends. The geometric stiffness matrix of
 ``update_KG_constant_stress`` is that of the constant membrane force ``Nxx =
--1`` N/m, without a static analysis, the lowest load multiplier is computed
-with ``eigsh``, and the critical load, the load multiplier times ``Nxx``
-times `2 \pi R`, is checked within 1 % against -200606.74858179153 N, a
-regression value: a result of the element of ``bfsccylinder.sanders`` stored
-in the test.
+-1`` N/m, without a static analysis. The four lowest load multipliers are
+computed with ``eigsh`` in the shift-invert mode ``'buckling'``, from a
+fixed starting vector, with the shift at half the load multiplier of the
+stored value, and sorted; the lowest one is verified by the residual of its
+eigenpair and by the number of negative pivots of `K + s K_G`
+(``negative_pivots`` of ``natural_frequency_solver.py``), zero for `s` just
+below it, so that no lower load multiplier is missing. The critical load,
+the lowest load multiplier times ``Nxx`` times `2 \pi R`, is checked within
+1 % against -199872.11 N, a regression value: a result of the element of
+``bfsccylinder.sanders`` stored in the test.
 
 Notes
 -----
@@ -35,11 +40,11 @@ hold only at the nodes.
 The stored value is a regression value of the element. For comparison, Table
 1 of [4]_ gives for Z33 192 kN with built-in edges, deep shell theory and a
 homogeneous membrane prebuckling state (BACCUS-C4), and the test results 173
-kN and 184 kN; the stored value, 200607 N, is 4.5 % higher than 192 kN.
+kN and 184 kN; the stored value, 199872 N, is 4.1 % higher than 192 kN.
 Table 6 of [2]_ gives 191.67 kN, computed with ABAQUS S8R5 elements and
 clamped ends, but with the elastic constants `E_{11} = 142.5` GPa, `E_{22} =
 8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa of its Table 1; the
-stored value is 4.7 % higher. The difference to 192 kN contains the
+stored value is 4.3 % higher. The difference to 192 kN contains the
 discretisation error of the 50 nodes around the circumference of this test;
 here, as in BACCUS-C4, the geometric stiffness matrix is that of a uniform
 membrane force.
@@ -71,7 +76,7 @@ sys.path.append(r'..')
 import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix, diags
-from scipy.sparse.linalg import eigsh, cg, lobpcg, LinearOperator, spilu, spsolve
+from scipy.sparse.linalg import eigsh
 from composites import laminated_plate
 
 from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0,
@@ -79,6 +84,8 @@ from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0,
                                   KC0_SPARSE_SIZE, KG_SPARSE_SIZE)
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
+
+from natural_frequency_solver import negative_pivots
 
 
 def test_linear_buckling(plot=False):
@@ -197,49 +204,34 @@ def test_linear_buckling(plot=False):
 
     print('structural matrices OK')
 
-    # lowest load multipliers of the linear buckling problem
-    num_eigvals = 3
-    Nu = N - bk.sum()
-    if False:
-        #NOTE lobpcg, not used
-        PREC = 1/Kuu.diagonal().max()
-        PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0, drop_tol=1e-8,
-                fill_factor=50)
-        print('spilu OK')
-        def matvec(x):
-            return PREC2.solve(x)
-        Ainv = LinearOperator(matvec=matvec, shape=(Nu, Nu))
-        maxiter = 1000
-        X = np.random.default_rng(0).random((Nu, num_eigvals)) - 0.5
-        X /= np.linalg.norm(X, axis=0)
-        #NOTE default tolerance is too large
-        tol = 1e-6
-        eigvals, eigvecsu, hist = lobpcg(A=PREC*Kuu, B=-PREC*KGuu, X=X, M=Ainv, largest=False,
-                maxiter=maxiter, retResidualNormsHistory=True, tol=tol)
-        assert len(hist) <= maxiter, 'did not converge'
-        load_mult = eigvals
-    else:
-        if True:
-            #NOTE shift-invert eigsh, used for the stored value
-            eigvals, eigvecsu = eigsh(A=Kuu, k=num_eigvals, which='SM', M=KGuu,
-                    tol=1e-9, sigma=1., mode='buckling')
-            load_mult = -eigvals
-        else:
-            #NOTE this is giving close but varying results for each run
-            PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0)
-            print('spilu OK')
-            def matvec(x):
-                return PREC2.solve(x)
-            Minv = LinearOperator(matvec=matvec, shape=(Nu, Nu))
-            eigvals, eigvecsu = eigsh(A=-PREC*KGuu, k=num_eigvals, which='LM',
-                    M=PREC*Kuu, Minv=Minv)
-            load_mult = 1./eigvals
+    # lowest load multipliers: shift-invert eigsh in the mode 'buckling',
+    # from a fixed starting vector, with the shift at half the load
+    # multiplier of the stored critical load, sorted in ascending order
+    Pcr_ref = -199872.11
+    num_eigvals = 4
+    sigma = -0.5*Pcr_ref/(Nxx*2*np.pi*R)
+    eigvals, eigvecsu = eigsh(A=Kuu, k=num_eigvals, which='LM', M=KGuu,
+            sigma=sigma, mode='buckling', v0=np.ones(Kuu.shape[0]))
+    load_mult = -eigvals
+    order = np.argsort(load_mult)
+    load_mult = load_mult[order]
+    eigvecsu = eigvecsu[:, order]
+
+    # verification: relative residual of the lowest eigenpair, and no load
+    # multiplier below the lowest one, from the number of negative pivots
+    # of Kuu + s*KGuu with s just below it
+    x = eigvecsu[:, 0]
+    Kx = Kuu @ x
+    res = np.linalg.norm(Kx + load_mult[0]*(KGuu @ x))/np.linalg.norm(Kx)
+    assert res < 1e-8, 'eigenpair residual %.1e' % res
+    s = load_mult[0]*(1 - 1e-6)
+    assert negative_pivots(Kuu + s*KGuu) == 0, 'lower load multiplier missing'
 
     print('linear buckling analysis OK')
     Pcr = load_mult[0]*Nxx*2*np.pi*R
     print('load_mult[0]', load_mult[0])
     print('Pcr top=', Pcr)
-    assert np.isclose(Pcr, -200606.74858179153, rtol=0.01)
+    assert np.isclose(Pcr, Pcr_ref, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)
