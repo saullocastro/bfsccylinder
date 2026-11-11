@@ -18,6 +18,12 @@ The dates of the released versions are those of their tagged commits.
   of these, inside the range of the tests of NASA TN D-3639, Table I,
   against their clamped smeared theory (71 to 96 %). No test of this
   repository imports bfscplate2d.
+- `ex_kinematics.ipynb` and `ex_linear_buckling.ipynb` solve the linear
+  buckling problems as the Z33 constant-stress tests and show the lowest
+  buckling loads: Z33 under a constant membrane force 201.10 kN
+  (Donnell-type) and 199.87 kN (Sanders-type), Z33 with the static
+  prebuckling state 201.06 kN, Z18 228.47 kN (before 201.75, 200.61, 201.69
+  and 229.06 kN, the second-lowest load multipliers).
 - New notebooks `moore1944_ring_cylinders.ipynb` and
   `moore1944_stiffened_cylinders.ipynb`, with the module
   `notebooks/moore1944_utils.py`: buckling under torsion of the 24S-T
@@ -41,6 +47,18 @@ The dates of the released versions are those of their tagged commits.
   bands) of Moore and Wescoat (1944), within 1 % of the values of the
   converged sector models, and equal multipliers for both signs of the
   torque. It does not import bfscplate2d.
+- The linear buckling tests of the cylinder Z33 under a constant membrane
+  force, `test_linear_buckling_Z33_constant_stress.py` and
+  `test_sanders_linear_buckling_Z33_constant_stress.py`, are deterministic
+  and check the lowest load multiplier: `eigsh` in the mode `'buckling'`
+  from a fixed starting vector, with the shift at half the stored load
+  multiplier, the residual of the eigenpair checked and, by Sylvester's law
+  of inertia, no lower load multiplier missing. Before, the tests took the
+  highest of three load multipliers returned from a random starting vector
+  with the shift 1, and failed in about 15 to 20 % of the runs. The stored
+  values were the second-lowest double load multipliers: -201751 N becomes
+  -201104 N (Donnell-type), -200606.75 N becomes -199872.11 N
+  (Sanders-type).
 
 ## 0.7.1 (2026-11-03)
 
