@@ -84,6 +84,8 @@ User guide
     notebooks/weller1977_stiffened_cylinder_buckling.nblink
     notebooks/peterson1959_stiffened_cylinder_buckling.nblink
     notebooks/singer1971_stiffened_cylinder_buckling.nblink
+    notebooks/moore1944_ring_cylinders.nblink
+    notebooks/moore1944_stiffened_cylinders.nblink
 
 
 bfsccylinder API

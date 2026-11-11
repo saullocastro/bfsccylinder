@@ -18,6 +18,29 @@ The dates of the released versions are those of their tagged commits.
   of these, inside the range of the tests of NASA TN D-3639, Table I,
   against their clamped smeared theory (71 to 96 %). No test of this
   repository imports bfscplate2d.
+- New notebooks `moore1944_ring_cylinders.ipynb` and
+  `moore1944_stiffened_cylinders.ipynb`, with the module
+  `notebooks/moore1944_utils.py`: buckling under torsion of the 24S-T
+  cylinders of NACA ARR 4E31 (Moore and Wescoat, 1944), Tables I and II, on
+  the periodic sector of `channel_cylinder_sector.py` with a constant
+  membrane shear pre-stress. Rings (1/2 x 1/2 in bars inside the skin) are
+  bands of skin elements with a ring layer on the inner face; the channel
+  stringers outside are plates (webs, flat lips) on a two-layer base.
+  Ring-only specimens 16, 17, 18, 13 and 13A, one Bloch index per
+  circumferential wave number: 1403, 1592, 2252, 2810 and 2829 psi with
+  hinged ends, -2.1 to +5.9 % from Moore's Donnell column and 10 to 32 %
+  above the observed stresses; the constant shear and a prescribed end
+  rotation give the same buckling torque. Stiffened specimens 19, 14, 20,
+  15 and 21, one stringer pitch: 2619, 3134, 3970, 4118 and 4422 psi, 6 to
+  38 % above the observed first panel buckling.
+
+### Tests
+
+- New `tests/test_moore1944_torsion.py`: first buckling stress in torsion
+  of specimen 18 (rings) and of specimen 19 (rings and stringers as skin
+  bands) of Moore and Wescoat (1944), within 1 % of the values of the
+  converged sector models, and equal multipliers for both signs of the
+  torque. It does not import bfscplate2d.
 
 ## 0.7.1 (2026-11-03)
 
