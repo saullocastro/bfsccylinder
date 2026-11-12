@@ -401,11 +401,11 @@ def test_finite_cylinder_shear_diaphragm(kinematics, prestate):
     stiffness, a reduction of about 9e-3, is checked for the 6 x 32 mesh
     within 2e-4 against the ratio of the closed forms of the number of
     circumferential waves ``n`` of the finite element modes, the same for
-    both loads (relative differences below 1e-4 with the 6 x 32 mesh). For the Sanders-type kinematics under
-    the lateral pressure the critical ``n`` of the closed form is 10 for the
-    follower and 11 for the dead pressure, the load multipliers of ``n =
-    10`` and ``11`` differing by 6e-4 and 1e-3, less than the
-    discretization error."""
+    both loads (relative differences below 1e-4 with the 6 x 32 mesh). For
+    the Sanders-type kinematics under the lateral pressure the critical
+    ``n`` of the closed form is 10 for the follower and 11 for the dead
+    pressure, the load multipliers of ``n = 10`` and ``11`` differing by
+    6e-4 and 1e-3, less than the discretization error."""
     lam = {}
     for nx, ny in ((5, 24), (7, 32)):
         lam[ny], waves, ref = cylinder_buckling(kinematics, prestate, nx=nx,
