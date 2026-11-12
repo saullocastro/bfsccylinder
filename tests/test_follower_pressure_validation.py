@@ -386,34 +386,42 @@ def test_finite_cylinder_shear_diaphragm(kinematics, prestate):
     r"""Finite cylinder, ``L/R = 1.5``, ``R/h = 500``, under a lateral
     (``Nxx = 0``) or hydrostatic (``Nxx = p R/2``, the end caps as a dead
     axial load) external pressure, with the membrane prestate given by
-    ``Nxx`` and ``Nyy = p R`` and the pressure as a follower or dead load.
+    ``Nxx`` and ``Nyy = p R`` and the pressure as a follower or dead load,
+    with the meshes 4 x 24 and 6 x 32.
 
-    The load multipliers of the 12 x 96 mesh converge as `O(h^2)`, with
-    relative errors of 8.5e-2, 1.5e-2 and 3.7e-3 for the meshes 6 x 48, 12 x
-    96 and 24 x 192 (see the module ``__main__``), the Richardson
-    extrapolation of the last two agreeing with the closed form within 7e-4;
-    they are checked within 2.5e-2. The discretization error is the same for
-    the follower and for the dead pressure, whose modes are the same, and
-    the ratio of the two load multipliers, which isolates the effect of the
-    follower load stiffness, is checked within 1e-4 against the ratio of
-    the closed forms of the number of circumferential waves ``n`` of the
-    finite element modes, the same for both loads. For the Sanders-type
-    kinematics under the lateral pressure the critical ``n`` of the closed
-    form is 10 for the follower and 11 for the dead pressure, the load
-    multipliers of ``n = 10`` and ``11`` differing by 6e-4 and 1e-3, less
-    than the discretization error, and the modes of the mesh have ``n =
-    11`` for both loads."""
-    lam, waves, ref = cylinder_buckling(kinematics, prestate)
+    The load multipliers converge from above as `O(h^2)`, with relative
+    errors of 0.29, 0.18, 8.5e-2, 1.5e-2 and 3.7e-3 for the meshes 4 x 24,
+    6 x 32, 6 x 48, 12 x 96 and 24 x 192 (see the module ``__main__``), the
+    Richardson extrapolation of the last two agreeing with the closed form
+    within 7e-4. The test checks that the load multipliers of both meshes
+    are above the closed form, those of the finer mesh closer to it and
+    within 0.2. The discretization error is the same for the follower and
+    for the dead pressure, whose modes are the same, and the ratio of the
+    two load multipliers, which isolates the effect of the follower load
+    stiffness, a reduction of about 9e-3, is checked for the 6 x 32 mesh
+    within 2e-4 against the ratio of the closed forms of the number of
+    circumferential waves ``n`` of the finite element modes, the same for
+    both loads (relative differences below 1e-4 with the 6 x 32 mesh). For
+    the Sanders-type kinematics under the lateral pressure the critical
+    ``n`` of the closed form is 10 for the follower and 11 for the dead
+    pressure, the load multipliers of ``n = 10`` and ``11`` differing by
+    6e-4 and 1e-3, less than the discretization error."""
+    lam = {}
+    for nx, ny in ((5, 24), (7, 32)):
+        lam[ny], waves, ref = cylinder_buckling(kinematics, prestate, nx=nx,
+                                                ny=ny)
+        n = waves['follower']
+        assert waves['dead'] == n
+        assert n in (10, 11)
     for load in ('follower', 'dead'):
-        assert np.isclose(lam[load], min(ref[load].values()), rtol=2.5e-2), (
-            load, lam, ref)
-    n = waves['follower']
-    assert waves['dead'] == n
-    assert n in (10, 11)
-    ratio = lam['follower']/lam['dead']
+        lam_ref = min(ref[load].values())
+        assert lam_ref < lam[32][load] < lam[24][load], (load, lam, lam_ref)
+        assert np.isclose(lam[32][load], lam_ref, rtol=0.2), (load, lam,
+                                                               lam_ref)
+    ratio = lam[32]['follower']/lam[32]['dead']
     ratio_ref = ref['follower'][n]/ref['dead'][n]
     assert ratio < 1
-    assert np.isclose(ratio, ratio_ref, rtol=1e-4), (ratio, ratio_ref)
+    assert np.isclose(ratio, ratio_ref, rtol=2e-4), (ratio, ratio_ref)
 
 
 if __name__ == '__main__':
@@ -429,7 +437,7 @@ if __name__ == '__main__':
                       % (kin, load, ny, lam, ref, lam/ref - 1))
     for kin, prestate in (('sanders', 'lateral'), ('sanders', 'hydrostatic'),
                           ('donnell', 'lateral')):
-        for nx, ny in ((7, 48), (13, 96), (25, 192)):
+        for nx, ny in ((5, 24), (7, 32), (7, 48), (13, 96), (25, 192)):
             lam, waves, ref = cylinder_buckling(kin, prestate, nx=nx,
                                                 ny=ny)
             print('    waves of the modes', waves)

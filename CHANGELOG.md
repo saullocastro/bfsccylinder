@@ -42,6 +42,13 @@ The dates of the released versions are those of their tagged commits.
 
 ### Tests
 
+- `test_finite_cylinder_shear_diaphragm` of
+  `tests/test_follower_pressure_validation.py` uses the meshes 4 x 24 and
+  6 x 32 (a few seconds per case): load multipliers above the closed form,
+  decreasing with the mesh and within 20 % of it, and the ratio of the
+  follower to the dead load multiplier within 2e-4 of the closed form. The
+  comparison of the 12 x 96 mesh with the closed form is in the notebook
+  `ex_follower_pressure.ipynb`.
 - New `tests/test_moore1944_torsion.py`: first buckling stress in torsion
   of specimen 18 (rings) and of specimen 19 (rings and stringers as skin
   bands) of Moore and Wescoat (1944), within 1 % of the values of the
