@@ -1,0 +1,6 @@
+{
+    "path": "../../../notebooks/lanzi2003_stiffened_cylinder.ipynb",
+    "extra-media": [
+        "../../../notebooks/composite_stiffened_shell.py"
+    ]
+}

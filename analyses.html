@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Analyses &#8212; bfsccylinder 0.7.1 documentation</title>
+    <title>7. Analyses &#8212; bfsccylinder 0.7.2 documentation</title>
   
   
   
@@ -30,6 +30,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
@@ -37,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=5a057da9"></script>
+    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +48,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Follower pressure" href="follower_pressure.html" />
-    <link rel="prev" title="Assembling a model" href="assembling.html" />
+    <link rel="next" title="8. Conventions and limits" href="conventions.html" />
+    <link rel="prev" title="6. Assembling a model" href="assembling.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.1" />
+  <meta name="docsearch:version" content="0.7.2" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -120,7 +121,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.1 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
   
 </a></div>
     
@@ -135,29 +136,29 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    Analyses
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -177,57 +178,169 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -249,6 +362,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -336,15 +456,36 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
   </a>
 </li>
 
@@ -364,64 +505,155 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="follower_pressure.html">
-    Follower pressure
+  <a class="nav-link nav-internal" href="conventions.html">
+    Conventions and limits
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_kinematics.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -443,6 +675,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -527,7 +766,7 @@
         <i class="fa-solid fa-house"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Analyses</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">7. </span>Analyses</span></li>
   </ul>
 </nav>
 </div>
@@ -545,266 +784,277 @@
                 <article class="bd-article">
                   
   <section id="analyses">
-<h1>Analyses<a class="headerlink" href="#analyses" title="Link to this heading">#</a></h1>
-<p>The matrices and vectors of <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>, restricted to the unknown
-degrees of freedom <code class="docutils literal notranslate"><span class="pre">bu</span></code>, give the systems of the analyses below, solved
-with SciPy as in the tests, or with structsolve, see <a class="reference internal" href="#id1">Solving with
-structsolve</a>. The functions are those of both kinematics, see
-<a class="reference internal" href="kinematics.html"><span class="doc">Donnell-type and Sanders-type kinematics</span></a>, and the theory of each matrix is in the Notes of its
-function.</p>
+<h1><span class="section-number">7. </span>Analyses<a class="headerlink" href="#analyses" title="Link to this heading">#</a></h1>
+<p>The element gives the matrices and vectors of <a class="reference internal" href="matrices.html"><span class="doc">Element matrices and internal forces</span></a>; the global
+systems are assembled as in <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a> and solved with SciPy or with
+structsolve. This chapter derives the systems of the four analyses from the
+equilibrium of the shell, for either kinematics, and states what each
+assumes.</p>
+<section id="equilibrium">
+<h2><span class="section-number">7.1. </span>Equilibrium<a class="headerlink" href="#equilibrium" title="Link to this heading">#</a></h2>
+<p>With the global displacement vector <span class="math notranslate nohighlight">\(\boldsymbol{u}\)</span>, the internal forces
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}(\boldsymbol{u})\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a>, the gradient
+of the strain energy, and the external forces <span class="math notranslate nohighlight">\(\lambda
+\boldsymbol{F}_{ext}\)</span> of a reference load scaled by the load multiplier
+<span class="math notranslate nohighlight">\(\lambda\)</span>, the principle of virtual work gives the residual</p>
+<div class="math notranslate nohighlight" id="equation-an-residual">
+<span class="eqno">(7.1)<a class="headerlink" href="#equation-an-residual" title="Link to this equation">#</a></span>\[\boldsymbol{R}(\boldsymbol{u}, \lambda) =
+\boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda \boldsymbol{F}_{ext} =
+\boldsymbol{0}\]</div>
+<p>over the unknown degrees of freedom, with the Jacobian
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_T(\boldsymbol{u})\)</span> of Eq. <a class="reference internal" href="matrices.html#equation-mat-kt">(4.4)</a>. For a follower
+pressure, <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span> depends on <span class="math notranslate nohighlight">\(\boldsymbol{u}\)</span> and the
+Jacobian has the load stiffness matrix as well, Eq. <a class="reference internal" href="follower_pressure.html#equation-fp-residual">(5.7)</a>. The
+analyses below are this equation, its linearisation, or its stability.</p>
+</section>
 <section id="linear-static-analysis">
-<h2>Linear static analysis<a class="headerlink" href="#linear-static-analysis" title="Link to this heading">#</a></h2>
-<div class="math notranslate nohighlight">
-\[\boldsymbol{K}_{C0}\boldsymbol{u} = \boldsymbol{F}_{ext}\]</div>
-<p>with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a> and the force vector or the
-prescribed displacements of <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>. The tests solve it with
-<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.spsolve</span></code> or with the conjugate gradient method of
-<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.cg</span></code>, with the matrix and the right-hand side scaled
-by a scalar, see <a class="reference internal" href="ex_linear_static.html"><span class="doc">Linear static analysis</span></a>.</p>
+<h2><span class="section-number">7.2. </span>Linear static analysis<a class="headerlink" href="#linear-static-analysis" title="Link to this heading">#</a></h2>
+<p>For small displacements, <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int} = \boldsymbol{K}_{C0}
+\boldsymbol{u}\)</span> and</p>
+<div class="math notranslate nohighlight" id="equation-an-linear-static">
+<span class="eqno">(7.2)<a class="headerlink" href="#equation-an-linear-static" title="Link to this equation">#</a></span>\[\boldsymbol{K}_{C0} \boldsymbol{u} = \boldsymbol{F}_{ext}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, symmetric and positive
+definite once the rigid-body motions are constrained. The degrees of
+freedom are partitioned into the unknown ones, <span class="math notranslate nohighlight">\(u\)</span>, and the constrained
+ones, <span class="math notranslate nohighlight">\(k\)</span>, with the known values <span class="math notranslate nohighlight">\(\bar{\boldsymbol{u}}_k\)</span>, zero for a
+support and nonzero for a prescribed displacement:</p>
+<div class="math notranslate nohighlight" id="equation-an-partition">
+<span class="eqno">(7.3)<a class="headerlink" href="#equation-an-partition" title="Link to this equation">#</a></span>\[\boldsymbol{K}_{uu} \boldsymbol{u}_u = \boldsymbol{F}_u -
+\boldsymbol{K}_{uk} \bar{\boldsymbol{u}}_k, \qquad
+\boldsymbol{F}_k = \boldsymbol{K}_{uk}^\top \boldsymbol{u}_u +
+\boldsymbol{K}_{kk} \bar{\boldsymbol{u}}_k\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{F}_k\)</span> the reaction forces. A prescribed displacement,
+e.g. the axial shortening of one end, is the load of the analysis, and the
+sum of its reactions is the corresponding force. A pressure enters through
+the force vector of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> at <span class="math notranslate nohighlight">\(\boldsymbol{u} =
+\boldsymbol{0}\)</span>, the consistent load vector of a dead pressure.</p>
 </section>
 <section id="linear-buckling-analysis">
-<h2>Linear buckling analysis<a class="headerlink" href="#linear-buckling-analysis" title="Link to this heading">#</a></h2>
-<div class="math notranslate nohighlight">
-\[(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} = \boldsymbol{0}\]</div>
-<p>The critical loads are <span class="math notranslate nohighlight">\(\lambda\)</span> times the load that gives <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>, and
-<span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span> are the buckling modes. <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is computed in one of two ways:</p>
+<h2><span class="section-number">7.3. </span>Linear buckling analysis<a class="headerlink" href="#linear-buckling-analysis" title="Link to this heading">#</a></h2>
+<p>A load <span class="math notranslate nohighlight">\(\lambda \boldsymbol{F}_{ext}\)</span> produces, in the linear range, the
+prebuckling state <span class="math notranslate nohighlight">\(\lambda \boldsymbol{u}_0\)</span>, with <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> the
+linear static solution of the reference load. The equilibrium becomes
+neutral, and the shell buckles, when the tangent stiffness matrix of this
+state is singular. Since <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is homogeneous of degree one in
+the displacements, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\lambda \boldsymbol{u}_0) = \lambda
+\boldsymbol{K}_G(\boldsymbol{u}_0)\)</span>, and neglecting the terms of the
+prebuckling rotations in <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}\)</span>,
+which vanish for a membrane prebuckling state, the tangent stiffness matrix
+is <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G(\boldsymbol{u}_0)\)</span> and</p>
+<div class="math notranslate nohighlight" id="equation-an-linear-buckling">
+<span class="eqno">(7.4)<a class="headerlink" href="#equation-an-linear-buckling" title="Link to this equation">#</a></span>\[\left( \boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G \right)
+\boldsymbol{\phi} = \boldsymbol{0}\]</div>
+<p>The eigenvalues <span class="math notranslate nohighlight">\(\lambda\)</span> are the load multipliers of the reference load,
+the critical load being the one of smallest magnitude, and the
+eigenvectors <span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span> the buckling modes. <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is
+computed in one of two ways:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, from the displacements <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> of the linear static
-solution of a reference load or prescribed displacement, such that the
-membrane stress resultants are those of the shell with its boundary
-conditions. Since <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is linear in <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, <span class="math notranslate nohighlight">\(\lambda\)</span> multiplies
-the reference load, e.g. the sum of the reaction forces of a prescribed
-shortening;</p></li>
-<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG_constant_stress" title="bfsccylinder.bfsccylinder.update_KG_constant_stress"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_constant_stress()</span></code></a>, from the membrane stress resultants
-<code class="docutils literal notranslate"><span class="pre">Nxx</span></code>, <code class="docutils literal notranslate"><span class="pre">Nyy</span></code> and <code class="docutils literal notranslate"><span class="pre">Nxy</span></code> given for each element, the last arguments
-of the function, without a static analysis: <span class="math notranslate nohighlight">\(\lambda\)</span> multiplies these
-resultants, e.g. <code class="docutils literal notranslate"><span class="pre">Nxx</span> <span class="pre">=</span> <span class="pre">-1</span></code> for an axial compression, of total force
-<span class="math notranslate nohighlight">\(-2 \pi R\)</span> along the circumference.</p></li>
+<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> from <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, with the resultants of the
+linear strains at each integration point, Eq. <a class="reference internal" href="matrices.html#equation-mat-kg">(4.8)</a>. They are the
+resultants of the shell with its boundary conditions, including the
+bending boundary layers near the supports, the hoop resultants that a
+restrained Poisson expansion creates, and the effect of an unbalanced
+laminate. For a prescribed displacement, <span class="math notranslate nohighlight">\(\lambda\)</span> multiplies the sum of
+its reactions;</p></li>
+<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG_constant_stress" title="bfsccylinder.bfsccylinder.update_KG_constant_stress"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_constant_stress()</span></code></a> from given membrane resultants
+<span class="math notranslate nohighlight">\(N_{xx}\)</span>, <span class="math notranslate nohighlight">\(N_{yy}\)</span> and <span class="math notranslate nohighlight">\(N_{xy}\)</span>, without a static analysis. <span class="math notranslate nohighlight">\(\lambda\)</span>
+multiplies these resultants, e.g. <span class="math notranslate nohighlight">\(N_{xx} = -1\)</span> for an axial compression
+of total force <span class="math notranslate nohighlight">\(-2 \pi R\)</span> along the circumference. The prebuckling state
+is then assumed to be a membrane state, and the boundary conditions enter
+the problem only through <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>.</p></li>
 </ul>
-<p>The tests compute the lowest load multipliers with
-<code class="docutils literal notranslate"><span class="pre">scipy.sparse.linalg.lobpcg</span></code>, for the problem <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\boldsymbol{\phi} =
-\lambda (-\boldsymbol{K}_G)\boldsymbol{\phi}\)</span>, with an incomplete LU factorization of
-<span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>, <code class="docutils literal notranslate"><span class="pre">spilu</span></code>, as preconditioner, see <a class="reference internal" href="ex_linear_buckling.html"><span class="doc">Linear buckling analysis</span></a>.
-The matrices can also be given to the linear buckling solver of
-<a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a>,
-<code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>, as in the validation tests of the follower pressure, see
-<a class="reference internal" href="ex_follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> are both symmetric, and the
+problem is a generalised symmetric eigenvalue problem, e.g. solved for the
+lowest load multipliers as <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} \boldsymbol{\phi} = \lambda
+(-\boldsymbol{K}_G) \boldsymbol{\phi}\)</span>, or with <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>, which
+solves Eq. <a class="reference internal" href="#equation-an-linear-buckling">(7.4)</a>. Under a follower pressure the load
+stiffness matrix of the reference pressure is added to
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>, Eq. <a class="reference internal" href="follower_pressure.html#equation-fp-buckling">(5.9)</a>, and the problem is unsymmetric
+in general. The two matrices must come from the same kinematics, see
+<a class="reference internal" href="kinematics.html"><span class="doc">Kinematics of the cylindrical shell</span></a>. Linear buckling neglects the nonlinearity of the
+prebuckling path, which the nonlinear static analysis below takes into
+account, and the imperfections of the shell; the element describes a
+perfect cylinder.</p>
 </section>
 <section id="natural-frequencies">
-<h2>Natural frequencies<a class="headerlink" href="#natural-frequencies" title="Link to this heading">#</a></h2>
-<div class="math notranslate nohighlight">
-\[(\boldsymbol{K}_{C0} - \omega_n^2 \boldsymbol{M})\boldsymbol{\phi} = \boldsymbol{0}\]</div>
-<p>with the mass matrix <span class="math notranslate nohighlight">\(\boldsymbol{M}\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a>, which needs <code class="docutils literal notranslate"><span class="pre">lex</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ley</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code> of each element, and <code class="docutils literal notranslate"><span class="pre">R</span></code> for the Sanders-type
-kinematics, and no integration points, and <span class="math notranslate nohighlight">\(\omega_n\)</span> the natural angular
-frequencies, in radians per unit time. The lowest frequencies of a cylinder
-are clustered; the tests use the function <code class="docutils literal notranslate"><span class="pre">lowest_frequencies</span></code> of
-<code class="docutils literal notranslate"><span class="pre">tests/natural_frequency_solver.py</span></code>, which solves the shift-inverted
-problem with ARPACK from a fixed starting vector and verifies the residual
-of each eigenpair and that no eigenvalue is missing, see
-<a class="reference internal" href="ex_natural_frequency.html"><span class="doc">Natural frequencies</span></a>.</p>
+<h2><span class="section-number">7.4. </span>Natural frequencies<a class="headerlink" href="#natural-frequencies" title="Link to this heading">#</a></h2>
+<p>The kinetic energy of Eq. <a class="reference internal" href="matrices.html#equation-mat-t">(4.9)</a> and the strain energy linearised
+about the undeformed state give the equations of free vibration, <span class="math notranslate nohighlight">\(\boldsymbol{M}
+\ddot{\boldsymbol{u}} + \boldsymbol{K}_{C0} \boldsymbol{u} = \boldsymbol{0}\)</span>,
+whose harmonic solutions <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{\phi} \sin(\omega_n
+t)\)</span> solve</p>
+<div class="math notranslate nohighlight" id="equation-an-frequencies">
+<span class="eqno">(7.5)<a class="headerlink" href="#equation-an-frequencies" title="Link to this equation">#</a></span>\[\left( \boldsymbol{K}_{C0} - \omega_n^2 \boldsymbol{M} \right)
+\boldsymbol{\phi} = \boldsymbol{0}\]</div>
+<p>with the consistent mass matrix <span class="math notranslate nohighlight">\(\boldsymbol{M}\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a>, the
+natural angular frequencies <span class="math notranslate nohighlight">\(\omega_n\)</span>, in radians per unit time, and the
+modes <span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span>. Both matrices are symmetric, <span class="math notranslate nohighlight">\(\boldsymbol{M}\)</span>
+positive definite. The lowest frequencies of a cylinder are clustered,
+close to each other, and those of a closed cylinder come in pairs of equal
+frequencies, the modes <span class="math notranslate nohighlight">\(\cos(n\theta)\)</span> and <span class="math notranslate nohighlight">\(\sin(n\theta)\)</span> of the same
+number <span class="math notranslate nohighlight">\(n\)</span> of circumferential waves. A solver of the lowest eigenpairs
+must therefore be verified for missing eigenvalues, e.g. with a
+shift-invert iteration about zero and the check of the residual of each
+eigenpair. Since the lowest modes may have few waves, the Sanders-type
+kinematics are the safer choice for them, see <a class="reference internal" href="kinematics.html"><span class="doc">Kinematics of the cylindrical shell</span></a>.</p>
 </section>
 <section id="nonlinear-static-analysis">
-<h2>Nonlinear static analysis<a class="headerlink" href="#nonlinear-static-analysis" title="Link to this heading">#</a></h2>
-<p>For large displacements, with the nonlinear strains of the kinematics, the
-equilibrium of the internal forces of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> with the
-external forces is solved for the displacements, e.g. with the
-Newton-Raphson method:</p>
-<div class="math notranslate nohighlight">
-\[\boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) - \lambda \boldsymbol{F}_{ext}, \qquad
-\boldsymbol{K}_T(\boldsymbol{u}) = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}), \qquad
-\boldsymbol{K}_T \Delta \boldsymbol{u} = -\boldsymbol{R}\]</div>
-<p>with the load factor <span class="math notranslate nohighlight">\(\lambda\)</span> increased in steps and the tangent stiffness
-matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> and
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, all computed with the current displacements and the
-same integration points as <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>. <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is the exact Jacobian of
-<span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>, such that the Newton-Raphson iterations converge
-quadratically; <code class="docutils literal notranslate"><span class="pre">tests/test_tangent_consistency.py</span></code> checks it for both
-kinematics with Taylor tests and finite differences. <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> keeps only
-the part linear in the displacements, the one of the linear buckling
-analysis, and the rest of the geometric terms is <span class="math notranslate nohighlight">\(\boldsymbol{K}_{GNL}\)</span>,
-computed with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span> by <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a>, see its Notes.</p>
-<p>The value arrays of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> are zeroed before each
-assembly, since the functions add to them, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>. The test
-of <a class="reference internal" href="ex_nonlinear_static.html"><span class="doc">Nonlinear static analysis</span></a> solves the iterations with structsolve, with
-the convergence criterion of the scaled norms of the residual and of the
-forces, see <a class="reference internal" href="#id1">Solving with structsolve</a> and <a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>.
-A follower pressure adds its force vector to the residual and its load
-stiffness matrix to <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span>, see <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+<h2><span class="section-number">7.5. </span>Nonlinear static analysis<a class="headerlink" href="#nonlinear-static-analysis" title="Link to this heading">#</a></h2>
+<p>For large displacements, Eq. <a class="reference internal" href="#equation-an-residual">(7.1)</a> is solved for
+<span class="math notranslate nohighlight">\(\boldsymbol{u}\)</span> with the nonlinear strains of the kinematics, e.g. with the
+Newton-Raphson method under load control:</p>
+<div class="math notranslate nohighlight" id="equation-an-newton">
+<span class="eqno">(7.6)<a class="headerlink" href="#equation-an-newton" title="Link to this equation">#</a></span>\[\boldsymbol{K}_T(\boldsymbol{u}^{(i)}) \Delta \boldsymbol{u} =
+-\boldsymbol{R}(\boldsymbol{u}^{(i)}, \lambda), \qquad
+\boldsymbol{u}^{(i+1)} = \boldsymbol{u}^{(i)} + \Delta \boldsymbol{u}\]</div>
+<p>with the load multiplier <span class="math notranslate nohighlight">\(\lambda\)</span> increased in steps, <span class="math notranslate nohighlight">\(\lambda = 1\)</span> being
+the full load, and</p>
+<div class="math notranslate nohighlight" id="equation-an-tangent">
+<span class="eqno">(7.7)<a class="headerlink" href="#equation-an-tangent" title="Link to this equation">#</a></span>\[\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}
+(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) +
+\boldsymbol{K}_G(\boldsymbol{u})\]</div>
+<p>of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> and <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, all
+computed with the current displacements and with the same integration
+points as <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>. <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is the exact Jacobian of
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>, such that the iterations converge quadratically
+near the solution. A follower pressure adds its force vector to the
+external forces and its load stiffness matrix to <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span>, Eq.
+<a class="reference internal" href="follower_pressure.html#equation-fp-residual">(5.7)</a>. Past a limit point of the load, load control fails, and
+an arc-length method, in which <span class="math notranslate nohighlight">\(\lambda\)</span> is an unknown constrained together
+with <span class="math notranslate nohighlight">\(\boldsymbol{u}\)</span> <a class="reference internal" href="#crisfield1981" id="id1"><span>[Crisfield1981]</span></a>, follows the equilibrium path.</p>
+<p>The degrees of freedom mix displacements, their first derivatives and
+<span class="math notranslate nohighlight">\(w_{,xy}\)</span>, of different dimensions. A convergence criterion on the
+Euclidean norm of <span class="math notranslate nohighlight">\(\boldsymbol{R}\)</span> depends on the units. Scaling each
+component of the residual and of the reference forces with the diagonal
+entry of a stiffness matrix, as in the convergence test of Crisfield
+<a class="reference internal" href="#crisfield1981" id="id2"><span>[Crisfield1981]</span></a>, removes this dependence; over the free degrees of freedom
+it also leaves out the reactions at the constrained ones.</p>
+</section>
+<section id="limit-points-bifurcations-and-imperfections">
+<h2><span class="section-number">7.6. </span>Limit points, bifurcations and imperfections<a class="headerlink" href="#limit-points-bifurcations-and-imperfections" title="Link to this heading">#</a></h2>
+<p>In the Riks method <a class="reference internal" href="#riks1979" id="id3"><span>[Riks1979]</span></a> the load multiplier is an unknown, and the
+increment of <span class="math notranslate nohighlight">\((\boldsymbol{u}, \lambda)\)</span> of each step is constrained to a
+prescribed arc length, such that the path is followed through the limit
+points of the load, where <span class="math notranslate nohighlight">\(\lambda\)</span> reaches a maximum or a minimum and load
+control fails. At a critical point of the path, a limit point or a
+bifurcation, <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is singular: one of its eigenvalues crosses
+zero. The number of negative eigenvalues of <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> at the
+converged states therefore locates the critical points crossed: it is zero
+on a stable branch, increases by one at each limit point beyond which the
+branch is unstable and at each bifurcation crossed without branching, and
+the sign of the determinant of <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> changes each time an odd
+number of eigenvalues crosses zero. For a symmetric <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> the
+count is the number of negative pivots of a symmetric factorization; for
+the unsymmetric <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> of a nonconservative follower pressure
+it is the number of negative real eigenvalues among those of smallest
+magnitude. A path that keeps a symmetry of the perfect shell, e.g. the
+axisymmetric path of an axially compressed cylinder, crosses bifurcations
+whose modes break that symmetry; the bifurcated branch is reached by
+switching to it along the critical eigenvector, after the change of the
+count of negative eigenvalues <a class="reference internal" href="#wagnerwriggers1988" id="id4"><span>[WagnerWriggers1988]</span></a>.</p>
+<p>The element describes a perfect cylinder. An initial imperfection <span class="math notranslate nohighlight">\(w_0\)</span> of
+the normal displacement, with the degrees of freedom <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>,
+can be added exactly when the non-linear membrane strains are quadratic
+forms of the rotations, as with the Donnell-type kinematics: the imperfect
+shell has the membrane strains <span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon}(\boldsymbol{u} +
+\boldsymbol{u}_0) - \boldsymbol{\varepsilon}(\boldsymbol{u}_0)\)</span> and the
+curvatures <span class="math notranslate nohighlight">\(\boldsymbol{\kappa}(\boldsymbol{u})\)</span>, which gives</p>
+<div class="math notranslate nohighlight" id="equation-an-imperfection">
+<span class="eqno">(7.8)<a class="headerlink" href="#equation-an-imperfection" title="Link to this equation">#</a></span>\[\boldsymbol{F}_{int,imp}(\boldsymbol{u}) =
+\boldsymbol{F}_{int}(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{F}_{int}(\boldsymbol{u}_0) -
+\boldsymbol{K}_G(\boldsymbol{N}_0) \boldsymbol{u}, \qquad
+\boldsymbol{K}_{T,imp}(\boldsymbol{u}) =
+\boldsymbol{K}_T(\boldsymbol{u} + \boldsymbol{u}_0) -
+\boldsymbol{K}_G(\boldsymbol{N}_0)\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{N}_0)\)</span> the geometric stiffness matrix of
+the membrane resultants <span class="math notranslate nohighlight">\(\boldsymbol{N}_0\)</span> of the whole strains of
+<span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, linear and non-linear. <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> integrates
+the resultants of the linear strains only, such that the part of the
+non-linear strains of <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> must be added to it, with the
+same integration points. The imperfect shell is stress free at
+<span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span>, and an imperfection in the shape of the
+lowest buckling mode turns the bifurcation of the perfect shell into a
+limit point.</p>
 </section>
 <section id="solving-with-structsolve">
-<span id="id1"></span><h2>Solving with structsolve<a class="headerlink" href="#solving-with-structsolve" title="Link to this heading">#</a></h2>
+<h2><span class="section-number">7.7. </span>Solving with structsolve<a class="headerlink" href="#solving-with-structsolve" title="Link to this heading">#</a></h2>
 <p>The solvers of <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a>
-receive the matrices and vectors of the model, assembled by the user. It is
-used by the tests and the examples, and it is not a requirement of
-bfsccylinder, see <a class="reference internal" href="install.html"><span class="doc">Installing bfsccylinder</span></a>. The linear buckling problem above is
-solved by <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>, as in the validation tests of the follower
-pressure.</p>
+receive the matrices and vectors of the model, assembled by the user; it is
+not a requirement of bfsccylinder, see <a class="reference internal" href="install.html"><span class="doc">Installing bfsccylinder</span></a>. The linear buckling
+problem is solved by <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>, with <code class="docutils literal notranslate"><span class="pre">symmetric=False</span></code> when it
+contains the load stiffness matrix of a follower pressure.</p>
 <p>The nonlinear static analysis is solved by <code class="docutils literal notranslate"><span class="pre">structsolve.Analysis</span></code>, with
-four callables that loop over the elements, call the functions of the
-element, of either kinematics, and assemble, see
-<a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>:</p>
+four callables that loop over the elements, call the functions of either
+kinematics and assemble:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">calc_fext(inc=1.,</span> <span class="pre">silent=False)</span></code>, the external forces <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span> times
-the load factor <code class="docutils literal notranslate"><span class="pre">inc</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_fext(inc=1.,</span> <span class="pre">silent=False)</span></code>, the external forces
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext}\)</span> times the load factor <code class="docutils literal notranslate"><span class="pre">inc</span></code>;</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">calc_fint(c,</span> <span class="pre">silent=False)</span></code>, the internal forces of
 <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> at the displacements <code class="docutils literal notranslate"><span class="pre">c</span></code>;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">calc_kC(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> with
-<code class="docutils literal notranslate"><span class="pre">NLgeom=False</span></code>, and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{c}) + \boldsymbol{K}_{GNL}(\boldsymbol{c})\)</span> with <code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">calc_kG(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{c})\)</span> of
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, called with <code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_kC(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>
+with <code class="docutils literal notranslate"><span class="pre">NLgeom=False</span></code>, and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}
+(\boldsymbol{c}) + \boldsymbol{K}_{GNL}(\boldsymbol{c})\)</span> with
+<code class="docutils literal notranslate"><span class="pre">NLgeom=True</span></code>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">calc_kG(c=None,</span> <span class="pre">NLgeom=False,</span> <span class="pre">silent=False)</span></code>,
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\boldsymbol{c})\)</span> of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>;</p></li>
 </ul>
-<p>such that <code class="docutils literal notranslate"><span class="pre">calc_kC</span> <span class="pre">+</span> <span class="pre">calc_kG</span></code> is the tangent stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> and
-the residual of structsolve is the one above, <span class="math notranslate nohighlight">\(\boldsymbol{R} =
-\boldsymbol{F}_{int}(\boldsymbol{c}) - \lambda \boldsymbol{F}_{ext}\)</span>, with
-the Newton-Raphson corrections <span class="math notranslate nohighlight">\(\boldsymbol{K}_T \Delta \boldsymbol{c} =
--\boldsymbol{R}\)</span>, the convention of structsolve 0.9.3 or newer, which
-the examples of bfsccylinder require, see <a class="reference internal" href="install.html"><span class="doc">Installing bfsccylinder</span></a>. The value arrays are zeroed in each call. The
-load factor goes from 0 to 1 in increments, the first one of size
-<code class="docutils literal notranslate"><span class="pre">Analysis.initialInc</span></code> and the next ones growing up to
-<code class="docutils literal notranslate"><span class="pre">Analysis.maxInc</span></code>, each starting from a predictor extrapolated from the
-previous increment, the linear solution of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> in the first one;
-<code class="docutils literal notranslate"><span class="pre">Analysis.static</span></code> returns the load factors and the solutions of the
-converged increments.</p>
+<p>such that <code class="docutils literal notranslate"><span class="pre">calc_kC</span> <span class="pre">+</span> <span class="pre">calc_kG</span></code> is <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> of Eq.
+<a class="reference internal" href="#equation-an-tangent">(7.7)</a> and the residual of structsolve is Eq.
+<a class="reference internal" href="#equation-an-residual">(7.1)</a>. The value arrays of the sparse matrices are zeroed in
+each call, since the functions add to them. <code class="docutils literal notranslate"><span class="pre">Analysis.static</span></code> increases
+the load factor from 0 to 1, the
+first increment of size <code class="docutils literal notranslate"><span class="pre">Analysis.initialInc</span></code> and the next ones growing up
+to <code class="docutils literal notranslate"><span class="pre">Analysis.maxInc</span></code>, and returns the load factors and the solutions of
+the converged increments. <code class="docutils literal notranslate"><span class="pre">Analysis.NL_method</span></code> selects the
+Newton-Raphson method, <code class="docutils literal notranslate"><span class="pre">'NR'</span></code>, or an arc-length method, and the
+convergence criterion is Crisfield’s by default, with the tolerance
+<code class="docutils literal notranslate"><span class="pre">Analysis.relTOL</span> <span class="pre">=</span> <span class="pre">1e-9</span></code>; <code class="docutils literal notranslate"><span class="pre">Analysis.convergence</span> <span class="pre">=</span> <span class="pre">'relative'</span></code> selects
+the Euclidean norm instead.</p>
 <p>structsolve imposes no boundary condition itself. The constrained degrees
-of freedom are removed in one of two ways:</p>
-<ul class="simple">
-<li><p>the partition of the free degrees of freedom, as in the tests: the
-callables receive <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">u[bu]</span></code> and return the vectors restricted to
-<code class="docutils literal notranslate"><span class="pre">bu</span></code> and the matrices to <code class="docutils literal notranslate"><span class="pre">bu</span></code> by <code class="docutils literal notranslate"><span class="pre">bu</span></code>, and the solutions are
-expanded with <code class="docutils literal notranslate"><span class="pre">u[bu]</span> <span class="pre">=</span> <span class="pre">c</span></code>;</p></li>
-<li><p>null rows and columns: the callables return the vectors and matrices of
-the whole model, with the rows and columns of the constrained degrees of
-freedom zeroed in all the matrices. The solvers remove them and return
-vectors with the size of the model, zero at these degrees of freedom.</p></li>
-</ul>
-<p>The convergence criterion is, by default, Crisfield’s: the residual and the
-reference forces, the external forces and the internal forces, are scaled
-with the diagonal of the linear stiffness matrix <code class="docutils literal notranslate"><span class="pre">calc_kC()</span></code> over the
-free degrees of freedom, and the iterations stop when their ratio is below
-<code class="docutils literal notranslate"><span class="pre">Analysis.relTOL</span> <span class="pre">=</span> <span class="pre">1e-9</span></code>. The scaled norm does not depend on the units of
-the degrees of freedom, which here mix displacements, their first
-derivatives and <span class="math notranslate nohighlight">\(w_{,xy}\)</span>, and leaves out the reactions at the constrained
-ones; <code class="docutils literal notranslate"><span class="pre">Analysis.convergence</span> <span class="pre">=</span> <span class="pre">'relative'</span></code> selects the Euclidean norm
-instead. With a consistent tangent the criterion is reached in a few
-iterations.</p>
-<p>A follower pressure <span class="math notranslate nohighlight">\(\lambda p\)</span>, see <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>, enters
-through the optional keyword argument <code class="docutils literal notranslate"><span class="pre">inc</span></code>, the load factor, which
-structsolve passes to the callables that declare it. The external forces
-are the dead part <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{0})\)</span> of <code class="docutils literal notranslate"><span class="pre">p</span></code>, <code class="docutils literal notranslate"><span class="pre">calc_fint</span></code> subtracts the part
-that depends on the displacements, <code class="docutils literal notranslate"><span class="pre">reference=0</span></code>, and <code class="docutils literal notranslate"><span class="pre">calc_kC</span></code> adds the
-load stiffness matrix of <span class="math notranslate nohighlight">\(\lambda p\)</span>, as in
-<code class="docutils literal notranslate"><span class="pre">tests/test_follower_pressure_structsolve.py</span></code>, see
-<a class="reference internal" href="ex_structsolve_nonlinear.html"><span class="doc">Nonlinear static analysis with structsolve</span></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">FollowerCallables</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">"""The callables of structsolve.Analysis for the ``elements`` of the</span>
-<span class="sd">    module ``mod`` under the follower pressures ``pressures``, one array of</span>
-<span class="sd">    shape ``(nint, nint)`` per element, times the load factor</span>
-
-<span class="sd">    They loop over the elements with the update functions and assemble, and</span>
-<span class="sd">    work on the unknown degrees of freedom ``bu`` only, the partition of the</span>
-<span class="sd">    free dofs of structsolve: the solution vector of the solvers is ``c =</span>
-<span class="sd">    u[bu]``, and the force vectors and matrices are restricted to ``bu``.</span>
-<span class="sd">    ``quadratic`` is the truncation of the area vector. ``calc_fint`` also</span>
-<span class="sd">    keeps the load factor and the internal forces of each iteration, for the</span>
-<span class="sd">    residual history.</span>
-<span class="sd">    """</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">bu</span><span class="p">,</span> <span class="n">pressures</span><span class="p">,</span>
-                 <span class="n">quadratic</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mod</span> <span class="o">=</span> <span class="n">mod</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">elements</span> <span class="o">=</span> <span class="n">elements</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bu</span> <span class="o">=</span> <span class="n">bu</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span> <span class="o">=</span> <span class="n">pressures</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span> <span class="o">=</span> <span class="n">quadratic</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KC0</span> <span class="o">=</span> <span class="n">assemble</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">elements</span><span class="p">,</span> <span class="n">mod</span><span class="o">.</span><span class="n">update_KC0</span><span class="p">,</span> <span class="s1">'KC0'</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span>
-                            <span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">))</span>
-        <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">shell</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elements</span><span class="p">):</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KCNL</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">mod</span><span class="o">.</span><span class="n">KCNL_SPARSE_SIZE</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KG</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">mod</span><span class="o">.</span><span class="n">KG_SPARSE_SIZE</span>
-            <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KCfollower</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">mod</span><span class="o">.</span><span class="n">KCfollower_SPARSE_SIZE</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">KCNL_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">KG_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KGr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="n">mod</span><span class="o">.</span><span class="n">KCfollower_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">INT</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="c1"># the dead part of the pressure, the force vector at u = 0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fp0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">shell</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">pressures</span><span class="p">):</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">update_fext_follower</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">),</span> <span class="n">shell</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span>
-                                     <span class="bp">self</span><span class="o">.</span><span class="n">fp0</span><span class="p">,</span> <span class="n">quadratic</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">expand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""The displacements of the model from those of the unknown dofs."""</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="n">u</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
-        <span class="k">return</span> <span class="n">u</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calc_fext</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">inc</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fp0</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calc_fint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">fint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mod</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">shell</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">):</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">update_fint</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="n">fint</span><span class="p">)</span>
-            <span class="c1"># minus the part of the follower pressure that depends on u</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">update_fext_follower</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
-                                     <span class="o">-</span><span class="n">inc</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="n">fint</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">iterations</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">inc</span><span class="p">,</span> <span class="n">fint</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]))</span>
-        <span class="k">return</span> <span class="n">fint</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calc_kC</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">inc</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">bu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bu</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">NLgeom</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">KC0</span><span class="p">[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
-        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span> <span class="o">*=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span> <span class="o">*=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">shell</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pressures</span><span class="p">):</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">update_KCNL</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span><span class="p">)</span>
-            <span class="c1"># the load stiffness matrix of the pressure inc*p</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">update_KCfollower</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span>
-                                  <span class="n">inc</span><span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span><span class="p">,</span>
-                                  <span class="bp">self</span><span class="o">.</span><span class="n">quadratic</span><span class="p">)</span>
-        <span class="n">KCNL</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KCNLv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KCNLr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCNLc</span><span class="p">)),</span>
-                          <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
-        <span class="n">KCf</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KCfv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KCfr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KCfc</span><span class="p">)),</span>
-                         <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
-        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KC0</span> <span class="o">+</span> <span class="n">KCNL</span> <span class="o">+</span> <span class="n">KCf</span><span class="p">)</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">calc_kG</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">NLgeom</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">silent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="n">mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mod</span>
-        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span> <span class="o">*=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">shell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
-            <span class="n">mod</span><span class="o">.</span><span class="n">update_KG</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span>
-                          <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGv</span><span class="p">)</span>
-        <span class="n">KG</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">KGv</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">KGr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">KGc</span><span class="p">)),</span>
-                        <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">KG</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bu</span><span class="p">]</span>
-</pre></div>
+of freedom are removed either by the partition of Eq. <a class="reference internal" href="#equation-an-partition">(7.3)</a>,
+the callables receiving and returning the vectors and matrices of the
+unknown degrees of freedom, or with null rows and columns: the callables
+return the vectors and matrices of the whole model with the rows and
+columns of the constrained degrees of freedom zeroed, which the solvers
+remove.</p>
+<p>A follower pressure <span class="math notranslate nohighlight">\(\lambda p_0\)</span> enters through the keyword argument
+<code class="docutils literal notranslate"><span class="pre">inc</span></code>, the load factor, which structsolve passes to the callables that
+declare it: the external forces are the dead part
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{0})\)</span> of <span class="math notranslate nohighlight">\(p_0\)</span>, <code class="docutils literal notranslate"><span class="pre">calc_fint</span></code> subtracts the
+part that depends on the displacements, <span class="math notranslate nohighlight">\(\lambda (\boldsymbol{F}_p
+(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))\)</span> of
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">reference=0</span></code>, and <code class="docutils literal notranslate"><span class="pre">calc_kC</span></code> adds the
+load stiffness matrix of <span class="math notranslate nohighlight">\(\lambda p_0\)</span>. The tangent stiffness matrix is then
+unsymmetric in general, which the solvers support with LU factorisations.
+For the arc-length methods, <code class="docutils literal notranslate"><span class="pre">calc_fext</span></code> also declares the configuration
+<code class="docutils literal notranslate"><span class="pre">c</span></code> and returns the follower force vector
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{c})\)</span> of <span class="math notranslate nohighlight">\(p_0\)</span>, minus the derivative of the
+residual with respect to the load factor.</p>
+</section>
+<section id="references">
+<h2><span class="section-number">7.8. </span>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div role="list" class="citation-list">
+<div class="citation" id="crisfield1981" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>Crisfield1981<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>)</span>
+<p>Crisfield, M. A., A fast incremental/iterative solution
+procedure that handles “snap-through”, Computers &amp; Structures, 13(1-3),
+55-62, 1981, doi:10.1016/0045-7949(81)90108-5.</p>
 </div>
-<p>The tangent stiffness matrix is then unsymmetric in general, which the
-solvers of structsolve support with LU factorizations. For the arc-length methods, <code class="docutils literal notranslate"><span class="pre">Analysis.NL_method</span></code>, <code class="docutils literal notranslate"><span class="pre">calc_fext</span></code> also
-declares the configuration <code class="docutils literal notranslate"><span class="pre">c</span></code> and returns the follower force vector
-<span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{c})\)</span> of <code class="docutils literal notranslate"><span class="pre">p</span></code>, minus the derivative of the
-residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda
-\boldsymbol{F}_p(\boldsymbol{c})\)</span> with respect to the load factor.</p>
+<div class="citation" id="riks1979" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">Riks1979</a><span class="fn-bracket">]</span></span>
+<p>Riks, E., An incremental approach to the solution of snapping
+and buckling problems, International Journal of Solids and Structures,
+15(7), 529-551, 1979, doi:10.1016/0020-7683(79)90081-7.</p>
+</div>
+<div class="citation" id="wagnerwriggers1988" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">WagnerWriggers1988</a><span class="fn-bracket">]</span></span>
+<p>Wagner, W., and Wriggers, P., A simple method for
+the calculation of postcritical branches, Engineering Computations, 5(2),
+103-109, 1988, doi:10.1108/eb023727.</p>
+</div>
+</div>
 </section>
 </section>
 
@@ -824,15 +1074,15 @@ residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymb
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Assembling a model</p>
+        <p class="prev-next-title"><span class="section-number">6. </span>Assembling a model</p>
       </div>
     </a>
     <a class="right-next"
-       href="follower_pressure.html"
+       href="conventions.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Follower pressure</p>
+        <p class="prev-next-title"><span class="section-number">8. </span>Conventions and limits</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -855,11 +1105,14 @@ residual <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymb
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-static-analysis">Linear static analysis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-buckling-analysis">Linear buckling analysis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#natural-frequencies">Natural frequencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-static-analysis">Nonlinear static analysis</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-with-structsolve">Solving with structsolve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#equilibrium">7.1. Equilibrium</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-static-analysis">7.2. Linear static analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-buckling-analysis">7.3. Linear buckling analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#natural-frequencies">7.4. Natural frequencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nonlinear-static-analysis">7.5. Nonlinear static analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#limit-points-bifurcations-and-imperfections">7.6. Limit points, bifurcations and imperfections</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-with-structsolve">7.7. Solving with structsolve</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">7.8. References</a></li>
 </ul>
   </nav></div>
 

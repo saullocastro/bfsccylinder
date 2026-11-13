@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Follower pressure &#8212; bfsccylinder 0.7.1 documentation</title>
+    <title>5. Follower pressure &#8212; bfsccylinder 0.7.2 documentation</title>
   
   
   
@@ -30,6 +30,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
@@ -37,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=5a057da9"></script>
+    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +48,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Linear static analysis" href="ex_linear_static.html" />
-    <link rel="prev" title="Analyses" href="analyses.html" />
+    <link rel="next" title="6. Assembling a model" href="assembling.html" />
+    <link rel="prev" title="4. Element matrices and internal forces" href="matrices.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.1" />
+  <meta name="docsearch:version" content="0.7.2" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -120,7 +121,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.1 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
   
 </a></div>
     
@@ -135,29 +136,29 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -177,57 +178,169 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -249,6 +362,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -336,15 +456,36 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Follower pressure
   </a>
 </li>
 
@@ -363,65 +504,156 @@
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    Follower pressure
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="conventions.html">
+    Conventions and limits
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_kinematics.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -443,6 +675,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -527,7 +766,7 @@
         <i class="fa-solid fa-house"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Follower pressure</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">5. </span>Follower pressure</span></li>
   </ul>
 </nav>
 </div>
@@ -545,95 +784,236 @@
                 <article class="bd-article">
                   
   <section id="follower-pressure">
-<h1>Follower pressure<a class="headerlink" href="#follower-pressure" title="Link to this heading">#</a></h1>
-<p>A follower pressure stays normal to the deformed mid-surface of the shell
-and acts on its deformed area, e.g. a gas pressure, as opposed to a dead
-pressure, which keeps the direction of the undeformed normal and the
-undeformed area. Its force vector depends on the displacements. Two
-functions of each kinematics give it:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> adds the force vector <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u})\)</span> of one
-element to a global force vector;</p></li>
-<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCfollower" title="bfsccylinder.bfsccylinder.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a> writes the load stiffness matrix
-<span class="math notranslate nohighlight">\(\boldsymbol{K}_F = -\partial \boldsymbol{F}_p/\partial \boldsymbol{u}\)</span> of one element in
-sparse arrays, at the position <code class="docutils literal notranslate"><span class="pre">init_k_KCfollower</span></code>, with
-<code class="docutils literal notranslate"><span class="pre">KCfollower_SPARSE_SIZE</span></code> entries, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.</p></li>
-</ul>
-<p>The theory, from the area vector of the deformed mid-surface, and the
-differences between the Donnell-type and the Sanders-type kinematics are
-given in the Notes of these functions and of the modules
-<a class="reference internal" href="api_bfsccylinder.html#module-bfsccylinder.bfsccylinder" title="bfsccylinder.bfsccylinder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder</span></code></a> and <a class="reference internal" href="api_bfsccylinder_sanders.html#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>.</p>
-<section id="pressure-at-the-integration-points">
-<h2>Pressure at the integration points<a class="headerlink" href="#pressure-at-the-integration-points" title="Link to this heading">#</a></h2>
-<p>The pressure <code class="docutils literal notranslate"><span class="pre">p</span></code> is given to both functions at the integration points of
-each element, as a C-contiguous array of shape <code class="docutils literal notranslate"><span class="pre">(nint,</span> <span class="pre">nint)</span></code>, <code class="docutils literal notranslate"><span class="pre">p[i,</span>
-<span class="pre">j]</span></code> at <code class="docutils literal notranslate"><span class="pre">xi</span> <span class="pre">=</span> <span class="pre">points[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">eta</span> <span class="pre">=</span> <span class="pre">points[j]</span></code>, as the stiffness arrays
-<code class="docutils literal notranslate"><span class="pre">A11</span></code>, …, per unit area of the undeformed mid-surface and as a function
-of the undeformed coordinates, e.g. <code class="docutils literal notranslate"><span class="pre">np.full((nint,</span> <span class="pre">nint),</span> <span class="pre">p)</span></code> for a
-uniform pressure. The pressure is multiplied by the load factor before it
-is given to the functions.</p>
-</section>
-<section id="sign">
-<h2>Sign<a class="headerlink" href="#sign" title="Link to this heading">#</a></h2>
-<p>A positive <code class="docutils literal notranslate"><span class="pre">p</span></code> pushes along <span class="math notranslate nohighlight">\(+z\)</span>, outwards, the direction of a positive
-<span class="math notranslate nohighlight">\(w\)</span>, such that an external pressure is negative. At <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span> the
-force vector is the dead pressure load, <span class="math notranslate nohighlight">\(\int_A p (\boldsymbol{S}^w)^\top dA\)</span>, the
-consistent load vector of a dead pressure, for both truncations below.</p>
+<h1><span class="section-number">5. </span>Follower pressure<a class="headerlink" href="#follower-pressure" title="Link to this heading">#</a></h1>
+<p>A gas or a liquid presses normal to the current surface of the shell and on
+its current area: the pressure follows the deformation. A dead pressure, in
+contrast, keeps the direction of the undeformed normal and the undeformed
+area. The difference matters for the buckling of rings and cylinders under
+external pressure, for which the buckling pressure of a follower load and
+of a dead load differ, and for any nonlinear analysis with pressure. This
+chapter derives the force vector of a follower pressure, its load stiffness
+matrix and the conditions under which this matrix is symmetric. Two
+functions of each kinematics implement them, <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a>
+and <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCfollower" title="bfsccylinder.bfsccylinder.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a>.</p>
+<section id="virtual-work-of-the-pressure">
+<h2><span class="section-number">5.1. </span>Virtual work of the pressure<a class="headerlink" href="#virtual-work-of-the-pressure" title="Link to this heading">#</a></h2>
+<p>The pressure <span class="math notranslate nohighlight">\(p(x, y)\)</span> is given per unit area of the undeformed
+mid-surface, as a function of the undeformed coordinates, a body-attached
+follower load in the classification of Schweizerhof and Ramm
+<a class="reference internal" href="#schweizerhoframm1984" id="id1"><span>[SchweizerhofRamm1984]</span></a>. With <span class="math notranslate nohighlight">\(\boldsymbol{X} = \boldsymbol{X}_0 +
+\boldsymbol{u}\)</span> the position of the deformed mid-surface, the pressure does
+the virtual work</p>
+<div class="math notranslate nohighlight" id="equation-fp-virtual-work">
+<span class="eqno">(5.1)<a class="headerlink" href="#equation-fp-virtual-work" title="Link to this equation">#</a></span>\[\delta W_p = \int_A p \, \boldsymbol{a}^\top \delta \boldsymbol{u} \, dA,
+\qquad \boldsymbol{a} = \boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> is the area vector of the deformed mid-surface per
+unit undeformed area and <span class="math notranslate nohighlight">\(\delta \boldsymbol{u} = \{\delta u, \delta v,
+\delta w\}^\top\)</span>. With the turning basis of Eq. <a class="reference internal" href="kinematics.html#equation-kin-basis">(1.2)</a>, the tangent
+vectors in the basis of the undeformed mid-surface are</p>
+<div class="math notranslate nohighlight" id="equation-fp-tangents">
+<span class="eqno">(5.2)<a class="headerlink" href="#equation-fp-tangents" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{X}_{,x} = \begin{Bmatrix} 1 + u_{,x} \\ v_{,x} \\ w_{,x}
+\end{Bmatrix}, \qquad
+\boldsymbol{X}_{,y} = \begin{Bmatrix} u_{,y} \\ 1 + v_{,y} + w/R \\
+w_{,y} - k_v v \end{Bmatrix}\end{split}\]</div>
+<p>with <span class="math notranslate nohighlight">\(k_v\)</span> of Eq. <a class="reference internal" href="kinematics.html#equation-kin-rotations">(1.4)</a>: the Sanders-type kinematics,
+<span class="math notranslate nohighlight">\(k_v = 1/R\)</span>, give the exact area vector, and the Donnell-type kinematics
+neglect the term <span class="math notranslate nohighlight">\(v/R\)</span> of the rotation of the normal, as their strains do.
+A positive <span class="math notranslate nohighlight">\(p\)</span> pushes along <span class="math notranslate nohighlight">\(+\boldsymbol{e}_z\)</span>, outwards, the direction of
+a positive <span class="math notranslate nohighlight">\(w\)</span>: an external pressure is negative.</p>
 </section>
 <section id="truncation-of-the-area-vector">
-<h2>Truncation of the area vector<a class="headerlink" href="#truncation-of-the-area-vector" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, the default, truncates the area vector to its terms of
-order 0 and 1 in the displacement gradients, the truncation consistent with
-the moderate rotations of the strains. <span class="math notranslate nohighlight">\(\boldsymbol{F}_p\)</span> is then affine in the
-displacements and <span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> constant, computed once for a fixed
-pressure. <code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code> adds the terms of order 2, e.g. to check that a
-result does not depend on the truncation; <span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> then depends on
-the displacements and is computed at each iteration.</p>
-<p><code class="docutils literal notranslate"><span class="pre">reference=0</span></code> in <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> leaves out the dead part,
-giving <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0})\)</span>, which vanishes at <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span>.</p>
+<h2><span class="section-number">5.2. </span>Truncation of the area vector<a class="headerlink" href="#truncation-of-the-area-vector" title="Link to this heading">#</a></h2>
+<p>The area vector is split into its parts of order 0, 1 and 2 in the
+displacement gradients, <span class="math notranslate nohighlight">\(\boldsymbol{a} = \boldsymbol{a}_0 +
+\boldsymbol{a}_1 + \boldsymbol{a}_2\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-fp-area-vector">
+<span class="eqno">(5.3)<a class="headerlink" href="#equation-fp-area-vector" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{a}_0 = \begin{Bmatrix} 0 \\ 0 \\ 1 \end{Bmatrix}, \qquad
+\boldsymbol{a}_1 = \begin{Bmatrix} -w_{,x} \\ -w_{,y} + k_v v \\
+u_{,x} + v_{,y} + w/R \end{Bmatrix}, \qquad
+\boldsymbol{a}_2 = \begin{Bmatrix} v_{,x} (w_{,y} - k_v v) - w_{,x}
+(v_{,y} + w/R) \\ w_{,x} u_{,y} - u_{,x} (w_{,y} - k_v v) \\ u_{,x}
+(v_{,y} + w/R) - v_{,x} u_{,y} \end{Bmatrix}\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{a}_0\)</span> is the dead load; <span class="math notranslate nohighlight">\(\boldsymbol{a}_1\)</span> has the rotations
+of the normal, <span class="math notranslate nohighlight">\(\beta_x\)</span> and <span class="math notranslate nohighlight">\(\beta_y\)</span>, in its in-plane components and the
+change of area, the linear membrane dilatation <span class="math notranslate nohighlight">\(\varepsilon_{xx} +
+\varepsilon_{yy}\)</span>, in its normal component. With the ordering of the
+moderate rotations of the strains, <span class="math notranslate nohighlight">\(u_{,x} \sim \epsilon\)</span> and <span class="math notranslate nohighlight">\(w_{,x} \sim
+\epsilon^{1/2}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{a}_0 + \boldsymbol{a}_1\)</span> keeps every term of
+<span class="math notranslate nohighlight">\(p \, \boldsymbol{a}^\top \delta \boldsymbol{u}\)</span> up to the order <span class="math notranslate nohighlight">\(\epsilon p
+\, \delta w\)</span> of the strains, and <span class="math notranslate nohighlight">\(\boldsymbol{a}_2\)</span> adds terms of order
+<span class="math notranslate nohighlight">\(\epsilon^2 p \, \delta w\)</span>, of the order of those that the strains neglect.</p>
+<p>The functions take two flags. <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, the default, uses the
+consistent truncation <span class="math notranslate nohighlight">\(\boldsymbol{a}_0 + \boldsymbol{a}_1\)</span>, and
+<code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code> adds <span class="math notranslate nohighlight">\(\boldsymbol{a}_2\)</span>, the complete area vector of the
+kinematics, e.g. to check that a result does not depend on the truncation.
+<code class="docutils literal notranslate"><span class="pre">reference=0</span></code> leaves out <span class="math notranslate nohighlight">\(\boldsymbol{a}_0\)</span>. With the interpolation of
+<a class="reference internal" href="element.html"><span class="doc">The BFSC element on the cylinder</span></a>, the force vector is</p>
+<div class="math notranslate nohighlight" id="equation-fp-force">
+<span class="eqno">(5.4)<a class="headerlink" href="#equation-fp-force" title="Link to this equation">#</a></span>\[\boldsymbol{F}_p(\boldsymbol{u}_e) = \int_A p \left(
+(\boldsymbol{S}^u)^\top a_x + (\boldsymbol{S}^v)^\top a_y +
+(\boldsymbol{S}^w)^\top a_z \right) dA, \qquad
+\boldsymbol{a} = r \boldsymbol{a}_0 + \boldsymbol{a}_1 + q
+\boldsymbol{a}_2\]</div>
+<p>with <span class="math notranslate nohighlight">\(r\)</span> = <code class="docutils literal notranslate"><span class="pre">reference</span></code> and <span class="math notranslate nohighlight">\(q\)</span> = <code class="docutils literal notranslate"><span class="pre">quadratic</span></code>. At <span class="math notranslate nohighlight">\(\boldsymbol{u}_e =
+\boldsymbol{0}\)</span> it is the consistent load vector of a dead pressure, <span class="math notranslate nohighlight">\(\int_A
+p (\boldsymbol{S}^w)^\top dA\)</span>, for both truncations; with <code class="docutils literal notranslate"><span class="pre">reference=0</span></code>
+it is <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u}_e) -
+\boldsymbol{F}_p(\boldsymbol{0})\)</span>, the part that depends on the
+displacements. For <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{F}_p\)</span> is affine in the
+displacements.</p>
+<p>The pressure is given to the functions at the integration points of each
+element, as an array <code class="docutils literal notranslate"><span class="pre">p</span></code> of shape <code class="docutils literal notranslate"><span class="pre">(nint,</span> <span class="pre">nint)</span></code>, <code class="docutils literal notranslate"><span class="pre">p[i,</span> <span class="pre">j]</span></code> at <span class="math notranslate nohighlight">\(\xi\)</span> =
+<code class="docutils literal notranslate"><span class="pre">points[i]</span></code> and <span class="math notranslate nohighlight">\(\eta\)</span> = <code class="docutils literal notranslate"><span class="pre">points[j]</span></code>, like the stiffnesses of
+<a class="reference internal" href="constitutive.html"><span class="doc">Constitutive relation</span></a>, multiplied by the load factor of the analysis. A
+pressure that depends on the current position, e.g. a hydrostatic head of a
+liquid, is not modelled.</p>
 </section>
-<section id="residual-and-tangent-stiffness-matrix">
-<h2>Residual and tangent stiffness matrix<a class="headerlink" href="#residual-and-tangent-stiffness-matrix" title="Link to this heading">#</a></h2>
-<p>With the pressure <span class="math notranslate nohighlight">\(\lambda p_0\)</span> of a load factor <span class="math notranslate nohighlight">\(\lambda\)</span>, the residual of
-the nonlinear static analysis of <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a> and its Jacobian are</p>
-<div class="math notranslate nohighlight">
-\[\boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{u}), \qquad
-\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}(\boldsymbol{u}) + \boldsymbol{K}_{GNL}(\boldsymbol{u}) + \boldsymbol{K}_G(\boldsymbol{u}) + \boldsymbol{K}_F\]</div>
-<p>with <span class="math notranslate nohighlight">\(\boldsymbol{F}_p\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> of the same <code class="docutils literal notranslate"><span class="pre">p</span> <span class="pre">=</span> <span class="pre">lambda*p0</span></code> and
-<code class="docutils literal notranslate"><span class="pre">quadratic</span></code>, see <code class="docutils literal notranslate"><span class="pre">residual_and_tangent</span></code> in <a class="reference internal" href="ex_follower_pressure.html"><span class="doc">Follower pressure</span></a>.
-A solver whose external force vector is fixed, <span class="math notranslate nohighlight">\(\lambda \boldsymbol{F}_{ext}\)</span>, takes the
-dead part <span class="math notranslate nohighlight">\(\boldsymbol{F}_{ext} = \boldsymbol{F}_p(\boldsymbol{0})\)</span> of <code class="docutils literal notranslate"><span class="pre">p0</span></code> as external forces and the part
-<code class="docutils literal notranslate"><span class="pre">reference=0</span></code>, <span class="math notranslate nohighlight">\(\lambda(\boldsymbol{F}_p(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{0}))\)</span>, with the internal
-forces.</p>
-<p>A linear buckling analysis under a follower pressure <span class="math notranslate nohighlight">\(\lambda p_0\)</span> adds the
-load stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_{F_{ref}}\)</span> of <code class="docutils literal notranslate"><span class="pre">p0</span></code> to <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of the linear static solution of
-<code class="docutils literal notranslate"><span class="pre">p0</span></code>:</p>
-<div class="math notranslate nohighlight">
-\[(\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G + \boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}\]</div>
-<p>as in the validation tests of rings and cylinders, see
-<a class="reference internal" href="ex_follower_pressure.html"><span class="doc">Follower pressure</span></a>. Under a dead pressure <span class="math notranslate nohighlight">\(\boldsymbol{K}_{F_{ref}}\)</span> is left
-out. With the Sanders-type kinematics and a dead pressure, a rigid rotation
-<span class="math notranslate nohighlight">\(v\)</span> = constant of a ring left free gives a spurious buckling mode at a
-vanishing load, which the follower load stiffness cancels, see the Notes of
-<a class="reference internal" href="api_bfsccylinder_sanders.html#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>.</p>
+<section id="load-stiffness-matrix">
+<h2><span class="section-number">5.3. </span>Load stiffness matrix<a class="headerlink" href="#load-stiffness-matrix" title="Link to this heading">#</a></h2>
+<p>The load stiffness matrix of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCfollower" title="bfsccylinder.bfsccylinder.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a> is the derivative
+of the force vector, with the sign of a stiffness:</p>
+<div class="math notranslate nohighlight" id="equation-fp-kf">
+<span class="eqno">(5.5)<a class="headerlink" href="#equation-fp-kf" title="Link to this equation">#</a></span>\[\boldsymbol{K}_F = -\frac{\partial \boldsymbol{F}_p}{\partial
+\boldsymbol{u}_e} = -\int_A p \left( (\boldsymbol{S}^u)^\top
+\frac{\partial a_x}{\partial \boldsymbol{u}_e} + (\boldsymbol{S}^v)^\top
+\frac{\partial a_y}{\partial \boldsymbol{u}_e} + (\boldsymbol{S}^w)^\top
+\frac{\partial a_z}{\partial \boldsymbol{u}_e} \right) dA\]</div>
+<p>with the derivatives of the displacement gradients, e.g. <span class="math notranslate nohighlight">\(\partial
+u_{,x}/\partial \boldsymbol{u}_e = \boldsymbol{S}^u_{,x}\)</span>. <span class="math notranslate nohighlight">\(\boldsymbol{a}_0\)</span>
+does not contribute. For <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code> the matrix is constant for a given
+pressure,</p>
+<div class="math notranslate nohighlight" id="equation-fp-kf-linear">
+<span class="eqno">(5.6)<a class="headerlink" href="#equation-fp-kf-linear" title="Link to this equation">#</a></span>\[\boldsymbol{K}_F = \int_A p \left( (\boldsymbol{S}^u)^\top
+\boldsymbol{S}^w_{,x} + (\boldsymbol{S}^v)^\top \left(
+\boldsymbol{S}^w_{,y} - k_v \boldsymbol{S}^v \right) -
+(\boldsymbol{S}^w)^\top \left( \boldsymbol{S}^u_{,x} +
+\boldsymbol{S}^v_{,y} + \boldsymbol{S}^w/R \right) \right) dA\]</div>
+<p>and for <code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code> it is linear in the displacements. The residual of
+a nonlinear analysis with the follower pressure and its Jacobian are</p>
+<div class="math notranslate nohighlight" id="equation-fp-residual">
+<span class="eqno">(5.7)<a class="headerlink" href="#equation-fp-residual" title="Link to this equation">#</a></span>\[\boldsymbol{R}(\boldsymbol{u}) = \boldsymbol{F}_{int}(\boldsymbol{u}) -
+\boldsymbol{F}_p(\boldsymbol{u}), \qquad
+\boldsymbol{K}_T = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} +
+\boldsymbol{K}_{GNL} + \boldsymbol{K}_G + \boldsymbol{K}_F\]</div>
+<p>with the matrices of Eq. <a class="reference internal" href="matrices.html#equation-mat-kt">(4.4)</a> and <span class="math notranslate nohighlight">\(\boldsymbol{F}_p\)</span> and
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> of the same pressure and truncation.</p>
 </section>
-<section id="unsymmetric-load-stiffness-matrix">
-<h2>Unsymmetric load stiffness matrix<a class="headerlink" href="#unsymmetric-load-stiffness-matrix" title="Link to this heading">#</a></h2>
-<p><span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> is unsymmetric in general, a non-conservative load. For
-the first-order area vector, <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, it is symmetric, and the
-follower pressure conservative, if and only if the pressure is uniform
-over the loaded region and, at each point of the contour of the loaded
-region, <span class="math notranslate nohighlight">\(w = 0\)</span> or the in-plane displacement normal to the contour is
-zero, e.g. a cylinder closed around the circumference with simply
-supported or clamped ends, or symmetry planes. The matrix of one element,
-free or partially restrained edges, a pressure on a patch whose edges lie
-inside the shell or a varying pressure give an unsymmetric matrix; in the
-assembled matrix, restricted to the unknown degrees of freedom, the
-contributions of the edges shared by two elements cancel. The conditions are given in the Notes of
-<a class="reference internal" href="api_bfsccylinder.html#module-bfsccylinder.bfsccylinder" title="bfsccylinder.bfsccylinder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder</span></code></a>. The matrix is written in full and must not
-be symmetrized: the linear systems and the eigenvalue problems are solved
-with the solvers of unsymmetric matrices, e.g. <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code> with
-<code class="docutils literal notranslate"><span class="pre">symmetric=False</span></code> in the validation tests.</p>
+<section id="symmetry-of-the-load-stiffness-matrix">
+<h2><span class="section-number">5.4. </span>Symmetry of the load stiffness matrix<a class="headerlink" href="#symmetry-of-the-load-stiffness-matrix" title="Link to this heading">#</a></h2>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> is unsymmetric in general: the follower pressure is a
+non-conservative load. For the first-order area vector, the skew part of
+the bilinear form <span class="math notranslate nohighlight">\(P(\delta \boldsymbol{u}, \Delta \boldsymbol{u}) = \int_A
+p \, \delta \boldsymbol{u}^\top \boldsymbol{a}_1(\Delta \boldsymbol{u}) \,
+dA\)</span> over the loaded region is, after an integration by parts,</p>
+<div class="math notranslate nohighlight" id="equation-fp-skew">
+<span class="eqno">(5.8)<a class="headerlink" href="#equation-fp-skew" title="Link to this equation">#</a></span>\[\begin{split}\begin{aligned}
+P(\delta \boldsymbol{u}, \Delta \boldsymbol{u}) - P(\Delta \boldsymbol{u},
+\delta \boldsymbol{u}) = &amp;-\oint p \left( (\delta u \Delta w - \delta w
+\Delta u) n_x + (\delta v \Delta w - \delta w \Delta v) n_y \right) ds
+\\ &amp;+ \int_A \left( p_{,x} (\delta u \Delta w - \delta w \Delta u) +
+p_{,y} (\delta v \Delta w - \delta w \Delta v) \right) dA
+\end{aligned}\end{split}\]</div>
+<p>with <span class="math notranslate nohighlight">\(\{n_x, n_y\}^\top\)</span> the outward normal of the contour of the loaded
+region. The terms of the curvature of the cylinder, <span class="math notranslate nohighlight">\(w/R\)</span> and <span class="math notranslate nohighlight">\(k_v v\)</span>, are
+symmetric and cancel, such that Eq. <a class="reference internal" href="#equation-fp-skew">(5.8)</a> holds for both
+kinematics. The load stiffness matrix is therefore symmetric, and the
+follower pressure conservative, if and only if:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(p\)</span> is uniform over the loaded region, such that the area integral
+vanishes; and</p></li>
+<li><p>at each point of the contour of the loaded region, either <span class="math notranslate nohighlight">\(w = 0\)</span> or the
+in-plane displacement normal to the contour vanishes, <span class="math notranslate nohighlight">\(u = 0\)</span> on an edge
+<span class="math notranslate nohighlight">\(x\)</span> = constant and <span class="math notranslate nohighlight">\(v = 0\)</span> on an edge <span class="math notranslate nohighlight">\(y\)</span> = constant, such that the
+contour integral vanishes.</p></li>
+</ul>
+<p>Simply supported and clamped edges, symmetry planes and closed surfaces
+meet these conditions; for a cylinder closed around the circumference, the
+contour of the loaded region is that of its ends. The load potential is
+then the pressure times the change of the enclosed volume. Free or
+partially restrained edges, a pressure applied on a patch whose edges lie
+inside the shell, and a pressure that varies over the surface give an
+unsymmetric matrix. These are the results of Hibbitt <a class="reference internal" href="#hibbitt1979" id="id2"><span>[Hibbitt1979]</span></a> and of
+Schweizerhof and Ramm <a class="reference internal" href="#schweizerhoframm1984" id="id3"><span>[SchweizerhofRamm1984]</span></a>, who showed that the pressure
+load stiffness is symmetric for closed surfaces or loaded surfaces with a
+fixed boundary.</p>
+<p>For the matrix of one element, the contour of the loaded region is the
+boundary of the element, where the second condition does not hold: the
+element matrix is unsymmetric. In the assembled matrix, the contour
+integrals along an edge shared by two elements cancel when <span class="math notranslate nohighlight">\(p\)</span> is
+continuous, since <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span> are continuous, and the conditions apply
+to the contour of the loaded region of the whole shell, restricted to the
+unknown degrees of freedom. The matrices are written in full and must not
+be symmetrized; the linear systems and eigenvalue problems that contain
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> are solved with solvers of unsymmetric matrices. For
+<code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code> the matrix depends on the displacements and these
+conditions do not apply.</p>
+</section>
+<section id="linear-buckling-under-a-follower-pressure">
+<h2><span class="section-number">5.5. </span>Linear buckling under a follower pressure<a class="headerlink" href="#linear-buckling-under-a-follower-pressure" title="Link to this heading">#</a></h2>
+<p>For a pressure <span class="math notranslate nohighlight">\(\lambda p_0\)</span> proportional to the load multiplier, the
+tangent stiffness matrix of the prebuckling state <span class="math notranslate nohighlight">\(\lambda
+\boldsymbol{u}_0\)</span>, linearised in <span class="math notranslate nohighlight">\(\lambda\)</span>, adds the load stiffness matrix
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_{F_{ref}}\)</span> of <span class="math notranslate nohighlight">\(p_0\)</span> to the geometric stiffness matrix of the
+linear static solution <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> of <span class="math notranslate nohighlight">\(p_0\)</span>:</p>
+<div class="math notranslate nohighlight" id="equation-fp-buckling">
+<span class="eqno">(5.9)<a class="headerlink" href="#equation-fp-buckling" title="Link to this equation">#</a></span>\[\left( \boldsymbol{K}_{C0} + \lambda \left( \boldsymbol{K}_G
+(\boldsymbol{u}_0) + \boldsymbol{K}_{F_{ref}} \right) \right)
+\boldsymbol{\phi} = \boldsymbol{0}\]</div>
+<p>with <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, an eigenvalue problem that is unsymmetric in general,
+see <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>. For a dead pressure, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{F_{ref}}\)</span> is left
+out. The two loads give different buckling pressures: for a ring in
+generalised plane strain buckling with <span class="math notranslate nohighlight">\(n = 2\)</span> circumferential waves, the
+inextensional limit of the exact second variation of the ring with the
+strains of <a class="reference internal" href="kinematics.html"><span class="doc">Kinematics of the cylindrical shell</span></a> gives</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Kinematics</p></th>
+<th class="head"><p>Load</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(p R^3/D\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Sanders-type</p></td>
+<td><p>follower</p></td>
+<td><p><span class="math notranslate nohighlight">\(-3\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Sanders-type</p></td>
+<td><p>dead</p></td>
+<td><p><span class="math notranslate nohighlight">\(-4\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Donnell-type</p></td>
+<td><p>follower</p></td>
+<td><p><span class="math notranslate nohighlight">\(-16/5\)</span></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>with <span class="math notranslate nohighlight">\(D\)</span> the bending stiffness of the wall. With the Sanders-type
+kinematics and a dead pressure, a ring free to rotate has a spurious
+buckling mode at a vanishing load: the rigid rotation <span class="math notranslate nohighlight">\(v\)</span> = constant under
+the hoop prestress <span class="math notranslate nohighlight">\(N_{yy} = pR\)</span> has the energy <span class="math notranslate nohighlight">\(\int_A N_{yy} (v/R)^2 dA\)</span>
+in <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>, negative under an external pressure, which the
+follower load stiffness, <span class="math notranslate nohighlight">\(-\int_A p v^2/R \, dA\)</span>, cancels. The rigid
+rotation must then be constrained, or the follower load used.</p>
+</section>
+<section id="references">
+<h2><span class="section-number">5.6. </span>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div role="list" class="citation-list">
+<div class="citation" id="hibbitt1979" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">Hibbitt1979</a><span class="fn-bracket">]</span></span>
+<p>Hibbitt, H. D., Some follower forces and load stiffness,
+International Journal for Numerical Methods in Engineering, 14(6),
+937-941, 1979, doi:10.1002/nme.1620140613.</p>
+</div>
+<div class="citation" id="schweizerhoframm1984" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>SchweizerhofRamm1984<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<p>Schweizerhof, K., and Ramm, E., Displacement
+dependent pressure loads in nonlinear finite element analyses, Computers
+&amp; Structures, 18(6), 1099-1114, 1984,
+doi:10.1016/0045-7949(84)90154-8.</p>
+</div>
+</div>
 </section>
 </section>
 
@@ -648,20 +1028,20 @@ with the solvers of unsymmetric matrices, e.g. <code class="docutils literal not
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="analyses.html"
+       href="matrices.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Analyses</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Element matrices and internal forces</p>
       </div>
     </a>
     <a class="right-next"
-       href="ex_linear_static.html"
+       href="assembling.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Linear static analysis</p>
+        <p class="prev-next-title"><span class="section-number">6. </span>Assembling a model</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -684,11 +1064,12 @@ with the solvers of unsymmetric matrices, e.g. <code class="docutils literal not
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pressure-at-the-integration-points">Pressure at the integration points</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sign">Sign</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#truncation-of-the-area-vector">Truncation of the area vector</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#residual-and-tangent-stiffness-matrix">Residual and tangent stiffness matrix</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#unsymmetric-load-stiffness-matrix">Unsymmetric load stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#virtual-work-of-the-pressure">5.1. Virtual work of the pressure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#truncation-of-the-area-vector">5.2. Truncation of the area vector</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-stiffness-matrix">5.3. Load stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#symmetry-of-the-load-stiffness-matrix">5.4. Symmetry of the load stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#linear-buckling-under-a-follower-pressure">5.5. Linear buckling under a follower pressure</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">5.6. References</a></li>
 </ul>
   </nav></div>
 

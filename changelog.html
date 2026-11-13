@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Changelog &#8212; bfsccylinder 0.7.1 documentation</title>
+    <title>Changelog &#8212; bfsccylinder 0.7.2 documentation</title>
   
   
   
@@ -30,6 +30,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
@@ -37,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=5a057da9"></script>
+    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -45,11 +46,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How the documentation is organised" href="documentation_levels.html" />
     <link rel="prev" title="Installing bfsccylinder" href="install.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.1" />
+  <meta name="docsearch:version" content="0.7.2" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -117,7 +119,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.1 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
   
 </a></div>
     
@@ -132,29 +134,29 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -174,57 +176,169 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -246,6 +360,13 @@
 <li class=" current active">
   <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -333,15 +454,36 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
   </a>
 </li>
 
@@ -361,64 +503,155 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="follower_pressure.html">
-    Follower pressure
+  <a class="nav-link nav-internal" href="conventions.html">
+    Conventions and limits
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_kinematics.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -440,6 +673,13 @@
 <li class="nav-item current active">
   <a class="nav-link nav-internal" href="#" aria-current="page">
     Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -549,7 +789,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-<span class="gu">## 0.7.1 (2026-11-03)</span>
+<span class="gu">## 0.7.2 (2026-11-13)</span>
 
 <span class="gu">### Tutorials</span>
 
@@ -608,6 +848,39 @@ The dates of the released versions are those of their tagged commits.
   <span class="sb">`CantileverModel.calc_KT`</span> assembles <span class="sb">`KC0 + KCNL + KG`</span> vectorized with
   NumPy, equal to the kernels to the round-off and about 7 times faster
   than <span class="sb">`update_KCNL`</span> of the Sanders-type element.
+<span class="k">-</span><span class="w"> </span>New module <span class="sb">`notebooks/z_cylinder_sector.py`</span>, used by the notebook
+  <span class="sb">`peterson1959_stiffened_cylinder_buckling.ipynb`</span>: one stringer pitch with
+  cyclic symmetry of a cylinder with Z-section stringers made of three
+  plates (the attached flange in a two-layer laminate of the skin, the web
+  and the free flange as <span class="sb">`BFSCPlate2D`</span> plates of bfscplate2d), clamped or
+  simply supported ends and the membrane pre-buckling state. Cylinders 1
+  and 2 of NASA Memo 2-12-59L (120 internal stringers, <span class="sb">`R`</span> = 23.74 in)
+  buckle at 2128.4 and 3196.1 lb/in with 12 and 13 circumferential waves
+  (coarse mesh); the measured loads, 270 and 413 kips, are 85.0 and 86.6 %
+  of these, inside the range of the tests of NASA TN D-3639, Table I,
+  against their clamped smeared theory (71 to 96 %). No test of this
+  repository imports bfscplate2d.
+<span class="k">-</span><span class="w"> </span><span class="sb">`ex_kinematics.ipynb`</span> and <span class="sb">`ex_linear_buckling.ipynb`</span> solve the linear
+  buckling problems as the Z33 constant-stress tests and show the lowest
+  buckling loads: Z33 under a constant membrane force 201.10 kN
+  (Donnell-type) and 199.87 kN (Sanders-type), Z33 with the static
+  prebuckling state 201.06 kN, Z18 228.47 kN (before 201.75, 200.61, 201.69
+  and 229.06 kN, the second-lowest load multipliers).
+<span class="k">-</span><span class="w"> </span>New notebooks <span class="sb">`moore1944_ring_cylinders.ipynb`</span> and
+  <span class="sb">`moore1944_stiffened_cylinders.ipynb`</span>, with the module
+  <span class="sb">`notebooks/moore1944_utils.py`</span>: buckling under torsion of the 24S-T
+  cylinders of NACA ARR 4E31 (Moore and Wescoat, 1944), Tables I and II, on
+  the periodic sector of <span class="sb">`channel_cylinder_sector.py`</span> with a constant
+  membrane shear pre-stress. Rings (1/2 x 1/2 in bars inside the skin) are
+  bands of skin elements with a ring layer on the inner face; the channel
+  stringers outside are plates (webs, flat lips) on a two-layer base.
+  Ring-only specimens 16, 17, 18, 13 and 13A, one Bloch index per
+  circumferential wave number: 1403, 1592, 2252, 2810 and 2829 psi with
+  hinged ends, -2.1 to +5.9 % from Moore's Donnell column and 10 to 32 %
+  above the observed stresses; the constant shear and a prescribed end
+  rotation give the same buckling torque. Stiffened specimens 19, 14, 20,
+  15 and 21, one stringer pitch: 2619, 3134, 3970, 4118 and 4422 psi, 6 to
+  38 % above the observed first panel buckling.
 
 <span class="gu">### Tests</span>
 
@@ -622,6 +895,30 @@ The dates of the released versions are those of their tagged commits.
   6.3.4(a) within 0.025.
 <span class="k">-</span><span class="w"> </span><span class="sb">`structsolve&gt;=0.10.0`</span> in <span class="sb">`requirements.txt`</span> (was 0.9.3), and in the
   installation page.
+<span class="k">-</span><span class="w"> </span><span class="sb">`test_finite_cylinder_shear_diaphragm`</span> of
+  <span class="sb">`tests/test_follower_pressure_validation.py`</span> uses the meshes 4 x 24 and
+  6 x 32 (a few seconds per case): load multipliers above the closed form,
+  decreasing with the mesh and within 20 % of it, and the ratio of the
+  follower to the dead load multiplier within 2e-4 of the closed form. The
+  comparison of the 12 x 96 mesh with the closed form is in the notebook
+  <span class="sb">`ex_follower_pressure.ipynb`</span>.
+<span class="k">-</span><span class="w"> </span>New <span class="sb">`tests/test_moore1944_torsion.py`</span>: first buckling stress in torsion
+  of specimen 18 (rings) and of specimen 19 (rings and stringers as skin
+  bands) of Moore and Wescoat (1944), within 1 % of the values of the
+  converged sector models, and equal multipliers for both signs of the
+  torque. It does not import bfscplate2d.
+<span class="k">-</span><span class="w"> </span>The linear buckling tests of the cylinder Z33 under a constant membrane
+  force, <span class="sb">`test_linear_buckling_Z33_constant_stress.py`</span> and
+  <span class="sb">`test_sanders_linear_buckling_Z33_constant_stress.py`</span>, are deterministic
+  and check the lowest load multiplier: <span class="sb">`eigsh`</span> in the mode <span class="sb">`'buckling'`</span>
+  from a fixed starting vector, with the shift at half the stored load
+  multiplier, the residual of the eigenpair checked and, by Sylvester's law
+  of inertia, no lower load multiplier missing. Before, the tests took the
+  highest of three load multipliers returned from a random starting vector
+  with the shift 1, and failed in about 15 to 20 % of the runs. The stored
+  values were the second-lowest double load multipliers: -201751 N becomes
+  -201104 N (Donnell-type), -200606.75 N becomes -199872.11 N
+  (Sanders-type).
 
 <span class="gu">### Documentation</span>
 
@@ -900,6 +1197,15 @@ The dates of the released versions are those of their tagged commits.
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Installing bfsccylinder</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="documentation_levels.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">How the documentation is organised</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>

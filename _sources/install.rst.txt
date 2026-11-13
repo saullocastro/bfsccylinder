@@ -47,10 +47,10 @@ the documentation only: bfsccylinder does not import it, and it is not
 installed with bfsccylinder, not being in the ``dependencies`` of
 ``pyproject.toml``. The tests and the examples require structsolve 0.10.0
 or newer: Crisfield's convergence criterion as default, the residual
-`\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_{ext}` of
-the examples of :doc:`analyses`, and the Riks method with a stop criterion
-on a displacement, the inertia of the tangent stiffness matrix and the
-branch switching of the tutorial of the post-buckling of a cylinder.
+`\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_{ext}`, the
+convention of these pages, and the Riks method with a stop criterion on a
+displacement, the inertia of the tangent stiffness matrix and branch
+switching.
 
 ``setup.py`` compiles with ``/O2`` on Windows and with ``-O3
 -fno-math-errno`` on Linux and macOS, without flags that change the

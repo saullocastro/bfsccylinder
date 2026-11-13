@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion &#8212; bfsccylinder 0.7.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/lanzi2003_stiffened_cylinder';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Post-buckling of an axially compressed cylinder with imperfections" href="simo1990_cylinder_postbuckling.html" />
+    <link rel="prev" title="First buckling of blade-stiffened CFRP curved panels" href="abramovich2003_stiffened_panels.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.2" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../kinematics.html">
+    Kinematics of the cylindrical shell
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../kinematics.html">
+    Kinematics of the cylindrical shell
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="Buckling-of-a-CFRP-stringer-stiffened-cylinder-under-axial-compression-and-torsion">
+<h1>Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion<a class="headerlink" href="#Buckling-of-a-CFRP-stringer-stiffened-cylinder-under-axial-compression-and-torsion" title="Link to this heading">#</a></h1>
+<p>Lanzi, Bisagni and Cordisco [1] designed cylinders of woven carbon fabric stiffened by eight L-shaped stringers to work in the post-buckling range under torsion, and analysed them with ABAQUS (shell elements S4R, a geometrically nonlinear analysis with the Riks method or an explicit dynamic analysis) in two configurations: A, with stringers only, and B, with a central ring as well. Two specimens of configuration B were manufactured and tested in torsion [1, 2, 3]; configuration A was analysed
+only. For configuration A, [1] gives the first buckling load under axial compression, 213 kN (Table 2), and the first buckling torque, 13.5 kNm (Tables 3 and 4).</p>
+<p>Here these two first buckling loads of configuration A are computed with a linear buckling analysis of a model of discrete stringers:</p>
+<ul class="simple">
+<li><p>the skin with the BFSC cylinder element of Sanders-type kinematics, <code class="docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code>;</p></li>
+<li><p>the L-shaped stringer assembled from two plates: the foot, a plate bonded on the inner surface of the skin, and the blade, a plate of BFSC plate elements <code class="docutils literal notranslate"><span class="pre">BFSCPlate2D</span></code> of <a class="reference external" href="https://github.com/saullocastro/bfscplate2d">bfscplate2d</a> rotated 90 degrees on top of the foot, in the plane <span class="math notranslate nohighlight">\((x, r)\)</span>, connected to the skin and the foot along their common edge;</p></li>
+<li><p>the reinforcing strips of the skin under the stringers as plates bonded on its outer surface.</p></li>
+</ul>
+<p>The model is given by the module <code class="docutils literal notranslate"><span class="pre">composite_stiffened_shell.py</span></code>, next to this notebook, also used in <a class="reference internal" href="abramovich2003_stiffened_panels.html"><span class="doc">First buckling of blade-stiffened CFRP curved panels</span></a>. Besides <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code>, it needs <code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code>, <code class="docutils literal notranslate"><span class="pre">composites</span></code>, <code class="docutils literal notranslate"><span class="pre">structsolve</span></code> and Matplotlib.</p>
+<section id="Data-of-configuration-A">
+<h2>Data of configuration A<a class="headerlink" href="#Data-of-configuration-A" title="Link to this heading">#</a></h2>
+<p>All values in N and mm. Each value is given with the place where it was read ([1] page numbers 75-2 to 75-5):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>quantity</p></th>
+<th class="head"><p>value</p></th>
+<th class="head"><p>source</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(E_{11}\)</span>, <span class="math notranslate nohighlight">\(E_{22}\)</span>, <span class="math notranslate nohighlight">\(G_{12}\)</span></p></td>
+<td><p>57765, 53686, 3065 N/mm<span class="math notranslate nohighlight">\(^2\)</span></p></td>
+<td><p>[1] Table 1; also [2] Table 1, [3] Table 1</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\nu_{12}\)</span></p></td>
+<td><p>0.048</p></td>
+<td><p>[1] Table 1</p></td>
+</tr>
+<tr class="row-even"><td><p>ply thickness</p></td>
+<td><p>0.330 mm</p></td>
+<td><p>[1] Table 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>free length <span class="math notranslate nohighlight">\(L\)</span></p></td>
+<td><p>540 mm (overall 700 mm with the two tabs)</p></td>
+<td><p>[1] p. 75-2; [2] Section 2</p></td>
+</tr>
+<tr class="row-even"><td><p>internal diameter</p></td>
+<td><p>700 mm</p></td>
+<td><p>[1] p. 75-2</p></td>
+</tr>
+<tr class="row-odd"><td><p>skin</p></td>
+<td><p>three layers <span class="math notranslate nohighlight">\([45/0/-45]\)</span>, 0 along the axis</p></td>
+<td><p>[1] p. 75-2; [3] p. 1808</p></td>
+</tr>
+<tr class="row-even"><td><p>reinforced skin areas</p></td>
+<td><p>40 mm wide, on the outer surface, under the stringers, three layers added: <span class="math notranslate nohighlight">\([-45/0/45]\)</span> in [3], <span class="math notranslate nohighlight">\([45/-45/45]\)</span> in [1]</p></td>
+<td><p>[1] p. 75-2; [3] p. 1808</p></td>
+</tr>
+<tr class="row-odd"><td><p>stringers</p></td>
+<td><p>8, L-shaped, equally spaced and equally oriented, bonded and riveted on the inner surface</p></td>
+<td><p>[1] p. 75-2, 75-3</p></td>
+</tr>
+<tr class="row-even"><td><p>L-section</p></td>
+<td><p>blade 25 mm, part in contact with the skin (foot) 32 mm, corner of mean radius about 7 mm</p></td>
+<td><p>[1] p. 75-2; [2] Table 2 (<span class="math notranslate nohighlight">\(25 \times 32\)</span>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>stringer lay-up</p></td>
+<td><p>8 plies, <span class="math notranslate nohighlight">\([0/90]_{2S}\)</span></p></td>
+<td><p>[2] Table 2 and p. 140, [3] p. 1808; see below</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The stringer lay-up is printed in [1] as “eight <span class="math notranslate nohighlight">\([0°/90°]_{4S}\)</span> oriented layers”, where eight layers and <span class="math notranslate nohighlight">\([0/90]_{4S}\)</span> (16 plies) disagree. [2] (Table 2, third shell, the ring-stiffened shell tested in torsion, whose stringers are “equal in number and dimensions to those of the first configuration”) and [3] (p. 1808) give eight plies <span class="math notranslate nohighlight">\([0/90]_{2S}\)</span>, and the nominal thicknesses of [2] Table 3 for that shell agree with three plies of skin, three of reinforcement and eight of
+stringer, as computed below. The model uses <span class="math notranslate nohighlight">\([0/90]_{2S}\)</span>.</p>
+<p>The reinforcement is <span class="math notranslate nohighlight">\([45/-45/45]\)</span> in [1] and <span class="math notranslate nohighlight">\([-45/0/45]\)</span> in [3] (for the manufactured shells with ring). The model uses the <span class="math notranslate nohighlight">\([-45/0/45]\)</span> of [3], which is balanced: the <span class="math notranslate nohighlight">\([45/-45/45]\)</span> of [1] has two <span class="math notranslate nohighlight">\(+45\)</span> plies and one <span class="math notranslate nohighlight">\(-45\)</span>, so that its extension-shear coupling stiffness <span class="math notranslate nohighlight">\(A_{16}\)</span> is not zero. The <span class="math notranslate nohighlight">\([45/-45/45]\)</span> of [1] is a variant below. The order in which the plies of the skin and of the reinforcement are listed is taken from the inner to the
+outer surface (the skin is not symmetric, so that the order changes its coupling stiffnesses <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span>); the reversed order of the skin is a variant below. TODO(author): is the stacking of [1] listed from the inner surface of the skin? And are the reinforcements of 40 mm centred on the 32 mm of the foot, as assumed below?</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">composites</span><span class="w"> </span><span class="kn">import</span> <span class="n">laminated_plate</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">composite_stiffened_shell</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">StiffenedShell</span><span class="p">,</span> <span class="n">node_coordinates</span><span class="p">,</span>
+                                       <span class="n">plot_skin_w</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="n">U</span><span class="p">,</span> <span class="n">V</span><span class="p">)</span>
+
+<span class="c1"># [1] Table 1, N/mm^2 and mm; transverse shear moduli not used (Kirchhoff)</span>
+<span class="n">E11</span><span class="p">,</span> <span class="n">E22</span><span class="p">,</span> <span class="n">G12</span><span class="p">,</span> <span class="n">nu12</span> <span class="o">=</span> <span class="mf">57765.</span><span class="p">,</span> <span class="mf">53686.</span><span class="p">,</span> <span class="mf">3065.</span><span class="p">,</span> <span class="mf">0.048</span>
+<span class="n">laminaprop</span> <span class="o">=</span> <span class="p">(</span><span class="n">E11</span><span class="p">,</span> <span class="n">E22</span><span class="p">,</span> <span class="n">nu12</span><span class="p">,</span> <span class="n">G12</span><span class="p">,</span> <span class="n">G12</span><span class="p">,</span> <span class="n">G12</span><span class="p">)</span>
+<span class="n">tp</span> <span class="o">=</span> <span class="mf">0.330</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mf">540.</span>
+<span class="n">D_internal</span> <span class="o">=</span> <span class="mf">700.</span>
+<span class="n">nstringers</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">skin_stack</span> <span class="o">=</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">]</span>  <span class="c1"># from the inner surface</span>
+<span class="n">strip_stack</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">]</span>  <span class="c1"># [3]; from the skin outwards</span>
+<span class="n">stringer_stack</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># [0/90]_2S</span>
+<span class="n">blade_height</span> <span class="o">=</span> <span class="mf">25.</span>  <span class="c1"># outer dimension, from the inner surface of the skin</span>
+<span class="n">foot_width</span> <span class="o">=</span> <span class="mf">32.</span>  <span class="c1"># outer dimension, including the blade</span>
+<span class="n">strip_width</span> <span class="o">=</span> <span class="mf">40.</span>
+
+<span class="n">h_skin</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">skin_stack</span><span class="p">)</span><span class="o">*</span><span class="n">tp</span>
+<span class="n">t_strip</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">strip_stack</span><span class="p">)</span><span class="o">*</span><span class="n">tp</span>
+<span class="n">t_str</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">stringer_stack</span><span class="p">)</span><span class="o">*</span><span class="n">tp</span>
+<span class="n">R</span> <span class="o">=</span> <span class="n">D_internal</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span>  <span class="c1"># mid-surface of the skin</span>
+<span class="n">pitch</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">R</span><span class="o">/</span><span class="n">nstringers</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'skin </span><span class="si">%.2f</span><span class="s1"> mm, reinforcement </span><span class="si">%.2f</span><span class="s1"> mm, stringer </span><span class="si">%.2f</span><span class="s1"> mm thick'</span>
+      <span class="o">%</span> <span class="p">(</span><span class="n">h_skin</span><span class="p">,</span> <span class="n">t_strip</span><span class="p">,</span> <span class="n">t_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'nominal skin + stringers: </span><span class="si">%.2f</span><span class="s1"> mm, [2] Table 3 (third shell): 4.62 mm'</span>
+      <span class="o">%</span> <span class="p">(</span><span class="n">h_skin</span> <span class="o">+</span> <span class="n">t_strip</span> <span class="o">+</span> <span class="n">t_str</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'R = </span><span class="si">%.3f</span><span class="s1"> mm, stringer pitch </span><span class="si">%.2f</span><span class="s1"> mm'</span> <span class="o">%</span> <span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">pitch</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+skin 0.99 mm, reinforcement 0.99 mm, stringer 2.64 mm thick
+nominal skin + stringers: 4.62 mm, [2] Table 3 (third shell): 4.62 mm
+R = 350.495 mm, stringer pitch 275.28 mm
+</pre></div></div>
+</div>
+</section>
+<section id="The-model-of-a-stringer">
+<h2>The model of a stringer<a class="headerlink" href="#The-model-of-a-stringer" title="Link to this heading">#</a></h2>
+<p>Over one pitch <span class="math notranslate nohighlight">\(2 \pi R/8\)</span>, the model has the plates:</p>
+<ul class="simple">
+<li><p>the <strong>skin</strong>, BFSC cylinder elements on the mid-surface of radius <span class="math notranslate nohighlight">\(R\)</span> = 350 + 0.99/2 mm;</p></li>
+<li><p>the <strong>reinforcement</strong>, a plate bonded on the outer surface of the skin, and the <strong>foot</strong>, a plate bonded on its inner surface: each is a laminate of BFSC cylinder elements on the nodes of the skin, whose stiffness matrices <span class="math notranslate nohighlight">\(\boldsymbol{A}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span> are referred to the mid-surface of the skin through the offset of its plies, <span class="math notranslate nohighlight">\(\pm (h_{skin} + t)/2\)</span> (a perfect bond, the plates sharing the normal of the Kirchhoff hypothesis); the stiffnesses of
+the plates add up. A flat plate element does not fit the curved surface of the skin (the foot spans 5 degrees of arc), hence the cylinder element;</p></li>
+<li><p>the <strong>blade</strong>, a plate of BFSC plate elements in the plane <span class="math notranslate nohighlight">\((x, r)\)</span>, rotated 90 degrees on top of the foot at its edge, from the mid-surface of the skin to the tip, of height <span class="math notranslate nohighlight">\(25 + h_{skin}/2\)</span>, whose root has the translations and the rotation about <span class="math notranslate nohighlight">\(x\)</span> of the skin and foot along their common edge (see the docstring of the module).</p></li>
+</ul>
+<p>The outer dimensions of the L, 25 and 32 mm, are taken from the inner surface of the skin and from the outer face of the blade; the foot of the model spans <span class="math notranslate nohighlight">\(32 - t/2\)</span> from the mid-plane of the blade. The corner of radius 7 mm and the rivets are not modelled, and the blade plate overlaps the skin and the foot over its first <span class="math notranslate nohighlight">\(h_{skin}/2 + t\)</span> = 3.1 mm, which adds 8 mm<span class="math notranslate nohighlight">\(^2\)</span> to the 67 mm<span class="math notranslate nohighlight">\(^2\)</span> of the blade. The plot shows one stringer over the developed section (radial
+dimensions magnified):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">skin</span> <span class="o">=</span> <span class="n">laminated_plate</span><span class="p">(</span><span class="n">skin_stack</span><span class="p">,</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span> <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">)</span>
+<span class="n">foot</span> <span class="o">=</span> <span class="n">laminated_plate</span><span class="p">(</span><span class="n">stringer_stack</span><span class="p">,</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span> <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">,</span>
+                       <span class="n">offset</span><span class="o">=-</span><span class="p">(</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">t_str</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">blade</span> <span class="o">=</span> <span class="n">laminated_plate</span><span class="p">(</span><span class="n">stringer_stack</span><span class="p">,</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span> <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">)</span>
+<span class="n">foot_model</span> <span class="o">=</span> <span class="n">foot_width</span> <span class="o">-</span> <span class="n">t_str</span><span class="o">/</span><span class="mi">2</span>  <span class="c1"># from the mid-plane of the blade</span>
+<span class="c1"># reinforcement centred on the footprint of the L, of foot_width</span>
+<span class="n">s_before</span> <span class="o">=</span> <span class="p">(</span><span class="n">strip_width</span> <span class="o">-</span> <span class="n">foot_width</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">t_str</span><span class="o">/</span><span class="mi">2</span>
+<span class="n">s_after</span> <span class="o">=</span> <span class="p">(</span><span class="n">strip_width</span> <span class="o">-</span> <span class="n">foot_width</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">strip_laminate</span><span class="p">(</span><span class="n">stack</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">laminated_plate</span><span class="p">(</span><span class="n">stack</span><span class="p">,</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span> <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">,</span>
+                           <span class="n">offset</span><span class="o">=</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">stack</span><span class="p">)</span><span class="o">*</span><span class="n">tp</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">nbay</span><span class="p">,</span> <span class="n">nfoot</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">nh</span><span class="p">,</span> <span class="n">skin_lam</span><span class="o">=</span><span class="n">skin</span><span class="p">,</span> <span class="n">strip_lam</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+          <span class="n">bottom_rotation_free</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">strip_lam</span> <span class="o">=</span> <span class="n">strip_laminate</span><span class="p">(</span><span class="n">strip_stack</span><span class="p">)</span> <span class="k">if</span> <span class="n">strip_lam</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">strip_lam</span>
+    <span class="n">segments</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nstringers</span><span class="p">):</span>
+        <span class="n">segments</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">s_before</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">foot_model</span><span class="p">,</span> <span class="n">nfoot</span><span class="p">),</span> <span class="p">(</span><span class="n">s_after</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                     <span class="p">(</span><span class="n">pitch</span> <span class="o">-</span> <span class="n">strip_width</span><span class="p">,</span> <span class="n">nbay</span><span class="p">)]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">node_coordinates</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">StiffenedShell</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">skin_lam</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nstringers</span><span class="p">):</span>
+        <span class="n">y0</span> <span class="o">=</span> <span class="n">k</span><span class="o">*</span><span class="n">pitch</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">add_plate</span><span class="p">(</span><span class="n">strip_lam</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">+</span> <span class="n">strip_width</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">add_plate</span><span class="p">(</span><span class="n">foot</span><span class="p">,</span> <span class="n">y0</span> <span class="o">+</span> <span class="n">s_before</span><span class="p">,</span> <span class="n">y0</span> <span class="o">+</span> <span class="n">s_before</span> <span class="o">+</span> <span class="n">foot_model</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">add_blade</span><span class="p">(</span><span class="n">y0</span> <span class="o">+</span> <span class="n">s_before</span><span class="p">,</span> <span class="n">blade_height</span> <span class="o">+</span> <span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">blade</span><span class="p">,</span> <span class="n">nh</span><span class="p">,</span>
+                        <span class="s1">'internal'</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">clamp_end</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">rotation_free</span><span class="o">=</span><span class="n">bottom_rotation_free</span><span class="p">)</span>
+    <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rigid_end</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">2.4</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="mi">100</span><span class="p">,</span> <span class="n">h_skin</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'0.6'</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="o">-</span><span class="n">s_before</span><span class="p">,</span> <span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">strip_width</span><span class="p">,</span> <span class="n">t_strip</span><span class="p">,</span>
+                           <span class="n">color</span><span class="o">=</span><span class="s1">'tab:green'</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="o">-</span><span class="n">t_str</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">t_str</span><span class="p">),</span> <span class="n">foot_width</span><span class="p">,</span>
+                           <span class="n">t_str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'tab:blue'</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="o">-</span><span class="n">t_str</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">blade_height</span><span class="p">),</span> <span class="n">t_str</span><span class="p">,</span>
+                           <span class="n">blade_height</span> <span class="o">-</span> <span class="n">t_str</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'tab:orange'</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">blade_height</span><span class="p">],</span> <span class="s1">'k--'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">'k:'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">28</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">'equal'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'$y$ from the blade (mm)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'$r - R$ (mm)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'skin (grey), reinforcement (green), foot (blue), blade '</span>
+             <span class="s1">'(orange); dashed: blade plate of the model, dotted: '</span>
+             <span class="s1">'mid-surface of the skin'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_lanzi2003_stiffened_cylinder_4_0.png" src="../_images/notebooks_lanzi2003_stiffened_cylinder_4_0.png" />
+</div>
+</div>
+</section>
+<section id="Boundary-conditions,-loads-and-analysis">
+<h2>Boundary conditions, loads and analysis<a class="headerlink" href="#Boundary-conditions,-loads-and-analysis" title="Link to this heading">#</a></h2>
+<p>In the tests the cylinder is clamped by its tabs between two loading platforms [1, 3]; in the analyses of [1] the translations of the lower edge are fixed and the upper edge is attached to a rigid body to which the displacement is applied. The model has:</p>
+<ul class="simple">
+<li><p>the edge <span class="math notranslate nohighlight">\(x = 0\)</span> clamped: <span class="math notranslate nohighlight">\(u = v = w = w_{,x} = 0\)</span> for the skin and the plates on it, <span class="math notranslate nohighlight">\(U = V = W = W_{,X} = 0\)</span> for the blades (the variant “rotation free at <span class="math notranslate nohighlight">\(x = 0\)</span>” below leaves <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(W_{,X}\)</span> free, the lower edge of the analyses of [1]);</p></li>
+<li><p>the edge <span class="math notranslate nohighlight">\(x = L\)</span> attached to a rigid ring: <span class="math notranslate nohighlight">\(w = w_{,x} = 0\)</span>, a uniform axial displacement <span class="math notranslate nohighlight">\(u = U\)</span> and a rotation <span class="math notranslate nohighlight">\(\phi\)</span> about the axis, <span class="math notranslate nohighlight">\(v =
+R \phi\)</span> for the skin and <span class="math notranslate nohighlight">\(W = (R + Y)\phi\)</span>, <span class="math notranslate nohighlight">\(W_{,Y} = \phi\)</span>, <span class="math notranslate nohighlight">\(V = 0\)</span> for the blades (<code class="docutils literal notranslate"><span class="pre">StiffenedShell.rigid_end</span></code>). The axial force <span class="math notranslate nohighlight">\(P\)</span> and the torque <span class="math notranslate nohighlight">\(T\)</span> are applied to the ring, the torque as the force <span class="math notranslate nohighlight">\(T/R\)</span> on the degree of freedom <span class="math notranslate nohighlight">\(R\phi\)</span>, a shear load on the end of the cylinder that keeps its section circular.</p></li>
+</ul>
+<p>As in all the models of <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code>, the derivatives along an edge of the displacements prescribed on it are prescribed as well: <span class="math notranslate nohighlight">\(u_{,y} =
+v_{,y} = w_{,y} = w_{,xy} = 0\)</span> for the skin and <span class="math notranslate nohighlight">\(U_{,Y} = V_{,Y} = W_{,Y}
+= W_{,XY} = 0\)</span> for the blades at <span class="math notranslate nohighlight">\(x = 0\)</span> (<span class="math notranslate nohighlight">\(w_{,xy}\)</span> and <span class="math notranslate nohighlight">\(W_{,XY}\)</span> free, with <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(W_{,X}\)</span>, in the variant with the rotation free), and at the ring, where <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span> are uniform, <span class="math notranslate nohighlight">\(u_{,y} = v_{,y} = w_{,y} = w_{,xy} = 0\)</span>, with <span class="math notranslate nohighlight">\(W_{,Y} = \phi\)</span> for the blades.</p>
+<p>The load cases are:</p>
+<ul class="simple">
+<li><p><strong>axial compression</strong>, [1] Table 2: the force <span class="math notranslate nohighlight">\(P\)</span> on the ring, <span class="math notranslate nohighlight">\(\phi =
+0\)</span>;</p></li>
+<li><p><strong>torsion with free axial shortening</strong>, [1] Table 3: the torque <span class="math notranslate nohighlight">\(T\)</span>, the axial displacement of the ring free;</p></li>
+<li><p><strong>torsion with constrained axial shortening</strong>, [1] Table 4: the torque <span class="math notranslate nohighlight">\(T\)</span>, the axial displacement of the ring zero.</p></li>
+</ul>
+<p>The pre-buckling state is the linear static solution <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} \boldsymbol{u}_0 = \boldsymbol{F}\)</span> for the unit load, and the geometric stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of the membrane forces of <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> (with the in-plane terms of the blades) gives the linear buckling problem</p>
+<div class="math notranslate nohighlight">
+\[(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} =
+\boldsymbol{0}\]</div>
+<p>solved with <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>; see <a class="reference internal" href="../analyses.html"><span class="doc">Analyses</span></a>. The shear flow of torsion, <span class="math notranslate nohighlight">\(N_{xy} = T/(2 \pi R^2)\)</span> in the skin, enters <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> through the term <span class="math notranslate nohighlight">\(2 N_{xy} w_{,x} w_{,y}\)</span>, whose sign follows that of <span class="math notranslate nohighlight">\(T\)</span>: the skin, the reinforcement and the L-sections, all equally oriented, are not symmetric about any plane through the axis, so that the critical torques of the two senses of rotation differ; both are computed, <span class="math notranslate nohighlight">\(T &gt; 0\)</span> turning the ring
+towards <span class="math notranslate nohighlight">\(+y\)</span> and <span class="math notranslate nohighlight">\(T &lt; 0\)</span> with the load reversed. The stiffnesses <span class="math notranslate nohighlight">\(P/\delta\)</span> and <span class="math notranslate nohighlight">\(T/\phi\)</span> of the pre-buckling state are compared with those of [1].</p>
+<p><strong>Why the whole cylinder.</strong> The L-sections and the laminates are not symmetric about any plane through the axis, so that no plane of symmetry can be used. A sector of one stringer pitch with periodic conditions represents only the modes in which all eight bays deform in the same way, whereas the local modes of the skin between the stringers form a cluster of eight close eigenvalues, one for each harmonic of the cyclic symmetry, as seen below; the whole cylinder gives all of them.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">analyse</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_eigvalues</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="o">*</span><span class="n">mesh</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s1">'axial'</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">fixed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mv</span><span class="p">)</span>
+        <span class="n">load</span> <span class="o">=</span> <span class="p">{</span><span class="n">mu</span><span class="p">:</span> <span class="o">-</span><span class="mf">1.</span><span class="p">}</span>  <span class="c1"># P = 1 N, compression</span>
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s1">'torsion'</span><span class="p">:</span>
+        <span class="n">load</span> <span class="o">=</span> <span class="p">{</span><span class="n">mv</span><span class="p">:</span> <span class="mf">1.</span><span class="o">/</span><span class="n">R</span><span class="p">}</span>  <span class="c1"># T = 1 N mm</span>
+    <span class="k">elif</span> <span class="n">case</span> <span class="o">==</span> <span class="s1">'torsion constrained'</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">fixed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+        <span class="n">load</span> <span class="o">=</span> <span class="p">{</span><span class="n">mv</span><span class="p">:</span> <span class="mf">1.</span><span class="o">/</span><span class="n">R</span><span class="p">}</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+    <span class="n">lam</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">u0</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">buckling</span><span class="p">(</span><span class="n">load</span><span class="p">,</span> <span class="n">num_eigvalues</span><span class="o">=</span><span class="n">num_eigvalues</span><span class="p">,</span>
+                                    <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="n">lam</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span> <span class="n">dofs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">Nr</span><span class="p">,</span>
+               <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s1">'axial'</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">]</span> <span class="o">=</span> <span class="n">lam</span><span class="o">/</span><span class="mf">1e3</span>  <span class="c1"># kN</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">'stiffness'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">u0</span><span class="p">[</span><span class="n">mu</span><span class="p">])</span><span class="o">/</span><span class="mf">1e3</span>  <span class="c1"># kN/mm</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">'shortening'</span><span class="p">]</span> <span class="o">=</span> <span class="n">lam</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="o">-</span><span class="n">u0</span><span class="p">[</span><span class="n">mu</span><span class="p">])</span>  <span class="c1"># mm at buckling</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">'Tcr'</span><span class="p">]</span> <span class="o">=</span> <span class="n">lam</span><span class="o">/</span><span class="mf">1e6</span>  <span class="c1"># kNm</span>
+        <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">u0</span><span class="p">[</span><span class="n">mv</span><span class="p">]</span><span class="o">/</span><span class="n">R</span><span class="p">)</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">'stiffness'</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1e-6</span><span class="o">/</span><span class="n">phi</span>  <span class="c1"># kNm/degree</span>
+        <span class="n">out</span><span class="p">[</span><span class="s1">'rotation'</span><span class="p">]</span> <span class="o">=</span> <span class="n">lam</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">phi</span>  <span class="c1"># degree at buckling</span>
+    <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Mesh-convergence">
+<h2>Mesh convergence<a class="headerlink" href="#Mesh-convergence" title="Link to this heading">#</a></h2>
+<p>Meshes of <code class="docutils literal notranslate"><span class="pre">nbay</span></code> elements between two reinforcements, <code class="docutils literal notranslate"><span class="pre">nfoot</span></code> elements across the foot, <code class="docutils literal notranslate"><span class="pre">nx</span></code> nodes along <span class="math notranslate nohighlight">\(x\)</span> and <code class="docutils literal notranslate"><span class="pre">nh</span></code> elements along the height of a blade; the 4 and 5.3 mm of reinforcement on both sides of the foot have one element each. The fourth mesh is the finest, to show that the third one is converged (it takes about half an hour):</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshes</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+<span class="n">conv</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">mesh</span> <span class="ow">in</span> <span class="n">meshes</span><span class="p">:</span>
+    <span class="n">conv</span><span class="p">[</span><span class="n">mesh</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">case</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'axial'</span><span class="p">,</span> <span class="s1">'torsion'</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">analyse</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="n">conv</span><span class="p">[</span><span class="n">mesh</span><span class="p">][</span><span class="n">case</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s1">'axial'</span> <span class="k">else</span> <span class="n">r</span><span class="p">[</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'mesh </span><span class="si">%-15s</span><span class="s1"> </span><span class="si">%6d</span><span class="s1"> dofs, </span><span class="si">%-8s</span><span class="s1">: </span><span class="si">%s</span><span class="s1"> = </span><span class="si">%.2f</span><span class="s1"> </span><span class="si">%s</span><span class="s1">, </span><span class="si">%.0f</span><span class="s1"> s'</span>
+              <span class="o">%</span> <span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'dofs'</span><span class="p">],</span> <span class="n">case</span><span class="p">,</span>
+                 <span class="s1">'P_cr'</span> <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s1">'axial'</span> <span class="k">else</span> <span class="s1">'T_cr'</span><span class="p">,</span> <span class="n">first</span><span class="p">,</span>
+                 <span class="s1">'kN'</span> <span class="k">if</span> <span class="n">case</span> <span class="o">==</span> <span class="s1">'axial'</span> <span class="k">else</span> <span class="s1">'kNm'</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">m0</span><span class="p">,</span> <span class="n">m1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">meshes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">meshes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+    <span class="n">dP</span> <span class="o">=</span> <span class="n">conv</span><span class="p">[</span><span class="n">m1</span><span class="p">][</span><span class="s1">'axial'</span><span class="p">][</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">conv</span><span class="p">[</span><span class="n">m0</span><span class="p">][</span><span class="s1">'axial'</span><span class="p">][</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">dT</span> <span class="o">=</span> <span class="n">conv</span><span class="p">[</span><span class="n">m1</span><span class="p">][</span><span class="s1">'torsion'</span><span class="p">][</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">conv</span><span class="p">[</span><span class="n">m0</span><span class="p">][</span><span class="s1">'torsion'</span><span class="p">][</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> -&gt; </span><span class="si">%s</span><span class="s1">: P_cr </span><span class="si">%+.2f</span><span class="s1"> </span><span class="si">%%</span><span class="s1">, T_cr </span><span class="si">%+.2f</span><span class="s1"> </span><span class="si">%%</span><span class="s1">'</span>
+          <span class="o">%</span> <span class="p">(</span><span class="n">m0</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="n">dP</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="n">dT</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+mesh (6, 2, 19, 2)    17009 dofs, axial   : P_cr = 254.56 kN, 32 s
+mesh (6, 2, 19, 2)    17010 dofs, torsion : T_cr = 18.33 kNm, 18 s
+mesh (10, 2, 28, 3)   36353 dofs, axial   : P_cr = 253.74 kN, 137 s
+mesh (10, 2, 28, 3)   36354 dofs, torsion : T_cr = 17.83 kNm, 55 s
+mesh (14, 3, 37, 3)   62897 dofs, axial   : P_cr = 252.43 kN, 313 s
+mesh (14, 3, 37, 3)   62898 dofs, torsion : T_cr = 17.76 kNm, 131 s
+mesh (20, 3, 55, 4)  124769 dofs, axial   : P_cr = 251.99 kN, 636 s
+mesh (20, 3, 55, 4)  124770 dofs, torsion : T_cr = 17.74 kNm, 352 s
+
+(6, 2, 19, 2) -&gt; (10, 2, 28, 3): P_cr -0.32 %, T_cr -2.77 %
+(10, 2, 28, 3) -&gt; (14, 3, 37, 3): P_cr -0.52 %, T_cr -0.35 %
+(14, 3, 37, 3) -&gt; (20, 3, 55, 4): P_cr -0.17 %, T_cr -0.12 %
+</pre></div></div>
+</div>
+<p>From the second to the third mesh the first buckling load changes by <span class="math notranslate nohighlight">\(-0.52\)</span> % and the first buckling torque by <span class="math notranslate nohighlight">\(-0.35\)</span> %, and from the third to the fourth mesh, <code class="docutils literal notranslate"><span class="pre">(20,</span> <span class="pre">3,</span> <span class="pre">55,</span> <span class="pre">4)</span></code> with 124769 degrees of freedom, by <span class="math notranslate nohighlight">\(-0.17\)</span> % and <span class="math notranslate nohighlight">\(-0.12\)</span> %; the third mesh, <code class="docutils literal notranslate"><span class="pre">(14,</span> <span class="pre">3,</span> <span class="pre">37,</span> <span class="pre">3)</span></code>, with elements of about 17 by 15 mm between the reinforcements, is used below.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'axial'</span><span class="p">:</span> <span class="n">conv</span><span class="p">[</span><span class="n">mesh</span><span class="p">][</span><span class="s1">'axial'</span><span class="p">],</span>
+    <span class="s1">'torsion'</span><span class="p">:</span> <span class="n">conv</span><span class="p">[</span><span class="n">mesh</span><span class="p">][</span><span class="s1">'torsion'</span><span class="p">],</span>
+    <span class="s1">'torsion reversed'</span><span class="p">:</span> <span class="n">analyse</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">'torsion'</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="s1">'torsion constrained'</span><span class="p">:</span> <span class="n">analyse</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">'torsion constrained'</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">vals</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">]</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s1">'axial'</span> <span class="k">else</span> <span class="n">r</span><span class="p">[</span><span class="s1">'Tcr'</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-20s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">)))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+axial                [252.43 252.43 252.43 252.44 252.44 252.45 252.45 252.45 252.57 252.57
+ 252.57 252.58]
+torsion              [17.76 17.85 17.85 18.07 18.08 18.08 18.19 18.19 18.38 18.38 18.5  18.5 ]
+torsion reversed     [17.85 17.93 17.93 18.16 18.16 18.16 18.28 18.28 18.46 18.46 18.59 18.59]
+torsion constrained  [17.76 17.85 17.85 18.07 18.08 18.08 18.19 18.19 18.38 18.38 18.49 18.49]
+</pre></div></div>
+</div>
+</section>
+<section id="Pre-buckling-stiffnesses">
+<h2>Pre-buckling stiffnesses<a class="headerlink" href="#Pre-buckling-stiffnesses" title="Link to this heading">#</a></h2>
+<p>Two estimates check the stiffnesses of the model: the axial stiffness of the bar of the laminates, <span class="math notranslate nohighlight">\(\sum_i b_i A_{11,i}/L\)</span> over the widths <span class="math notranslate nohighlight">\(b_i\)</span> of the plates of the section, without (upper value) and with the free lateral contraction, <span class="math notranslate nohighlight">\(A_{11} - A_{12}^2/A_{22}\)</span>; and the torsional stiffness of the thin-walled closed section, <span class="math notranslate nohighlight">\(4 \mathcal{A}^2/(L \oint
+ds/A_{66})\)</span>, with <span class="math notranslate nohighlight">\(\mathcal{A} = \pi R^2\)</span> and <span class="math notranslate nohighlight">\(A_{66}\)</span> of the skin, plus reinforcement and foot under the stringers.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">strip</span> <span class="o">=</span> <span class="n">strip_laminate</span><span class="p">(</span><span class="n">strip_stack</span><span class="p">)</span>
+<span class="n">bars</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">R</span><span class="p">,</span> <span class="n">skin</span><span class="p">),</span> <span class="p">(</span><span class="n">nstringers</span><span class="o">*</span><span class="n">strip_width</span><span class="p">,</span> <span class="n">strip</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">nstringers</span><span class="o">*</span><span class="n">foot_model</span><span class="p">,</span> <span class="n">foot</span><span class="p">),</span>
+        <span class="p">(</span><span class="n">nstringers</span><span class="o">*</span><span class="p">(</span><span class="n">blade_height</span> <span class="o">+</span> <span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">blade</span><span class="p">)]</span>
+<span class="n">EA</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="o">*</span><span class="n">lam</span><span class="o">.</span><span class="n">A11</span> <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">lam</span> <span class="ow">in</span> <span class="n">bars</span><span class="p">)</span>
+<span class="n">EA_free</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">b</span><span class="o">*</span><span class="p">(</span><span class="n">lam</span><span class="o">.</span><span class="n">A11</span> <span class="o">-</span> <span class="n">lam</span><span class="o">.</span><span class="n">A12</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">lam</span><span class="o">.</span><span class="n">A22</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span><span class="p">,</span> <span class="n">lam</span> <span class="ow">in</span> <span class="n">bars</span><span class="p">)</span>
+<span class="n">under_foot</span> <span class="o">=</span> <span class="n">foot_model</span>
+<span class="n">under_strip</span> <span class="o">=</span> <span class="n">strip_width</span> <span class="o">-</span> <span class="n">foot_model</span>
+<span class="n">rest</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">R</span> <span class="o">-</span> <span class="n">nstringers</span><span class="o">*</span><span class="n">strip_width</span>
+<span class="n">ds_A66</span> <span class="o">=</span> <span class="p">(</span><span class="n">rest</span><span class="o">/</span><span class="n">skin</span><span class="o">.</span><span class="n">A66</span>
+          <span class="o">+</span> <span class="n">nstringers</span><span class="o">*</span><span class="n">under_strip</span><span class="o">/</span><span class="p">(</span><span class="n">skin</span><span class="o">.</span><span class="n">A66</span> <span class="o">+</span> <span class="n">strip</span><span class="o">.</span><span class="n">A66</span><span class="p">)</span>
+          <span class="o">+</span> <span class="n">nstringers</span><span class="o">*</span><span class="n">under_foot</span><span class="o">/</span><span class="p">(</span><span class="n">skin</span><span class="o">.</span><span class="n">A66</span> <span class="o">+</span> <span class="n">strip</span><span class="o">.</span><span class="n">A66</span> <span class="o">+</span> <span class="n">foot</span><span class="o">.</span><span class="n">A66</span><span class="p">))</span>
+<span class="n">GJ</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">pi</span><span class="o">*</span><span class="n">R</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="n">ds_A66</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'axial: model </span><span class="si">%.1f</span><span class="s1"> kN/mm; bar estimate </span><span class="si">%.1f</span><span class="s1"> (free contraction </span><span class="si">%.1f</span><span class="s1">) '</span>
+      <span class="s1">'kN/mm; [1] Table 2: 215 kN/mm'</span>
+      <span class="o">%</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">'axial'</span><span class="p">][</span><span class="s1">'stiffness'</span><span class="p">],</span> <span class="n">EA</span><span class="o">/</span><span class="n">L</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">EA_free</span><span class="o">/</span><span class="n">L</span><span class="o">/</span><span class="mf">1e3</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'torsion: model </span><span class="si">%.1f</span><span class="s1"> kNm/degree; thin-walled estimate </span><span class="si">%.1f</span><span class="s1"> kNm/degree;'</span>
+      <span class="s1">' [1] Table 3: 15.8 kNm/degree'</span>
+      <span class="o">%</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">'torsion'</span><span class="p">][</span><span class="s1">'stiffness'</span><span class="p">],</span> <span class="n">GJ</span><span class="o">/</span><span class="n">L</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">180</span><span class="o">/</span><span class="mf">1e6</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+axial: model 275.3 kN/mm; bar estimate 311.4 (free contraction 271.9) kN/mm; [1] Table 2: 215 kN/mm
+torsion: model 178.9 kNm/degree; thin-walled estimate 177.2 kNm/degree; [1] Table 3: 15.8 kNm/degree
+</pre></div></div>
+</div>
+<p>The axial stiffness of the model lies between the two bar estimates, 1.3 % above the one with free lateral contraction (the large Poisson’s ratio of the <span class="math notranslate nohighlight">\(\pm 45\)</span> plies makes the difference); the torsional stiffness is 1.0 % above the thin-walled estimate. Both are above those of [1]: 215 kN/mm, [1] Table 2, is 78 % of the axial stiffness of the model, and the slope of the torque-rotation curve of [1] Fig. 4, about 161 kNm/degree, is 90 % of the torsional stiffness. The 15.8 kNm/degree
+printed in [1] Tables 3 and 4 is a tenth of that slope and of the pre-buckling stiffnesses measured on the two shells of configuration B, 153 and 159 kNm/degree ([1] Table 5, p. 75-11; 158 kNm/degree in [2] p. 148). The data of [1-3] do not explain the difference: a stringer of 16 plies, the <span class="math notranslate nohighlight">\([0/90]_{4S}\)</span> as printed in [1], would make the model stiffer still.</p>
+</section>
+<section id="Comparison-with-Lanzi,-Bisagni-and-Cordisco-[1]">
+<h2>Comparison with Lanzi, Bisagni and Cordisco [1]<a class="headerlink" href="#Comparison-with-Lanzi,-Bisagni-and-Cordisco-[1]" title="Link to this heading">#</a></h2>
+<p>The first buckling loads of [1] are those of geometrically nonlinear analyses of the perfect shell: the load at which the first buckles appear and the load-shortening (torque-rotation) curve drops, [1] Figs. 2 and 4. Besides the values of the tables, the curves of Figs. 2 and 4 were read (pixel coordinates of the PDF page rendered at 500 and 600 dpi, precision about <span class="math notranslate nohighlight">\(\pm 2\)</span> kN, <span class="math notranslate nohighlight">\(\pm 0.01\)</span> mm, <span class="math notranslate nohighlight">\(\pm 0.3\)</span> kNm and <span class="math notranslate nohighlight">\(\pm 0.005\)</span> degree): the curves labelled “without reinforcing
+ring” have their first peak at about 198 kN and 0.91 mm (axial) and 14.2 kNm and 0.088 degree (torsion, free axial displacement), whereas the curve labelled “with reinforcing ring” of Fig. 2 has its first peak at about 213 kN and 0.98 mm. Since the strain of the skin at buckling hardly depends on the stringers, the shortening and the rotation at first buckling are compared as well.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ra</span><span class="p">,</span> <span class="n">rt</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">'axial'</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="s1">'torsion'</span><span class="p">]</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s1">'P_cr, axial (kN)'</span><span class="p">,</span> <span class="n">ra</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="p">[(</span><span class="s1">'[1] Table 2'</span><span class="p">,</span> <span class="mf">213.</span><span class="p">),</span>
+                                        <span class="p">(</span><span class="s1">'[1] Fig. 2, first peak'</span><span class="p">,</span> <span class="mf">198.</span><span class="p">)]),</span>
+    <span class="p">(</span><span class="s1">'shortening at P_cr (mm)'</span><span class="p">,</span> <span class="n">ra</span><span class="p">[</span><span class="s1">'shortening'</span><span class="p">],</span>
+     <span class="p">[(</span><span class="s1">'[1] Table 2: 213/215'</span><span class="p">,</span> <span class="mf">213.</span><span class="o">/</span><span class="mf">215.</span><span class="p">),</span> <span class="p">(</span><span class="s1">'[1] Fig. 2'</span><span class="p">,</span> <span class="mf">0.91</span><span class="p">)]),</span>
+    <span class="p">(</span><span class="s1">'P/delta (kN/mm)'</span><span class="p">,</span> <span class="n">ra</span><span class="p">[</span><span class="s1">'stiffness'</span><span class="p">],</span> <span class="p">[(</span><span class="s1">'[1] Table 2'</span><span class="p">,</span> <span class="mf">215.</span><span class="p">)]),</span>
+    <span class="p">(</span><span class="s1">'T_cr, T &gt; 0, free shortening (kNm)'</span><span class="p">,</span> <span class="n">rt</span><span class="p">[</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+     <span class="p">[(</span><span class="s1">'[1] Table 3'</span><span class="p">,</span> <span class="mf">13.5</span><span class="p">),</span> <span class="p">(</span><span class="s1">'[1] Fig. 4, first peak'</span><span class="p">,</span> <span class="mf">14.2</span><span class="p">)]),</span>
+    <span class="p">(</span><span class="s1">'T_cr, T &lt; 0, free shortening (kNm)'</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="s1">'torsion reversed'</span><span class="p">][</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+     <span class="p">[(</span><span class="s1">'[1] Table 3'</span><span class="p">,</span> <span class="mf">13.5</span><span class="p">)]),</span>
+    <span class="p">(</span><span class="s1">'T_cr, T &gt; 0, constrained shortening (kNm)'</span><span class="p">,</span>
+     <span class="n">res</span><span class="p">[</span><span class="s1">'torsion constrained'</span><span class="p">][</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="p">[(</span><span class="s1">'[1] Table 4'</span><span class="p">,</span> <span class="mf">13.5</span><span class="p">)]),</span>
+    <span class="p">(</span><span class="s1">'rotation at T_cr (degree)'</span><span class="p">,</span> <span class="n">rt</span><span class="p">[</span><span class="s1">'rotation'</span><span class="p">],</span>
+     <span class="p">[(</span><span class="s1">'[1] Fig. 4'</span><span class="p">,</span> <span class="mf">0.088</span><span class="p">)]),</span>
+    <span class="p">(</span><span class="s1">'T/phi (kNm/degree)'</span><span class="p">,</span> <span class="n">rt</span><span class="p">[</span><span class="s1">'stiffness'</span><span class="p">],</span> <span class="p">[(</span><span class="s1">'[1] Table 3'</span><span class="p">,</span> <span class="mf">15.8</span><span class="p">),</span>
+                                             <span class="p">(</span><span class="s1">'[1] Fig. 4: 14.2/0.088'</span><span class="p">,</span>
+                                              <span class="mf">14.2</span><span class="o">/</span><span class="mf">0.088</span><span class="p">)]),</span>
+<span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-42s</span><span class="s1"> </span><span class="si">%8s</span><span class="s1"> | </span><span class="si">%-26s</span><span class="s1"> </span><span class="si">%8s</span><span class="s1"> </span><span class="si">%9s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">'quantity'</span><span class="p">,</span> <span class="s1">'present'</span><span class="p">,</span> <span class="s1">'reference'</span><span class="p">,</span>
+                                     <span class="s1">'value'</span><span class="p">,</span> <span class="s1">'rel. diff.'</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">refs</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">rname</span><span class="p">,</span> <span class="n">rval</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">refs</span><span class="p">):</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="s1">'</span><span class="si">%-42s</span><span class="s1"> </span><span class="si">%8.3g</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">' '</span><span class="o">*</span><span class="mi">51</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> | </span><span class="si">%-26s</span><span class="s1"> </span><span class="si">%8.3g</span><span class="s1"> </span><span class="si">%+8.1f</span><span class="s1"> </span><span class="si">%%</span><span class="s1">'</span>
+              <span class="o">%</span> <span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">rname</span><span class="p">,</span> <span class="n">rval</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">val</span> <span class="o">-</span> <span class="n">rval</span><span class="p">)</span><span class="o">/</span><span class="n">rval</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+quantity                                    present | reference                     value rel. diff.
+P_cr, axial (kN)                                252 | [1] Table 2                     213    +18.5 %
+                                                    | [1] Fig. 2, first peak          198    +27.5 %
+shortening at P_cr (mm)                       0.917 | [1] Table 2: 213/215          0.991     -7.5 %
+                                                    | [1] Fig. 2                     0.91     +0.7 %
+P/delta (kN/mm)                                 275 | [1] Table 2                     215    +28.1 %
+T_cr, T &gt; 0, free shortening (kNm)             17.8 | [1] Table 3                    13.5    +31.6 %
+                                                    | [1] Fig. 4, first peak         14.2    +25.1 %
+T_cr, T &lt; 0, free shortening (kNm)             17.9 | [1] Table 3                    13.5    +32.2 %
+T_cr, T &gt; 0, constrained shortening (kNm)      17.8 | [1] Table 4                    13.5    +31.6 %
+rotation at T_cr (degree)                    0.0993 | [1] Fig. 4                    0.088    +12.9 %
+T/phi (kNm/degree)                              179 | [1] Table 3                    15.8  +1032.0 %
+                                                    | [1] Fig. 4: 14.2/0.088          161    +10.8 %
+</pre></div></div>
+</div>
+</section>
+<section id="Buckling-modes">
+<h2>Buckling modes<a class="headerlink" href="#Buckling-modes" title="Link to this heading">#</a></h2>
+<p>The normal displacement <span class="math notranslate nohighlight">\(w\)</span> of the skin of the first modes, over the developed cylinder seen from the outside, with the blades as lines; the foot of each stringer extends towards <span class="math notranslate nohighlight">\(+y\)</span> from its blade:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mf">8.5</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="p">[</span><span class="s1">'axial'</span><span class="p">,</span> <span class="s1">'torsion'</span><span class="p">,</span> <span class="s1">'torsion reversed'</span><span class="p">]):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'kN'</span><span class="p">)</span> <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">'axial'</span> <span class="k">else</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="s1">'kNm'</span><span class="p">)</span>
+    <span class="n">plot_skin_w</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'model'</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">'modes'</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="s1">'</span><span class="si">%s</span><span class="s1">: first mode, </span><span class="si">%.2f</span><span class="s1"> </span><span class="si">%s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="o">*</span><span class="n">val</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'$x$ (mm)'</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">'$y = R\theta$ (mm)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_lanzi2003_stiffened_cylinder_17_0.png" src="../_images/notebooks_lanzi2003_stiffened_cylinder_17_0.png" />
+</div>
+</div>
+</section>
+<section id="Variants-of-the-data">
+<h2>Variants of the data<a class="headerlink" href="#Variants-of-the-data" title="Link to this heading">#</a></h2>
+<p>The same mesh with one change at a time: the plies of the skin listed from the outer surface, <span class="math notranslate nohighlight">\([-45/0/45]\)</span> from the inner one; the reinforcement <span class="math notranslate nohighlight">\([45/-45/45]\)</span> of [1]; and the lower edge with the rotations free, as in the analyses of [1]:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">variants</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'skin [-45/0/45] from inside'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">skin_lam</span><span class="o">=</span><span class="n">laminated_plate</span><span class="p">(</span><span class="n">skin_stack</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span>
+                                 <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">)),</span>
+    <span class="s1">'reinforcement [45/-45/45] [1]'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">strip_lam</span><span class="o">=</span><span class="n">strip_laminate</span><span class="p">([</span><span class="mi">45</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="mi">45</span><span class="p">])),</span>
+    <span class="s1">'rotation free at x = 0'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">bottom_rotation_free</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-30s</span><span class="s1"> </span><span class="si">%10s</span><span class="s1"> </span><span class="si">%14s</span><span class="s1"> </span><span class="si">%14s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">'variant'</span><span class="p">,</span> <span class="s1">'P_cr (kN)'</span><span class="p">,</span> <span class="s1">'T_cr T&gt;0 (kNm)'</span><span class="p">,</span>
+                                <span class="s1">'T_cr T&lt;0 (kNm)'</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-30s</span><span class="s1"> </span><span class="si">%10.1f</span><span class="s1"> </span><span class="si">%14.2f</span><span class="s1"> </span><span class="si">%14.2f</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">'reference model'</span><span class="p">,</span> <span class="n">ra</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                      <span class="n">rt</span><span class="p">[</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                      <span class="n">res</span><span class="p">[</span><span class="s1">'torsion reversed'</span><span class="p">][</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">variants</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">analyse</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">'axial'</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="n">tp_</span> <span class="o">=</span> <span class="n">analyse</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">'torsion'</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="n">tm</span> <span class="o">=</span> <span class="n">analyse</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="s1">'torsion'</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-30s</span><span class="s1"> </span><span class="si">%10.1f</span><span class="s1"> </span><span class="si">%14.2f</span><span class="s1"> </span><span class="si">%14.2f</span><span class="s1">'</span>
+          <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">tp_</span><span class="p">[</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">tm</span><span class="p">[</span><span class="s1">'Tcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+variant                         P_cr (kN) T_cr T&gt;0 (kNm) T_cr T&lt;0 (kNm)
+reference model                     252.4          17.76          17.85
+skin [-45/0/45] from inside         252.4          17.85          17.76
+reinforcement [45/-45/45] [1]       242.9          17.69          17.78
+rotation free at x = 0              244.4          17.69          17.81
+</pre></div></div>
+</div>
+</section>
+<section id="Discussion">
+<h2>Discussion<a class="headerlink" href="#Discussion" title="Link to this heading">#</a></h2>
+<p><strong>Axial compression.</strong> The first mode is a local mode of the skin between the reinforcements, with short axial half-waves, about 18 along the length, across the whole width of each bay; the twelve lowest loads are within 0.06 % of each other, one for each combination of the eight bays. The first buckling load of the model, 252.4 kN, is 18.5 % above the value of [1] Table 2 and 27.5 % above the first peak of the curve of [1] Fig. 2 labelled “without reinforcing ring”, but the shortening at first
+buckling, 0.917 mm, is within 1 % of that peak (0.91 mm) and 7.5 % below 213/215 = 0.99 mm: the skin buckles at almost the same strain, and the difference of the loads follows that of the axial stiffnesses, 275 kN/mm here and 215 kN/mm in [1] (see above). The rotations free at the lower edge, as in the analyses of [1], lower the first buckling load by 3.2 %, and the unbalanced reinforcement <span class="math notranslate nohighlight">\([45/-45/45]\)</span> of [1] by 3.8 %, to 242.9 kN, 14.0 % above [1] Table 2. The values of [1] are first
+buckling loads of geometrically nonlinear analyses of the perfect shell, which follow the bending of the stringers, whose cross-sections are not symmetric about the skin, and the deformation near the ends before buckling; the linear buckling analysis about the linear pre-buckling state does not.</p>
+<p><strong>Torsion.</strong> The first mode has, in each bay, two main buckles of opposite sign, inclined like the diagonal of the bay that goes from the lower edge towards <span class="math notranslate nohighlight">\(+y\)</span> at the upper edge for <span class="math notranslate nohighlight">\(T &gt; 0\)</span>, and like the other diagonal for <span class="math notranslate nohighlight">\(T &lt; 0\)</span>; the twelve lowest torques are within 5 %. The first buckling torque, 17.76 kNm, is 31.6 % above the 13.5 kNm of [1] Tables 3 and 4 and 25.1 % above the first peak of [1] Fig. 4, and the rotation at first buckling, 0.099 degree, is 13 % above the
+0.088 degree of that peak: in torsion too the model is stiffer (11 % above the slope of Fig. 4) and buckles at a larger shear strain. As in [1], free and constrained axial shortening give the same first buckling torque (here to 0.01 kNm). The two senses of rotation differ by 0.5 %; listing the plies of the skin in the reversed order swaps the two values, so that the difference comes from the coupling stiffnesses <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> of the unsymmetric skin, not from the orientation of the
+L-sections. The reinforcement of [1] changes the first buckling torque by <span class="math notranslate nohighlight">\(-0.4\)</span> %.</p>
+<p><strong>Data.</strong> The differences with [1] are not explained by the variants computed here (at most 4 %): the stacking direction of the skin, the lay-up of the reinforcement and the rotation at the lower edge. The model leaves out the corner of radius 7 mm of the L-sections and the rivets, and uses the nominal thicknesses (the measured skin of the shell with ring, 1.090 mm against 0.99 mm nominal, [2] Table 3, would raise the buckling loads).</p>
+<p><strong>Suspected errors in [1].</strong> This case is kept as a documented discrepancy: the model is not adjusted to [1], three of whose data are probably wrong.</p>
+<ul class="simple">
+<li><p>The model of [1] is more flexible than the published data imply: its axial stiffness, 215 kN/mm ([1] Table 2), and the slope of its torque-rotation curve, about 161 kNm/degree ([1] Fig. 4), are 22 % and 10 % below those of the present model, which agree within 1.3 % with the estimates from the nominal section and laminates (see above); its first buckling load under axial compression is lower too, at almost the same shortening.</p></li>
+<li><p>The torsional stiffness of 15.8 kNm/degree of [1] Tables 3 and 4 is a tenth of the slope of [1] Fig. 4, of the 153 and 159 kNm/degree measured ([1] Table 5) and of the 158 kNm/degree of [2] (p. 148): probably a misprint of 158 kNm/degree.</p></li>
+<li><p>The labels of the two curves of [1] Fig. 2 are possibly swapped with respect to [1] Table 2: the curve labelled “without reinforcing ring” has its first peak at about 198 kN, the one labelled “with reinforcing ring” at about 213 kN and 0.98 mm, whereas Table 2 gives 213 kN without and 217 kN with the ring. With the labels swapped, the shortening at first buckling of configuration A is 0.98 mm, and that of the model, 0.917 mm, is 6.4 % below it.</p></li>
+</ul>
+<p><strong>The panels implementation.</strong> The panels implementation of this case (<a class="reference external" href="https://github.com/saullocastro/panels">panels</a>, notebook <code class="docutils literal notranslate"><span class="pre">lanzi2003_torsion_cylinder</span></code>, with the same reinforcement <span class="math notranslate nohighlight">\([-45/0/45]\)</span>) agrees with the present one: with the lower end clamped, as here, it gives 252.8 kN under axial compression, against 252.4 kN, and 240.8 kN with the rotations of the lower end free; its first buckling torques, 17.65 and 17.77 kNm, are within 0.6 % of those here, and its pre-buckling
+stiffnesses, 270.8 kN/mm and 178.6 kNm/degree, within 1.7 %. The two implementations are 13 to 19 % above [1] under axial compression and 31 to 32 % above [1] in torsion.</p>
+</section>
+<section id="References">
+<h2>References<a class="headerlink" href="#References" title="Link to this heading">#</a></h2>
+<p>[1] Lanzi, L., Bisagni, C. and Cordisco, P., “Post-buckling design and testing of composite stiffened cylindrical shells under torsion”, 29th European Rotorcraft Forum, Friedrichshafen, Germany, 16-18 September 2003, paper 75. <a class="reference external" href="http://hdl.handle.net/20.500.11881/394">http://hdl.handle.net/20.500.11881/394</a></p>
+<p>[2] Bisagni, C. and Cordisco, P., “Post-buckling and collapse experiments of stiffened composite cylindrical shells subjected to axial loading and torque”, Composite Structures, 73(2), 138-149, 2006. <a class="reference external" href="https://doi.org/10.1016/j.compstruct.2005.11.055">https://doi.org/10.1016/j.compstruct.2005.11.055</a></p>
+<p>[3] Bisagni, C. and Cordisco, P., “Testing of stiffened composite cylindrical shells in the postbuckling range until failure”, AIAA Journal, 42(9), 1806-1817, 2004. <a class="reference external" href="https://doi.org/10.2514/1.6088">https://doi.org/10.2514/1.6088</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="abramovich2003_stiffened_panels.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">First buckling of blade-stiffened CFRP curved panels</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="simo1990_cylinder_postbuckling.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Post-buckling of an axially compressed cylinder with imperfections</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Data-of-configuration-A">Data of configuration A</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#The-model-of-a-stringer">The model of a stringer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Boundary-conditions,-loads-and-analysis">Boundary conditions, loads and analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Mesh-convergence">Mesh convergence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Pre-buckling-stiffnesses">Pre-buckling stiffnesses</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Comparison-with-Lanzi,-Bisagni-and-Cordisco-[1]">Comparison with Lanzi, Bisagni and Cordisco [1]</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Buckling-modes">Buckling modes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Variants-of-the-data">Variants of the data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Discussion">Discussion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#References">References</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/notebooks/lanzi2003_stiffened_cylinder.nblink.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

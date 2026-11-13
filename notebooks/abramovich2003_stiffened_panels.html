@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>First buckling of blade-stiffened CFRP curved panels &#8212; bfsccylinder 0.7.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/abramovich2003_stiffened_panels';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion" href="lanzi2003_stiffened_cylinder.html" />
+    <link rel="prev" title="Axial buckling of stringer-stiffened cylinders" href="stiffened_cylinder_buckling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.2" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../kinematics.html">
+    Kinematics of the cylindrical shell
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../kinematics.html">
+    Kinematics of the cylindrical shell
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">First buckling of blade-stiffened CFRP curved panels</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="First-buckling-of-blade-stiffened-CFRP-curved-panels">
+<h1>First buckling of blade-stiffened CFRP curved panels<a class="headerlink" href="#First-buckling-of-blade-stiffened-CFRP-curved-panels" title="Link to this heading">#</a></h1>
+<p>Abramovich et al. [1] tested in axial compression nine curved panels of graphite-epoxy (Hexcel IM7/8552), PSC1 to PSC9, stiffened by co-cured blade stringers, measured the load of the first local buckle of the skin between the stringers and the collapse load, and compared them with a linear buckling analysis of MSC/NASTRAN. Abramovich and Weller [2] tabulated these results again with those of other panels of the same series, the material constants and the dimensions of the stringer. The panels
+belong to three configurations:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>configuration</p></th>
+<th class="head"><p>panels</p></th>
+<th class="head"><p>blades</p></th>
+<th class="head"><p>blade height <span class="math notranslate nohighlight">\(h_s\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>A</p></td>
+<td><p>PSC1, PSC2, PSC4</p></td>
+<td><p>5</p></td>
+<td><p>20 mm</p></td>
+</tr>
+<tr class="row-odd"><td><p>B</p></td>
+<td><p>PSC3, PSC5, PSC6</p></td>
+<td><p>5</p></td>
+<td><p>15 mm</p></td>
+</tr>
+<tr class="row-even"><td><p>C</p></td>
+<td><p>PSC7, PSC8, PSC9</p></td>
+<td><p>6</p></td>
+<td><p>20 mm</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Here the first buckling load of each configuration is computed with a linear buckling analysis of a model of discrete stringers:</p>
+<ul class="simple">
+<li><p>the skin with the BFSC cylinder element of Sanders-type kinematics, <code class="docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code>;</p></li>
+<li><p>the T-shaped stringer assembled from plates: the stepped foot, a plate bonded on the inner surface of the skin, and the blade, a plate of BFSC plate elements <code class="docutils literal notranslate"><span class="pre">BFSCPlate2D</span></code> of <a class="reference external" href="https://github.com/saullocastro/bfscplate2d">bfscplate2d</a> standing on the middle of the foot, in the plane <span class="math notranslate nohighlight">\((x, r)\)</span>, connected to the skin and foot along their common line.</p></li>
+</ul>
+<p>The model is given by the module <code class="docutils literal notranslate"><span class="pre">composite_stiffened_shell.py</span></code>, next to this notebook, which is also used in <a class="reference internal" href="lanzi2003_stiffened_cylinder.html"><span class="doc">Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion</span></a>. Besides <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code>, it needs <code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code>, <code class="docutils literal notranslate"><span class="pre">composites</span></code>, <code class="docutils literal notranslate"><span class="pre">structsolve</span></code> and Matplotlib.</p>
+<section id="Data-of-the-panels">
+<h2>Data of the panels<a class="headerlink" href="#Data-of-the-panels" title="Link to this heading">#</a></h2>
+<p>All values in N and mm. Each value is given with the place where it was read:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>quantity</p></th>
+<th class="head"><p>value</p></th>
+<th class="head"><p>source</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>material</p></td>
+<td><p>Hexcel IM7 (12K)/8552</p></td>
+<td><p>[1] p. 2, [2] Section 2</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(E_{11}\)</span>, <span class="math notranslate nohighlight">\(E_{22}\)</span>, <span class="math notranslate nohighlight">\(G_{12}\)</span></p></td>
+<td><p>147300, 11800, 6000 N/mm<span class="math notranslate nohighlight">\(^2\)</span></p></td>
+<td><p>[2] Table 1</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\nu_{12}\)</span></p></td>
+<td><p>0.3</p></td>
+<td><p>[2] Table 1</p></td>
+</tr>
+<tr class="row-odd"><td><p>ply thickness</p></td>
+<td><p>0.125 mm</p></td>
+<td><p>[1] p. 2, [2] Table 1</p></td>
+</tr>
+<tr class="row-even"><td><p>radius <span class="math notranslate nohighlight">\(R\)</span></p></td>
+<td><p>938 mm</p></td>
+<td><p>[1] p. 2 and Fig. 1c, [2] Section 2</p></td>
+</tr>
+<tr class="row-odd"><td><p>length</p></td>
+<td><p>720 mm, of which two end pieces of 30 mm</p></td>
+<td><p>[1] p. 2 and Fig. 1c</p></td>
+</tr>
+<tr class="row-even"><td><p>free length <span class="math notranslate nohighlight">\(L\)</span></p></td>
+<td><p>660 mm</p></td>
+<td><p>[1] Fig. 1c (30.0, 660.0, 30.0)</p></td>
+</tr>
+<tr class="row-odd"><td><p>arc length</p></td>
+<td><p>680 mm</p></td>
+<td><p>[1] Fig. 1c, [2] Section 2</p></td>
+</tr>
+<tr class="row-even"><td><p>skin lay-up</p></td>
+<td><p><span class="math notranslate nohighlight">\((0, \pm 45, 90)_S\)</span></p></td>
+<td><p>[1] p. 2, [2] Section 2</p></td>
+</tr>
+<tr class="row-odd"><td><p>stringer lay-up</p></td>
+<td><p><span class="math notranslate nohighlight">\((\pm 45, 0_2)_{3S}\)</span></p></td>
+<td><p>[1] p. 2</p></td>
+</tr>
+<tr class="row-even"><td><p>stringers, A and B</p></td>
+<td><p>5, spacing 544.0/4 = 136 mm, 68.0 mm from the edges</p></td>
+<td><p>[1] Fig. 1c, section A-A of assemblies 501, 502</p></td>
+</tr>
+<tr class="row-odd"><td><p>stringers, C</p></td>
+<td><p>6, spacing 566.7/5 = 113.34 mm, 56.7 mm from the edges</p></td>
+<td><p>[1] Fig. 1c, section A-A of assembly 503</p></td>
+</tr>
+<tr class="row-even"><td><p>blade height <span class="math notranslate nohighlight">\(h_s\)</span></p></td>
+<td><p>20 mm (A, C), 15 mm (B)</p></td>
+<td><p>[1] Table 1, [2] Table 3</p></td>
+</tr>
+<tr class="row-odd"><td><p>blade</p></td>
+<td><p>3 mm thick; tip 21 mm from the outer surface of the 1 mm skin</p></td>
+<td><p>[2] Fig. 1, top</p></td>
+</tr>
+<tr class="row-even"><td><p>foot</p></td>
+<td><p>60 mm wide, stepped: skin plus foot 2.50 mm thick over the middle 20 mm, 2 mm over 40 mm, 1.50 mm over 60 mm; fillets of radius 2 mm</p></td>
+<td><p>[2] Fig. 1, top</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The 24 plies of 0.125 mm of <span class="math notranslate nohighlight">\((\pm 45, 0_2)_{3S}\)</span> give the 3 mm of the blade of [2] Fig. 1, and the 8 plies of the skin its 1 mm. The tip of the blade at 21 mm from the outer surface of the skin, [2] Fig. 1, is 20 mm from its inner surface, the height <span class="math notranslate nohighlight">\(h_s\)</span> of [2] Table 3; the same reference is assumed for <span class="math notranslate nohighlight">\(h_s\)</span> = 15 mm. The material constants of [2] Table 1 are given for the panels AXIAL1 to AXIAL4, of the same material as the PSC panels ([2] Section 2); the transverse shear
+moduli, not given, are not used by the elements, whose kinematics neglect transverse shear. The pattern of 6 stringers, <span class="math notranslate nohighlight">\(2 \times 56.7 + 566.7\)</span> = 680.1 mm, is centred on the arc length of 680 mm.</p>
+<p>Section D-D of [1] Fig. 1c shows the panel embedded in the end pieces of 30 mm; in the model the skin and the blades are loaded together by the end pieces. Fig. 4 of [1] shows the panel in the testing machine with longitudinal fixture plates along the unloaded edges; the restraint that they give is not described.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">composites</span><span class="w"> </span><span class="kn">import</span> <span class="n">laminated_plate</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">composite_stiffened_shell</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">StiffenedShell</span><span class="p">,</span> <span class="n">node_coordinates</span><span class="p">,</span>
+                                       <span class="n">plot_skin_w</span><span class="p">)</span>
+
+<span class="c1"># [2] Table 1, N/mm^2; transverse shear moduli not used (Kirchhoff elements)</span>
+<span class="n">E11</span><span class="p">,</span> <span class="n">E22</span><span class="p">,</span> <span class="n">G12</span><span class="p">,</span> <span class="n">nu12</span> <span class="o">=</span> <span class="mf">147300.</span><span class="p">,</span> <span class="mf">11800.</span><span class="p">,</span> <span class="mf">6000.</span><span class="p">,</span> <span class="mf">0.3</span>
+<span class="n">laminaprop</span> <span class="o">=</span> <span class="p">(</span><span class="n">E11</span><span class="p">,</span> <span class="n">E22</span><span class="p">,</span> <span class="n">nu12</span><span class="p">,</span> <span class="n">G12</span><span class="p">,</span> <span class="n">G12</span><span class="p">,</span> <span class="n">G12</span><span class="p">)</span>
+<span class="n">tp</span> <span class="o">=</span> <span class="mf">0.125</span>  <span class="c1"># ply thickness, [1] p. 2</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mf">938.</span>  <span class="c1"># [1] p. 2</span>
+<span class="n">L</span> <span class="o">=</span> <span class="mf">660.</span>  <span class="c1"># free length, [1] Fig. 1c</span>
+<span class="n">arc</span> <span class="o">=</span> <span class="mf">680.</span>  <span class="c1"># [1] Fig. 1c</span>
+
+<span class="n">skin_stack</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># (0, +-45, 90)_S</span>
+<span class="n">half</span> <span class="o">=</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span>  <span class="c1"># (+-45, 0_2)_3</span>
+<span class="n">blade_stack</span> <span class="o">=</span> <span class="n">half</span> <span class="o">+</span> <span class="n">half</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># (+-45, 0_2)_3S</span>
+<span class="n">h_skin</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">skin_stack</span><span class="p">)</span><span class="o">*</span><span class="n">tp</span>
+<span class="n">t_blade</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">blade_stack</span><span class="p">)</span><span class="o">*</span><span class="n">tp</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'skin </span><span class="si">%.3f</span><span class="s1"> mm, blade </span><span class="si">%.3f</span><span class="s1"> mm thick'</span> <span class="o">%</span> <span class="p">(</span><span class="n">h_skin</span><span class="p">,</span> <span class="n">t_blade</span><span class="p">))</span>
+
+<span class="n">configurations</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'A'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">panels</span><span class="o">=</span><span class="s1">'PSC1, PSC2, PSC4'</span><span class="p">,</span> <span class="n">nblades</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">hs</span><span class="o">=</span><span class="mf">20.</span><span class="p">,</span>
+              <span class="n">spacing</span><span class="o">=</span><span class="mf">544.0</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span>
+    <span class="s1">'B'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">panels</span><span class="o">=</span><span class="s1">'PSC3, PSC5, PSC6'</span><span class="p">,</span> <span class="n">nblades</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">hs</span><span class="o">=</span><span class="mf">15.</span><span class="p">,</span>
+              <span class="n">spacing</span><span class="o">=</span><span class="mf">544.0</span><span class="o">/</span><span class="mi">4</span><span class="p">),</span>
+    <span class="s1">'C'</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">panels</span><span class="o">=</span><span class="s1">'PSC7, PSC8, PSC9'</span><span class="p">,</span> <span class="n">nblades</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">hs</span><span class="o">=</span><span class="mf">20.</span><span class="p">,</span>
+              <span class="n">spacing</span><span class="o">=</span><span class="mf">566.7</span><span class="o">/</span><span class="mi">5</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configurations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">c</span><span class="p">[</span><span class="s1">'edge'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">arc</span> <span class="o">-</span> <span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="s1">'nblades'</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">c</span><span class="p">[</span><span class="s1">'spacing'</span><span class="p">])</span><span class="o">/</span><span class="mi">2</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1">: </span><span class="si">%d</span><span class="s1"> blades, h_s = </span><span class="si">%.0f</span><span class="s1"> mm, spacing </span><span class="si">%.2f</span><span class="s1"> mm, '</span>
+          <span class="s1">'first blade </span><span class="si">%.2f</span><span class="s1"> mm from the edge'</span>
+          <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="s1">'nblades'</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">'hs'</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">'spacing'</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">'edge'</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+skin 1.000 mm, blade 3.000 mm thick
+A: 5 blades, h_s = 20 mm, spacing 136.00 mm, first blade 68.00 mm from the edge
+B: 5 blades, h_s = 15 mm, spacing 136.00 mm, first blade 68.00 mm from the edge
+C: 6 blades, h_s = 20 mm, spacing 113.34 mm, first blade 56.65 mm from the edge
+</pre></div></div>
+</div>
+</section>
+<section id="The-stringer:-blade-and-stepped-foot">
+<h2>The stringer: blade and stepped foot<a class="headerlink" href="#The-stringer:-blade-and-stepped-foot" title="Link to this heading">#</a></h2>
+<p>The blade stringer of [2] Fig. 1 is a T: the two halves of the blade laminate, 12 plies each, turn at the root into the two flanges of the foot, which end in two steps of 4 plies: the foot is 12 plies (1.5 mm) thick over the middle 20 mm, 8 plies (1.0 mm) from 10 to 20 mm on each side of the blade and 4 plies (0.5 mm) from 20 to 30 mm, which gives the total thicknesses of skin and foot of 2.50, 2 and 1.50 mm of the figure.</p>
+<p>The model has the plates:</p>
+<ul class="simple">
+<li><p>the <strong>skin</strong>, BFSC cylinder elements on the mid-surface of radius <span class="math notranslate nohighlight">\(R\)</span>;</p></li>
+<li><p>the <strong>foot</strong>, six strips of 10 mm bonded on the inner surface of the skin, each a laminate of BFSC cylinder elements on the nodes of the skin whose stiffness matrices <span class="math notranslate nohighlight">\(\boldsymbol{A}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span> are referred to the mid-surface of the skin through the offset of its plies, <span class="math notranslate nohighlight">\(-(h_{skin} + t_{foot})/2\)</span>: a perfect bond, skin and foot sharing the normal of the Kirchhoff hypothesis, the stiffnesses of the two plates adding up;</p></li>
+<li><p>the <strong>blade</strong>, a plate of BFSC plate elements in the plane <span class="math notranslate nohighlight">\((x, r)\)</span>, on the line of the middle of the foot, from the mid-surface of the skin to the tip, of height <span class="math notranslate nohighlight">\(h_s + h_{skin}/2\)</span>, with the translations and the rotation about <span class="math notranslate nohighlight">\(x\)</span> of its root equal to those of the skin (see the docstring of the module).</p></li>
+</ul>
+<p>Within the foot, the plies of a flange are those of a half of the blade, in the order they have at the root: the plies of the middle of the blade, <span class="math notranslate nohighlight">\(0_2\)</span>, on the skin, the <span class="math notranslate nohighlight">\(45\)</span> of the faces of the blade on the free surface of the foot, and the two flanges mirror images of each other (<span class="math notranslate nohighlight">\(+45\)</span> of one flange is <span class="math notranslate nohighlight">\(-45\)</span> of the other). The plies that end at the two steps are not given in [1, 2]. The model drops whole repeats <span class="math notranslate nohighlight">\([0_2/-45/45]\)</span> (listed from the skin), one at each
+step: the three repeats of a flange are equal, so that the laminate of a step is the same whichever repeat ends there, the one farthest from the skin, the one next to it or the middle one. Two other schemes, which drop first the plies of one orientation, are computed in the section “Sensitivity to the ply drops” below. The fillets of radius 2 mm and the filler at the root are not modelled. The blade plate overlaps the skin and the 1.5 mm of the foot over its first 2 mm, which adds
+<span class="math notranslate nohighlight">\(3 \times 2\)</span> = 6 mm<span class="math notranslate nohighlight">\(^2\)</span> to the 61.5 mm<span class="math notranslate nohighlight">\(^2\)</span> of a blade of <span class="math notranslate nohighlight">\(h_s\)</span> = 20 mm.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># flange plies listed from the skin side, flange at y &gt; y_s</span>
+<span class="n">from_skin</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">45</span><span class="p">,</span> <span class="mi">45</span><span class="p">]</span><span class="o">*</span><span class="mi">3</span>
+<span class="c1"># plies (indices of from_skin) kept in the steps of 8 and 4 plies; the plies</span>
+<span class="c1"># that end at a step are those farthest from the skin among those dropped</span>
+<span class="n">drop_schemes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">'whole repeats'</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]),</span>
+    <span class="s1">'0 plies first'</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">11</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">]),</span>
+    <span class="s1">'+-45 plies first'</span><span class="p">:</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">]),</span>
+<span class="p">}</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">foot_laminates</span><span class="p">(</span><span class="n">scheme</span><span class="o">=</span><span class="s1">'whole repeats'</span><span class="p">):</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="p">{</span><span class="mi">12</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">)),</span> <span class="mi">8</span><span class="p">:</span> <span class="n">drop_schemes</span><span class="p">[</span><span class="n">scheme</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="n">drop_schemes</span><span class="p">[</span><span class="n">scheme</span><span class="p">][</span><span class="mi">1</span><span class="p">]}</span>
+    <span class="n">feet</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_skin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">[</span><span class="n">n</span><span class="p">]]</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">right</span><span class="p">]</span>
+        <span class="n">offset</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">n</span><span class="o">*</span><span class="n">tp</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># composites lists the plies from the bottom (inner) to the top</span>
+        <span class="n">feet</span><span class="p">[(</span><span class="s1">'right'</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span> <span class="o">=</span> <span class="n">laminated_plate</span><span class="p">(</span><span class="n">right</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span>
+                                             <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">,</span>
+                                             <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+        <span class="n">feet</span><span class="p">[(</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span> <span class="o">=</span> <span class="n">laminated_plate</span><span class="p">(</span><span class="n">left</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span>
+                                            <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">,</span>
+                                            <span class="n">offset</span><span class="o">=</span><span class="n">offset</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">feet</span>
+
+
+<span class="n">skin</span> <span class="o">=</span> <span class="n">laminated_plate</span><span class="p">(</span><span class="n">skin_stack</span><span class="p">,</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span> <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">)</span>
+<span class="n">blade</span> <span class="o">=</span> <span class="n">laminated_plate</span><span class="p">(</span><span class="n">blade_stack</span><span class="p">,</span> <span class="n">plyt</span><span class="o">=</span><span class="n">tp</span><span class="p">,</span> <span class="n">laminaprop</span><span class="o">=</span><span class="n">laminaprop</span><span class="p">)</span>
+<span class="n">feet</span> <span class="o">=</span> <span class="n">foot_laminates</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">build</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">n_edge</span><span class="p">,</span> <span class="n">n_foot</span><span class="p">,</span> <span class="n">n_bay</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">nh</span><span class="p">,</span> <span class="n">clamped_sides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+          <span class="n">feet</span><span class="o">=</span><span class="n">feet</span><span class="p">):</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">configurations</span><span class="p">[</span><span class="n">config</span><span class="p">]</span>
+    <span class="n">nb</span><span class="p">,</span> <span class="n">sp</span><span class="p">,</span> <span class="n">edge</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">'nblades'</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">'spacing'</span><span class="p">],</span> <span class="n">c</span><span class="p">[</span><span class="s1">'edge'</span><span class="p">]</span>
+    <span class="n">segments</span> <span class="o">=</span> <span class="p">[(</span><span class="n">edge</span> <span class="o">-</span> <span class="mf">30.</span><span class="p">,</span> <span class="n">n_edge</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb</span><span class="p">):</span>
+        <span class="n">segments</span> <span class="o">+=</span> <span class="p">[(</span><span class="mf">10.</span><span class="p">,</span> <span class="n">n_foot</span><span class="p">)]</span><span class="o">*</span><span class="mi">6</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">nb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">segments</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">sp</span> <span class="o">-</span> <span class="mf">60.</span><span class="p">,</span> <span class="n">n_bay</span><span class="p">)]</span>
+    <span class="n">segments</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">edge</span> <span class="o">-</span> <span class="mf">30.</span><span class="p">,</span> <span class="n">n_edge</span><span class="p">)]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">node_coordinates</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">StiffenedShell</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">nx</span><span class="p">,</span> <span class="n">skin</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nb</span><span class="p">):</span>
+        <span class="n">ys</span> <span class="o">=</span> <span class="n">edge</span> <span class="o">+</span> <span class="n">k</span><span class="o">*</span><span class="n">sp</span>
+        <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">20.</span><span class="p">,</span> <span class="mf">30.</span><span class="p">)]:</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">add_plate</span><span class="p">(</span><span class="n">feet</span><span class="p">[(</span><span class="s1">'right'</span><span class="p">,</span> <span class="n">n</span><span class="p">)],</span> <span class="n">ys</span> <span class="o">+</span> <span class="n">d1</span><span class="p">,</span> <span class="n">ys</span> <span class="o">+</span> <span class="n">d2</span><span class="p">)</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">add_plate</span><span class="p">(</span><span class="n">feet</span><span class="p">[(</span><span class="s1">'left'</span><span class="p">,</span> <span class="n">n</span><span class="p">)],</span> <span class="n">ys</span> <span class="o">-</span> <span class="n">d2</span><span class="p">,</span> <span class="n">ys</span> <span class="o">-</span> <span class="n">d1</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">add_blade</span><span class="p">(</span><span class="n">ys</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="s1">'hs'</span><span class="p">]</span> <span class="o">+</span> <span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">blade</span><span class="p">,</span> <span class="n">nh</span><span class="p">,</span> <span class="s1">'internal'</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+    <span class="c1"># loaded edges: clamped in the end pieces, x = L moved by the platen</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">clamp_end</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">mu</span><span class="p">,</span> <span class="n">mv</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">rigid_end</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fixed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">mv</span><span class="p">)</span>
+    <span class="c1"># unloaded edges in the fixture plates</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">support_side</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">clamped_sides</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">support_side</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">clamped_sides</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">mu</span>
+
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">2.2</span><span class="p">))</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">configurations</span><span class="p">[</span><span class="s1">'A'</span><span class="p">]</span>
+<span class="n">ys</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="s1">'edge'</span><span class="p">]</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">ys</span> <span class="o">-</span> <span class="mi">60</span><span class="p">,</span> <span class="o">-</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="mi">120</span><span class="p">,</span> <span class="n">h_skin</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'0.6'</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">d1</span><span class="p">,</span> <span class="n">d2</span> <span class="ow">in</span> <span class="p">[(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">10.</span><span class="p">),</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">10.</span><span class="p">,</span> <span class="mf">20.</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mf">20.</span><span class="p">,</span> <span class="mf">30.</span><span class="p">)]:</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">((</span><span class="n">ys</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">d1</span><span class="p">,</span> <span class="n">ys</span> <span class="o">+</span> <span class="n">s</span><span class="o">*</span><span class="n">d2</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">y1</span><span class="p">,</span> <span class="o">-</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">n</span><span class="o">*</span><span class="n">tp</span><span class="p">),</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">,</span> <span class="n">n</span><span class="o">*</span><span class="n">tp</span><span class="p">,</span>
+                                   <span class="n">color</span><span class="o">=</span><span class="s1">'tab:blue'</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">ys</span> <span class="o">-</span> <span class="n">t_blade</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="s1">'hs'</span><span class="p">]),</span> <span class="n">t_blade</span><span class="p">,</span>
+                           <span class="n">c</span><span class="p">[</span><span class="s1">'hs'</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">'tab:orange'</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">ys</span><span class="p">,</span> <span class="n">ys</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">h_skin</span><span class="o">/</span><span class="mi">2</span> <span class="o">-</span> <span class="n">c</span><span class="p">[</span><span class="s1">'hs'</span><span class="p">]],</span> <span class="s1">'k--'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">ys</span> <span class="o">-</span> <span class="mi">60</span><span class="p">,</span> <span class="n">ys</span> <span class="o">+</span> <span class="mi">60</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">'k:'</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">ys</span> <span class="o">-</span> <span class="mi">60</span><span class="p">,</span> <span class="n">ys</span> <span class="o">+</span> <span class="mi">60</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">23</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">'equal'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">'$y$ (mm)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'$r - R$ (mm)'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'stringer of configuration A: skin (grey), foot (blue), blade '</span>
+             <span class="s1">'(orange); dashed: blade plate of the model, dotted: '</span>
+             <span class="s1">'mid-surface of the skin'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_abramovich2003_stiffened_panels_4_0.png" src="../_images/notebooks_abramovich2003_stiffened_panels_4_0.png" />
+</div>
+</div>
+</section>
+<section id="Boundary-conditions,-load-and-analysis">
+<h2>Boundary conditions, load and analysis<a class="headerlink" href="#Boundary-conditions,-load-and-analysis" title="Link to this heading">#</a></h2>
+<p>The loaded edges are held in the end pieces of 30 mm and loaded by the platens of the testing machine [1]: the edge <span class="math notranslate nohighlight">\(x = 0\)</span> is clamped, <span class="math notranslate nohighlight">\(u = v = w
+= w_{,x} = 0\)</span> for the skin and <span class="math notranslate nohighlight">\(U = V = W = W_{,X} = 0\)</span> for the blades, and the edge <span class="math notranslate nohighlight">\(x = L\)</span> is clamped to a rigid platen that moves along <span class="math notranslate nohighlight">\(x\)</span> only: a uniform <span class="math notranslate nohighlight">\(u = U\)</span>, with <span class="math notranslate nohighlight">\(v = w = w_{,x} = 0\)</span> and <span class="math notranslate nohighlight">\(V = W = W_{,X} = 0\)</span>. The axial force <span class="math notranslate nohighlight">\(P\)</span> is applied to the platen, a single degree of freedom of the model (see <code class="docutils literal notranslate"><span class="pre">StiffenedShell.rigid_end</span></code>), and the axial stiffness of the panel is <span class="math notranslate nohighlight">\(P/\delta\)</span>, with <span class="math notranslate nohighlight">\(\delta\)</span> the shortening of the static solution.</p>
+<p>The unloaded edges <span class="math notranslate nohighlight">\(y = 0\)</span> and <span class="math notranslate nohighlight">\(y = 680\)</span> mm are supported by the fixture plates, with <span class="math notranslate nohighlight">\(w = 0\)</span> and <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span> free; two cases bound the unknown rotational restraint: simply supported, <span class="math notranslate nohighlight">\(w_{,y}\)</span> free, and clamped, <span class="math notranslate nohighlight">\(w_{,y} = 0\)</span>.</p>
+<p>As in all the models of <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code>, the derivatives along an edge of the displacements prescribed on it are prescribed as well: at a clamped end <span class="math notranslate nohighlight">\(u_{,y} = v_{,y} = w_{,y} = w_{,xy} = 0\)</span> for the skin and <span class="math notranslate nohighlight">\(U_{,Y} =
+V_{,Y} = W_{,Y} = W_{,XY} = 0\)</span> for the blades (at the rigid platen <span class="math notranslate nohighlight">\(u\)</span> uniform, so that <span class="math notranslate nohighlight">\(u_{,y} = 0\)</span> too), and along a simply supported unloaded edge, <span class="math notranslate nohighlight">\(w = 0\)</span>, also <span class="math notranslate nohighlight">\(w_{,x} = 0\)</span>, with <span class="math notranslate nohighlight">\(w_{,y} = w_{,xy} = 0\)</span> when it is clamped.</p>
+<p>The pre-buckling state is the linear static solution <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span> of <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0} \boldsymbol{u}_0 = \boldsymbol{F}\)</span> for a unit force on the platen, and the geometric stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of the membrane forces of <span class="math notranslate nohighlight">\(\boldsymbol{u}_0\)</span>, with the in-plane terms of the blades, gives the linear buckling problem</p>
+<div class="math notranslate nohighlight">
+\[(\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} =
+\boldsymbol{0}\]</div>
+<p>solved with <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>; the first buckling load is <span class="math notranslate nohighlight">\(\lambda_1 P\)</span>. See <a class="reference internal" href="../analyses.html"><span class="doc">Analyses</span></a> for the matrices of the BFSC cylinder element. The local modes of the skin between the stringers have close eigenvalues, one for each bay and combination of bays, so that more eigenvalues than the lowest one are requested, which also speeds up the convergence of the eigensolver.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">analyse</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">clamped_sides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">num_eigvalues</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">feet</span><span class="o">=</span><span class="n">feet</span><span class="p">):</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <span class="n">build</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="o">*</span><span class="n">mesh</span><span class="p">,</span> <span class="n">clamped_sides</span><span class="o">=</span><span class="n">clamped_sides</span><span class="p">,</span>
+                      <span class="n">feet</span><span class="o">=</span><span class="n">feet</span><span class="p">)</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="mf">1.</span>  <span class="c1"># N</span>
+    <span class="n">lam</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">u0</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">buckling</span><span class="p">({</span><span class="n">mu</span><span class="p">:</span> <span class="o">-</span><span class="n">P</span><span class="p">},</span> <span class="n">num_eigvalues</span><span class="o">=</span><span class="n">num_eigvalues</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">Pcr</span><span class="o">=</span><span class="n">lam</span><span class="o">*</span><span class="n">P</span><span class="p">,</span> <span class="n">modes</span><span class="o">=</span><span class="n">modes</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">P</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">u0</span><span class="p">[</span><span class="n">mu</span><span class="p">]),</span>
+               <span class="n">dofs</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">Nr</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">out</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Mesh-convergence">
+<h2>Mesh convergence<a class="headerlink" href="#Mesh-convergence" title="Link to this heading">#</a></h2>
+<p>Configuration A with simply supported unloaded edges, meshes of <code class="docutils literal notranslate"><span class="pre">n_edge</span></code> elements between the edge of the panel and the first foot, <code class="docutils literal notranslate"><span class="pre">n_foot</span></code> elements across each 10 mm strip of the foot, <code class="docutils literal notranslate"><span class="pre">n_bay</span></code> elements between two feet, <code class="docutils literal notranslate"><span class="pre">nx</span></code> nodes along <span class="math notranslate nohighlight">\(x\)</span> and <code class="docutils literal notranslate"><span class="pre">nh</span></code> elements along the height of a blade:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshes</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+          <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">67</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+<span class="n">conv</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">mesh</span> <span class="ow">in</span> <span class="n">meshes</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">analyse</span><span class="p">(</span><span class="s1">'A'</span><span class="p">,</span> <span class="n">mesh</span><span class="p">)</span>
+    <span class="n">conv</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'mesh </span><span class="si">%-18s</span><span class="s1"> </span><span class="si">%6d</span><span class="s1"> dofs: P_cr = </span><span class="si">%s</span><span class="s1"> kN, P/delta = </span><span class="si">%.1f</span><span class="s1"> kN/mm, </span><span class="si">%.0f</span><span class="s1"> s'</span>
+          <span class="o">%</span> <span class="p">(</span><span class="n">mesh</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'dofs'</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+             <span class="n">r</span><span class="p">[</span><span class="s1">'k'</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]))</span>
+<span class="k">for</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">conv</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">conv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'change of P_cr from </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">: </span><span class="si">%.2f</span><span class="s1"> </span><span class="si">%%</span><span class="s1">'</span>
+          <span class="o">%</span> <span class="p">(</span><span class="n">r0</span><span class="p">[</span><span class="s1">'dofs'</span><span class="p">],</span> <span class="n">r1</span><span class="p">[</span><span class="s1">'dofs'</span><span class="p">],</span>
+             <span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">r1</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">r0</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="n">r1</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+mesh (2, 1, 4, 23, 2)    13201 dofs: P_cr = [99.39 99.58 99.96] kN, P/delta = 139.2 kN/mm, 13 s
+mesh (3, 1, 6, 34, 3)    24837 dofs: P_cr = [99.01 99.18 99.57] kN, P/delta = 139.2 kN/mm, 32 s
+mesh (4, 1, 8, 45, 3)    37603 dofs: P_cr = [98.91 99.08 99.47] kN, P/delta = 139.2 kN/mm, 70 s
+mesh (6, 2, 12, 67, 4)   92625 dofs: P_cr = [98.78 98.94 99.34] kN, P/delta = 139.2 kN/mm, 290 s
+change of P_cr from 13201 to 24837: -0.39 %
+change of P_cr from 24837 to 37603: -0.10 %
+change of P_cr from 37603 to 92625: -0.14 %
+</pre></div></div>
+</div>
+<p>The first buckling load changes by less than 0.2 % from the third mesh to the finest one, and by less than 1 % from the coarsest; the third mesh, <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">1,</span> <span class="pre">8,</span> <span class="pre">45,</span> <span class="pre">3)</span></code>, is used below for the three configurations.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">clamped</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">analyse</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">clamped_sides</span><span class="o">=</span><span class="n">clamped</span><span class="p">)</span>
+        <span class="n">results</span><span class="p">[(</span><span class="n">config</span><span class="p">,</span> <span class="n">clamped</span><span class="p">)]</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1">, unloaded edges </span><span class="si">%-16s</span><span class="s1">: P_cr = </span><span class="si">%6.1f</span><span class="s1"> kN, '</span>
+              <span class="s1">'P/delta = </span><span class="si">%.1f</span><span class="s1"> kN/mm, </span><span class="si">%.0f</span><span class="s1"> s'</span>
+              <span class="o">%</span> <span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="s1">'clamped'</span> <span class="k">if</span> <span class="n">clamped</span> <span class="k">else</span> <span class="s1">'simply supported'</span><span class="p">,</span>
+                 <span class="n">r</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'k'</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+A, unloaded edges simply supported: P_cr =   98.9 kN, P/delta = 139.2 kN/mm, 73 s
+A, unloaded edges clamped         : P_cr =   98.9 kN, P/delta = 139.2 kN/mm, 72 s
+B, unloaded edges simply supported: P_cr =   92.4 kN, P/delta = 129.5 kN/mm, 67 s
+B, unloaded edges clamped         : P_cr =   92.4 kN, P/delta = 129.5 kN/mm, 70 s
+C, unloaded edges simply supported: P_cr =  150.0 kN, P/delta = 155.1 kN/mm, 95 s
+C, unloaded edges clamped         : P_cr =  150.0 kN, P/delta = 155.1 kN/mm, 97 s
+</pre></div></div>
+</div>
+</section>
+<section id="Comparison-with-the-tests-and-with-MSC/NASTRAN">
+<h2>Comparison with the tests and with MSC/NASTRAN<a class="headerlink" href="#Comparison-with-the-tests-and-with-MSC/NASTRAN" title="Link to this heading">#</a></h2>
+<p>The first buckling loads of the tests are those of [1] Table 1 and [2] Table 3 (the same values), the loads at which the first local buckle was seen (Moiré fringes, strain gages); the theoretical values are the linear buckling loads of MSC/NASTRAN of [1] Table 1. The collapse loads of PSC7 to PSC9 differ between [1] Table 1 (280.0, 270.0, 280.0 kN) and [2] Table 3 (228.5, 240.0, 244.0 kN, equal to the first buckling loads); they are not compared here. The relative differences are those of the
+present model, with simply supported (SS) and clamped (CC) unloaded edges:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># [1] Table 1 and [2] Table 3, kN</span>
+<span class="n">tests</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'A'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'PSC1'</span><span class="p">:</span> <span class="mf">131.0</span><span class="p">,</span> <span class="s1">'PSC2'</span><span class="p">:</span> <span class="mf">150.0</span><span class="p">,</span> <span class="s1">'PSC4'</span><span class="p">:</span> <span class="mf">158.5</span><span class="p">},</span>
+         <span class="s1">'B'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'PSC3'</span><span class="p">:</span> <span class="mf">136.0</span><span class="p">,</span> <span class="s1">'PSC5'</span><span class="p">:</span> <span class="mf">113.0</span><span class="p">,</span> <span class="s1">'PSC6'</span><span class="p">:</span> <span class="mf">126.0</span><span class="p">},</span>
+         <span class="s1">'C'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'PSC7'</span><span class="p">:</span> <span class="mf">228.5</span><span class="p">,</span> <span class="s1">'PSC8'</span><span class="p">:</span> <span class="mf">240.0</span><span class="p">,</span> <span class="s1">'PSC9'</span><span class="p">:</span> <span class="mf">244.0</span><span class="p">}}</span>
+<span class="n">nastran</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'A'</span><span class="p">:</span> <span class="mf">92.</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">:</span> <span class="mf">89.</span><span class="p">,</span> <span class="s1">'C'</span><span class="p">:</span> <span class="mf">139.</span><span class="p">}</span>  <span class="c1"># [1] Table 1, kN</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'conf.  present SS  present CC | reference                 value  '</span>
+      <span class="s1">'(SS - ref)/ref'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">:</span>
+    <span class="n">Pss</span> <span class="o">=</span> <span class="n">results</span><span class="p">[(</span><span class="n">config</span><span class="p">,</span> <span class="kc">False</span><span class="p">)][</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span>
+    <span class="n">Pcc</span> <span class="o">=</span> <span class="n">results</span><span class="p">[(</span><span class="n">config</span><span class="p">,</span> <span class="kc">True</span><span class="p">)][</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span>
+    <span class="n">refs</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">'MSC/NASTRAN [1]'</span><span class="p">,</span> <span class="n">nastran</span><span class="p">[</span><span class="n">config</span><span class="p">])]</span>
+    <span class="n">refs</span> <span class="o">+=</span> <span class="p">[(</span><span class="s1">'test '</span> <span class="o">+</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">tests</span><span class="p">[</span><span class="n">config</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">tests</span><span class="p">[</span><span class="n">config</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+    <span class="n">refs</span> <span class="o">+=</span> <span class="p">[(</span><span class="s1">'mean of the tests'</span><span class="p">,</span> <span class="n">mean</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">refs</span><span class="p">):</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'</span><span class="si">%-6s</span><span class="s1"> </span><span class="si">%8.1f</span><span class="s1"> </span><span class="si">%11.1f</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">Pss</span><span class="p">,</span> <span class="n">Pcc</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span>
+                <span class="k">else</span> <span class="s1">' '</span><span class="o">*</span><span class="mi">26</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> | </span><span class="si">%-22s</span><span class="s1"> </span><span class="si">%8.1f</span><span class="s1">  </span><span class="si">%+7.1f</span><span class="s1"> </span><span class="si">%%</span><span class="s1">'</span>
+              <span class="o">%</span> <span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">Pss</span> <span class="o">-</span> <span class="n">val</span><span class="p">)</span><span class="o">/</span><span class="n">val</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+conf.  present SS  present CC | reference                 value  (SS - ref)/ref
+A          98.9        98.9 | MSC/NASTRAN [1]            92.0     +7.5 %
+                           | test PSC1                 131.0    -24.5 %
+                           | test PSC2                 150.0    -34.1 %
+                           | test PSC4                 158.5    -37.6 %
+                           | mean of the tests         146.5    -32.5 %
+B          92.4        92.4 | MSC/NASTRAN [1]            89.0     +3.8 %
+                           | test PSC3                 136.0    -32.1 %
+                           | test PSC5                 113.0    -18.3 %
+                           | test PSC6                 126.0    -26.7 %
+                           | mean of the tests         125.0    -26.1 %
+C         150.0       150.0 | MSC/NASTRAN [1]           139.0     +7.9 %
+                           | test PSC7                 228.5    -34.4 %
+                           | test PSC8                 240.0    -37.5 %
+                           | test PSC9                 244.0    -38.5 %
+                           | mean of the tests         237.5    -36.8 %
+</pre></div></div>
+</div>
+</section>
+<section id="Buckling-modes">
+<h2>Buckling modes<a class="headerlink" href="#Buckling-modes" title="Link to this heading">#</a></h2>
+<p>The normal displacement <span class="math notranslate nohighlight">\(w\)</span> of the skin of the first mode of each configuration, simply supported unloaded edges, over the developed panel seen from the outside, with the blades as lines:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mf">4.5</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">ax</span><span class="p">,</span> <span class="n">config</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">configurations</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">results</span><span class="p">[(</span><span class="n">config</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+    <span class="n">plot_skin_w</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">r</span><span class="p">[</span><span class="s1">'model'</span><span class="p">],</span> <span class="n">r</span><span class="p">[</span><span class="s1">'modes'</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span>
+                <span class="s1">'</span><span class="si">%s</span><span class="s1"> (</span><span class="si">%s</span><span class="s1">): </span><span class="si">%.1f</span><span class="s1"> kN'</span> <span class="o">%</span> <span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">configurations</span><span class="p">[</span><span class="n">config</span><span class="p">][</span><span class="s1">'panels'</span><span class="p">],</span>
+                                      <span class="n">r</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">))</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">'$x$ (mm)'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_abramovich2003_stiffened_panels_14_0.png" src="../_images/notebooks_abramovich2003_stiffened_panels_14_0.png" />
+</div>
+</div>
+<p>The ten lowest buckling loads of each configuration, which are modes of the skin between the stringers in different bays and combinations of bays:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">results</span><span class="p">[(</span><span class="n">config</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array2string</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+A [ 98.9  99.1  99.5  99.5  99.9 100.  100.1 100.2 101.1 101.7]
+B [92.4 92.5 92.8 92.8 93.2 93.3 93.4 93.5 94.4 94.8]
+C [150.  150.2 150.5 151.1 151.5 151.9 152.  152.1 152.3 152.7]
+</pre></div></div>
+</div>
+</section>
+<section id="Sensitivity-to-the-ply-drops">
+<h2>Sensitivity to the ply drops<a class="headerlink" href="#Sensitivity-to-the-ply-drops" title="Link to this heading">#</a></h2>
+<p>Neither [1] nor [2] gives the plies that end at the two steps of the foot. Besides the whole repeats of the model, two schemes bound the plausible ones: the <span class="math notranslate nohighlight">\(0\)</span> plies end first (the step of 8 plies keeps the two <span class="math notranslate nohighlight">\(0\)</span> plies next to the skin and the six <span class="math notranslate nohighlight">\(\pm 45\)</span> plies, the step of 4 plies two pairs <span class="math notranslate nohighlight">\(-45/45\)</span>), or the <span class="math notranslate nohighlight">\(\pm 45\)</span> plies end first (the step of 8 plies keeps the six <span class="math notranslate nohighlight">\(0\)</span> plies and the pair <span class="math notranslate nohighlight">\(-45/45\)</span> next to the skin, the step of 4 plies four
+<span class="math notranslate nohighlight">\(0\)</span> plies). In each scheme, among the plies of an orientation, those farthest from the skin end first. The laminates of the steps, listed from the skin:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">scheme</span><span class="p">,</span> <span class="p">(</span><span class="n">k8</span><span class="p">,</span> <span class="n">k4</span><span class="p">)</span> <span class="ow">in</span> <span class="n">drop_schemes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-17s</span><span class="s1"> 8 plies </span><span class="si">%s</span><span class="s1">, 4 plies </span><span class="si">%s</span><span class="s1">'</span>
+          <span class="o">%</span> <span class="p">(</span><span class="n">scheme</span><span class="p">,</span> <span class="p">[</span><span class="n">from_skin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">k8</span><span class="p">],</span> <span class="p">[</span><span class="n">from_skin</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">k4</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+whole repeats     8 plies [0, 0, -45, 45, 0, 0, -45, 45], 4 plies [0, 0, -45, 45]
+0 plies first     8 plies [0, 0, -45, 45, -45, 45, -45, 45], 4 plies [-45, 45, -45, 45]
++-45 plies first  8 plies [0, 0, -45, 45, 0, 0, 0, 0], 4 plies [0, 0, 0, 0]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sens</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="n">drop_schemes</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s1">'whole repeats'</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">results</span><span class="p">[(</span><span class="n">config</span><span class="p">,</span> <span class="kc">False</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">analyse</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">mesh</span><span class="p">,</span> <span class="n">feet</span><span class="o">=</span><span class="n">foot_laminates</span><span class="p">(</span><span class="n">scheme</span><span class="p">))</span>
+        <span class="n">sens</span><span class="p">[(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">config</span><span class="p">)]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s1">'Pcr'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mf">1e3</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-17s</span><span class="s1">'</span> <span class="o">%</span> <span class="s1">'scheme'</span> <span class="o">+</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'</span><span class="si">%14s</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="s1">'</span><span class="si">%s</span><span class="s1"> (kN)'</span> <span class="o">%</span> <span class="n">c</span><span class="p">)</span>
+                                  <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">)</span>
+      <span class="o">+</span> <span class="s1">'   diff. from MSC/NASTRAN [1]'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">scheme</span> <span class="ow">in</span> <span class="n">drop_schemes</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-17s</span><span class="s1">'</span> <span class="o">%</span> <span class="n">scheme</span>
+          <span class="o">+</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'</span><span class="si">%14.1f</span><span class="s1">'</span> <span class="o">%</span> <span class="n">sens</span><span class="p">[(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">c</span><span class="p">)]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">)</span>
+          <span class="o">+</span> <span class="s1">'   '</span> <span class="o">+</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'</span><span class="si">%+.1f</span><span class="s1"> </span><span class="si">%%</span><span class="s1">'</span> <span class="o">%</span> <span class="p">(</span><span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">sens</span><span class="p">[(</span><span class="n">scheme</span><span class="p">,</span> <span class="n">c</span><span class="p">)]</span><span class="o">/</span><span class="n">nastran</span><span class="p">[</span><span class="n">c</span><span class="p">]</span>
+                                                 <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+                              <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="si">%-17s</span><span class="s1">'</span> <span class="o">%</span> <span class="s1">'MSC/NASTRAN [1]'</span>
+      <span class="o">+</span> <span class="s1">''</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">'</span><span class="si">%14.1f</span><span class="s1">'</span> <span class="o">%</span> <span class="n">nastran</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">configurations</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+scheme                   A (kN)        B (kN)        C (kN)   diff. from MSC/NASTRAN [1]
+whole repeats              98.9          92.4         150.0   +7.5 %, +3.8 %, +7.9 %
+0 plies first              94.2          87.5         144.7   +2.4 %, -1.7 %, +4.1 %
++-45 plies first           97.9          91.9         139.5   +6.4 %, +3.3 %, +0.4 %
+MSC/NASTRAN [1]            92.0          89.0         139.0
+</pre></div></div>
+</div>
+</section>
+<section id="Discussion">
+<h2>Discussion<a class="headerlink" href="#Discussion" title="Link to this heading">#</a></h2>
+<p><strong>Modes.</strong> The lowest modes are local modes of the skin between the feet of the stringers, with about ten axial half-waves in each bay, largest in the middle bays and of opposite sign in neighbouring bays, the lines of the blades remaining nearly straight. The ten lowest loads of each configuration are within 3 % of each other: they are combinations of the modes of the four (five) inner bays, which are almost uncoupled. The unloaded edges, simply supported or clamped, change the first buckling
+load by less than 0.1 kN: the edge bays, 38 mm (A, B) and 26.7 mm (C) wide between the edge and the foot, are much stiffer than the inner bays, 76 mm (A, B) and 53.3 mm (C) wide between two feet.</p>
+<p><strong>MSC/NASTRAN.</strong> The present first buckling loads are 7.5 %, 3.8 % and 7.9 % above those of MSC/NASTRAN of [1] for A, B and C. Both are linear buckling analyses of the perfect panel, and the ratio of configurations C and A is almost the same, 1.52 here and 1.51 for MSC/NASTRAN; [1] does not describe its model, so that the differences cannot be traced. Here they depend on the modelling of the stepped foot, bonded on the skin with its full stiffness, on the overlap of the blade with the skin and
+the foot, and on the plies that end at the steps of the foot.</p>
+<p><strong>Ply drops.</strong> The plies that end at the steps of the foot, not given in [1, 2], change the first buckling load by up to 7 %: whole repeats give the highest loads, 98.9, 92.4 and 150.0 kN for A, B and C; the <span class="math notranslate nohighlight">\(0\)</span> plies ending first give 94.2, 87.5 and 144.7 kN (<span class="math notranslate nohighlight">\(-4.8\)</span>, <span class="math notranslate nohighlight">\(-5.3\)</span> and <span class="math notranslate nohighlight">\(-3.5\)</span> %), +2.4, <span class="math notranslate nohighlight">\(-1.7\)</span> and +4.1 % from MSC/NASTRAN; the <span class="math notranslate nohighlight">\(\pm 45\)</span> plies ending first give 97.9, 91.9 and 139.5 kN (<span class="math notranslate nohighlight">\(-1.0\)</span>, <span class="math notranslate nohighlight">\(-0.5\)</span> and <span class="math notranslate nohighlight">\(-7.0\)</span> %), +6.4, +3.3 and +0.4 %
+from MSC/NASTRAN. All three schemes are within <span class="math notranslate nohighlight">\(-1.7\)</span> to +7.9 % of MSC/NASTRAN; the model above uses whole repeats.</p>
+<p><strong>The panels implementation.</strong> The panels implementation of this case (<a class="reference external" href="https://github.com/saullocastro/panels">panels</a>, notebook <code class="docutils literal notranslate"><span class="pre">abramovich2009_blade_panels</span></code>), with the stepped feet as cylindrical shells bonded on the skin, the blades as plates standing on the mid-surface of the central step of the feet, and the same whole-repeat ply drops, gives 96.8, 90.3 and 146.2 kN for A, B and C, +5.3, +1.5 and +5.2 % from MSC/NASTRAN; the present values are 2.1 to 2.5 % higher. With the blade
+standing on the mid-surface of the skin, as here, it gives 98.6 kN for A, 0.3 % below the present value: the two implementations agree, and their difference comes from where the blade stands.</p>
+<p><strong>Tests.</strong> The measured first buckling loads are 1.22 to 1.63 times the present ones, 1.48, 1.35 and 1.58 times for the means of A, B and C, and differ by up to 21 % between the panels of one configuration (113.0 to 136.0 kN for B). [1] states that the predicted local buckling loads under-estimated the test results. The test loads are those at which the first local buckle was seen (Moiré fringes) or indicated by the strain gages [1, 2], whereas the analysis gives the bifurcation of the perfect
+panel; [2] (Section 4) discusses how this definition of the experimental value differs from the computed one. The model also leaves out the fillets of radius 2 mm and the filler at the root of the blade, which stiffen the skin at the edges of the bays, and uses the nominal thicknesses, the measured ones not being given in [1, 2]. The effect of the blade height is smaller in the model than in the tests: from A to B the first buckling load decreases by 6.6 % here (3.3 % for MSC/NASTRAN) and the
+mean of the tests by 15 %. The model is not adjusted to the tests.</p>
+</section>
+<section id="References">
+<h2>References<a class="headerlink" href="#References" title="Link to this heading">#</a></h2>
+<p>[1] Abramovich, H., Grunwald, A., Pevsner, P., Weller, T., et al., “Experiments on axial compression postbuckling behavior of stiffened cylindrical composite panels”, 44th AIAA/ASME/ASCE/AHS/ASC Structures, Structural Dynamics, and Materials Conference, Norfolk, VA, 2003, AIAA paper 2003-1793. <a class="reference external" href="https://doi.org/10.2514/6.2003-1793">https://doi.org/10.2514/6.2003-1793</a></p>
+<p>[2] Abramovich, H. and Weller, T., “Buckling and postbuckling behavior of laminated composite stringer stiffened curved panels under axial compression: experiments and design guidelines”, Journal of Mechanics of Materials and Structures, 4(7-8), 1187-1207, 2009. <a class="reference external" href="https://doi.org/10.2140/jomms.2009.4.1187">https://doi.org/10.2140/jomms.2009.4.1187</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="stiffened_cylinder_buckling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Axial buckling of stringer-stiffened cylinders</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="lanzi2003_stiffened_cylinder.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Data-of-the-panels">Data of the panels</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#The-stringer:-blade-and-stepped-foot">The stringer: blade and stepped foot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Boundary-conditions,-load-and-analysis">Boundary conditions, load and analysis</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Mesh-convergence">Mesh convergence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Comparison-with-the-tests-and-with-MSC/NASTRAN">Comparison with the tests and with MSC/NASTRAN</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Buckling-modes">Buckling modes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Sensitivity-to-the-ply-drops">Sensitivity to the ply drops</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#Discussion">Discussion</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#References">References</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="../_sources/notebooks/abramovich2003_stiffened_panels.nblink.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

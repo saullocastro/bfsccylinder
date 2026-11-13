@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Assembling a model &#8212; bfsccylinder 0.7.1 documentation</title>
+    <title>6. Assembling a model &#8212; bfsccylinder 0.7.2 documentation</title>
   
   
   
@@ -30,6 +30,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
@@ -37,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=5a057da9"></script>
+    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +48,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Analyses" href="analyses.html" />
-    <link rel="prev" title="Donnell-type and Sanders-type kinematics" href="kinematics.html" />
+    <link rel="next" title="7. Analyses" href="analyses.html" />
+    <link rel="prev" title="5. Follower pressure" href="follower_pressure.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.1" />
+  <meta name="docsearch:version" content="0.7.2" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -120,7 +121,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.1 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
   
 </a></div>
     
@@ -135,29 +136,29 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
-  </a>
-</li>
-
-
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    Assembling a model
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -176,58 +177,170 @@
                 </button>
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#" aria-current="page">
+    Assembling a model
+  </a>
+</li>
+
+
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -249,6 +362,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -336,15 +456,36 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
   </a>
 </li>
 
@@ -364,64 +505,155 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="follower_pressure.html">
-    Follower pressure
+  <a class="nav-link nav-internal" href="conventions.html">
+    Conventions and limits
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_kinematics.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -443,6 +675,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -527,7 +766,7 @@
         <i class="fa-solid fa-house"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Assembling a model</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">6. </span>Assembling a model</span></li>
   </ul>
 </nav>
 </div>
@@ -545,49 +784,53 @@
                 <article class="bd-article">
                   
   <section id="assembling-a-model">
-<h1>Assembling a model<a class="headerlink" href="#assembling-a-model" title="Link to this heading">#</a></h1>
-<p><code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code> computes the contributions of one element; the mesh, the
-global matrices, the boundary conditions and the loads are written by the
-user with NumPy and SciPy, as in the tests of the repository, see
-<a class="reference internal" href="ex_linear_static.html"><span class="doc">Linear static analysis</span></a>. The functions and the sizes below are those of
-the Donnell-type element; the module <a class="reference internal" href="api_bfsccylinder_sanders.html#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>,
-imported from <code class="docutils literal notranslate"><span class="pre">bfsccylinder.sanders</span></code>, has the same names, see
-<a class="reference internal" href="kinematics.html"><span class="doc">Donnell-type and Sanders-type kinematics</span></a>.</p>
+<h1><span class="section-number">6. </span>Assembling a model<a class="headerlink" href="#assembling-a-model" title="Link to this heading">#</a></h1>
+<p>The library computes the contributions of one element; the mesh, the global
+matrices, the boundary conditions and the loads are written by the user
+with NumPy and SciPy. This chapter describes the data structures that
+connect the element of <a class="reference internal" href="element.html"><span class="doc">The BFSC element on the cylinder</span></a> to the global systems of
+<a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>. The names are those of the <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code> namespace;
+<a class="reference internal" href="api_sanders.html#module-bfsccylinder.sanders" title="bfsccylinder.sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.sanders</span></code></a> has the same names for the Sanders-type
+element, with its own sizes.</p>
 <section id="mesh-of-a-closed-cylinder">
-<h2>Mesh of a closed cylinder<a class="headerlink" href="#mesh-of-a-closed-cylinder" title="Link to this heading">#</a></h2>
-<p>A cylinder of length <span class="math notranslate nohighlight">\(L\)</span> and radius <span class="math notranslate nohighlight">\(R\)</span> is divided into <code class="docutils literal notranslate"><span class="pre">nx</span> <span class="pre">-</span> <span class="pre">1</span></code> elements
-along <span class="math notranslate nohighlight">\(x\)</span> and <code class="docutils literal notranslate"><span class="pre">ny</span></code> elements around the circumference, of sides <code class="docutils literal notranslate"><span class="pre">lex</span> <span class="pre">=</span>
-<span class="pre">L/(nx</span> <span class="pre">-</span> <span class="pre">1)</span></code> and <code class="docutils literal notranslate"><span class="pre">ley</span> <span class="pre">=</span> <span class="pre">2*pi*R/ny</span></code>. The tests number <code class="docutils literal notranslate"><span class="pre">nx</span></code> by <code class="docutils literal notranslate"><span class="pre">ny</span> <span class="pre">+</span> <span class="pre">1</span></code>
-nodes with <span class="math notranslate nohighlight">\(x\)</span> varying slowest and close the cylinder by giving the last
-column of nodes the numbers of the first one, before taking the four nodes
-of each element from the corners of the array, in the order of
-<a class="reference internal" href="element.html"><span class="doc">The element and its degrees of freedom</span></a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nids</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="o">*</span><span class="p">(</span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
-<span class="n">nids_mesh</span> <span class="o">=</span> <span class="n">nids</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<h2><span class="section-number">6.1. </span>Mesh of a closed cylinder<a class="headerlink" href="#mesh-of-a-closed-cylinder" title="Link to this heading">#</a></h2>
+<p>The <span class="math notranslate nohighlight">\(C^1\)</span> continuity of the element requires a structured mesh of
+rectangles along <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>. A cylinder of length <span class="math notranslate nohighlight">\(L\)</span> is divided into
+<code class="docutils literal notranslate"><span class="pre">nx</span> <span class="pre">-</span> <span class="pre">1</span></code> elements along <span class="math notranslate nohighlight">\(x\)</span> and <code class="docutils literal notranslate"><span class="pre">ny</span></code> elements around the circumference,
+of sides <code class="docutils literal notranslate"><span class="pre">lex</span> <span class="pre">=</span> <span class="pre">L/(nx</span> <span class="pre">-</span> <span class="pre">1)</span></code> and <code class="docutils literal notranslate"><span class="pre">ley</span> <span class="pre">=</span> <span class="pre">2*pi*R/ny</span></code>. A grid of <code class="docutils literal notranslate"><span class="pre">nx</span></code> by
+<code class="docutils literal notranslate"><span class="pre">ny</span> <span class="pre">+</span> <span class="pre">1</span></code> node numbers, <span class="math notranslate nohighlight">\(x\)</span> varying slowest, is closed around the
+circumference by giving the last column the numbers of the first one; the
+four nodes of each element are then taken from the corners of the grid in
+the order of <a class="reference internal" href="element.html"><span class="doc">The BFSC element on the cylinder</span></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nids_mesh</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">nx</span><span class="o">*</span><span class="p">(</span><span class="n">ny</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">nids_mesh</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-<span class="n">nids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">nids_mesh</span><span class="p">)</span>
-<span class="n">nid_pos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">nids</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nids</span><span class="p">))))</span>
-
 <span class="n">n1s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 <span class="n">n2s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 <span class="n">n3s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 <span class="n">n4s</span> <span class="o">=</span> <span class="n">nids_mesh</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>with <code class="docutils literal notranslate"><span class="pre">nid_pos</span></code> mapping each node identification number to its index,
-such that <code class="docutils literal notranslate"><span class="pre">c1</span> <span class="pre">=</span> <span class="pre">DOF*nid_pos[n1]</span></code>, and so on, and the model has <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span>
-<span class="pre">DOF*nx*ny</span></code> degrees of freedom. The elements of the last column share their
-nodes 3 and 4 with the nodes 2 and 1 of the first column, and the
-continuity of the degrees of freedom closes the shell around the
-circumference.</p>
+<p>With the index <code class="docutils literal notranslate"><span class="pre">i</span></code> of each node in the sorted unique numbers, the
+positions are <code class="docutils literal notranslate"><span class="pre">c1</span> <span class="pre">=</span> <span class="pre">DOF*i</span></code> for node 1, and likewise for the other nodes,
+and the model has <code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">=</span> <span class="pre">DOF*nx*ny</span></code> degrees of freedom. The elements of the
+last column share their nodes 3 and 4 with the nodes 2 and 1 of the first
+column: the continuity of the degrees of freedom of the shared nodes closes
+the shell, and no constraint is needed between <span class="math notranslate nohighlight">\(\theta = 0\)</span> and <span class="math notranslate nohighlight">\(\theta =
+2\pi\)</span>. An open panel has <code class="docutils literal notranslate"><span class="pre">ny</span> <span class="pre">+</span> <span class="pre">1</span></code> distinct columns of nodes. Elements of
+different sizes along <span class="math notranslate nohighlight">\(x\)</span> or <span class="math notranslate nohighlight">\(y\)</span> are allowed as long as the grid stays
+structured, each element having its own <code class="docutils literal notranslate"><span class="pre">lex</span></code> and <code class="docutils literal notranslate"><span class="pre">ley</span></code>.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">DOF*i</span></code>, the slice <code class="docutils literal notranslate"><span class="pre">u[6::DOF]</span></code> of a global vector gives <span class="math notranslate nohighlight">\(w\)</span> at
+all the nodes, <code class="docutils literal notranslate"><span class="pre">u[0::DOF]</span></code> gives <span class="math notranslate nohighlight">\(u\)</span>, <code class="docutils literal notranslate"><span class="pre">u[3::DOF]</span></code> gives <span class="math notranslate nohighlight">\(v\)</span>, and so on
+for the ten degrees of freedom of <a class="reference internal" href="element.html"><span class="doc">The BFSC element on the cylinder</span></a>, which is how the boundary
+conditions, the loads and the results are addressed node by node.</p>
 </section>
-<section id="element-loop-and-sparse-arrays">
-<h2>Element loop and sparse arrays<a class="headerlink" href="#element-loop-and-sparse-arrays" title="Link to this heading">#</a></h2>
+<section id="sparse-arrays">
+<h2><span class="section-number">6.2. </span>Sparse arrays<a class="headerlink" href="#sparse-arrays" title="Link to this heading">#</a></h2>
 <p>Each function <code class="docutils literal notranslate"><span class="pre">update_K*</span></code> and <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> writes the entries of one
 element in three 1-D arrays, the row indices, the column indices and the
 values, at the positions <code class="docutils literal notranslate"><span class="pre">init_k</span></code> to <code class="docutils literal notranslate"><span class="pre">init_k</span> <span class="pre">+</span> <span class="pre">SPARSE_SIZE</span> <span class="pre">-</span> <span class="pre">1</span></code>, with
 <code class="docutils literal notranslate"><span class="pre">init_k</span></code> the attribute of the element for that matrix and <code class="docutils literal notranslate"><span class="pre">SPARSE_SIZE</span></code>
-the number of entries of one element:</p>
+the number of entries per element of <a class="reference internal" href="matrices.html"><span class="doc">Element matrices and internal forces</span></a>:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Function</p></th>
@@ -619,88 +862,75 @@ the number of entries of one element:</p>
 </tbody>
 </table>
 </div>
-<p>The sizes of the Sanders-type element are larger for KCNL, KG, M and
-KCfollower, see <a class="reference internal" href="api_bfsccylinder_sanders.html#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>; the code is the
-same when the sizes are taken from the namespace of the element used. For
-<code class="docutils literal notranslate"><span class="pre">num_elements</span></code> elements the arrays have <code class="docutils literal notranslate"><span class="pre">SPARSE_SIZE*num_elements</span></code>
+<p>For <code class="docutils literal notranslate"><span class="pre">num_elements</span></code> elements the arrays have <code class="docutils literal notranslate"><span class="pre">SPARSE_SIZE*num_elements</span></code>
 entries, of type <code class="docutils literal notranslate"><span class="pre">INT</span></code> for the indices and <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> for the values, and
-the element of index <code class="docutils literal notranslate"><span class="pre">k</span></code> gets <code class="docutils literal notranslate"><span class="pre">init_k</span> <span class="pre">=</span> <span class="pre">k*SPARSE_SIZE</span></code>, e.g. by
-increasing a counter by <code class="docutils literal notranslate"><span class="pre">SPARSE_SIZE</span></code> in the element loop:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">nint</span> <span class="o">=</span> <span class="mi">4</span>
-<span class="n">points</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">get_points_weights</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="n">nint</span><span class="p">)</span>
-<span class="n">KC0r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-<span class="n">KC0c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
-<span class="n">KC0v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="o">*</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
-<span class="n">init_k_KC0</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="k">for</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">,</span> <span class="n">n4</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">n1s</span><span class="p">,</span> <span class="n">n2s</span><span class="p">,</span> <span class="n">n3s</span><span class="p">,</span> <span class="n">n4s</span><span class="p">):</span>
-    <span class="n">shell</span> <span class="o">=</span> <span class="n">BFSCCylinder</span><span class="p">(</span><span class="n">nint</span><span class="p">)</span>
-    <span class="n">shell</span><span class="o">.</span><span class="n">c1</span> <span class="o">=</span> <span class="n">DOF</span><span class="o">*</span><span class="n">nid_pos</span><span class="p">[</span><span class="n">n1</span><span class="p">]</span>
-    <span class="o">...</span>
-    <span class="n">shell</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">R</span>
-    <span class="n">shell</span><span class="o">.</span><span class="n">lex</span> <span class="o">=</span> <span class="n">L</span><span class="o">/</span><span class="p">(</span><span class="n">nx</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">shell</span><span class="o">.</span><span class="n">ley</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">R</span><span class="o">/</span><span class="n">ny</span>
-    <span class="n">assign_constant_ABD</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
-    <span class="n">shell</span><span class="o">.</span><span class="n">init_k_KC0</span> <span class="o">=</span> <span class="n">init_k_KC0</span>
-    <span class="n">update_KC0</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">,</span> <span class="n">KC0v</span><span class="p">)</span>
-    <span class="n">init_k_KC0</span> <span class="o">+=</span> <span class="n">KC0_SPARSE_SIZE</span>
-
-<span class="n">KC0</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">KC0v</span><span class="p">,</span> <span class="p">(</span><span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">))</span><span class="o">.</span><span class="n">tocsc</span><span class="p">()</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">scipy.sparse.coo_matrix</span></code> sums the values at repeated positions, the
-entries of the nodes shared by several elements. <code class="docutils literal notranslate"><span class="pre">INT</span></code>, <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code>,
-<code class="docutils literal notranslate"><span class="pre">DOF</span></code> and the sizes are given by the <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code> and
-<code class="docutils literal notranslate"><span class="pre">bfsccylinder.sanders</span></code> namespaces. The elements write the entries of both
-triangles of each matrix, not only an upper triangle, and the matrices that
-are symmetric come out symmetric after the sum.</p>
+the element of index <code class="docutils literal notranslate"><span class="pre">k</span></code> gets <code class="docutils literal notranslate"><span class="pre">init_k</span> <span class="pre">=</span> <span class="pre">k*SPARSE_SIZE</span></code>. The global
+matrix is the sum of the element matrices, the assembly</p>
+<div class="math notranslate nohighlight" id="equation-as-assembly">
+<span class="eqno">(6.1)<a class="headerlink" href="#equation-as-assembly" title="Link to this equation">#</a></span>\[\boldsymbol{K} = \sum_{e} \boldsymbol{L}_e^\top \boldsymbol{K}_e
+\boldsymbol{L}_e\]</div>
+<p>with <span class="math notranslate nohighlight">\(\boldsymbol{L}_e\)</span> the Boolean matrix that extracts the 40 degrees of
+freedom of the element from the global vector; it is obtained by gathering
+the three arrays in a sparse matrix of coordinate format, e.g. <code class="docutils literal notranslate"><span class="pre">KC0</span> <span class="pre">=</span>
+<span class="pre">coo_matrix((KC0v,</span> <span class="pre">(KC0r,</span> <span class="pre">KC0c)),</span> <span class="pre">shape=(N,</span> <span class="pre">N)).tocsc()</span></code>, which sums the
+values at repeated positions, the entries of the nodes shared by several
+elements. The elements write both triangles of each matrix, such that the
+symmetric matrices come out symmetric and the unsymmetric load stiffness
+matrix of a follower pressure is complete.</p>
 <p>The functions overwrite the indices but <strong>add</strong> the values to the existing
-ones. Arrays reused for a new configuration, e.g. KCNL and KG at each
-iteration of a nonlinear analysis, are zeroed first, <code class="docutils literal notranslate"><span class="pre">KCNLv</span> <span class="pre">*=</span> <span class="pre">0</span></code>; the
-indices do not change for a fixed mesh.</p>
+ones. The value arrays reused for a new configuration, e.g. of
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> at each iteration of a
+nonlinear analysis, are zeroed first, e.g. <code class="docutils literal notranslate"><span class="pre">KCNLv</span> <span class="pre">*=</span> <span class="pre">0</span></code>; the indices do
+not change for a fixed mesh.</p>
 <p>The vectors are assembled without position attributes:
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> and <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> add the vector of
-one element directly to a global vector of size <code class="docutils literal notranslate"><span class="pre">N</span></code>, at the positions of
-its nodes, and the functions that depend on the displacements read them
-from a global vector <code class="docutils literal notranslate"><span class="pre">u</span></code> of size <code class="docutils literal notranslate"><span class="pre">N</span></code>.</p>
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> and <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a> add the vector of one
+element to a global vector of size <code class="docutils literal notranslate"><span class="pre">N</span></code>, at the positions of its nodes, and
+the functions that depend on the displacements read them from a global
+vector of size <code class="docutils literal notranslate"><span class="pre">N</span></code>, copying those of the element to its attribute <code class="docutils literal notranslate"><span class="pre">u</span></code>.</p>
 </section>
 <section id="boundary-conditions-and-loads">
-<h2>Boundary conditions and loads<a class="headerlink" href="#boundary-conditions-and-loads" title="Link to this heading">#</a></h2>
-<p>The tests constrain degrees of freedom by partitioning the global system: a
-boolean array <code class="docutils literal notranslate"><span class="pre">bk</span></code> marks the constrained degrees of freedom, selected with
-the slices of <a class="reference internal" href="element.html"><span class="doc">The element and its degrees of freedom</span></a> and the coordinates of the nodes, and <code class="docutils literal notranslate"><span class="pre">bu</span> <span class="pre">=</span>
-<span class="pre">~bk</span></code> the unknown ones, e.g. for <span class="math notranslate nohighlight">\(u = v = w = 0\)</span> at the nodes of both
-ends:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-<span class="n">checkSS</span> <span class="o">=</span> <span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">isclose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">L</span><span class="p">)</span>
-<span class="n">bk</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkSS</span>
-<span class="n">bk</span><span class="p">[</span><span class="mi">3</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkSS</span>
-<span class="n">bk</span><span class="p">[</span><span class="mi">6</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">checkSS</span>
-<span class="n">bu</span> <span class="o">=</span> <span class="o">~</span><span class="n">bk</span>
-
-<span class="n">Kuu</span> <span class="o">=</span> <span class="n">KC0</span><span class="p">[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bu</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>A concentrated load is a value of the global force vector at a degree of
-freedom of a node, e.g. <code class="docutils literal notranslate"><span class="pre">f[6::DOF][check]</span> <span class="pre">=</span> <span class="pre">fmid</span></code> for a normal force, and
-an axial force at the nodes of an edge, e.g. <code class="docutils literal notranslate"><span class="pre">fext[0::DOF][checkTopEdge]</span> <span class="pre">=</span>
-<span class="pre">-load/ny</span></code>, see <a class="reference internal" href="ex_nonlinear_static.html"><span class="doc">Nonlinear static analysis</span></a>. The force vector of a pressure
-is given by <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a>, at <span class="math notranslate nohighlight">\(\boldsymbol{u} = \boldsymbol{0}\)</span> the dead
-pressure load, see <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
-<p>A prescribed displacement, e.g. the axial shortening of one end, is a known
-value <code class="docutils literal notranslate"><span class="pre">uk</span> <span class="pre">=</span> <span class="pre">u[bk]</span></code> of a constrained degree of freedom, which moves to the
-right-hand side of the reduced system, <span class="math notranslate nohighlight">\(\boldsymbol{K}_{uu}\boldsymbol{u}_u = -\boldsymbol{K}_{uk}\bar{\boldsymbol{u}}_k\)</span>,
-and whose reaction forces are <span class="math notranslate nohighlight">\(\boldsymbol{F}_k = \boldsymbol{K}_{uk}^\top\boldsymbol{u}_u +
-\boldsymbol{K}_{kk}\bar{\boldsymbol{u}}_k\)</span>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Kuk</span> <span class="o">=</span> <span class="n">KC0</span><span class="p">[</span><span class="n">bu</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bk</span><span class="p">]</span>
-<span class="n">Kkk</span> <span class="o">=</span> <span class="n">KC0</span><span class="p">[</span><span class="n">bk</span><span class="p">,</span> <span class="p">:][:,</span> <span class="n">bk</span><span class="p">]</span>
-<span class="n">fu</span> <span class="o">=</span> <span class="o">-</span><span class="n">Kuk</span><span class="o">*</span><span class="n">uk</span>
-<span class="o">...</span>
-<span class="n">fk</span> <span class="o">=</span> <span class="n">Kuk</span><span class="o">.</span><span class="n">T</span><span class="o">*</span><span class="n">uu</span> <span class="o">+</span> <span class="n">Kkk</span><span class="o">*</span><span class="n">uk</span>
-</pre></div>
-</div>
-<p>see <a class="reference internal" href="ex_linear_buckling.html"><span class="doc">Linear buckling analysis</span></a>. The solution of the reduced system is
-expanded to the size of the model, <code class="docutils literal notranslate"><span class="pre">u[bu]</span> <span class="pre">=</span> <span class="pre">uu</span></code>, before it is given to the
-functions that depend on the displacements, e.g. <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>.</p>
+<h2><span class="section-number">6.3. </span>Boundary conditions and loads<a class="headerlink" href="#boundary-conditions-and-loads" title="Link to this heading">#</a></h2>
+<p>Boundary conditions are imposed on degrees of freedom, selected by the
+slices above and by the coordinates of the nodes, and the global system is
+partitioned into the unknown and the constrained ones, Eq.
+<a class="reference internal" href="analyses.html#equation-an-partition">(7.3)</a>. Because the derivatives are degrees of freedom, a
+condition on a derivative is imposed directly, e.g. a clamped end <span class="math notranslate nohighlight">\(x\)</span> =
+constant has <span class="math notranslate nohighlight">\(w_{,x} = 0\)</span> in addition to the conditions of a simple
+support, and a prescribed axial shortening is a known nonzero <span class="math notranslate nohighlight">\(u\)</span> at the
+nodes of an end.</p>
+<p>The conditions are imposed at the nodes. Along an edge <span class="math notranslate nohighlight">\(x\)</span> = constant, <span class="math notranslate nohighlight">\(w\)</span>
+is the cubic of <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> of the nodes of the edge, and the normal
+slope <span class="math notranslate nohighlight">\(w_{,x}\)</span> the cubic of <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,xy}\)</span>, see <a class="reference internal" href="element.html"><span class="doc">The BFSC element on the cylinder</span></a>: <span class="math notranslate nohighlight">\(w
+= 0\)</span> holds along the whole edge only when <span class="math notranslate nohighlight">\(w_{,y}\)</span> is constrained with <span class="math notranslate nohighlight">\(w\)</span>,
+and <span class="math notranslate nohighlight">\(w_{,x} = 0\)</span> only when <span class="math notranslate nohighlight">\(w_{,xy}\)</span> is constrained with <span class="math notranslate nohighlight">\(w_{,x}\)</span>; likewise
+<span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> with <span class="math notranslate nohighlight">\(u_{,y}\)</span> and <span class="math notranslate nohighlight">\(v_{,y}\)</span>. With only the values constrained,
+the edge deforms between the nodes, as the figure shows for <span class="math notranslate nohighlight">\(w\)</span> along three
+elements of an edge whose nodes have <span class="math notranslate nohighlight">\(w = 0\)</span> and <span class="math notranslate nohighlight">\(w_{,y} = \cos(9 y/R)\)</span>,
+with <code class="docutils literal notranslate"><span class="pre">ley</span></code> the side of the elements along <span class="math notranslate nohighlight">\(y\)</span>.</p>
+<figure class="align-default">
+<img alt="_images/edge_interpolation.png" class="plot-directive" src="_images/edge_interpolation.png" />
+</figure>
+<p>The deviation is a discretisation error and vanishes with mesh refinement.
+In the linear buckling of the laminated cylinders Z22 and Z33 under axial
+compression, it is small for a simple support: with <span class="math notranslate nohighlight">\(v = w = 0\)</span> at the
+nodes, the largest <span class="math notranslate nohighlight">\(w\)</span> along the ends between the nodes is below 1 % of the
+largest <span class="math notranslate nohighlight">\(w\)</span> of the mode, and constraining <span class="math notranslate nohighlight">\(v_{,y}\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> too changes
+the buckling load by less than 0.01 %. For a clamped end, <span class="math notranslate nohighlight">\(u = v = w =
+w_{,x} = 0\)</span> at the nodes, it is larger on coarse meshes: about 5 % of the
+largest <span class="math notranslate nohighlight">\(w\)</span> with 50 nodes around the circumference, and constraining
+<span class="math notranslate nohighlight">\(u_{,y}\)</span>, <span class="math notranslate nohighlight">\(v_{,y}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span> and <span class="math notranslate nohighlight">\(w_{,xy}\)</span> too changes the buckling load by
+0.2 to 1.3 %; with 90 nodes the deviation falls below 0.4 %.</p>
+<p>A symmetry plane <span class="math notranslate nohighlight">\(y\)</span> = constant has the antisymmetric <span class="math notranslate nohighlight">\(v\)</span> zero and the
+symmetric fields with zero normal slope: <span class="math notranslate nohighlight">\(v = v_{,x} = 0\)</span> and <span class="math notranslate nohighlight">\(u_{,y} =
+w_{,y} = w_{,xy} = 0\)</span>.</p>
+<p>A concentrated force is a value of the global force vector at a degree of
+freedom, e.g. at the position of <span class="math notranslate nohighlight">\(w\)</span> of a node for a normal force, and an
+axial edge load is distributed over the nodes of the edge at the positions
+of <span class="math notranslate nohighlight">\(u\)</span>. The consistent force vector of a pressure is given by
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a>, see <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>. After the
+solution of the reduced system, the solution is expanded to the size of the
+model before it is given to the functions that depend on the displacements,
+e.g. <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> or <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a>.</p>
 </section>
 </section>
 
@@ -715,12 +945,12 @@ functions that depend on the displacements, e.g. <a class="reference internal" h
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="kinematics.html"
+       href="follower_pressure.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Donnell-type and Sanders-type kinematics</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Follower pressure</p>
       </div>
     </a>
     <a class="right-next"
@@ -728,7 +958,7 @@ functions that depend on the displacements, e.g. <a class="reference internal" h
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Analyses</p>
+        <p class="prev-next-title"><span class="section-number">7. </span>Analyses</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -751,9 +981,9 @@ functions that depend on the displacements, e.g. <a class="reference internal" h
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-of-a-closed-cylinder">Mesh of a closed cylinder</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#element-loop-and-sparse-arrays">Element loop and sparse arrays</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions-and-loads">Boundary conditions and loads</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mesh-of-a-closed-cylinder">6.1. Mesh of a closed cylinder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sparse-arrays">6.2. Sparse arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#boundary-conditions-and-loads">6.3. Boundary conditions and loads</a></li>
 </ul>
   </nav></div>
 

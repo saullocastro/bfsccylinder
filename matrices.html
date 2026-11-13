@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>4. Element matrices and internal forces &#8212; bfsccylinder 0.7.2 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
+
+    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'matrices';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. Follower pressure" href="follower_pressure.html" />
+    <link rel="prev" title="3. The BFSC element on the cylinder" href="element.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="color-scheme" content="light dark"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.7.2" />
+  
+    
+    <script src="_static/searchtools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script src="searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation" aria-expanded="false" aria-controls="pst-primary-sidebar-modal">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Kinematics of the cylindrical shell
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button type="button" class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page" aria-expanded="false" aria-controls="pst-secondary-sidebar-modal">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal" tabindex="-1"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Kinematics of the cylindrical shell
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
+    Linear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
+    Linear buckling analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
+    Natural frequencies
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
+    Nonlinear static analysis
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
+    Nonlinear static analysis with structsolve
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
+    Follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/ex_kinematics.html">
+    Donnell-type and Sanders-type kinematics
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="api.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="install.html">
+    Installing bfsccylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="changelog.html">
+    Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-house"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">4. </span>Element matrices and internal forces</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="element-matrices-and-internal-forces">
+<h1><span class="section-number">4. </span>Element matrices and internal forces<a class="headerlink" href="#element-matrices-and-internal-forces" title="Link to this heading">#</a></h1>
+<p>Every matrix and vector of the element follows from two energies, the
+strain energy of the kinematics of <a class="reference internal" href="kinematics.html"><span class="doc">Kinematics of the cylindrical shell</span></a> with the constitutive
+relation of <a class="reference internal" href="constitutive.html"><span class="doc">Constitutive relation</span></a>, and the kinetic energy, discretised with
+the interpolation of <a class="reference internal" href="element.html"><span class="doc">The BFSC element on the cylinder</span></a>. The functions named below are those of
+<a class="reference internal" href="api_bfsccylinder.html#module-bfsccylinder.bfsccylinder" title="bfsccylinder.bfsccylinder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder</span></code></a>; <a class="reference internal" href="api_bfsccylinder_sanders.html#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>
+has the same functions, with the operators of the Sanders-type kinematics.</p>
+<section id="strain-energy">
+<h2><span class="section-number">4.1. </span>Strain energy<a class="headerlink" href="#strain-energy" title="Link to this heading">#</a></h2>
+<p>With the membrane strains <span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon} =
+\boldsymbol{\varepsilon}_L + \boldsymbol{\varepsilon}_{NL}\)</span> and the
+curvatures <span class="math notranslate nohighlight">\(\boldsymbol{\kappa}\)</span>, the strain energy of the element is</p>
+<div class="math notranslate nohighlight" id="equation-mat-u">
+<span class="eqno">(4.1)<a class="headerlink" href="#equation-mat-u" title="Link to this equation">#</a></span>\[U(\boldsymbol{u}_e) = \frac{1}{2} \int_A \left(
+\boldsymbol{\varepsilon}^\top \boldsymbol{A} \boldsymbol{\varepsilon} +
+2 \boldsymbol{\varepsilon}^\top \boldsymbol{B} \boldsymbol{\kappa} +
+\boldsymbol{\kappa}^\top \boldsymbol{D} \boldsymbol{\kappa} \right) dA\]</div>
+<p>with, from Eqs. <a class="reference internal" href="element.html#equation-el-bm">(3.6)</a> to <a class="reference internal" href="element.html#equation-el-bnl">(3.9)</a>,</p>
+<div class="math notranslate nohighlight" id="equation-mat-strains">
+<span class="eqno">(4.2)<a class="headerlink" href="#equation-mat-strains" title="Link to this equation">#</a></span>\[\boldsymbol{\varepsilon} = \left( \boldsymbol{B}_m + \frac{1}{2}
+\boldsymbol{B}_{NL} \right) \boldsymbol{u}_e, \qquad
+\delta \boldsymbol{\varepsilon} = \left( \boldsymbol{B}_m +
+\boldsymbol{B}_{NL} \right) \delta \boldsymbol{u}_e, \qquad
+\boldsymbol{\kappa} = \boldsymbol{B}_b \boldsymbol{u}_e\]</div>
+<p>The factor <span class="math notranslate nohighlight">\(1/2\)</span> in the strains and its absence in their variation come
+from <span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon}_{NL}\)</span> being quadratic in the displacements.</p>
+</section>
+<section id="internal-force-vector">
+<h2><span class="section-number">4.2. </span>Internal force vector<a class="headerlink" href="#internal-force-vector" title="Link to this heading">#</a></h2>
+<p>The internal force vector of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a> is the gradient of the
+strain energy:</p>
+<div class="math notranslate nohighlight" id="equation-mat-fint">
+<span class="eqno">(4.3)<a class="headerlink" href="#equation-mat-fint" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{F}_{int} = \frac{\partial U}{\partial \boldsymbol{u}_e} =
+\int_A \left( \left( \boldsymbol{B}_m + \boldsymbol{B}_{NL}
+\right)^\top \boldsymbol{N} + \boldsymbol{B}_b^\top \boldsymbol{M}
+\right) dA, \qquad
+\begin{Bmatrix} \boldsymbol{N} \\ \boldsymbol{M} \end{Bmatrix} =
+\begin{bmatrix} \boldsymbol{A} &amp; \boldsymbol{B} \\ \boldsymbol{B} &amp;
+\boldsymbol{D} \end{bmatrix} \begin{Bmatrix} \boldsymbol{\varepsilon} \\
+\boldsymbol{\kappa} \end{Bmatrix}\end{split}\]</div>
+<p>with the resultants of the current displacements. At equilibrium,
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span> balances the external forces, see <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>.</p>
+</section>
+<section id="tangent-stiffness-matrix">
+<h2><span class="section-number">4.3. </span>Tangent stiffness matrix<a class="headerlink" href="#tangent-stiffness-matrix" title="Link to this heading">#</a></h2>
+<p>The Hessian of the strain energy, the Jacobian of
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>, is split into four matrices:</p>
+<div class="math notranslate nohighlight" id="equation-mat-kt">
+<span class="eqno">(4.4)<a class="headerlink" href="#equation-mat-kt" title="Link to this equation">#</a></span>\[\boldsymbol{K}_T = \frac{\partial \boldsymbol{F}_{int}}{\partial
+\boldsymbol{u}_e} = \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL}
+(\boldsymbol{u}_e) + \boldsymbol{K}_{GNL}(\boldsymbol{u}_e) +
+\boldsymbol{K}_G(\boldsymbol{u}_e)\]</div>
+<p>computed by <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a> (<span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>),
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> (<span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}\)</span>) and
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> (<span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>). Since the three functions
+differentiate the same quadrature sums as <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a>,
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is the exact Jacobian of the discrete internal forces for
+any number of integration points, such that the Newton-Raphson iterations
+of <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a> converge quadratically.</p>
+<p><strong>Linear constitutive stiffness matrix.</strong> The term of the linear strains,</p>
+<div class="math notranslate nohighlight" id="equation-mat-kc0">
+<span class="eqno">(4.5)<a class="headerlink" href="#equation-mat-kc0" title="Link to this equation">#</a></span>\[\boldsymbol{K}_{C0} = \int_A \left( \boldsymbol{B}_m^\top \boldsymbol{A}
+\boldsymbol{B}_m + \boldsymbol{B}_m^\top \boldsymbol{B} \boldsymbol{B}_b
++ \boldsymbol{B}_b^\top \boldsymbol{B} \boldsymbol{B}_m +
+\boldsymbol{B}_b^\top \boldsymbol{D} \boldsymbol{B}_b \right) dA\]</div>
+<p>does not depend on the displacements: it is the stiffness matrix of a
+linear static analysis and the tangent stiffness matrix at
+<span class="math notranslate nohighlight">\(\boldsymbol{u}_e = \boldsymbol{0}\)</span>. It is symmetric. With the Sanders-type
+kinematics, <span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span> has terms of <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span>, such that the
+bending stiffness <span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span> couples the in-plane and the normal
+displacements even for a homogeneous wall, <span class="math notranslate nohighlight">\(\boldsymbol{B} = \boldsymbol{0}\)</span>.</p>
+<p><strong>Nonlinear constitutive stiffness matrix.</strong> The terms of
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span> in the derivative of <span class="math notranslate nohighlight">\((\boldsymbol{B}_m +
+\boldsymbol{B}_{NL})^\top \boldsymbol{N}\)</span> and of <span class="math notranslate nohighlight">\(\boldsymbol{B}_b^\top
+\boldsymbol{M}\)</span> with <span class="math notranslate nohighlight">\(\boldsymbol{N}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{M}\)</span> varying are</p>
+<div class="math notranslate nohighlight" id="equation-mat-kcnl">
+<span class="eqno">(4.6)<a class="headerlink" href="#equation-mat-kcnl" title="Link to this equation">#</a></span>\[\boldsymbol{K}_{CNL} = \underbrace{\int_A \left( \boldsymbol{B}_m^\top
+\boldsymbol{A} + \boldsymbol{B}_b^\top \boldsymbol{B} \right)
+\boldsymbol{B}_{NL} dA}_{\boldsymbol{K}_{C0L}} +
+\underbrace{\int_A \boldsymbol{B}_{NL}^\top \left( \boldsymbol{A}
+\boldsymbol{B}_m + \boldsymbol{B} \boldsymbol{B}_b \right)
+dA}_{\boldsymbol{K}_{CL0}} +
+\underbrace{\int_A \boldsymbol{B}_{NL}^\top \boldsymbol{A}
+\boldsymbol{B}_{NL} dA}_{\boldsymbol{K}_{CLL}}\]</div>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0L}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CL0}\)</span> are linear in the
+displacements and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CLL}\)</span> is quadratic.</p>
+<p><strong>Geometric stiffness matrices.</strong> The derivative of <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span>
+in <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}^\top \boldsymbol{N}\)</span>, with <span class="math notranslate nohighlight">\(\boldsymbol{N}\)</span> held
+fixed, gives a geometric stiffness matrix of the membrane resultants. The
+resultants are split into the part of the linear strains and the part of
+the nonlinear strains,</p>
+<div class="math notranslate nohighlight" id="equation-mat-n-split">
+<span class="eqno">(4.7)<a class="headerlink" href="#equation-mat-n-split" title="Link to this equation">#</a></span>\[\boldsymbol{N}_L = \boldsymbol{A} \boldsymbol{B}_m \boldsymbol{u}_e +
+\boldsymbol{B} \boldsymbol{B}_b \boldsymbol{u}_e, \qquad
+\boldsymbol{N}_{NL} = \boldsymbol{A} \boldsymbol{\varepsilon}_{NL}\]</div>
+<p>and so is the geometric stiffness matrix:</p>
+<div class="math notranslate nohighlight" id="equation-mat-kg">
+<span class="eqno">(4.8)<a class="headerlink" href="#equation-mat-kg" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{K}_G = \int_A \boldsymbol{G}^\top \begin{bmatrix} N_{Lxx} &amp;
+N_{Lxy} \\ N_{Lxy} &amp; N_{Lyy} \end{bmatrix} \boldsymbol{G} \, dA, \qquad
+\boldsymbol{K}_{GNL} = \int_A \boldsymbol{G}^\top \begin{bmatrix}
+N_{NLxx} &amp; N_{NLxy} \\ N_{NLxy} &amp; N_{NLyy} \end{bmatrix} \boldsymbol{G}
+\, dA\end{split}\]</div>
+<p>with the rows <span class="math notranslate nohighlight">\(\boldsymbol{G}\)</span> of the rotations, Eq. <a class="reference internal" href="element.html#equation-el-g">(3.8)</a>. Since
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}^\top \boldsymbol{N}\)</span> is, row by row, <span class="math notranslate nohighlight">\(\boldsymbol{G}^\top\)</span>
+times the resultants times the slopes, its derivative at fixed
+<span class="math notranslate nohighlight">\(\boldsymbol{N}\)</span> is this quadratic form. <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> computes
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> and <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> adds <span class="math notranslate nohighlight">\(\boldsymbol{K}_{GNL}\)</span> to
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span>. The split keeps <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> homogeneous of
+degree one in the displacements, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G(\lambda
+\boldsymbol{u}_0) = \lambda \boldsymbol{K}_G(\boldsymbol{u}_0)\)</span>, which is
+what a linear buckling analysis needs, while <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} +
+\boldsymbol{K}_{GNL}\)</span> vanishes at zero displacements and collects the rest
+of the Hessian.</p>
+<p>The geometric stiffness matrix depends on the kinematics through
+<span class="math notranslate nohighlight">\(\boldsymbol{G}\)</span>. For the Donnell-type kinematics, <span class="math notranslate nohighlight">\(\boldsymbol{G}\)</span> has
+entries only at the degrees of freedom of <span class="math notranslate nohighlight">\(w\)</span>, and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> is the
+geometric stiffness matrix of a flat plate: the curvature of the shell
+enters a buckling problem only through <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> and the
+resultants. For the Sanders-type kinematics, the row <span class="math notranslate nohighlight">\(\boldsymbol{S}^w_{,y}
+- \boldsymbol{S}^v/R\)</span> populates the blocks <span class="math notranslate nohighlight">\(v\)</span>-<span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(v\)</span>-<span class="math notranslate nohighlight">\(w\)</span>, multiplied
+by <span class="math notranslate nohighlight">\(N_{yy}\)</span> and <span class="math notranslate nohighlight">\(N_{xy}\)</span> only; for a membrane state of axial compression,
+<span class="math notranslate nohighlight">\(N_{yy} = N_{xy} = 0\)</span>, the two matrices coincide.</p>
+<p><strong>Geometric stiffness matrix of a constant stress state.</strong>
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG_constant_stress" title="bfsccylinder.bfsccylinder.update_KG_constant_stress"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_constant_stress()</span></code></a> evaluates the <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of
+Eq. <a class="reference internal" href="#equation-mat-kg">(4.8)</a> with given resultants <span class="math notranslate nohighlight">\(N_{xx}\)</span>, <span class="math notranslate nohighlight">\(N_{yy}\)</span> and <span class="math notranslate nohighlight">\(N_{xy}\)</span>,
+constant over the element, instead of those of a displacement field. It is
+linear in the given resultants, and is the geometric stiffness matrix of an
+assumed membrane state, e.g. a uniform axial compression without the
+bending boundary layers that the supports of a real cylinder produce.</p>
+</section>
+<section id="mass-matrix">
+<h2><span class="section-number">4.4. </span>Mass matrix<a class="headerlink" href="#mass-matrix" title="Link to this heading">#</a></h2>
+<p>The kinetic energy of the displacement field of Eq.
+<a class="reference internal" href="kinematics.html#equation-kin-displacement-field">(1.3)</a>, for a density <span class="math notranslate nohighlight">\(\rho\)</span> = <code class="docutils literal notranslate"><span class="pre">rho</span></code> uniform over
+the thickness <span class="math notranslate nohighlight">\(h\)</span> = <code class="docutils literal notranslate"><span class="pre">h</span></code>, with the shallow-shell volume <span class="math notranslate nohighlight">\(dV = dz\, dA\)</span> and
+the reference surface at the middle of the thickness, is</p>
+<div class="math notranslate nohighlight" id="equation-mat-t">
+<span class="eqno">(4.9)<a class="headerlink" href="#equation-mat-t" title="Link to this equation">#</a></span>\[T = \frac{1}{2} \int_A \left( \rho h \left( \dot{u}^2 + \dot{v}^2 +
+\dot{w}^2 \right) + \rho \frac{h^3}{12} \left( \dot{\beta}_x^2 +
+\dot{\beta}_y^2 \right) \right) dA\]</div>
+<p>the terms of <span class="math notranslate nohighlight">\(\int z \, dz = 0\)</span> vanishing. With Eqs. <a class="reference internal" href="element.html#equation-el-rows">(3.5)</a> and
+<a class="reference internal" href="element.html#equation-el-g">(3.8)</a>, the consistent mass matrix of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> is</p>
+<div class="math notranslate nohighlight" id="equation-mat-m">
+<span class="eqno">(4.10)<a class="headerlink" href="#equation-mat-m" title="Link to this equation">#</a></span>\[\boldsymbol{M} = \int_A \rho \left( h \left( (\boldsymbol{S}^u)^\top
+\boldsymbol{S}^u + (\boldsymbol{S}^v)^\top \boldsymbol{S}^v +
+(\boldsymbol{S}^w)^\top \boldsymbol{S}^w \right) + \frac{h^3}{12}
+\boldsymbol{G}^\top \boldsymbol{G} \right) dA\]</div>
+<p>The terms in <span class="math notranslate nohighlight">\(h^3/12\)</span> are the rotary inertia of the rotations of the
+normal of each kinematics: the Sanders-type rotation <span class="math notranslate nohighlight">\(\beta_y = -w_{,y} +
+v/R\)</span> couples <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span> and adds <span class="math notranslate nohighlight">\(\rho h^3/(12 R^2)
+(\boldsymbol{S}^v)^\top \boldsymbol{S}^v\)</span>, terms that the Donnell-type
+matrix does not have. The rotation used in the kinetic energy is the one of
+the strains, such that the rigid translation of Eq.
+<a class="reference internal" href="kinematics.html#equation-kin-rigid-translation">(1.11)</a> has the exact kinetic energy with the
+Sanders-type kinematics. The integrand is a polynomial and the matrix is
+computed in closed form from <code class="docutils literal notranslate"><span class="pre">lex</span></code>, <code class="docutils literal notranslate"><span class="pre">ley</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code>, <code class="docutils literal notranslate"><span class="pre">rho</span></code> and, for the
+Sanders-type kinematics, <code class="docutils literal notranslate"><span class="pre">R</span></code>.</p>
+</section>
+<section id="entries-per-element">
+<h2><span class="section-number">4.5. </span>Entries per element<a class="headerlink" href="#entries-per-element" title="Link to this heading">#</a></h2>
+<p>Each function writes the entries of one element, both triangles included,
+in sparse arrays; the entries that vanish identically, e.g. the block of
+the in-plane degrees of freedom of the Donnell-type <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span>,
+are not written. The number of entries per element is a constant of each
+module:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Matrix</p></th>
+<th class="head"><p>Function</p></th>
+<th class="head"><p>Donnell-type</p></th>
+<th class="head"><p>Sanders-type</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a></p></td>
+<td><p>1600</p></td>
+<td><p>1600</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL} + \boldsymbol{K}_{GNL}\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a></p></td>
+<td><p>1024</p></td>
+<td><p>1456</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KG_constant_stress" title="bfsccylinder.bfsccylinder.update_KG_constant_stress"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG_constant_stress()</span></code></a></p></td>
+<td><p>256</p></td>
+<td><p>784</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{M}\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a></p></td>
+<td><p>544</p></td>
+<td><p>920</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span></p></td>
+<td><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCfollower" title="bfsccylinder.bfsccylinder.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a></p></td>
+<td><p>1312</p></td>
+<td><p>1456</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">KC0_SPARSE_SIZE</span></code>, <code class="docutils literal notranslate"><span class="pre">KCNL_SPARSE_SIZE</span></code>, <code class="docutils literal notranslate"><span class="pre">KG_SPARSE_SIZE</span></code>,
+<code class="docutils literal notranslate"><span class="pre">M_SPARSE_SIZE</span></code> and <code class="docutils literal notranslate"><span class="pre">KCfollower_SPARSE_SIZE</span></code> of each namespace. For the
+Donnell-type element, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> has the <span class="math notranslate nohighlight">\(16 \times 16\)</span> entries of
+the degrees of freedom of <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span> the <span class="math notranslate nohighlight">\(40 \times 40\)</span>
+entries minus the <span class="math notranslate nohighlight">\(24 \times 24\)</span> of <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span>; for the Sanders-type
+element, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> has the <span class="math notranslate nohighlight">\(28 \times 28\)</span> entries of <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span>,
+and <span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span> all entries except the <span class="math notranslate nohighlight">\(12 \times 12\)</span> of <span class="math notranslate nohighlight">\(u\)</span>.
+The load stiffness matrix <span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> of a follower pressure is
+derived in <a class="reference internal" href="follower_pressure.html"><span class="doc">Follower pressure</span></a>.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="element.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title"><span class="section-number">3. </span>The BFSC element on the cylinder</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="follower_pressure.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title"><span class="section-number">5. </span>Follower pressure</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal" tabindex="-1"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-energy">4.1. Strain energy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#internal-force-vector">4.2. Internal force vector</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tangent-stiffness-matrix">4.3. Tangent stiffness matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mass-matrix">4.4. Mass matrix</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#entries-per-element">4.5. Entries per element</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  <div class="tocsection sourcelink">
+    <a href="_sources/matrices.rst.txt">
+      <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2020-2026, Saullo G. P. Castro.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.0.4.
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.24.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

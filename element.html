@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>The element and its degrees of freedom &#8212; bfsccylinder 0.7.1 documentation</title>
+    <title>3. The BFSC element on the cylinder &#8212; bfsccylinder 0.7.2 documentation</title>
   
   
   
@@ -30,6 +30,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
@@ -37,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=5a057da9"></script>
+    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -47,12 +48,12 @@
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Donnell-type and Sanders-type kinematics" href="kinematics.html" />
-    <link rel="prev" title="BFSC cylinder finite element - bfsccylinder" href="index.html" />
+    <link rel="next" title="4. Element matrices and internal forces" href="matrices.html" />
+    <link rel="prev" title="2. Constitutive relation" href="constitutive.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.1" />
+  <meta name="docsearch:version" content="0.7.2" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -120,7 +121,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.1 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
   
 </a></div>
     
@@ -134,30 +135,30 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    The element and its degrees of freedom
-  </a>
-</li>
-
-
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    The BFSC element on the cylinder
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -177,57 +178,169 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -249,6 +362,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -335,16 +455,37 @@
 <nav>
   <ul class="bd-navbar-elements navbar-nav">
     
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="#" aria-current="page">
-    The element and its degrees of freedom
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#" aria-current="page">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
   </a>
 </li>
 
@@ -364,64 +505,155 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="follower_pressure.html">
-    Follower pressure
+  <a class="nav-link nav-internal" href="conventions.html">
+    Conventions and limits
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_kinematics.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -443,6 +675,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -527,7 +766,7 @@
         <i class="fa-solid fa-house"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">The element and its degrees of freedom</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><span class="section-number">3. </span>The BFSC element on the cylinder</span></li>
   </ul>
 </nav>
 </div>
@@ -544,65 +783,114 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="the-element-and-its-degrees-of-freedom">
-<h1>The element and its degrees of freedom<a class="headerlink" href="#the-element-and-its-degrees-of-freedom" title="Link to this heading">#</a></h1>
-<p>The single-curvature BFSC element is a four-node rectangle of the developed
-mid-surface of a cylinder of radius <code class="docutils literal notranslate"><span class="pre">R</span></code>, with <span class="math notranslate nohighlight">\(x\)</span> the axial coordinate and
-<span class="math notranslate nohighlight">\(y = R \theta\)</span> the arc length along the circumference, of sides <code class="docutils literal notranslate"><span class="pre">lex</span></code>
-along <span class="math notranslate nohighlight">\(x\)</span> and <code class="docutils literal notranslate"><span class="pre">ley</span></code> along <span class="math notranslate nohighlight">\(y\)</span>. The displacements <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span> are
-interpolated with products of cubic Hermite polynomials, whose nodal values
-are the degrees of freedom below. Two classes share the same nodes, degrees
-of freedom and attributes, and differ in their kinematics, see
-<a class="reference internal" href="kinematics.html"><span class="doc">Donnell-type and Sanders-type kinematics</span></a>:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder" title="bfsccylinder.bfsccylinder.BFSCCylinder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder.BFSCCylinder</span></code></a>, Donnell-type
-kinematics, given by the <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code> namespace;</p></li>
-<li><p><a class="reference internal" href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders</span></code></a>,
-Sanders-type kinematics, given by the <code class="docutils literal notranslate"><span class="pre">bfsccylinder.sanders</span></code> namespace.</p></li>
-</ul>
-<p>The interpolation functions, the kinematics and the integration of each
-matrix are given in the Notes of <a class="reference internal" href="api_bfsccylinder.html#module-bfsccylinder.bfsccylinder" title="bfsccylinder.bfsccylinder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder</span></code></a> and
-<a class="reference internal" href="api_bfsccylinder_sanders.html#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>.</p>
-<section id="node-ordering">
-<h2>Node ordering<a class="headerlink" href="#node-ordering" title="Link to this heading">#</a></h2>
-<p>The nodes are numbered counterclockwise from the corner with the smallest
-<span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, as the CQUAD4 element of Nastran:</p>
+  <section id="the-bfsc-element-on-the-cylinder">
+<h1><span class="section-number">3. </span>The BFSC element on the cylinder<a class="headerlink" href="#the-bfsc-element-on-the-cylinder" title="Link to this heading">#</a></h1>
+<p>The element interpolates the three displacements of the mid-surface with
+products of cubic Hermite polynomials, whose nodal values are the
+displacements and their derivatives. For the normal displacement <span class="math notranslate nohighlight">\(w\)</span> this is
+the plate-bending rectangle of Bogner, Fox and Schmit <a class="reference internal" href="#bogner1965" id="id1"><span>[Bogner1965]</span></a>, the
+BFS element, with the cross derivative <span class="math notranslate nohighlight">\(w_{,xy}\)</span> as a degree of freedom;
+the in-plane displacements <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> use the same functions without the
+cross derivative, as in the BFSC plate element of Castro and Jansen
+<a class="reference internal" href="#castrojansen2021" id="id2"><span>[CastroJansen2021]</span></a>. The single-curvature version, for the developed
+mid-surface of a cylinder, was presented by Castro and Jansen
+<a class="reference internal" href="#castrojansen2022" id="id3"><span>[CastroJansen2022]</span></a> with Donnell-type and Sanders-type kinematics. The
+interpolation and the integration are the same for both kinematics.</p>
+<section id="geometry-and-natural-coordinates">
+<h2><span class="section-number">3.1. </span>Geometry and natural coordinates<a class="headerlink" href="#geometry-and-natural-coordinates" title="Link to this heading">#</a></h2>
+<p>The element is a rectangle of the developed mid-surface, of sides <span class="math notranslate nohighlight">\(l_{ex}\)</span>
+= <code class="docutils literal notranslate"><span class="pre">lex</span></code> along <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(l_{ey}\)</span> = <code class="docutils literal notranslate"><span class="pre">ley</span></code> along <span class="math notranslate nohighlight">\(y = R\theta\)</span>, with
+<span class="math notranslate nohighlight">\(R\)</span> = <code class="docutils literal notranslate"><span class="pre">R</span></code>. The natural coordinates <span class="math notranslate nohighlight">\(\xi, \eta \in [-1, 1]\)</span> give</p>
+<div class="math notranslate nohighlight" id="equation-el-natural">
+<span class="eqno">(3.1)<a class="headerlink" href="#equation-el-natural" title="Link to this equation">#</a></span>\[x = x_1 + \frac{l_{ex}}{2} (\xi + 1), \qquad
+y = y_1 + \frac{l_{ey}}{2} (\eta + 1), \qquad
+\frac{\partial}{\partial x} = \frac{2}{l_{ex}}
+\frac{\partial}{\partial \xi}, \qquad
+\frac{\partial}{\partial y} = \frac{2}{l_{ey}}
+\frac{\partial}{\partial \eta}, \qquad
+dA = \frac{l_{ex} l_{ey}}{4} d\xi \, d\eta\]</div>
+<p>with <span class="math notranslate nohighlight">\((x_1, y_1)\)</span> the position of node 1. The nodes are numbered
+counterclockwise from the corner of the smallest <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, as the CQUAD4
+element of Nastran:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Node</p></th>
-<th class="head"><p>Natural coordinates</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\((\xi_i, \eta_i)\)</span></p></th>
 <th class="head"><p>Position</p></th>
 </tr>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>1</p></td>
-<td><p><span class="math notranslate nohighlight">\(\xi = -1, \eta = -1\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((-1, -1)\)</span></p></td>
 <td><p><span class="math notranslate nohighlight">\((x_1, y_1)\)</span></p></td>
 </tr>
 <tr class="row-odd"><td><p>2</p></td>
-<td><p><span class="math notranslate nohighlight">\(\xi = +1, \eta = -1\)</span></p></td>
-<td><p><span class="math notranslate nohighlight">\((x_1 + lex, y_1)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((+1, -1)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((x_1 + l_{ex}, y_1)\)</span></p></td>
 </tr>
 <tr class="row-even"><td><p>3</p></td>
-<td><p><span class="math notranslate nohighlight">\(\xi = +1, \eta = +1\)</span></p></td>
-<td><p><span class="math notranslate nohighlight">\((x_1 + lex, y_1 + ley)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((+1, +1)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((x_1 + l_{ex}, y_1 + l_{ey})\)</span></p></td>
 </tr>
 <tr class="row-odd"><td><p>4</p></td>
-<td><p><span class="math notranslate nohighlight">\(\xi = -1, \eta = +1\)</span></p></td>
-<td><p><span class="math notranslate nohighlight">\((x_1, y_1 + ley)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((-1, +1)\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\((x_1, y_1 + l_{ey})\)</span></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>with <span class="math notranslate nohighlight">\(x = x_1 + lex (\xi + 1)/2\)</span> and <span class="math notranslate nohighlight">\(y = y_1 + ley (\eta + 1)/2\)</span>. The
-element knows neither <span class="math notranslate nohighlight">\(x_1\)</span> nor <span class="math notranslate nohighlight">\(y_1\)</span>: its matrices depend on <code class="docutils literal notranslate"><span class="pre">lex</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ley</span></code>, <code class="docutils literal notranslate"><span class="pre">R</span></code>, its properties and its degrees of freedom, not on its
-position.</p>
+<p>The element knows neither <span class="math notranslate nohighlight">\(x_1\)</span> nor <span class="math notranslate nohighlight">\(y_1\)</span>: its matrices depend on
+<span class="math notranslate nohighlight">\(l_{ex}\)</span>, <span class="math notranslate nohighlight">\(l_{ey}\)</span>, <span class="math notranslate nohighlight">\(R\)</span>, its stiffnesses and its displacements, not on its
+position. The mid-surface of the element is curved, <span class="math notranslate nohighlight">\(R\)</span> entering the
+strains, while its interpolation is written on the developed rectangle.</p>
 </section>
-<section id="degrees-of-freedom-of-a-node">
-<h2>Degrees of freedom of a node<a class="headerlink" href="#degrees-of-freedom-of-a-node" title="Link to this heading">#</a></h2>
+<section id="cubic-hermite-polynomials">
+<h2><span class="section-number">3.2. </span>Cubic Hermite polynomials<a class="headerlink" href="#cubic-hermite-polynomials" title="Link to this heading">#</a></h2>
+<p>On <span class="math notranslate nohighlight">\([-1, 1]\)</span>, the cubic Hermite polynomials of the end <span class="math notranslate nohighlight">\(\xi_i = \pm 1\)</span> are</p>
+<div class="math notranslate nohighlight" id="equation-el-hermite-1d">
+<span class="eqno">(3.2)<a class="headerlink" href="#equation-el-hermite-1d" title="Link to this equation">#</a></span>\[\phi_i(\xi) = \frac{1}{4} (\xi + \xi_i)^2 (2 - \xi \xi_i), \qquad
+\psi_i(\xi) = \frac{1}{4} \xi_i (\xi + \xi_i)^2 (\xi \xi_i - 1)\]</div>
+<p><span class="math notranslate nohighlight">\(\phi_i\)</span> is one at its end and zero at the other, with zero slope at both;
+<span class="math notranslate nohighlight">\(\psi_i\)</span> is zero at both ends, with the slope <span class="math notranslate nohighlight">\(d\psi_i/d\xi\)</span> one at its end
+and zero at the other. A cubic on <span class="math notranslate nohighlight">\([-1, 1]\)</span> is fully determined by its
+values and slopes at the two ends, which is the basis of the continuity
+of the element.</p>
+</section>
+<section id="interpolation-functions">
+<h2><span class="section-number">3.3. </span>Interpolation functions<a class="headerlink" href="#interpolation-functions" title="Link to this heading">#</a></h2>
+<p>The two-dimensional functions of node <span class="math notranslate nohighlight">\(i\)</span> are the tensor products of
+Eq. <a class="reference internal" href="#equation-el-hermite-1d">(3.2)</a>, scaled by <span class="math notranslate nohighlight">\(l_{ex}/2\)</span> and <span class="math notranslate nohighlight">\(l_{ey}/2\)</span> such that
+their nodal derivatives in <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, not in <span class="math notranslate nohighlight">\(\xi\)</span> and <span class="math notranslate nohighlight">\(\eta\)</span>, are one:</p>
+<div class="math notranslate nohighlight" id="equation-el-hermite-2d">
+<span class="eqno">(3.3)<a class="headerlink" href="#equation-el-hermite-2d" title="Link to this equation">#</a></span>\[H_i = \phi_i(\xi) \phi_i(\eta), \qquad
+H_{xi} = \frac{l_{ex}}{2} \psi_i(\xi) \phi_i(\eta), \qquad
+H_{yi} = \frac{l_{ey}}{2} \phi_i(\xi) \psi_i(\eta), \qquad
+H_{xyi} = \frac{l_{ex} l_{ey}}{4} \psi_i(\xi) \psi_i(\eta)\]</div>
+<p>where <span class="math notranslate nohighlight">\(\phi_i(\eta)\)</span> and <span class="math notranslate nohighlight">\(\psi_i(\eta)\)</span> are those of the end <span class="math notranslate nohighlight">\(\eta_i\)</span>.
+These are the functions <span class="math notranslate nohighlight">\(H_i\)</span>, <span class="math notranslate nohighlight">\(H_{xi}\)</span>, <span class="math notranslate nohighlight">\(H_{yi}\)</span> and <span class="math notranslate nohighlight">\(H_{xyi}\)</span> of the Notes
+of <a class="reference internal" href="api_bfsccylinder.html#module-bfsccylinder.bfsccylinder" title="bfsccylinder.bfsccylinder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder</span></code></a>. At the nodes, <span class="math notranslate nohighlight">\(H_i\)</span> is one at its node
+and zero at the others, with zero derivatives <span class="math notranslate nohighlight">\(\partial/\partial x\)</span>,
+<span class="math notranslate nohighlight">\(\partial/\partial y\)</span> and <span class="math notranslate nohighlight">\(\partial^2/\partial x \partial y\)</span>; the other
+three functions vanish at all nodes, and so do these derivatives, except
+<span class="math notranslate nohighlight">\(\partial H_{xi}/\partial x = \partial H_{yi}/\partial y = \partial^2
+H_{xyi}/\partial x \partial y = 1\)</span> at their own node. The displacements are</p>
+<div class="math notranslate nohighlight" id="equation-el-interpolation">
+<span class="eqno">(3.4)<a class="headerlink" href="#equation-el-interpolation" title="Link to this equation">#</a></span>\[\begin{split}\begin{aligned}
+u &amp;= \sum_{i=1}^{4} \left( H_i u_i + H_{xi} {u_{,x}}_i + H_{yi}
+     {u_{,y}}_i \right) \\
+v &amp;= \sum_{i=1}^{4} \left( H_i v_i + H_{xi} {v_{,x}}_i + H_{yi}
+     {v_{,y}}_i \right) \\
+w &amp;= \sum_{i=1}^{4} \left( H_i w_i + H_{xi} {w_{,x}}_i + H_{yi}
+     {w_{,y}}_i + H_{xyi} {w_{,xy}}_i \right)
+\end{aligned}\end{split}\]</div>
+<p>The 16 functions of <span class="math notranslate nohighlight">\(w\)</span> span the complete bicubic polynomials, <span class="math notranslate nohighlight">\(\xi^a
+\eta^b\)</span> with <span class="math notranslate nohighlight">\(a, b \leq 3\)</span>; the 12 functions of <span class="math notranslate nohighlight">\(u\)</span> and of <span class="math notranslate nohighlight">\(v\)</span> span a
+subset of them.</p>
+</section>
+<section id="degrees-of-freedom">
+<h2><span class="section-number">3.4. </span>Degrees of freedom<a class="headerlink" href="#degrees-of-freedom" title="Link to this heading">#</a></h2>
 <p>Each node has <code class="docutils literal notranslate"><span class="pre">DOF</span> <span class="pre">=</span> <span class="pre">10</span></code> degrees of freedom, at the positions <code class="docutils literal notranslate"><span class="pre">c</span></code> to
-<code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">+</span> <span class="pre">9</span></code> of the global vectors and matrices, with <code class="docutils literal notranslate"><span class="pre">c</span></code> the attribute
+<code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">+</span> <span class="pre">9</span></code> of the global vectors and matrices, <code class="docutils literal notranslate"><span class="pre">c</span></code> being the attribute
 <code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code> or <code class="docutils literal notranslate"><span class="pre">c4</span></code> of the element for the nodes 1 to 4:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -655,68 +943,182 @@ position.</p>
 </tbody>
 </table>
 </div>
-<p><span class="math notranslate nohighlight">\(u\)</span> is the axial displacement, <span class="math notranslate nohighlight">\(v\)</span> the circumferential displacement and <span class="math notranslate nohighlight">\(w\)</span>
-the normal displacement, positive outwards, away from the axis of the
-cylinder. The cross derivative <span class="math notranslate nohighlight">\(w_{,xy}\)</span> is a degree of freedom of <span class="math notranslate nohighlight">\(w\)</span>
-only; <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> have no cross derivative. With <code class="docutils literal notranslate"><span class="pre">c</span> <span class="pre">=</span> <span class="pre">DOF*i</span></code> for the node
-of index <code class="docutils literal notranslate"><span class="pre">i</span></code>, the usual choice of the tests, the slice <code class="docutils literal notranslate"><span class="pre">u[6::DOF]</span></code> of a
-global vector gives <span class="math notranslate nohighlight">\(w\)</span> at all the nodes, <code class="docutils literal notranslate"><span class="pre">u[0::DOF]</span></code> gives <span class="math notranslate nohighlight">\(u\)</span>, and so
-on, which is how the boundary conditions and the loads are applied, see
-<a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.</p>
-<p>The 40 degrees of freedom of the element, e.g. its attribute <code class="docutils literal notranslate"><span class="pre">u</span></code>, are
-those of the nodes 1, 2, 3 and 4 in sequence, 10 per node in the order of
-the table.</p>
+<p>The element vector <span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span>, of size 40, the attribute <code class="docutils literal notranslate"><span class="pre">u</span></code>,
+holds the degrees of freedom of the nodes 1, 2, 3 and 4 in sequence, 10 per
+node in the order of the table. In row form,</p>
+<div class="math notranslate nohighlight" id="equation-el-rows">
+<span class="eqno">(3.5)<a class="headerlink" href="#equation-el-rows" title="Link to this equation">#</a></span>\[u = \boldsymbol{S}^u \boldsymbol{u}_e, \qquad
+v = \boldsymbol{S}^v \boldsymbol{u}_e, \qquad
+w = \boldsymbol{S}^w \boldsymbol{u}_e\]</div>
+<p>with the rows of 40 entries evaluated at a point <span class="math notranslate nohighlight">\((\xi, \eta)\)</span> by
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Su" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Su"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Su()</span></code></a>, <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Sv()</span></code></a> and
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Sw()</span></code></a>, and their derivatives, e.g.
+<span class="math notranslate nohighlight">\(w_{,x} = \boldsymbol{S}^w_{,x} \boldsymbol{u}_e\)</span>, by
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Su_x" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Su_x"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Su_x()</span></code></a>, <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Su_y" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Su_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Su_y()</span></code></a>,
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv_x" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv_x"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Sv_x()</span></code></a>, <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv_y" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Sv_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Sv_y()</span></code></a>,
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw_x" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw_x"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Sw_x()</span></code></a> and <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw_y" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Sw_y"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Sw_y()</span></code></a>.
+The rows of the Sanders-type element,
+<a class="reference internal" href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders</span></code></a>, are the
+same. The derivatives as degrees of freedom have a mechanical meaning:
+<span class="math notranslate nohighlight">\(-w_{,x}\)</span> and <span class="math notranslate nohighlight">\(-w_{,y}\)</span> are the Donnell-type rotations of the normal,
+<span class="math notranslate nohighlight">\(u_{,x}\)</span> the axial strain and <span class="math notranslate nohighlight">\(u_{,y} + v_{,x}\)</span> the shear strain at the
+node.</p>
 </section>
 <section id="continuity-between-elements">
-<h2>Continuity between elements<a class="headerlink" href="#continuity-between-elements" title="Link to this heading">#</a></h2>
-<p>Along an edge, <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(w\)</span> and their derivatives normal to the edge
-depend only on the degrees of freedom of the two nodes of that edge, such
-that <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(w\)</span> and their first derivatives are continuous between
-elements that share an edge. Along an edge <span class="math notranslate nohighlight">\(x\)</span> = constant, for instance,
-<span class="math notranslate nohighlight">\(w\)</span> is interpolated from <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(w_{,y}\)</span> of the two nodes, and the normal
-slope <span class="math notranslate nohighlight">\(w_{,x}\)</span> from <span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,xy}\)</span>.</p>
+<h2><span class="section-number">3.5. </span>Continuity between elements<a class="headerlink" href="#continuity-between-elements" title="Link to this heading">#</a></h2>
+<p>Along an edge <span class="math notranslate nohighlight">\(x\)</span> = constant, <span class="math notranslate nohighlight">\(\xi = \pm 1\)</span>, the functions <span class="math notranslate nohighlight">\(\psi_i(\xi)\)</span>
+vanish and <span class="math notranslate nohighlight">\(\phi_i(\xi)\)</span> is one for the nodes of the edge and zero for the
+others, such that <span class="math notranslate nohighlight">\(w\)</span> along the edge is the cubic in <span class="math notranslate nohighlight">\(\eta\)</span> of <span class="math notranslate nohighlight">\(w\)</span> and
+<span class="math notranslate nohighlight">\(w_{,y}\)</span> of the two nodes of the edge. The normal slope <span class="math notranslate nohighlight">\(w_{,x}\)</span> along the
+edge has the contributions of <span class="math notranslate nohighlight">\(H_{xi}\)</span> and <span class="math notranslate nohighlight">\(H_{xyi}\)</span> only, since
+<span class="math notranslate nohighlight">\(d\phi_i/d\xi\)</span> vanishes at <span class="math notranslate nohighlight">\(\xi = \pm 1\)</span>: it is the cubic in <span class="math notranslate nohighlight">\(\eta\)</span> of
+<span class="math notranslate nohighlight">\(w_{,x}\)</span> and <span class="math notranslate nohighlight">\(w_{,xy}\)</span> of the same two nodes. The same holds for the edges
+<span class="math notranslate nohighlight">\(y\)</span> = constant and for <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span>, whose normal derivatives along an edge
+depend on <span class="math notranslate nohighlight">\(u_{,x}\)</span>, <span class="math notranslate nohighlight">\(v_{,x}\)</span> (or <span class="math notranslate nohighlight">\(u_{,y}\)</span>, <span class="math notranslate nohighlight">\(v_{,y}\)</span>) of the nodes of the
+edge. Two elements that share an edge, and therefore its two nodes, have
+the same <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(w\)</span> and the same first derivatives along it: the
+interpolation is <span class="math notranslate nohighlight">\(C^1\)</span> continuous, as required by the second derivatives of
+<span class="math notranslate nohighlight">\(w\)</span> in the curvatures, and the membrane strains are continuous as well. The
+continuity requires a structured mesh of
+rectangles whose sides follow <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span>, with the nodes of the elements
+that share an edge at the same positions, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.</p>
 </section>
-<section id="properties-of-the-element">
-<h2>Properties of the element<a class="headerlink" href="#properties-of-the-element" title="Link to this heading">#</a></h2>
-<p>The constructor takes <code class="docutils literal notranslate"><span class="pre">nint</span></code>, the number of integration points in each
-direction, the size of the <code class="docutils literal notranslate"><span class="pre">points</span></code> and <code class="docutils literal notranslate"><span class="pre">weights</span></code> later given to the
-functions, e.g. <code class="docutils literal notranslate"><span class="pre">BFSCCylinder(nint)</span></code>. Before the functions are called, the
-attributes below are set for each element, see
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder" title="bfsccylinder.bfsccylinder.BFSCCylinder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder.BFSCCylinder</span></code></a> for their definitions:</p>
+<section id="strain-operators">
+<h2><span class="section-number">3.6. </span>Strain operators<a class="headerlink" href="#strain-operators" title="Link to this heading">#</a></h2>
+<p>Substituting Eq. <a class="reference internal" href="#equation-el-rows">(3.5)</a> into the strains of <a class="reference internal" href="kinematics.html"><span class="doc">Kinematics of the cylindrical shell</span></a> gives
+the operators of the element:</p>
+<div class="math notranslate nohighlight" id="equation-el-bm">
+<span class="eqno">(3.6)<a class="headerlink" href="#equation-el-bm" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{\varepsilon}_L = \boldsymbol{B}_m \boldsymbol{u}_e, \qquad
+\boldsymbol{B}_m = \begin{bmatrix} \boldsymbol{S}^u_{,x} \\
+\boldsymbol{S}^v_{,y} + \boldsymbol{S}^w/R \\
+\boldsymbol{S}^u_{,y} + \boldsymbol{S}^v_{,x} \end{bmatrix}\end{split}\]</div>
+<div class="math notranslate nohighlight" id="equation-el-bb">
+<span class="eqno">(3.7)<a class="headerlink" href="#equation-el-bb" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{\kappa} = \boldsymbol{B}_b \boldsymbol{u}_e, \qquad
+\boldsymbol{B}_b = \begin{bmatrix} -\boldsymbol{S}^w_{,xx} \\
+-\boldsymbol{S}^w_{,yy} + s \, \boldsymbol{S}^v_{,y}/R \\
+-2 \boldsymbol{S}^w_{,xy} + s \left( \dfrac{3}{2R} \boldsymbol{S}^v_{,x}
+- \dfrac{1}{2R} \boldsymbol{S}^u_{,y} \right) \end{bmatrix}\end{split}\]</div>
+<p>with <span class="math notranslate nohighlight">\(s = 0\)</span> for the Donnell-type and <span class="math notranslate nohighlight">\(s = 1\)</span> for the Sanders-type
+kinematics, evaluated by <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Bm" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Bm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Bm()</span></code></a>,
+<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Bb" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Bb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinder.update_Bb()</span></code></a> and
+<a class="reference internal" href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb()</span></code></a>.
+With the rows of the rotations,</p>
+<div class="math notranslate nohighlight" id="equation-el-g">
+<span class="eqno">(3.8)<a class="headerlink" href="#equation-el-g" title="Link to this equation">#</a></span>\[\begin{split}\begin{Bmatrix} -\beta_x \\ -\beta_y \end{Bmatrix} =
+\begin{Bmatrix} w_{,x} \\ w_{,y} - k_v v \end{Bmatrix} =
+\boldsymbol{G} \boldsymbol{u}_e, \qquad
+\boldsymbol{G} = \begin{bmatrix} \boldsymbol{S}^w_{,x} \\
+\boldsymbol{S}^w_{,y} - k_v \boldsymbol{S}^v \end{bmatrix}\end{split}\]</div>
+<p>the rows <code class="docutils literal notranslate"><span class="pre">G1</span></code> and <code class="docutils literal notranslate"><span class="pre">G2</span></code> of the code, the variation of the nonlinear
+strains of Eq. <a class="reference internal" href="kinematics.html#equation-kin-eps-nonlinear">(1.9)</a> is <span class="math notranslate nohighlight">\(\delta
+\boldsymbol{\varepsilon}_{NL} = \boldsymbol{B}_{NL} \delta
+\boldsymbol{u}_e\)</span>, and <span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon}_{NL} = \frac{1}{2}
+\boldsymbol{B}_{NL} \boldsymbol{u}_e\)</span>, with</p>
+<div class="math notranslate nohighlight" id="equation-el-bnl">
+<span class="eqno">(3.9)<a class="headerlink" href="#equation-el-bnl" title="Link to this equation">#</a></span>\[\begin{split}\boldsymbol{B}_{NL} = \begin{bmatrix} w_{,x} \boldsymbol{G}_1 \\
+(w_{,y} - k_v v) \boldsymbol{G}_2 \\
+w_{,x} \boldsymbol{G}_2 + (w_{,y} - k_v v) \boldsymbol{G}_1
+\end{bmatrix}\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{G}_1\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{G}_2\)</span> being the rows of <span class="math notranslate nohighlight">\(\boldsymbol{G}\)</span>
+and the slopes those of the current displacements; the rows of
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span> are <code class="docutils literal notranslate"><span class="pre">BmL1</span></code>, <code class="docutils literal notranslate"><span class="pre">BmL2</span></code> and <code class="docutils literal notranslate"><span class="pre">BmL3</span></code> in the code.
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span> depends on the displacements, <span class="math notranslate nohighlight">\(\boldsymbol{B}_m\)</span> and
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span> do not.</p>
+</section>
+<section id="numerical-integration">
+<span id="integration"></span><h2><span class="section-number">3.7. </span>Numerical integration<a class="headerlink" href="#numerical-integration" title="Link to this heading">#</a></h2>
+<p>The integrals over the element are computed with the product
+Gauss-Legendre rule of <a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>:</p>
+<div class="math notranslate nohighlight" id="equation-el-quadrature">
+<span class="eqno">(3.10)<a class="headerlink" href="#equation-el-quadrature" title="Link to this equation">#</a></span>\[\int_A f \, dA \approx \frac{l_{ex} l_{ey}}{4} \sum_{i=0}^{n-1}
+\sum_{j=0}^{n-1} w_i w_j f(\xi_i, \eta_j)\]</div>
+<p>with <span class="math notranslate nohighlight">\(n\)</span> = <code class="docutils literal notranslate"><span class="pre">nint</span></code> points <span class="math notranslate nohighlight">\(\xi_i\)</span> in each direction, the roots of the
+Legendre polynomial of degree <span class="math notranslate nohighlight">\(n\)</span>, and weights <span class="math notranslate nohighlight">\(w_i\)</span>. The rule is exact for
+polynomials of degree up to <span class="math notranslate nohighlight">\(2n - 1\)</span> in each of <span class="math notranslate nohighlight">\(\xi\)</span> and <span class="math notranslate nohighlight">\(\eta\)</span>. With
+<span class="math notranslate nohighlight">\(\boldsymbol{A}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span> constant over the
+element, the integrands are polynomials, whose degree in each variable gives
+the number of points of an exact integration:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Integrand</p></th>
+<th class="head"><p>Degree in each variable</p></th>
+<th class="head"><p>Exact with</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of a constant stress,
+follower pressure (<code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>)</p></td>
+<td><p>6</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">&gt;=</span> <span class="pre">4</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span>, follower pressure (<code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code>)</p></td>
+<td><p>9</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">&gt;=</span> <span class="pre">5</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\boldsymbol{K}_{CNL}\)</span>, internal forces</p></td>
+<td><p>12</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">nint</span> <span class="pre">&gt;=</span> <span class="pre">7</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>the follower pressure for a pressure uniform over the element. The mass
+matrix of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> is integrated in closed form, without
+integration points. The tangent stiffness matrix is the exact derivative of
+the quadrature sums of the internal forces for any <code class="docutils literal notranslate"><span class="pre">nint</span></code>, see
+<a class="reference internal" href="matrices.html"><span class="doc">Element matrices and internal forces</span></a>, such that a reduced integration changes the discrete model
+but not the consistency of the Newton-Raphson iterations. The same
+<code class="docutils literal notranslate"><span class="pre">nint</span></code> is given to the constructor of the element, <code class="docutils literal notranslate"><span class="pre">BFSCCylinder(nint)</span></code>,
+which sizes the arrays of the stiffnesses, and to
+<a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>, whose <code class="docutils literal notranslate"><span class="pre">points</span></code> and
+<code class="docutils literal notranslate"><span class="pre">weights</span></code> are given to the functions.</p>
+</section>
+<section id="attributes-of-the-element">
+<h2><span class="section-number">3.8. </span>Attributes of the element<a class="headerlink" href="#attributes-of-the-element" title="Link to this heading">#</a></h2>
+<p>Before the functions are called, each element receives:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, <code class="docutils literal notranslate"><span class="pre">c4</span></code>: positions of the nodes in the global
+<li><p><code class="docutils literal notranslate"><span class="pre">c1</span></code>, <code class="docutils literal notranslate"><span class="pre">c2</span></code>, <code class="docutils literal notranslate"><span class="pre">c3</span></code>, <code class="docutils literal notranslate"><span class="pre">c4</span></code>: positions of its nodes in the global
 vectors;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lex</span></code>, <code class="docutils literal notranslate"><span class="pre">ley</span></code> and <code class="docutils literal notranslate"><span class="pre">R</span></code>: lengths of the sides and radius, <code class="docutils literal notranslate"><span class="pre">R</span></code>
-nonzero;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">A11</span></code>, …, <code class="docutils literal notranslate"><span class="pre">D66</span></code>: the laminate stiffnesses at each of the <code class="docutils literal notranslate"><span class="pre">nint</span></code>
-by <code class="docutils literal notranslate"><span class="pre">nint</span></code> integration points, arrays of shape <code class="docutils literal notranslate"><span class="pre">(nint,</span> <span class="pre">nint)</span></code>, the
-entry <code class="docutils literal notranslate"><span class="pre">[i,</span> <span class="pre">j]</span></code> at <code class="docutils literal notranslate"><span class="pre">xi</span> <span class="pre">=</span> <span class="pre">points[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">eta</span> <span class="pre">=</span> <span class="pre">points[j]</span></code>.
-<a class="reference internal" href="api_utils.html#bfsccylinder.utils.assign_constant_ABD" title="bfsccylinder.utils.assign_constant_ABD"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.utils.assign_constant_ABD()</span></code></a> copies the same values,
-e.g. of <code class="xref py py-func docutils literal notranslate"><span class="pre">composites.laminated_plate()</span></code>, to all the points; they can
-also be set point by point, e.g. for fiber angles that vary along <span class="math notranslate nohighlight">\(x\)</span>, as
-in <code class="docutils literal notranslate"><span class="pre">tests/test_linear_buckling_FW_VAT_P_VT.py</span></code>;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code>: thickness and density, used only by the mass matrix of
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a>, which with the Sanders-type kinematics also uses
-<code class="docutils literal notranslate"><span class="pre">R</span></code>;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">init_k_KC0</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_KCNL</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_KG</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_M</span></code>,
-<code class="docutils literal notranslate"><span class="pre">init_k_KCfollower</span></code>: positions of the element in the sparse arrays of
+<li><p><code class="docutils literal notranslate"><span class="pre">lex</span></code>, <code class="docutils literal notranslate"><span class="pre">ley</span></code> and <code class="docutils literal notranslate"><span class="pre">R</span></code>: the lengths of its sides and the radius,
+<code class="docutils literal notranslate"><span class="pre">R</span></code> nonzero;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">A11</span></code>, …, <code class="docutils literal notranslate"><span class="pre">D66</span></code>: the stiffnesses at its integration points, see
+<a class="reference internal" href="constitutive.html"><span class="doc">Constitutive relation</span></a>;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">h</span></code> and <code class="docutils literal notranslate"><span class="pre">rho</span></code>: thickness and density, for the mass matrix only;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">init_k_KC0</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_KCNL</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_KG</span></code>, <code class="docutils literal notranslate"><span class="pre">init_k_M</span></code> and
+<code class="docutils literal notranslate"><span class="pre">init_k_KCfollower</span></code>: positions of its entries in the sparse arrays of
 each matrix, see <a class="reference internal" href="assembling.html"><span class="doc">Assembling a model</span></a>.</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">n1</span></code>, <code class="docutils literal notranslate"><span class="pre">n2</span></code>, <code class="docutils literal notranslate"><span class="pre">n3</span></code> and <code class="docutils literal notranslate"><span class="pre">n4</span></code> are identification numbers for the user,
-not read by the functions. The methods <code class="docutils literal notranslate"><span class="pre">update_Su</span></code>, …, <code class="docutils literal notranslate"><span class="pre">update_Sw_y</span></code>,
-<code class="docutils literal notranslate"><span class="pre">update_Bm</span></code> and <code class="docutils literal notranslate"><span class="pre">update_Bb</span></code> of the element evaluate the interpolation
-functions and the strain operators at a point <span class="math notranslate nohighlight">\((\xi, \eta)\)</span>, e.g. to
-integrate a load or to recover the strains; the <code class="docutils literal notranslate"><span class="pre">update_*</span></code> functions of
-the modules do not use them.</p>
+not read by the functions. The methods <code class="docutils literal notranslate"><span class="pre">update_Su</span></code>, …, <code class="docutils literal notranslate"><span class="pre">update_Bb</span></code>
+evaluate the rows and operators at one point, e.g. to recover the strains
+from a solution; the <code class="docutils literal notranslate"><span class="pre">update_*</span></code> functions of the modules evaluate the same
+quantities in local variables at each integration point.</p>
 </section>
-<section id="integration-points">
-<h2>Integration points<a class="headerlink" href="#integration-points" title="Link to this heading">#</a></h2>
-<p>All the functions except <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_M" title="bfsccylinder.bfsccylinder.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_M()</span></code></a> integrate over the element with
-<code class="docutils literal notranslate"><span class="pre">nint</span></code> by <code class="docutils literal notranslate"><span class="pre">nint</span></code> Gauss-Legendre points, the products of the
-one-dimensional points and weights of
-<a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>, given to each function.
-The number of points that integrates each matrix exactly is given in the
-Notes of <a class="reference internal" href="api_bfsccylinder.html#module-bfsccylinder.bfsccylinder" title="bfsccylinder.bfsccylinder"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder</span></code></a>.</p>
+<section id="references">
+<h2><span class="section-number">3.9. </span>References<a class="headerlink" href="#references" title="Link to this heading">#</a></h2>
+<div role="list" class="citation-list">
+<div class="citation" id="bogner1965" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">Bogner1965</a><span class="fn-bracket">]</span></span>
+<p>Bogner, F. K., Fox, R. L., and Schmit, L. A., The
+generation of inter-element-compatible stiffness and mass matrices by the
+use of interpolation formulas, Proceedings of the Conference on Matrix
+Methods in Structural Mechanics, AFFDL-TR-66-80, Wright-Patterson Air
+Force Base, Dayton, Ohio, 26-28 October 1965, pp. 395-444.</p>
+</div>
+<div class="citation" id="castrojansen2021" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">CastroJansen2021</a><span class="fn-bracket">]</span></span>
+<p>Castro, S. G. P., and Jansen, E. L., Displacement-based
+formulation of Koiter’s method: application to multi-modal post-buckling
+finite element analysis of plates, Thin-Walled Structures, 159, 107217,
+2021, doi:10.1016/j.tws.2020.107217.</p>
+</div>
+<div class="citation" id="castrojansen2022" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">CastroJansen2022</a><span class="fn-bracket">]</span></span>
+<p>Castro, S. G. P., and Jansen, E. L., Displacement-based
+multi-modal formulation of Koiter’s method applied to cylindrical shells,
+AIAA SciTech 2022 Forum, AIAA 2022-0256, 2022, doi:10.2514/6.2022-0256.</p>
+</div>
+</div>
 </section>
 </section>
 
@@ -731,20 +1133,20 @@ Notes of <a class="reference internal" href="api_bfsccylinder.html#module-bfsccy
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="constitutive.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">BFSC cylinder finite element - bfsccylinder</p>
+        <p class="prev-next-title"><span class="section-number">2. </span>Constitutive relation</p>
       </div>
     </a>
     <a class="right-next"
-       href="kinematics.html"
+       href="matrices.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Donnell-type and Sanders-type kinematics</p>
+        <p class="prev-next-title"><span class="section-number">4. </span>Element matrices and internal forces</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -767,11 +1169,15 @@ Notes of <a class="reference internal" href="api_bfsccylinder.html#module-bfsccy
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#node-ordering">Node ordering</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#degrees-of-freedom-of-a-node">Degrees of freedom of a node</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#continuity-between-elements">Continuity between elements</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-of-the-element">Properties of the element</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#integration-points">Integration points</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#geometry-and-natural-coordinates">3.1. Geometry and natural coordinates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cubic-hermite-polynomials">3.2. Cubic Hermite polynomials</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interpolation-functions">3.3. Interpolation functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#degrees-of-freedom">3.4. Degrees of freedom</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#continuity-between-elements">3.5. Continuity between elements</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#strain-operators">3.6. Strain operators</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#numerical-integration">3.7. Numerical integration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attributes-of-the-element">3.8. Attributes of the element</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#references">3.9. References</a></li>
 </ul>
   </nav></div>
 

@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Donnell-type cylinder element (bfsccylinder.bfsccylinder) &#8212; bfsccylinder 0.7.1 documentation</title>
+    <title>Donnell-type cylinder element (bfsccylinder.bfsccylinder) &#8212; bfsccylinder 0.7.2 documentation</title>
   
   
   
@@ -30,6 +30,7 @@
 <link href="_static/styles/pydata-sphinx-theme.css?digest=75c7c72ae941e8b558d8" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=75c7c72ae941e8b558d8"></script>
@@ -37,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=5a057da9"></script>
+    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -52,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.1" />
+  <meta name="docsearch:version" content="0.7.2" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -120,7 +121,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.1 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
   
 </a></div>
     
@@ -135,29 +136,29 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
-  </a>
-</li>
-
-
-<li class="nav-item ">
   <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="assembling.html">
-    Assembling a model
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="analyses.html">
-    Analyses
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
   </a>
 </li>
 
@@ -177,57 +178,169 @@
                 <ul id="pst-nav-more-links" class="dropdown-menu">
                     
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="assembling.html">
+    Assembling a model
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="analyses.html">
+    Analyses
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="conventions.html">
+    Conventions and limits
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="ex_kinematics.html">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class=" ">
-  <a class="nav-link dropdown-item nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -249,6 +362,13 @@
 <li class=" ">
   <a class="nav-link dropdown-item nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -336,15 +456,36 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="element.html">
-    The element and its degrees of freedom
+  <a class="nav-link nav-internal" href="kinematics.html">
+    Kinematics of the cylindrical shell
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="kinematics.html">
-    Donnell-type and Sanders-type kinematics
+  <a class="nav-link nav-internal" href="constitutive.html">
+    Constitutive relation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="element.html">
+    The BFSC element on the cylinder
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="matrices.html">
+    Element matrices and internal forces
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="follower_pressure.html">
+    Follower pressure
   </a>
 </li>
 
@@ -364,64 +505,155 @@
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="follower_pressure.html">
-    Follower pressure
+  <a class="nav-link nav-internal" href="conventions.html">
+    Conventions and limits
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_static.html">
     Linear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_linear_buckling.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_linear_buckling.html">
     Linear buckling analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_natural_frequency.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_natural_frequency.html">
     Natural frequencies
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_nonlinear_static.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_nonlinear_static.html">
     Nonlinear static analysis
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_structsolve_nonlinear.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_structsolve_nonlinear.html">
     Nonlinear static analysis with structsolve
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_follower_pressure.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_follower_pressure.html">
     Follower pressure
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="ex_kinematics.html">
+  <a class="nav-link nav-internal" href="notebooks/ex_kinematics.html">
     Donnell-type and Sanders-type kinematics
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_frequencies.html">
+    Natural frequencies of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/stiffened_cylinder_buckling.html">
+    Axial buckling of stringer-stiffened cylinders
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/abramovich2003_stiffened_panels.html">
+    First buckling of blade-stiffened CFRP curved panels
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/lanzi2003_stiffened_cylinder.html">
+    Buckling of a CFRP stringer-stiffened cylinder under axial compression and torsion
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/simo1990_cylinder_postbuckling.html">
+    Post-buckling of an axially compressed cylinder with imperfections
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/schweizerhof1984_cylinder_follower.html">
+    Cantilever cylinder under a follower pressure
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/sewall1968_stiffened_cylinder_frequencies.html">
+    Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/egle1968_few_stringer_cylinder_frequencies.html">
+    Natural frequencies of cylinders with four and eight channel stringers: Egle and Sewall (1968)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/card1966_stiffened_cylinder_buckling.html">
+    Axial buckling of integrally stringer-stiffened cylinders: Card and Jones (1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/weller1977_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: integrally stiffened Technion shells (Weller and Singer 1977; Poorveis and Kabir 2006)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/peterson1959_stiffened_cylinder_buckling.html">
+    Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/singer1971_stiffened_cylinder_buckling.html">
+    Flat integral stringers, simply supported and clamped: the Caltech shells AS-2 to AS-4 (Singer, Arbocz and Babcock 1971)
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_ring_cylinders.html">
+    Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="notebooks/moore1944_stiffened_cylinders.html">
+    Torsional buckling of ring- and stringer-stiffened cylinders: Moore and Wescoat (1944), Table II
   </a>
 </li>
 
@@ -443,6 +675,13 @@
 <li class="nav-item ">
   <a class="nav-link nav-internal" href="changelog.html">
     Changelog
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="documentation_levels.html">
+    How the documentation is organised
   </a>
 </li>
 
@@ -986,6 +1225,15 @@ of the linear membrane strains and of the curvatures, and <code class="docutils 
 <code class="docutils literal notranslate"><span class="pre">Sw_y</span></code> the rows of the interpolation of the displacements and of their
 derivatives; the <code class="docutils literal notranslate"><span class="pre">update_*</span></code> functions of the module evaluate the same
 operators at each integration point in local variables.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder</span><span class="w"> </span><span class="kn">import</span> <span class="n">BFSCCylinder</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span> <span class="o">=</span> <span class="n">BFSCCylinder</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">A11</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(4, 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">c1</span>
+<span class="go">-1</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="bfsccylinder.bfsccylinder.BFSCCylinder.update_Bb">
 <span class="sig-name descname"><span class="pre">update_Bb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#bfsccylinder.bfsccylinder.BFSCCylinder.update_Bb" title="Link to this definition">#</a></dt>
@@ -1355,6 +1603,31 @@ the local variables <code class="docutils literal notranslate"><span class="pre"
 and <code class="docutils literal notranslate"><span class="pre">Bb3_*</span></code>, and the <span class="math notranslate nohighlight">\(\boldsymbol{A}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span> of that point. KC0 does not
 depend on the displacements: it is the stiffness matrix of a linear static
 analysis and the tangent stiffness matrix at zero displacements.</p>
+<p class="rubric">Examples</p>
+<p>One element of an isotropic cylinder, its nodes at the first positions
+of the global vectors:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">composites</span><span class="w"> </span><span class="kn">import</span> <span class="n">isotropic_plate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BFSCCylinder</span><span class="p">,</span> <span class="n">update_KC0</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="n">INT</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>
+<span class="gp">... </span>                          <span class="n">KC0_SPARSE_SIZE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.quadrature</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_points_weights</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">assign_constant_ABD</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">points</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">get_points_weights</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span> <span class="o">=</span> <span class="n">BFSCCylinder</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c4</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">DOF</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">DOF</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">lex</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">ley</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prop</span> <span class="o">=</span> <span class="n">isotropic_plate</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mf">70e9</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">assign_constant_ABD</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">KC0r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">KC0c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">KC0v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KC0_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">update_KC0</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">,</span> <span class="n">KC0v</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">KC0</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">KC0v</span><span class="p">,</span> <span class="p">(</span><span class="n">KC0r</span><span class="p">,</span> <span class="n">KC0c</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">))</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">KC0</span><span class="p">,</span> <span class="n">KC0</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1651,6 +1924,33 @@ to <span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span> for <s
 <code class="docutils literal notranslate"><span class="pre">u</span></code> the linear static solution for a reference load, the load multipliers
 <span class="math notranslate nohighlight">\(\lambda\)</span> and the buckling modes <span class="math notranslate nohighlight">\(\boldsymbol{\phi}\)</span> solve <span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \lambda
 \boldsymbol{K}_G)\boldsymbol{\phi} = \boldsymbol{0}\)</span>, with <span class="math notranslate nohighlight">\(\boldsymbol{K}_{C0}\)</span> of <a class="reference internal" href="#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>.</p>
+<p class="rubric">Examples</p>
+<p>One element of an isotropic cylinder, its nodes at the first positions
+of the global vectors, with nodes 2 and 3 displaced by <code class="docutils literal notranslate"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">-1e-5</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">composites</span><span class="w"> </span><span class="kn">import</span> <span class="n">isotropic_plate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BFSCCylinder</span><span class="p">,</span> <span class="n">update_KG</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="n">INT</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>
+<span class="gp">... </span>                          <span class="n">KG_SPARSE_SIZE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.quadrature</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_points_weights</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">assign_constant_ABD</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">points</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">get_points_weights</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span> <span class="o">=</span> <span class="n">BFSCCylinder</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c4</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">DOF</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">DOF</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">lex</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">ley</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prop</span> <span class="o">=</span> <span class="n">isotropic_plate</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mf">70e9</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">assign_constant_ABD</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="p">[</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e-5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">KGr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">KGc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">KGv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">KG_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">update_KG</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">KGr</span><span class="p">,</span> <span class="n">KGc</span><span class="p">,</span> <span class="n">KGv</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">KG</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">KGv</span><span class="p">,</span> <span class="p">(</span><span class="n">KGr</span><span class="p">,</span> <span class="n">KGc</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">))</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">KG</span><span class="p">,</span> <span class="n">KG</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1773,6 +2073,33 @@ integral is exact. The matrix of
 <a class="reference internal" href="api_bfsccylinder_sanders.html#bfsccylinder.bfsccylinder_sanders.update_M" title="bfsccylinder.bfsccylinder_sanders.update_M"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders.update_M()</span></code></a> differs: its rotary
 inertia uses the Sanders-type rotation <span class="math notranslate nohighlight">\(-w_{,y} + v/R\)</span>, which couples
 <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span>.</p>
+<p class="rubric">Examples</p>
+<p>One element of an isotropic cylinder, its nodes at the first positions
+of the global vectors; the entries between the degrees of freedom <span class="math notranslate nohighlight">\(u\)</span> of
+the nodes sum to the mass <code class="docutils literal notranslate"><span class="pre">rho*h*lex*ley</span></code> of the element:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">composites</span><span class="w"> </span><span class="kn">import</span> <span class="n">isotropic_plate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BFSCCylinder</span><span class="p">,</span> <span class="n">update_M</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="n">INT</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>
+<span class="gp">... </span>                          <span class="n">M_SPARSE_SIZE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.quadrature</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_points_weights</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">assign_constant_ABD</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">points</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">get_points_weights</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span> <span class="o">=</span> <span class="n">BFSCCylinder</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c4</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">DOF</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">DOF</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">lex</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">ley</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prop</span> <span class="o">=</span> <span class="n">isotropic_plate</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mf">70e9</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">assign_constant_ABD</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">h</span> <span class="o">=</span> <span class="mf">2.7e3</span><span class="p">,</span> <span class="mf">0.001</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Mr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">M_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Mc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">M_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">INT</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Mv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">M_SPARSE_SIZE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DOUBLE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">update_M</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">Mr</span><span class="p">,</span> <span class="n">Mc</span><span class="p">,</span> <span class="n">Mv</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">M</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">Mv</span><span class="p">,</span> <span class="p">(</span><span class="n">Mr</span><span class="p">,</span> <span class="n">Mc</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">))</span><span class="o">.</span><span class="n">toarray</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="n">DOF</span><span class="p">,</span> <span class="mi">0</span><span class="p">::</span><span class="n">DOF</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="mi">6</span><span class="p">))</span>
+<span class="go">0.027</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1974,6 +2301,30 @@ The tangent stiffness matrix <span class="math notranslate nohighlight">\(\parti
 the sum of the matrices of <a class="reference internal" href="#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="#bfsccylinder.bfsccylinder.update_KCNL" title="bfsccylinder.bfsccylinder.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> and
 <a class="reference internal" href="#bfsccylinder.bfsccylinder.update_KG" title="bfsccylinder.bfsccylinder.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> computed with the same <code class="docutils literal notranslate"><span class="pre">u</span></code>, <code class="docutils literal notranslate"><span class="pre">points</span></code> and
 <code class="docutils literal notranslate"><span class="pre">weights</span></code>. At equilibrium <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span> balances the external forces.</p>
+<p class="rubric">Examples</p>
+<p>One element of an isotropic cylinder, its nodes at the first positions
+of the global vectors, with nodes 2 and 3 displaced by <code class="docutils literal notranslate"><span class="pre">u</span> <span class="pre">=</span> <span class="pre">-1e-5</span></code>:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">scipy.sparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">composites</span><span class="w"> </span><span class="kn">import</span> <span class="n">isotropic_plate</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BFSCCylinder</span><span class="p">,</span> <span class="n">update_fint</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="n">INT</span><span class="p">,</span> <span class="n">DOUBLE</span><span class="p">,</span>
+<span class="gp">... </span>                          <span class="n">KC0_SPARSE_SIZE</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.quadrature</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_points_weights</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">assign_constant_ABD</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">points</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">get_points_weights</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span> <span class="o">=</span> <span class="n">BFSCCylinder</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">c1</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c2</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c3</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">c4</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">DOF</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">DOF</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span><span class="o">.</span><span class="n">lex</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">ley</span><span class="p">,</span> <span class="n">shell</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">1.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prop</span> <span class="o">=</span> <span class="n">isotropic_plate</span><span class="p">(</span><span class="n">thickness</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">E</span><span class="o">=</span><span class="mf">70e9</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">assign_constant_ABD</span><span class="p">(</span><span class="n">shell</span><span class="p">,</span> <span class="n">prop</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="p">[</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="n">u</span><span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">DOF</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e-5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fint</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">DOF</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">update_fint</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">fint</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">fint</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">3</span><span class="p">))</span>
+<span class="go">461.538</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
