@@ -1,19 +1,25 @@
 """The tangent stiffness matrix must be the derivative of the internal force
 
-KT = KC0 + KCNL(u) + KG(u) is what every Newton-Raphson built on these
-elements uses as the Jacobian of fint. If the two drift apart, the analyses
-still converge, but linearly instead of quadratically, with a contraction
-factor set by how far KT is from the true Jacobian, which on a fine mesh is
-close enough to one to exhaust the iteration cap at every load step.
+Checks that KT = KC0 + KCNL(u) + KG(u), the tangent stiffness matrix used
+by every Newton-Raphson built on these elements, is the Jacobian of fint:
+by a directional Taylor test, against a central finite difference of fint,
+for symmetry, in the undeformed state (fint = 0 and KT = KC0) and against
+KC0 @ u for small displacements. Both kinematics are covered, over several
+random states and directions, in a deformed state of the order of the shell
+thickness so that the nonlinear terms actually carry weight.
 
-The check is a directional Taylor test,
+Notes
+-----
+If KT and the Jacobian of fint drift apart, the analyses still converge,
+but linearly instead of quadratically, with a contraction factor set by how
+far KT is from the true Jacobian, which on a fine mesh is close enough to
+one to exhaust the iteration cap at every load step. The directional Taylor
+test computes::
 
     |fint(u + h d) - fint(u) - h KT d| / |h KT d|
 
 which falls proportionally to h for a consistent tangent and plateaus for an
-inconsistent one. Both kinematics are covered, over several random states
-and directions, in a deformed state of the order of the shell thickness so
-that the nonlinear terms actually carry weight.
+inconsistent one.
 """
 import sys
 

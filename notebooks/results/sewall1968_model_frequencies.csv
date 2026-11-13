@@ -1,0 +1,1969 @@
+# Natural frequencies of the discrete-stringer model of the notebook sewall1968_stiffened_cylinder_frequencies.ipynb
+# (bfsccylinder skin + bfscplate2d stringers), finest meshes; variants: D_y/D = 1, uniform D_y/D of Sewall and Naumann
+# appendix A, D_y at the roots, and as [2] (uniform 1.197, no in-surface inertia of the skin). f_Hz in Hz.
+study,ends,shell,variant,m,n,f_Hz
+tests,CC,external,D_y/D = 1,1,2,764.70
+tests,CC,external,D_y/D = 1,1,3,557.78
+tests,CC,external,D_y/D = 1,1,4,438.02
+tests,CC,external,D_y/D = 1,1,5,364.68
+tests,CC,external,D_y/D = 1,1,6,319.95
+tests,CC,external,D_y/D = 1,1,7,295.28
+tests,CC,external,D_y/D = 1,1,8,286.05
+tests,CC,external,D_y/D = 1,1,9,289.38
+tests,CC,external,D_y/D = 1,1,10,303.11
+tests,CC,external,D_y/D = 1,1,11,325.53
+tests,CC,external,D_y/D = 1,1,12,355.27
+tests,CC,external,D_y/D = 1,1,13,391.25
+tests,CC,external,D_y/D = 1,1,14,432.63
+tests,CC,external,D_y/D = 1,1,15,478.78
+tests,CC,external,D_y/D = 1,1,16,529.23
+tests,CC,external,D_y/D = 1,2,2,1381.25
+tests,CC,external,D_y/D = 1,2,3,1079.12
+tests,CC,external,D_y/D = 1,2,4,890.78
+tests,CC,external,D_y/D = 1,2,5,771.52
+tests,CC,external,D_y/D = 1,2,6,694.49
+tests,CC,external,D_y/D = 1,2,7,644.97
+tests,CC,external,D_y/D = 1,2,8,614.76
+tests,CC,external,D_y/D = 1,2,9,599.04
+tests,CC,external,D_y/D = 1,2,10,594.84
+tests,CC,external,D_y/D = 1,2,11,600.24
+tests,CC,external,D_y/D = 1,2,12,613.90
+tests,CC,external,D_y/D = 1,2,13,634.84
+tests,CC,external,D_y/D = 1,2,14,662.31
+tests,CC,external,D_y/D = 1,2,15,695.67
+tests,CC,external,D_y/D = 1,2,16,734.37
+tests,CC,external,D_y/D = 1,3,2,1802.98
+tests,CC,external,D_y/D = 1,3,3,1545.35
+tests,CC,external,D_y/D = 1,3,4,1354.62
+tests,CC,external,D_y/D = 1,3,5,1221.48
+tests,CC,external,D_y/D = 1,3,6,1130.34
+tests,CC,external,D_y/D = 1,3,7,1068.77
+tests,CC,external,D_y/D = 1,3,8,1028.29
+tests,CC,external,D_y/D = 1,3,9,1003.34
+tests,CC,external,D_y/D = 1,3,10,990.32
+tests,CC,external,D_y/D = 1,3,11,986.87
+tests,CC,external,D_y/D = 1,3,12,991.41
+tests,CC,external,D_y/D = 1,3,13,1002.87
+tests,CC,external,D_y/D = 1,3,14,1020.48
+tests,CC,external,D_y/D = 1,3,15,1043.66
+tests,CC,external,D_y/D = 1,3,16,1071.93
+tests,CC,external,D_y/D = 1,4,2,2104.86
+tests,CC,external,D_y/D = 1,4,3,1931.47
+tests,CC,external,D_y/D = 1,4,4,1784.07
+tests,CC,external,D_y/D = 1,4,5,1671.43
+tests,CC,external,D_y/D = 1,4,6,1589.62
+tests,CC,external,D_y/D = 1,4,7,1532.08
+tests,CC,external,D_y/D = 1,4,8,1493.04
+tests,CC,external,D_y/D = 1,4,9,1468.09
+tests,CC,external,D_y/D = 1,4,10,1454.10
+tests,CC,external,D_y/D = 1,4,11,1448.90
+tests,CC,external,D_y/D = 1,4,12,1450.95
+tests,CC,external,D_y/D = 1,4,13,1459.19
+tests,CC,external,D_y/D = 1,4,14,1472.87
+tests,CC,external,D_y/D = 1,4,15,1491.43
+tests,CC,external,D_y/D = 1,4,16,1514.43
+tests,CC,external,roots,1,2,766.58
+tests,CC,external,roots,1,3,558.84
+tests,CC,external,roots,1,4,438.96
+tests,CC,external,roots,1,5,365.88
+tests,CC,external,roots,1,6,321.93
+tests,CC,external,roots,1,7,298.71
+tests,CC,external,roots,1,8,291.78
+tests,CC,external,roots,1,9,298.26
+tests,CC,external,roots,1,10,315.98
+tests,CC,external,roots,1,11,343.14
+tests,CC,external,roots,1,12,378.31
+tests,CC,external,roots,1,13,420.38
+tests,CC,external,roots,1,14,468.55
+tests,CC,external,roots,1,15,522.25
+tests,CC,external,roots,1,16,581.06
+tests,CC,external,roots,2,2,1390.23
+tests,CC,external,roots,2,3,1083.10
+tests,CC,external,roots,2,4,893.25
+tests,CC,external,roots,2,5,773.64
+tests,CC,external,roots,2,6,696.84
+tests,CC,external,roots,2,7,648.06
+tests,CC,external,roots,2,8,619.14
+tests,CC,external,roots,2,9,605.38
+tests,CC,external,roots,2,10,603.92
+tests,CC,external,roots,2,11,612.92
+tests,CC,external,roots,2,12,631.12
+tests,CC,external,roots,2,13,657.59
+tests,CC,external,roots,2,14,691.60
+tests,CC,external,roots,2,15,732.56
+tests,CC,external,roots,2,16,779.98
+tests,CC,external,roots,3,2,1819.84
+tests,CC,external,roots,3,3,1553.56
+tests,CC,external,roots,3,4,1359.24
+tests,CC,external,roots,3,5,1224.87
+tests,CC,external,roots,3,6,1133.56
+tests,CC,external,roots,3,7,1072.45
+tests,CC,external,roots,3,8,1032.90
+tests,CC,external,roots,3,9,1009.38
+tests,CC,external,roots,3,10,998.37
+tests,CC,external,roots,3,11,997.59
+tests,CC,external,roots,3,12,1005.59
+tests,CC,external,roots,3,13,1021.40
+tests,CC,external,roots,3,14,1044.36
+tests,CC,external,roots,3,15,1073.99
+tests,CC,external,roots,3,16,1109.93
+tests,CC,external,roots,4,2,2121.82
+tests,CC,external,roots,4,3,1940.56
+tests,CC,external,roots,4,4,1789.18
+tests,CC,external,roots,4,5,1675.06
+tests,CC,external,roots,4,6,1593.09
+tests,CC,external,roots,4,7,1536.07
+tests,CC,external,roots,4,8,1497.95
+tests,CC,external,roots,4,9,1474.25
+tests,CC,external,roots,4,10,1461.88
+tests,CC,external,roots,4,11,1458.72
+tests,CC,external,roots,4,12,1463.34
+tests,CC,external,roots,4,13,1474.78
+tests,CC,external,roots,4,14,1492.43
+tests,CC,external,roots,4,15,1515.84
+tests,CC,external,roots,4,16,1544.70
+tests,CC,external,uniform,1,2,765.25
+tests,CC,external,uniform,1,3,558.07
+tests,CC,external,uniform,1,4,438.34
+tests,CC,external,uniform,1,5,365.32
+tests,CC,external,uniform,1,6,321.34
+tests,CC,external,uniform,1,7,298.01
+tests,CC,external,uniform,1,8,290.82
+tests,CC,external,uniform,1,9,296.88
+tests,CC,external,uniform,1,10,313.95
+tests,CC,external,uniform,1,11,340.21
+tests,CC,external,uniform,1,12,374.19
+tests,CC,external,uniform,1,13,414.74
+tests,CC,external,uniform,1,14,461.00
+tests,CC,external,uniform,1,15,512.33
+tests,CC,external,uniform,1,16,568.23
+tests,CC,external,uniform,2,2,1383.97
+tests,CC,external,uniform,2,3,1080.27
+tests,CC,external,uniform,2,4,891.50
+tests,CC,external,uniform,2,5,772.24
+tests,CC,external,uniform,2,6,695.54
+tests,CC,external,uniform,2,7,646.68
+tests,CC,external,uniform,2,8,617.54
+tests,CC,external,uniform,2,9,603.35
+tests,CC,external,uniform,2,10,601.21
+tests,CC,external,uniform,2,11,609.22
+tests,CC,external,uniform,2,12,626.06
+tests,CC,external,uniform,2,13,650.74
+tests,CC,external,uniform,2,14,682.46
+tests,CC,external,uniform,2,15,720.56
+tests,CC,external,uniform,2,16,764.44
+tests,CC,external,uniform,3,2,1808.00
+tests,CC,external,uniform,3,3,1547.78
+tests,CC,external,uniform,3,4,1356.00
+tests,CC,external,uniform,3,5,1222.60
+tests,CC,external,uniform,3,6,1131.61
+tests,CC,external,uniform,3,7,1070.51
+tests,CC,external,uniform,3,8,1030.79
+tests,CC,external,uniform,3,9,1006.92
+tests,CC,external,uniform,3,10,995.34
+tests,CC,external,uniform,3,11,993.73
+tests,CC,external,uniform,3,12,1000.56
+tests,CC,external,uniform,3,13,1014.78
+tests,CC,external,uniform,3,14,1035.63
+tests,CC,external,uniform,3,15,1062.56
+tests,CC,external,uniform,3,16,1095.08
+tests,CC,external,uniform,4,2,2109.88
+tests,CC,external,uniform,4,3,1934.20
+tests,CC,external,uniform,4,4,1785.69
+tests,CC,external,uniform,4,5,1672.74
+tests,CC,external,uniform,4,6,1591.10
+tests,CC,external,uniform,4,7,1534.04
+tests,CC,external,uniform,4,8,1495.71
+tests,CC,external,uniform,4,9,1471.70
+tests,CC,external,uniform,4,10,1458.92
+tests,CC,external,uniform,4,11,1455.18
+tests,CC,external,uniform,4,12,1459.02
+tests,CC,external,uniform,4,13,1469.39
+tests,CC,external,uniform,4,14,1485.57
+tests,CC,external,uniform,4,15,1507.04
+tests,CC,external,uniform,4,16,1533.37
+tests,CF,external,D_y/D = 1,1,2,283.75
+tests,CF,external,D_y/D = 1,1,3,167.73
+tests,CF,external,D_y/D = 1,1,4,115.42
+tests,CF,external,D_y/D = 1,1,5,96.20
+tests,CF,external,D_y/D = 1,1,6,97.68
+tests,CF,external,D_y/D = 1,1,7,112.29
+tests,CF,external,D_y/D = 1,1,8,135.14
+tests,CF,external,D_y/D = 1,1,9,163.73
+tests,CF,external,D_y/D = 1,1,10,196.92
+tests,CF,external,D_y/D = 1,1,11,234.19
+tests,CF,external,D_y/D = 1,1,12,275.25
+tests,CF,external,D_y/D = 1,1,13,319.94
+tests,CF,external,D_y/D = 1,1,14,368.14
+tests,CF,external,D_y/D = 1,1,15,419.71
+tests,CF,external,D_y/D = 1,1,16,474.57
+tests,CF,external,D_y/D = 1,2,2,918.07
+tests,CF,external,D_y/D = 1,2,3,637.81
+tests,CF,external,D_y/D = 1,2,4,482.01
+tests,CF,external,D_y/D = 1,2,5,390.80
+tests,CF,external,D_y/D = 1,2,6,338.10
+tests,CF,external,D_y/D = 1,2,7,311.30
+tests,CF,external,D_y/D = 1,2,8,303.29
+tests,CF,external,D_y/D = 1,2,9,309.40
+tests,CF,external,D_y/D = 1,2,10,326.34
+tests,CF,external,D_y/D = 1,2,11,351.73
+tests,CF,external,D_y/D = 1,2,12,383.91
+tests,CF,external,D_y/D = 1,2,13,421.74
+tests,CF,external,D_y/D = 1,2,14,464.45
+tests,CF,external,D_y/D = 1,2,15,511.46
+tests,CF,external,D_y/D = 1,2,16,562.37
+tests,CF,external,D_y/D = 1,3,2,1528.78
+tests,CF,external,D_y/D = 1,3,3,1207.07
+tests,CF,external,D_y/D = 1,3,4,986.03
+tests,CF,external,D_y/D = 1,3,5,838.94
+tests,CF,external,D_y/D = 1,3,6,741.90
+tests,CF,external,D_y/D = 1,3,7,679.07
+tests,CF,external,D_y/D = 1,3,8,640.57
+tests,CF,external,D_y/D = 1,3,9,620.19
+tests,CF,external,D_y/D = 1,3,10,613.86
+tests,CF,external,D_y/D = 1,3,11,618.82
+tests,CF,external,D_y/D = 1,3,12,633.10
+tests,CF,external,D_y/D = 1,3,13,655.26
+tests,CF,external,D_y/D = 1,3,14,684.21
+tests,CF,external,D_y/D = 1,3,15,719.05
+tests,CF,external,D_y/D = 1,3,16,759.07
+tests,CF,external,D_y/D = 1,4,2,1868.15
+tests,CF,external,D_y/D = 1,4,3,1621.82
+tests,CF,external,D_y/D = 1,4,4,1424.76
+tests,CF,external,D_y/D = 1,4,5,1279.06
+tests,CF,external,D_y/D = 1,4,6,1174.94
+tests,CF,external,D_y/D = 1,4,7,1102.21
+tests,CF,external,D_y/D = 1,4,8,1052.97
+tests,CF,external,D_y/D = 1,4,9,1021.53
+tests,CF,external,D_y/D = 1,4,10,1003.97
+tests,CF,external,D_y/D = 1,4,11,997.53
+tests,CF,external,D_y/D = 1,4,12,1000.29
+tests,CF,external,D_y/D = 1,4,13,1010.86
+tests,CF,external,D_y/D = 1,4,14,1028.20
+tests,CF,external,D_y/D = 1,4,15,1051.51
+tests,CF,external,D_y/D = 1,4,16,1080.14
+tests,CF,external,roots,1,2,283.98
+tests,CF,external,roots,1,3,168.00
+tests,CF,external,roots,1,4,116.23
+tests,CF,external,roots,1,5,98.43
+tests,CF,external,roots,1,6,102.20
+tests,CF,external,roots,1,7,119.59
+tests,CF,external,roots,1,8,145.57
+tests,CF,external,roots,1,9,177.67
+tests,CF,external,roots,1,10,214.81
+tests,CF,external,roots,1,11,256.53
+tests,CF,external,roots,1,12,302.61
+tests,CF,external,roots,1,13,352.94
+tests,CF,external,roots,1,14,407.43
+tests,CF,external,roots,1,15,466.05
+tests,CF,external,roots,1,16,528.75
+tests,CF,external,roots,2,2,920.94
+tests,CF,external,roots,2,3,639.12
+tests,CF,external,roots,2,4,483.13
+tests,CF,external,roots,2,5,392.33
+tests,CF,external,roots,2,6,340.68
+tests,CF,external,roots,2,7,315.71
+tests,CF,external,roots,2,8,310.35
+tests,CF,external,roots,2,9,319.93
+tests,CF,external,roots,2,10,341.06
+tests,CF,external,roots,2,11,371.32
+tests,CF,external,roots,2,12,409.03
+tests,CF,external,roots,2,13,453.08
+tests,CF,external,roots,2,14,502.74
+tests,CF,external,roots,2,15,557.50
+tests,CF,external,roots,2,16,617.05
+tests,CF,external,roots,3,2,1541.28
+tests,CF,external,roots,3,3,1212.64
+tests,CF,external,roots,3,4,989.28
+tests,CF,external,roots,3,5,841.70
+tests,CF,external,roots,3,6,745.05
+tests,CF,external,roots,3,7,683.32
+tests,CF,external,roots,3,8,646.63
+tests,CF,external,roots,3,9,628.85
+tests,CF,external,roots,3,10,625.97
+tests,CF,external,roots,3,11,635.30
+tests,CF,external,roots,3,12,654.92
+tests,CF,external,roots,3,13,683.40
+tests,CF,external,roots,3,14,719.68
+tests,CF,external,roots,3,15,762.91
+tests,CF,external,roots,3,16,812.42
+tests,CF,external,roots,4,2,1888.12
+tests,CF,external,roots,4,3,1632.23
+tests,CF,external,roots,4,4,1430.78
+tests,CF,external,roots,4,5,1283.51
+tests,CF,external,roots,4,6,1179.25
+tests,CF,external,roots,4,7,1107.25
+tests,CF,external,roots,4,8,1059.37
+tests,CF,external,roots,4,9,1029.94
+tests,CF,external,roots,4,10,1015.07
+tests,CF,external,roots,4,11,1012.10
+tests,CF,external,roots,4,12,1019.20
+tests,CF,external,roots,4,13,1035.07
+tests,CF,external,roots,4,14,1058.78
+tests,CF,external,roots,4,15,1089.61
+tests,CF,external,roots,4,16,1126.99
+tests,CF,external,uniform,1,2,283.81
+tests,CF,external,uniform,1,3,167.87
+tests,CF,external,uniform,1,4,116.08
+tests,CF,external,uniform,1,5,98.19
+tests,CF,external,uniform,1,6,101.82
+tests,CF,external,uniform,1,7,119.01
+tests,CF,external,uniform,1,8,144.70
+tests,CF,external,uniform,1,9,176.38
+tests,CF,external,uniform,1,10,212.96
+tests,CF,external,uniform,1,11,253.91
+tests,CF,external,uniform,1,12,298.98
+tests,CF,external,uniform,1,13,347.99
+tests,CF,external,uniform,1,14,400.80
+tests,CF,external,uniform,1,15,457.31
+tests,CF,external,uniform,1,16,517.40
+tests,CF,external,uniform,2,2,918.93
+tests,CF,external,uniform,2,3,638.17
+tests,CF,external,uniform,2,4,482.38
+tests,CF,external,uniform,2,5,391.52
+tests,CF,external,uniform,2,6,339.62
+tests,CF,external,uniform,2,7,314.22
+tests,CF,external,uniform,2,8,308.23
+tests,CF,external,uniform,2,9,316.98
+tests,CF,external,uniform,2,10,337.06
+tests,CF,external,uniform,2,11,366.05
+tests,CF,external,uniform,2,12,402.21
+tests,CF,external,uniform,2,13,444.38
+tests,CF,external,uniform,2,14,491.76
+tests,CF,external,uniform,2,15,543.78
+tests,CF,external,uniform,2,16,600.01
+tests,CF,external,uniform,3,2,1532.53
+tests,CF,external,uniform,3,3,1208.69
+tests,CF,external,uniform,3,4,986.97
+tests,CF,external,uniform,3,5,839.84
+tests,CF,external,uniform,3,6,743.16
+tests,CF,external,uniform,3,7,681.08
+tests,CF,external,uniform,3,8,643.78
+tests,CF,external,uniform,3,9,625.08
+tests,CF,external,uniform,3,10,620.95
+tests,CF,external,uniform,3,11,628.65
+tests,CF,external,uniform,3,12,646.21
+tests,CF,external,uniform,3,13,672.17
+tests,CF,external,uniform,3,14,705.39
+tests,CF,external,uniform,3,15,744.96
+tests,CF,external,uniform,3,16,790.14
+tests,CF,external,uniform,4,2,1874.07
+tests,CF,external,uniform,4,3,1624.89
+tests,CF,external,uniform,4,4,1426.54
+tests,CF,external,uniform,4,5,1280.47
+tests,CF,external,uniform,4,6,1176.50
+tests,CF,external,uniform,4,7,1104.31
+tests,CF,external,uniform,4,8,1055.93
+tests,CF,external,uniform,4,9,1025.73
+tests,CF,external,uniform,4,10,1009.78
+tests,CF,external,uniform,4,11,1005.37
+tests,CF,external,uniform,4,12,1010.61
+tests,CF,external,uniform,4,13,1024.13
+tests,CF,external,uniform,4,14,1044.90
+tests,CF,external,uniform,4,15,1072.14
+tests,CF,external,uniform,4,16,1105.18
+tests,FF,external,D_y/D = 1,0,2,4.99
+tests,FF,external,D_y/D = 1,0,3,14.13
+tests,FF,external,D_y/D = 1,0,4,27.09
+tests,FF,external,D_y/D = 1,0,5,43.80
+tests,FF,external,D_y/D = 1,0,6,64.20
+tests,FF,external,D_y/D = 1,0,7,88.27
+tests,FF,external,D_y/D = 1,0,8,115.99
+tests,FF,external,D_y/D = 1,0,9,147.31
+tests,FF,external,D_y/D = 1,0,10,182.21
+tests,FF,external,D_y/D = 1,0,11,220.64
+tests,FF,external,D_y/D = 1,0,12,262.55
+tests,FF,external,D_y/D = 1,0,13,307.90
+tests,FF,external,D_y/D = 1,0,14,356.62
+tests,FF,external,D_y/D = 1,0,15,408.64
+tests,FF,external,D_y/D = 1,0,16,463.88
+tests,FF,external,D_y/D = 1,1,2,15.63
+tests,FF,external,D_y/D = 1,1,3,32.18
+tests,FF,external,D_y/D = 1,1,4,49.86
+tests,FF,external,D_y/D = 1,1,5,69.68
+tests,FF,external,D_y/D = 1,1,6,92.18
+tests,FF,external,D_y/D = 1,1,7,117.68
+tests,FF,external,D_y/D = 1,1,8,146.34
+tests,FF,external,D_y/D = 1,1,9,178.27
+tests,FF,external,D_y/D = 1,1,10,213.53
+tests,FF,external,D_y/D = 1,1,11,252.13
+tests,FF,external,D_y/D = 1,1,12,294.09
+tests,FF,external,D_y/D = 1,1,13,339.36
+tests,FF,external,D_y/D = 1,1,14,387.91
+tests,FF,external,D_y/D = 1,1,15,439.68
+tests,FF,external,D_y/D = 1,1,16,494.59
+tests,FF,external,D_y/D = 1,2,2,1185.41
+tests,FF,external,D_y/D = 1,2,3,808.93
+tests,FF,external,D_y/D = 1,2,4,582.85
+tests,FF,external,D_y/D = 1,2,5,451.37
+tests,FF,external,D_y/D = 1,2,6,377.64
+tests,FF,external,D_y/D = 1,2,7,340.72
+tests,FF,external,D_y/D = 1,2,8,328.51
+tests,FF,external,D_y/D = 1,2,9,333.48
+tests,FF,external,D_y/D = 1,2,10,350.70
+tests,FF,external,D_y/D = 1,2,11,376.97
+tests,FF,external,D_y/D = 1,2,12,410.20
+tests,FF,external,D_y/D = 1,2,13,449.04
+tests,FF,external,D_y/D = 1,2,14,492.62
+tests,FF,external,D_y/D = 1,2,15,540.32
+tests,FF,external,D_y/D = 1,2,16,591.69
+tests,FF,external,D_y/D = 1,3,2,1614.02
+tests,FF,external,D_y/D = 1,3,3,1310.71
+tests,FF,external,D_y/D = 1,3,4,1075.08
+tests,FF,external,D_y/D = 1,3,5,907.47
+tests,FF,external,D_y/D = 1,3,6,792.68
+tests,FF,external,D_y/D = 1,3,7,716.97
+tests,FF,external,D_y/D = 1,3,8,670.09
+tests,FF,external,D_y/D = 1,3,9,644.79
+tests,FF,external,D_y/D = 1,3,10,635.99
+tests,FF,external,D_y/D = 1,3,11,640.07
+tests,FF,external,D_y/D = 1,3,12,654.46
+tests,FF,external,D_y/D = 1,3,13,677.26
+tests,FF,external,D_y/D = 1,3,14,707.06
+tests,FF,external,D_y/D = 1,3,15,742.78
+tests,FF,external,D_y/D = 1,3,16,783.56
+tests,FF,external,D_y/D = 1,4,2,1928.27
+tests,FF,external,D_y/D = 1,4,3,1696.59
+tests,FF,external,D_y/D = 1,4,4,1497.14
+tests,FF,external,D_y/D = 1,4,5,1341.70
+tests,FF,external,D_y/D = 1,4,6,1226.11
+tests,FF,external,D_y/D = 1,4,7,1142.87
+tests,FF,external,D_y/D = 1,4,8,1085.02
+tests,FF,external,D_y/D = 1,4,9,1047.05
+tests,FF,external,D_y/D = 1,4,10,1024.81
+tests,FF,external,D_y/D = 1,4,11,1015.21
+tests,FF,external,D_y/D = 1,4,12,1016.00
+tests,FF,external,D_y/D = 1,4,13,1025.46
+tests,FF,external,D_y/D = 1,4,14,1042.30
+tests,FF,external,D_y/D = 1,4,15,1065.49
+tests,FF,external,D_y/D = 1,4,16,1094.20
+tests,FF,external,roots,0,2,5.46
+tests,FF,external,roots,0,3,15.47
+tests,FF,external,roots,0,4,29.67
+tests,FF,external,roots,0,5,48.00
+tests,FF,external,roots,0,6,70.42
+tests,FF,external,roots,0,7,96.92
+tests,FF,external,roots,0,8,127.49
+tests,FF,external,roots,0,9,162.13
+tests,FF,external,roots,0,10,200.83
+tests,FF,external,roots,0,11,243.58
+tests,FF,external,roots,0,12,290.39
+tests,FF,external,roots,0,13,341.24
+tests,FF,external,roots,0,14,396.13
+tests,FF,external,roots,0,15,455.04
+tests,FF,external,roots,0,16,517.97
+tests,FF,external,roots,1,2,15.96
+tests,FF,external,roots,1,3,33.16
+tests,FF,external,roots,1,4,51.86
+tests,FF,external,roots,1,5,73.12
+tests,FF,external,roots,1,6,97.53
+tests,FF,external,roots,1,7,125.39
+tests,FF,external,roots,1,8,156.91
+tests,FF,external,roots,1,9,192.20
+tests,FF,external,roots,1,10,231.35
+tests,FF,external,roots,1,11,274.41
+tests,FF,external,roots,1,12,321.44
+tests,FF,external,roots,1,13,372.43
+tests,FF,external,roots,1,14,427.42
+tests,FF,external,roots,1,15,486.39
+tests,FF,external,roots,1,16,549.34
+tests,FF,external,roots,2,2,1191.50
+tests,FF,external,roots,2,3,811.07
+tests,FF,external,roots,2,4,584.29
+tests,FF,external,roots,2,5,453.22
+tests,FF,external,roots,2,6,380.72
+tests,FF,external,roots,2,7,345.89
+tests,FF,external,roots,2,8,336.63
+tests,FF,external,roots,2,9,345.34
+tests,FF,external,roots,2,10,367.02
+tests,FF,external,roots,2,11,398.41
+tests,FF,external,roots,2,12,437.44
+tests,FF,external,roots,2,13,482.79
+tests,FF,external,roots,2,14,533.65
+tests,FF,external,roots,2,15,589.47
+tests,FF,external,roots,2,16,649.91
+tests,FF,external,roots,3,2,1628.53
+tests,FF,external,roots,3,3,1317.88
+tests,FF,external,roots,3,4,1079.22
+tests,FF,external,roots,3,5,910.90
+tests,FF,external,roots,3,6,796.65
+tests,FF,external,roots,3,7,722.37
+tests,FF,external,roots,3,8,677.76
+tests,FF,external,roots,3,9,655.61
+tests,FF,external,roots,3,10,650.85
+tests,FF,external,roots,3,11,659.92
+tests,FF,external,roots,3,12,680.25
+tests,FF,external,roots,3,13,709.97
+tests,FF,external,roots,3,14,747.68
+tests,FF,external,roots,3,15,792.37
+tests,FF,external,roots,3,16,843.22
+tests,FF,external,roots,4,2,1950.72
+tests,FF,external,roots,4,3,1709.05
+tests,FF,external,roots,4,4,1504.51
+tests,FF,external,roots,4,5,1347.12
+tests,FF,external,roots,4,6,1231.36
+tests,FF,external,roots,4,7,1149.04
+tests,FF,external,roots,4,8,1092.94
+tests,FF,external,roots,4,9,1057.49
+tests,FF,external,roots,4,10,1038.55
+tests,FF,external,roots,4,11,1033.10
+tests,FF,external,roots,4,12,1038.96
+tests,FF,external,roots,4,13,1054.50
+tests,FF,external,roots,4,14,1078.50
+tests,FF,external,roots,4,15,1110.02
+tests,FF,external,roots,4,16,1148.28
+tests,FF,external,uniform,0,2,5.46
+tests,FF,external,uniform,0,3,15.46
+tests,FF,external,uniform,0,4,29.65
+tests,FF,external,uniform,0,5,47.92
+tests,FF,external,uniform,0,6,70.25
+tests,FF,external,uniform,0,7,96.59
+tests,FF,external,uniform,0,8,126.91
+tests,FF,external,uniform,0,9,161.19
+tests,FF,external,uniform,0,10,199.37
+tests,FF,external,uniform,0,11,241.42
+tests,FF,external,uniform,0,12,287.28
+tests,FF,external,uniform,0,13,336.90
+tests,FF,external,uniform,0,14,390.21
+tests,FF,external,uniform,0,15,447.13
+tests,FF,external,uniform,0,16,507.58
+tests,FF,external,uniform,1,2,15.84
+tests,FF,external,uniform,1,3,32.90
+tests,FF,external,uniform,1,4,51.45
+tests,FF,external,uniform,1,5,72.54
+tests,FF,external,uniform,1,6,96.71
+tests,FF,external,uniform,1,7,124.27
+tests,FF,external,uniform,1,8,155.38
+tests,FF,external,uniform,1,9,190.14
+tests,FF,external,uniform,1,10,228.59
+tests,FF,external,uniform,1,11,270.74
+tests,FF,external,uniform,1,12,316.59
+tests,FF,external,uniform,1,13,366.10
+tests,FF,external,uniform,1,14,419.23
+tests,FF,external,uniform,1,15,475.89
+tests,FF,external,uniform,1,16,536.01
+tests,FF,external,uniform,2,2,1187.30
+tests,FF,external,uniform,2,3,809.55
+tests,FF,external,uniform,2,4,583.30
+tests,FF,external,uniform,2,5,452.14
+tests,FF,external,uniform,2,6,379.23
+tests,FF,external,uniform,2,7,343.73
+tests,FF,external,uniform,2,8,333.54
+tests,FF,external,uniform,2,9,341.09
+tests,FF,external,uniform,2,10,361.38
+tests,FF,external,uniform,2,11,391.13
+tests,FF,external,uniform,2,12,428.23
+tests,FF,external,uniform,2,13,471.29
+tests,FF,external,uniform,2,14,519.43
+tests,FF,external,uniform,2,15,572.04
+tests,FF,external,uniform,2,16,628.67
+tests,FF,external,uniform,3,2,1618.46
+tests,FF,external,uniform,3,3,1312.85
+tests,FF,external,uniform,3,4,1076.30
+tests,FF,external,uniform,3,5,908.57
+tests,FF,external,uniform,3,6,794.18
+tests,FF,external,uniform,3,7,719.31
+tests,FF,external,uniform,3,8,673.74
+tests,FF,external,uniform,3,9,650.25
+tests,FF,external,uniform,3,10,643.77
+tests,FF,external,uniform,3,11,650.70
+tests,FF,external,uniform,3,12,668.44
+tests,FF,external,uniform,3,13,695.07
+tests,FF,external,uniform,3,14,729.16
+tests,FF,external,uniform,3,15,769.62
+tests,FF,external,uniform,3,16,815.55
+tests,FF,external,uniform,4,2,1935.06
+tests,FF,external,uniform,4,3,1700.35
+tests,FF,external,uniform,4,4,1499.37
+tests,FF,external,uniform,4,5,1343.42
+tests,FF,external,uniform,4,6,1227.97
+tests,FF,external,uniform,4,7,1145.31
+tests,FF,external,uniform,4,8,1088.44
+tests,FF,external,uniform,4,9,1051.84
+tests,FF,external,uniform,4,10,1031.36
+tests,FF,external,uniform,4,11,1023.97
+tests,FF,external,uniform,4,12,1027.40
+tests,FF,external,uniform,4,13,1039.97
+tests,FF,external,uniform,4,14,1060.39
+tests,FF,external,uniform,4,15,1087.64
+tests,FF,external,uniform,4,16,1120.87
+tests,SS,external,D_y/D = 1,1,2,665.95
+tests,SS,external,D_y/D = 1,1,3,424.18
+tests,SS,external,D_y/D = 1,1,4,296.28
+tests,SS,external,D_y/D = 1,1,5,228.49
+tests,SS,external,D_y/D = 1,1,6,195.80
+tests,SS,external,D_y/D = 1,1,7,186.21
+tests,SS,external,D_y/D = 1,1,8,192.86
+tests,SS,external,D_y/D = 1,1,9,211.06
+tests,SS,external,D_y/D = 1,1,10,237.68
+tests,SS,external,D_y/D = 1,1,11,270.72
+tests,SS,external,D_y/D = 1,1,12,308.99
+tests,SS,external,D_y/D = 1,1,13,351.74
+tests,SS,external,D_y/D = 1,1,14,398.53
+tests,SS,external,D_y/D = 1,1,15,449.03
+tests,SS,external,D_y/D = 1,1,16,503.00
+tests,SS,external,D_y/D = 1,2,2,1346.22
+tests,SS,external,D_y/D = 1,2,3,1020.02
+tests,SS,external,D_y/D = 1,2,4,805.31
+tests,SS,external,D_y/D = 1,2,5,665.15
+tests,SS,external,D_y/D = 1,2,6,574.52
+tests,SS,external,D_y/D = 1,2,7,517.82
+tests,SS,external,D_y/D = 1,2,8,485.38
+tests,SS,external,D_y/D = 1,2,9,471.04
+tests,SS,external,D_y/D = 1,2,10,470.73
+tests,SS,external,D_y/D = 1,2,11,481.65
+tests,SS,external,D_y/D = 1,2,12,501.77
+tests,SS,external,D_y/D = 1,2,13,529.60
+tests,SS,external,D_y/D = 1,2,14,563.98
+tests,SS,external,D_y/D = 1,2,15,604.04
+tests,SS,external,D_y/D = 1,2,16,649.08
+tests,SS,external,D_y/D = 1,3,2,1747.88
+tests,SS,external,D_y/D = 1,3,3,1474.81
+tests,SS,external,D_y/D = 1,3,4,1266.48
+tests,SS,external,D_y/D = 1,3,5,1115.93
+tests,SS,external,D_y/D = 1,3,6,1009.54
+tests,SS,external,D_y/D = 1,3,7,935.85
+tests,SS,external,D_y/D = 1,3,8,886.47
+tests,SS,external,D_y/D = 1,3,9,855.59
+tests,SS,external,D_y/D = 1,3,10,839.17
+tests,SS,external,D_y/D = 1,3,11,834.40
+tests,SS,external,D_y/D = 1,3,12,839.29
+tests,SS,external,D_y/D = 1,3,13,852.40
+tests,SS,external,D_y/D = 1,3,14,872.65
+tests,SS,external,D_y/D = 1,3,15,899.19
+tests,SS,external,D_y/D = 1,3,16,931.31
+tests,SS,external,D_y/D = 1,4,2,2014.76
+tests,SS,external,D_y/D = 1,4,3,1829.51
+tests,SS,external,D_y/D = 1,4,4,1669.38
+tests,SS,external,D_y/D = 1,4,5,1543.89
+tests,SS,external,D_y/D = 1,4,6,1450.03
+tests,SS,external,D_y/D = 1,4,7,1381.90
+tests,SS,external,D_y/D = 1,4,8,1333.97
+tests,SS,external,D_y/D = 1,4,9,1301.88
+tests,SS,external,D_y/D = 1,4,10,1282.38
+tests,SS,external,D_y/D = 1,4,11,1273.14
+tests,SS,external,D_y/D = 1,4,12,1272.44
+tests,SS,external,D_y/D = 1,4,13,1279.04
+tests,SS,external,D_y/D = 1,4,14,1292.00
+tests,SS,external,D_y/D = 1,4,15,1310.63
+tests,SS,external,D_y/D = 1,4,16,1334.32
+tests,SS,external,roots,1,2,667.13
+tests,SS,external,roots,1,3,424.68
+tests,SS,external,roots,1,4,296.88
+tests,SS,external,roots,1,5,229.72
+tests,SS,external,roots,1,6,198.41
+tests,SS,external,roots,1,7,191.11
+tests,SS,external,roots,1,8,200.84
+tests,SS,external,roots,1,9,222.76
+tests,SS,external,roots,1,10,253.62
+tests,SS,external,roots,1,11,291.44
+tests,SS,external,roots,1,12,335.03
+tests,SS,external,roots,1,13,383.73
+tests,SS,external,roots,1,14,437.14
+tests,SS,external,roots,1,15,495.02
+tests,SS,external,roots,1,16,557.20
+tests,SS,external,roots,2,2,1355.41
+tests,SS,external,roots,2,3,1023.80
+tests,SS,external,roots,2,4,807.45
+tests,SS,external,roots,2,5,667.03
+tests,SS,external,roots,2,6,576.88
+tests,SS,external,roots,2,7,521.29
+tests,SS,external,roots,2,8,490.68
+tests,SS,external,roots,2,9,478.99
+tests,SS,external,roots,2,10,482.22
+tests,SS,external,roots,2,11,497.60
+tests,SS,external,roots,2,12,523.11
+tests,SS,external,roots,2,13,557.24
+tests,SS,external,roots,2,14,598.87
+tests,SS,external,roots,2,15,647.13
+tests,SS,external,roots,2,16,701.38
+tests,SS,external,roots,3,2,1766.41
+tests,SS,external,roots,3,3,1483.99
+tests,SS,external,roots,3,4,1271.61
+tests,SS,external,roots,3,5,1119.62
+tests,SS,external,roots,3,6,1013.12
+tests,SS,external,roots,3,7,940.09
+tests,SS,external,roots,3,8,892.04
+tests,SS,external,roots,3,9,863.13
+tests,SS,external,roots,3,10,849.41
+tests,SS,external,roots,3,11,848.17
+tests,SS,external,roots,3,12,857.52
+tests,SS,external,roots,3,13,876.11
+tests,SS,external,roots,3,14,902.94
+tests,SS,external,roots,3,15,937.24
+tests,SS,external,roots,3,16,978.39
+tests,SS,external,roots,4,2,2035.75
+tests,SS,external,roots,4,3,1841.36
+tests,SS,external,roots,4,4,1676.28
+tests,SS,external,roots,4,5,1548.69
+tests,SS,external,roots,4,6,1454.38
+tests,SS,external,roots,4,7,1386.74
+tests,SS,external,roots,4,8,1339.94
+tests,SS,external,roots,4,9,1309.50
+tests,SS,external,roots,4,10,1292.19
+tests,SS,external,roots,4,11,1285.74
+tests,SS,external,roots,4,12,1288.53
+tests,SS,external,roots,4,13,1299.45
+tests,SS,external,roots,4,14,1317.66
+tests,SS,external,roots,4,15,1342.59
+tests,SS,external,roots,4,16,1373.76
+tests,SS,external,uniform,1,2,666.30
+tests,SS,external,uniform,1,3,424.32
+tests,SS,external,uniform,1,4,296.57
+tests,SS,external,uniform,1,5,229.37
+tests,SS,external,uniform,1,6,197.93
+tests,SS,external,uniform,1,7,190.38
+tests,SS,external,uniform,1,8,199.72
+tests,SS,external,uniform,1,9,221.09
+tests,SS,external,uniform,1,10,251.21
+tests,SS,external,uniform,1,11,288.05
+tests,SS,external,uniform,1,12,330.41
+tests,SS,external,uniform,1,13,377.55
+tests,SS,external,uniform,1,14,429.01
+tests,SS,external,uniform,1,15,484.48
+tests,SS,external,uniform,1,16,543.73
+tests,SS,external,uniform,2,2,1348.99
+tests,SS,external,uniform,2,3,1021.10
+tests,SS,external,uniform,2,4,805.90
+tests,SS,external,uniform,2,5,665.79
+tests,SS,external,uniform,2,6,575.60
+tests,SS,external,uniform,2,7,519.76
+tests,SS,external,uniform,2,8,488.69
+tests,SS,external,uniform,2,9,476.30
+tests,SS,external,uniform,2,10,478.54
+tests,SS,external,uniform,2,11,492.58
+tests,SS,external,uniform,2,12,516.35
+tests,SS,external,uniform,2,13,548.31
+tests,SS,external,uniform,2,14,587.27
+tests,SS,external,uniform,2,15,632.31
+tests,SS,external,uniform,2,16,682.68
+tests,SS,external,uniform,3,2,1753.38
+tests,SS,external,uniform,3,3,1477.50
+tests,SS,external,uniform,3,4,1267.96
+tests,SS,external,uniform,3,5,1117.06
+tests,SS,external,uniform,3,6,1010.84
+tests,SS,external,uniform,3,7,937.68
+tests,SS,external,uniform,3,8,889.20
+tests,SS,external,uniform,3,9,859.62
+tests,SS,external,uniform,3,10,844.92
+tests,SS,external,uniform,3,11,842.35
+tests,SS,external,uniform,3,12,849.93
+tests,SS,external,uniform,3,13,866.25
+tests,SS,external,uniform,3,14,890.23
+tests,SS,external,uniform,3,15,921.00
+tests,SS,external,uniform,3,16,957.86
+tests,SS,external,uniform,4,2,2020.92
+tests,SS,external,uniform,4,3,1833.00
+tests,SS,external,uniform,4,4,1671.45
+tests,SS,external,uniform,4,5,1545.43
+tests,SS,external,uniform,4,6,1451.62
+tests,SS,external,uniform,4,7,1383.94
+tests,SS,external,uniform,4,8,1336.76
+tests,SS,external,uniform,4,9,1305.72
+tests,SS,external,uniform,4,10,1287.59
+tests,SS,external,uniform,4,11,1280.05
+tests,SS,external,uniform,4,12,1281.42
+tests,SS,external,uniform,4,13,1290.48
+tests,SS,external,uniform,4,14,1306.34
+tests,SS,external,uniform,4,15,1328.31
+tests,SS,external,uniform,4,16,1355.80
+tests,CC,internal,D_y/D = 1,1,2,727.68
+tests,CC,internal,D_y/D = 1,1,3,494.55
+tests,CC,internal,D_y/D = 1,1,4,355.19
+tests,CC,internal,D_y/D = 1,1,5,269.34
+tests,CC,internal,D_y/D = 1,1,6,220.75
+tests,CC,internal,D_y/D = 1,1,7,201.45
+tests,CC,internal,D_y/D = 1,1,8,204.58
+tests,CC,internal,D_y/D = 1,1,9,223.12
+tests,CC,internal,D_y/D = 1,1,10,251.68
+tests,CC,internal,D_y/D = 1,1,11,287.04
+tests,CC,internal,D_y/D = 1,1,12,327.54
+tests,CC,internal,D_y/D = 1,1,13,372.38
+tests,CC,internal,D_y/D = 1,1,14,421.11
+tests,CC,internal,D_y/D = 1,1,15,473.51
+tests,CC,internal,D_y/D = 1,1,16,529.38
+tests,CC,internal,D_y/D = 1,2,2,1343.93
+tests,CC,internal,D_y/D = 1,2,3,981.70
+tests,CC,internal,D_y/D = 1,2,4,747.25
+tests,CC,internal,D_y/D = 1,2,5,594.50
+tests,CC,internal,D_y/D = 1,2,6,497.27
+tests,CC,internal,D_y/D = 1,2,7,441.34
+tests,CC,internal,D_y/D = 1,2,8,417.07
+tests,CC,internal,D_y/D = 1,2,9,416.21
+tests,CC,internal,D_y/D = 1,2,10,431.73
+tests,CC,internal,D_y/D = 1,2,11,458.40
+tests,CC,internal,D_y/D = 1,2,12,492.81
+tests,CC,internal,D_y/D = 1,2,13,532.95
+tests,CC,internal,D_y/D = 1,2,14,577.68
+tests,CC,internal,D_y/D = 1,2,15,626.34
+tests,CC,internal,D_y/D = 1,2,16,678.55
+tests,CC,internal,D_y/D = 1,3,2,1825.18
+tests,CC,internal,D_y/D = 1,3,3,1463.41
+tests,CC,internal,D_y/D = 1,3,4,1189.21
+tests,CC,internal,D_y/D = 1,3,5,993.99
+tests,CC,internal,D_y/D = 1,3,6,861.39
+tests,CC,internal,D_y/D = 1,3,7,777.60
+tests,CC,internal,D_y/D = 1,3,8,731.56
+tests,CC,internal,D_y/D = 1,3,9,713.99
+tests,CC,internal,D_y/D = 1,3,10,717.14
+tests,CC,internal,D_y/D = 1,3,11,734.89
+tests,CC,internal,D_y/D = 1,3,12,762.86
+tests,CC,internal,D_y/D = 1,3,13,798.10
+tests,CC,internal,D_y/D = 1,3,14,838.74
+tests,CC,internal,D_y/D = 1,3,15,883.61
+tests,CC,internal,D_y/D = 1,3,16,932.01
+tests,CC,internal,D_y/D = 1,4,2,2225.93
+tests,CC,internal,D_y/D = 1,4,3,1917.54
+tests,CC,internal,D_y/D = 1,4,4,1652.61
+tests,CC,internal,D_y/D = 1,4,5,1447.58
+tests,CC,internal,D_y/D = 1,4,6,1299.29
+tests,CC,internal,D_y/D = 1,4,7,1199.21
+tests,CC,internal,D_y/D = 1,4,8,1138.13
+tests,CC,internal,D_y/D = 1,4,9,1107.52
+tests,CC,internal,D_y/D = 1,4,10,1099.98
+tests,CC,internal,D_y/D = 1,4,11,1109.44
+tests,CC,internal,D_y/D = 1,4,12,1131.21
+tests,CC,internal,D_y/D = 1,4,13,1161.88
+tests,CC,internal,D_y/D = 1,4,14,1199.05
+tests,CC,internal,D_y/D = 1,4,15,1241.10
+tests,CC,internal,D_y/D = 1,4,16,1286.94
+tests,CC,internal,roots,1,2,729.47
+tests,CC,internal,roots,1,3,495.71
+tests,CC,internal,roots,1,4,356.32
+tests,CC,internal,roots,1,5,270.95
+tests,CC,internal,roots,1,6,223.64
+tests,CC,internal,roots,1,7,206.61
+tests,CC,internal,roots,1,8,212.82
+tests,CC,internal,roots,1,9,235.01
+tests,CC,internal,roots,1,10,267.68
+tests,CC,internal,roots,1,11,307.66
+tests,CC,internal,roots,1,12,353.36
+tests,CC,internal,roots,1,13,404.02
+tests,CC,internal,roots,1,14,459.28
+tests,CC,internal,roots,1,15,518.96
+tests,CC,internal,roots,1,16,582.94
+tests,CC,internal,roots,2,2,1351.48
+tests,CC,internal,roots,2,3,985.24
+tests,CC,internal,roots,2,4,749.68
+tests,CC,internal,roots,2,5,596.82
+tests,CC,internal,roots,2,6,500.18
+tests,CC,internal,roots,2,7,445.56
+tests,CC,internal,roots,2,8,423.36
+tests,CC,internal,roots,2,9,425.30
+tests,CC,internal,roots,2,10,444.30
+tests,CC,internal,roots,2,11,475.14
+tests,CC,internal,roots,2,12,514.47
+tests,CC,internal,roots,2,13,560.32
+tests,CC,internal,roots,2,14,611.62
+tests,CC,internal,roots,2,15,667.78
+tests,CC,internal,roots,2,16,728.49
+tests,CC,internal,roots,3,2,1838.99
+tests,CC,internal,roots,3,3,1470.08
+tests,CC,internal,roots,3,4,1193.06
+tests,CC,internal,roots,3,5,997.01
+tests,CC,internal,roots,3,6,864.62
+tests,CC,internal,roots,3,7,781.75
+tests,CC,internal,roots,3,8,737.26
+tests,CC,internal,roots,3,9,721.86
+tests,CC,internal,roots,3,10,727.76
+tests,CC,internal,roots,3,11,748.92
+tests,CC,internal,roots,3,12,781.01
+tests,CC,internal,roots,3,13,821.17
+tests,CC,internal,roots,3,14,867.65
+tests,CC,internal,roots,3,15,919.36
+tests,CC,internal,roots,3,16,975.72
+tests,CC,internal,roots,4,2,2239.83
+tests,CC,internal,roots,4,3,1924.55
+tests,CC,internal,roots,4,4,1656.30
+tests,CC,internal,roots,4,5,1450.17
+tests,CC,internal,roots,4,6,1302.02
+tests,CC,internal,roots,4,7,1202.83
+tests,CC,internal,roots,4,8,1143.17
+tests,CC,internal,roots,4,9,1114.39
+tests,CC,internal,roots,4,10,1109.09
+tests,CC,internal,roots,4,11,1121.22
+tests,CC,internal,roots,4,12,1146.20
+tests,CC,internal,roots,4,13,1180.69
+tests,CC,internal,roots,4,14,1222.43
+tests,CC,internal,roots,4,15,1269.92
+tests,CC,internal,roots,4,16,1322.20
+tests,CC,internal,uniform,1,2,728.17
+tests,CC,internal,uniform,1,3,494.84
+tests,CC,internal,uniform,1,4,355.56
+tests,CC,internal,uniform,1,5,270.21
+tests,CC,internal,uniform,1,6,222.83
+tests,CC,internal,uniform,1,7,205.62
+tests,CC,internal,uniform,1,8,211.54
+tests,CC,internal,uniform,1,9,233.29
+tests,CC,internal,uniform,1,10,265.34
+tests,CC,internal,uniform,1,11,304.49
+tests,CC,internal,uniform,1,12,349.10
+tests,CC,internal,uniform,1,13,398.36
+tests,CC,internal,uniform,1,14,451.85
+tests,CC,internal,uniform,1,15,509.33
+tests,CC,internal,uniform,1,16,570.60
+tests,CC,internal,uniform,2,2,1346.07
+tests,CC,internal,uniform,2,3,982.60
+tests,CC,internal,uniform,2,4,747.85
+tests,CC,internal,uniform,2,5,595.24
+tests,CC,internal,uniform,2,6,498.57
+tests,CC,internal,uniform,2,7,443.74
+tests,CC,internal,uniform,2,8,421.16
+tests,CC,internal,uniform,2,9,422.54
+tests,CC,internal,uniform,2,10,440.76
+tests,CC,internal,uniform,2,11,470.57
+tests,CC,internal,uniform,2,12,508.53
+tests,CC,internal,uniform,2,13,552.64
+tests,CC,internal,uniform,2,14,601.75
+tests,CC,internal,uniform,2,15,655.20
+tests,CC,internal,uniform,2,16,712.60
+tests,CC,internal,uniform,3,2,1829.13
+tests,CC,internal,uniform,3,3,1465.18
+tests,CC,internal,uniform,3,4,1190.18
+tests,CC,internal,uniform,3,5,994.84
+tests,CC,internal,uniform,3,6,862.60
+tests,CC,internal,uniform,3,7,779.58
+tests,CC,internal,uniform,3,8,734.73
+tests,CC,internal,uniform,3,9,718.78
+tests,CC,internal,uniform,3,10,723.94
+tests,CC,internal,uniform,3,11,744.11
+tests,CC,internal,uniform,3,12,774.89
+tests,CC,internal,uniform,3,13,813.35
+tests,CC,internal,uniform,3,14,857.63
+tests,CC,internal,uniform,3,15,906.59
+tests,CC,internal,uniform,3,16,959.53
+tests,CC,internal,uniform,4,2,2229.99
+tests,CC,internal,uniform,4,3,1919.49
+tests,CC,internal,uniform,4,4,1653.60
+tests,CC,internal,uniform,4,5,1448.38
+tests,CC,internal,uniform,4,6,1300.41
+tests,CC,internal,uniform,4,7,1201.03
+tests,CC,internal,uniform,4,8,1140.98
+tests,CC,internal,uniform,4,9,1111.72
+tests,CC,internal,uniform,4,10,1105.83
+tests,CC,internal,uniform,4,11,1117.24
+tests,CC,internal,uniform,4,12,1141.27
+tests,CC,internal,uniform,4,13,1174.53
+tests,CC,internal,uniform,4,14,1214.66
+tests,CC,internal,uniform,4,15,1260.04
+tests,CC,internal,uniform,4,16,1309.61
+tests,CF,internal,D_y/D = 1,1,2,266.31
+tests,CF,internal,D_y/D = 1,1,3,145.47
+tests,CF,internal,D_y/D = 1,1,4,92.80
+tests,CF,internal,D_y/D = 1,1,5,77.65
+tests,CF,internal,D_y/D = 1,1,6,85.55
+tests,CF,internal,D_y/D = 1,1,7,105.48
+tests,CF,internal,D_y/D = 1,1,8,132.03
+tests,CF,internal,D_y/D = 1,1,9,163.41
+tests,CF,internal,D_y/D = 1,1,10,198.97
+tests,CF,internal,D_y/D = 1,1,11,238.41
+tests,CF,internal,D_y/D = 1,1,12,281.57
+tests,CF,internal,D_y/D = 1,1,13,328.34
+tests,CF,internal,D_y/D = 1,1,14,378.65
+tests,CF,internal,D_y/D = 1,1,15,432.41
+tests,CF,internal,D_y/D = 1,1,16,489.54
+tests,CF,internal,D_y/D = 1,2,2,873.33
+tests,CF,internal,D_y/D = 1,2,3,563.33
+tests,CF,internal,D_y/D = 1,2,4,387.76
+tests,CF,internal,D_y/D = 1,2,5,286.29
+tests,CF,internal,D_y/D = 1,2,6,234.00
+tests,CF,internal,D_y/D = 1,2,7,217.58
+tests,CF,internal,D_y/D = 1,2,8,225.46
+tests,CF,internal,D_y/D = 1,2,9,247.99
+tests,CF,internal,D_y/D = 1,2,10,279.30
+tests,CF,internal,D_y/D = 1,2,11,316.48
+tests,CF,internal,D_y/D = 1,2,12,358.22
+tests,CF,internal,D_y/D = 1,2,13,403.89
+tests,CF,internal,D_y/D = 1,2,14,453.17
+tests,CF,internal,D_y/D = 1,2,15,505.87
+tests,CF,internal,D_y/D = 1,2,16,561.85
+tests,CF,internal,D_y/D = 1,3,2,1490.67
+tests,CF,internal,D_y/D = 1,3,3,1093.86
+tests,CF,internal,D_y/D = 1,3,4,816.79
+tests,CF,internal,D_y/D = 1,3,5,631.93
+tests,CF,internal,D_y/D = 1,3,6,515.04
+tests,CF,internal,D_y/D = 1,3,7,449.85
+tests,CF,internal,D_y/D = 1,3,8,423.72
+tests,CF,internal,D_y/D = 1,3,9,425.16
+tests,CF,internal,D_y/D = 1,3,10,444.52
+tests,CF,internal,D_y/D = 1,3,11,475.12
+tests,CF,internal,D_y/D = 1,3,12,513.00
+tests,CF,internal,D_y/D = 1,3,13,556.03
+tests,CF,internal,D_y/D = 1,3,14,603.09
+tests,CF,internal,D_y/D = 1,3,15,653.58
+tests,CF,internal,D_y/D = 1,3,16,707.18
+tests,CF,internal,D_y/D = 1,4,2,1888.00
+tests,CF,internal,D_y/D = 1,4,3,1528.10
+tests,CF,internal,D_y/D = 1,4,4,1235.54
+tests,CF,internal,D_y/D = 1,4,5,1018.22
+tests,CF,internal,D_y/D = 1,4,6,867.43
+tests,CF,internal,D_y/D = 1,4,7,771.86
+tests,CF,internal,D_y/D = 1,4,8,720.35
+tests,CF,internal,D_y/D = 1,4,9,702.10
+tests,CF,internal,D_y/D = 1,4,10,707.44
+tests,CF,internal,D_y/D = 1,4,11,728.69
+tests,CF,internal,D_y/D = 1,4,12,760.46
+tests,CF,internal,D_y/D = 1,4,13,799.28
+tests,CF,internal,D_y/D = 1,4,14,843.09
+tests,CF,internal,D_y/D = 1,4,15,890.66
+tests,CF,internal,D_y/D = 1,4,16,941.26
+tests,CF,internal,roots,1,2,266.55
+tests,CF,internal,roots,1,3,145.79
+tests,CF,internal,roots,1,4,93.84
+tests,CF,internal,roots,1,5,80.52
+tests,CF,internal,roots,1,6,90.90
+tests,CF,internal,roots,1,7,113.54
+tests,CF,internal,roots,1,8,143.13
+tests,CF,internal,roots,1,9,177.97
+tests,CF,internal,roots,1,10,217.46
+tests,CF,internal,roots,1,11,261.37
+tests,CF,internal,roots,1,12,309.56
+tests,CF,internal,roots,1,13,361.98
+tests,CF,internal,roots,1,14,418.60
+tests,CF,internal,roots,1,15,479.40
+tests,CF,internal,roots,1,16,544.36
+tests,CF,internal,roots,2,2,875.81
+tests,CF,internal,roots,2,3,564.56
+tests,CF,internal,roots,2,4,388.97
+tests,CF,internal,roots,2,5,288.23
+tests,CF,internal,roots,2,6,237.63
+tests,CF,internal,roots,2,7,223.80
+tests,CF,internal,roots,2,8,234.83
+tests,CF,internal,roots,2,9,260.91
+tests,CF,internal,roots,2,10,296.22
+tests,CF,internal,roots,2,11,337.98
+tests,CF,internal,roots,2,12,384.95
+tests,CF,internal,roots,2,13,436.56
+tests,CF,internal,roots,2,14,492.54
+tests,CF,internal,roots,2,15,552.76
+tests,CF,internal,roots,2,16,617.15
+tests,CF,internal,roots,3,2,1501.31
+tests,CF,internal,roots,3,3,1098.67
+tests,CF,internal,roots,3,4,819.81
+tests,CF,internal,roots,3,5,634.88
+tests,CF,internal,roots,3,6,519.04
+tests,CF,internal,roots,3,7,455.89
+tests,CF,internal,roots,3,8,432.66
+tests,CF,internal,roots,3,9,437.64
+tests,CF,internal,roots,3,10,461.08
+tests,CF,internal,roots,3,11,496.33
+tests,CF,internal,roots,3,12,539.56
+tests,CF,internal,roots,3,13,588.71
+tests,CF,internal,roots,3,14,642.77
+tests,CF,internal,roots,3,15,701.25
+tests,CF,internal,roots,3,16,763.87
+tests,CF,internal,roots,4,2,1904.90
+tests,CF,internal,roots,4,3,1536.80
+tests,CF,internal,roots,4,4,1240.66
+tests,CF,internal,roots,4,5,1022.33
+tests,CF,internal,roots,4,6,872.03
+tests,CF,internal,roots,4,7,778.01
+tests,CF,internal,roots,4,8,728.88
+tests,CF,internal,roots,4,9,713.70
+tests,CF,internal,roots,4,10,722.70
+tests,CF,internal,roots,4,11,748.22
+tests,CF,internal,roots,4,12,784.93
+tests,CF,internal,roots,4,13,829.50
+tests,CF,internal,roots,4,14,879.95
+tests,CF,internal,roots,4,15,935.18
+tests,CF,internal,roots,4,16,994.58
+tests,CF,internal,uniform,1,2,266.37
+tests,CF,internal,uniform,1,3,145.64
+tests,CF,internal,uniform,1,4,93.65
+tests,CF,internal,uniform,1,5,80.24
+tests,CF,internal,uniform,1,6,90.51
+tests,CF,internal,uniform,1,7,112.99
+tests,CF,internal,uniform,1,8,142.32
+tests,CF,internal,uniform,1,9,176.78
+tests,CF,internal,uniform,1,10,215.73
+tests,CF,internal,uniform,1,11,258.90
+tests,CF,internal,uniform,1,12,306.12
+tests,CF,internal,uniform,1,13,357.29
+tests,CF,internal,uniform,1,14,412.32
+tests,CF,internal,uniform,1,15,471.12
+tests,CF,internal,uniform,1,16,533.60
+tests,CF,internal,uniform,2,2,874.01
+tests,CF,internal,uniform,2,3,563.62
+tests,CF,internal,uniform,2,4,388.15
+tests,CF,internal,uniform,2,5,287.23
+tests,CF,internal,uniform,2,6,236.23
+tests,CF,internal,uniform,2,7,221.85
+tests,CF,internal,uniform,2,8,232.29
+tests,CF,internal,uniform,2,9,257.71
+tests,CF,internal,uniform,2,10,292.21
+tests,CF,internal,uniform,2,11,332.94
+tests,CF,internal,uniform,2,12,378.59
+tests,CF,internal,uniform,2,13,428.52
+tests,CF,internal,uniform,2,14,482.43
+tests,CF,internal,uniform,2,15,540.12
+tests,CF,internal,uniform,2,16,601.43
+tests,CF,internal,uniform,3,2,1493.69
+tests,CF,internal,uniform,3,3,1095.11
+tests,CF,internal,uniform,3,4,817.54
+tests,CF,internal,uniform,3,5,632.82
+tests,CF,internal,uniform,3,6,516.64
+tests,CF,internal,uniform,3,7,452.77
+tests,CF,internal,uniform,3,8,428.56
+tests,CF,internal,uniform,3,9,432.39
+tests,CF,internal,uniform,3,10,454.51
+tests,CF,internal,uniform,3,11,488.22
+tests,CF,internal,uniform,3,12,529.59
+tests,CF,internal,uniform,3,13,576.49
+tests,CF,internal,uniform,3,14,627.83
+tests,CF,internal,uniform,3,15,683.02
+tests,CF,internal,uniform,3,16,741.72
+tests,CF,internal,uniform,4,2,1892.84
+tests,CF,internal,uniform,4,3,1530.45
+tests,CF,internal,uniform,4,4,1236.85
+tests,CF,internal,uniform,4,5,1019.37
+tests,CF,internal,uniform,4,6,869.01
+tests,CF,internal,uniform,4,7,774.41
+tests,CF,internal,uniform,4,8,724.34
+tests,CF,internal,uniform,4,9,707.98
+tests,CF,internal,uniform,4,10,715.58
+tests,CF,internal,uniform,4,11,739.44
+tests,CF,internal,uniform,4,12,774.17
+tests,CF,internal,uniform,4,13,816.34
+tests,CF,internal,uniform,4,14,863.88
+tests,CF,internal,uniform,4,15,915.61
+tests,CF,internal,uniform,4,16,970.80
+tests,FF,internal,D_y/D = 1,0,2,5.19
+tests,FF,internal,D_y/D = 1,0,3,14.65
+tests,FF,internal,D_y/D = 1,0,4,28.06
+tests,FF,internal,D_y/D = 1,0,5,45.34
+tests,FF,internal,D_y/D = 1,0,6,66.44
+tests,FF,internal,D_y/D = 1,0,7,91.33
+tests,FF,internal,D_y/D = 1,0,8,120.00
+tests,FF,internal,D_y/D = 1,0,9,152.40
+tests,FF,internal,D_y/D = 1,0,10,188.51
+tests,FF,internal,D_y/D = 1,0,11,228.29
+tests,FF,internal,D_y/D = 1,0,12,271.68
+tests,FF,internal,D_y/D = 1,0,13,318.64
+tests,FF,internal,D_y/D = 1,0,14,369.11
+tests,FF,internal,D_y/D = 1,0,15,423.03
+tests,FF,internal,D_y/D = 1,0,16,480.32
+tests,FF,internal,D_y/D = 1,1,2,15.62
+tests,FF,internal,D_y/D = 1,1,3,32.13
+tests,FF,internal,D_y/D = 1,1,4,49.93
+tests,FF,internal,D_y/D = 1,1,5,70.04
+tests,FF,internal,D_y/D = 1,1,6,92.97
+tests,FF,internal,D_y/D = 1,1,7,119.00
+tests,FF,internal,D_y/D = 1,1,8,148.33
+tests,FF,internal,D_y/D = 1,1,9,181.12
+tests,FF,internal,D_y/D = 1,1,10,217.47
+tests,FF,internal,D_y/D = 1,1,11,257.38
+tests,FF,internal,D_y/D = 1,1,12,300.84
+tests,FF,internal,D_y/D = 1,1,13,347.79
+tests,FF,internal,D_y/D = 1,1,14,398.19
+tests,FF,internal,D_y/D = 1,1,15,451.96
+tests,FF,internal,D_y/D = 1,1,16,509.03
+tests,FF,internal,D_y/D = 1,2,2,1127.22
+tests,FF,internal,D_y/D = 1,2,3,709.02
+tests,FF,internal,D_y/D = 1,2,4,461.17
+tests,FF,internal,D_y/D = 1,2,5,322.91
+tests,FF,internal,D_y/D = 1,2,6,255.51
+tests,FF,internal,D_y/D = 1,2,7,235.26
+tests,FF,internal,D_y/D = 1,2,8,243.98
+tests,FF,internal,D_y/D = 1,2,9,268.69
+tests,FF,internal,D_y/D = 1,2,10,302.25
+tests,FF,internal,D_y/D = 1,2,11,341.40
+tests,FF,internal,D_y/D = 1,2,12,384.74
+tests,FF,internal,D_y/D = 1,2,13,431.68
+tests,FF,internal,D_y/D = 1,2,14,481.92
+tests,FF,internal,D_y/D = 1,2,15,535.33
+tests,FF,internal,D_y/D = 1,2,16,591.77
+tests,FF,internal,D_y/D = 1,3,2,1578.15
+tests,FF,internal,D_y/D = 1,3,3,1184.90
+tests,FF,internal,D_y/D = 1,3,4,881.04
+tests,FF,internal,D_y/D = 1,3,5,669.36
+tests,FF,internal,D_y/D = 1,3,6,534.37
+tests,FF,internal,D_y/D = 1,3,7,460.39
+tests,FF,internal,D_y/D = 1,3,8,432.23
+tests,FF,internal,D_y/D = 1,3,9,435.22
+tests,FF,internal,D_y/D = 1,3,10,457.41
+tests,FF,internal,D_y/D = 1,3,11,491.01
+tests,FF,internal,D_y/D = 1,3,12,531.63
+tests,FF,internal,D_y/D = 1,3,13,577.01
+tests,FF,internal,D_y/D = 1,3,14,626.01
+tests,FF,internal,D_y/D = 1,3,15,678.06
+tests,FF,internal,D_y/D = 1,3,16,732.83
+tests,FF,internal,D_y/D = 1,4,2,1946.64
+tests,FF,internal,D_y/D = 1,4,3,1592.82
+tests,FF,internal,D_y/D = 1,4,4,1285.69
+tests,FF,internal,D_y/D = 1,4,5,1048.20
+tests,FF,internal,D_y/D = 1,4,6,879.84
+tests,FF,internal,D_y/D = 1,4,7,772.66
+tests,FF,internal,D_y/D = 1,4,8,715.69
+tests,FF,internal,D_y/D = 1,4,9,696.63
+tests,FF,internal,D_y/D = 1,4,10,703.83
+tests,FF,internal,D_y/D = 1,4,11,728.08
+tests,FF,internal,D_y/D = 1,4,12,763.08
+tests,FF,internal,D_y/D = 1,4,13,804.97
+tests,FF,internal,D_y/D = 1,4,14,851.48
+tests,FF,internal,D_y/D = 1,4,15,901.33
+tests,FF,internal,D_y/D = 1,4,16,953.81
+tests,FF,internal,roots,0,2,5.68
+tests,FF,internal,roots,0,3,16.03
+tests,FF,internal,roots,0,4,30.72
+tests,FF,internal,roots,0,5,49.65
+tests,FF,internal,roots,0,6,72.81
+tests,FF,internal,roots,0,7,100.19
+tests,FF,internal,roots,0,8,131.77
+tests,FF,internal,roots,0,9,167.55
+tests,FF,internal,roots,0,10,207.53
+tests,FF,internal,roots,0,11,251.69
+tests,FF,internal,roots,0,12,300.04
+tests,FF,internal,roots,0,13,352.55
+tests,FF,internal,roots,0,14,409.23
+tests,FF,internal,roots,0,15,470.07
+tests,FF,internal,roots,0,16,535.05
+tests,FF,internal,roots,1,2,15.95
+tests,FF,internal,roots,1,3,33.11
+tests,FF,internal,roots,1,4,51.96
+tests,FF,internal,roots,1,5,73.55
+tests,FF,internal,roots,1,6,98.41
+tests,FF,internal,roots,1,7,126.83
+tests,FF,internal,roots,1,8,159.03
+tests,FF,internal,roots,1,9,195.22
+tests,FF,internal,roots,1,10,235.50
+tests,FF,internal,roots,1,11,279.93
+tests,FF,internal,roots,1,12,328.50
+tests,FF,internal,roots,1,13,381.21
+tests,FF,internal,roots,1,14,438.06
+tests,FF,internal,roots,1,15,499.04
+tests,FF,internal,roots,1,16,564.13
+tests,FF,internal,roots,2,2,1132.36
+tests,FF,internal,roots,2,3,710.81
+tests,FF,internal,roots,2,4,462.56
+tests,FF,internal,roots,2,5,325.16
+tests,FF,internal,roots,2,6,259.76
+tests,FF,internal,roots,2,7,242.41
+tests,FF,internal,roots,2,8,254.50
+tests,FF,internal,roots,2,9,282.92
+tests,FF,internal,roots,2,10,320.63
+tests,FF,internal,roots,2,11,364.52
+tests,FF,internal,roots,2,12,413.28
+tests,FF,internal,roots,2,13,466.37
+tests,FF,internal,roots,2,14,523.58
+tests,FF,internal,roots,2,15,584.82
+tests,FF,internal,roots,2,16,650.05
+tests,FF,internal,roots,3,2,1590.56
+tests,FF,internal,roots,3,3,1190.98
+tests,FF,internal,roots,3,4,884.73
+tests,FF,internal,roots,3,5,672.96
+tests,FF,internal,roots,3,6,539.40
+tests,FF,internal,roots,3,7,468.06
+tests,FF,internal,roots,3,8,443.42
+tests,FF,internal,roots,3,9,450.46
+tests,FF,internal,roots,3,10,477.18
+tests,FF,internal,roots,3,11,515.84
+tests,FF,internal,roots,3,12,562.19
+tests,FF,internal,roots,3,13,614.10
+tests,FF,internal,roots,3,14,670.53
+tests,FF,internal,roots,3,15,731.00
+tests,FF,internal,roots,3,16,795.30
+tests,FF,internal,roots,4,2,1966.03
+tests,FF,internal,roots,4,3,1603.38
+tests,FF,internal,roots,4,4,1291.99
+tests,FF,internal,roots,4,5,1053.27
+tests,FF,internal,roots,4,6,885.63
+tests,FF,internal,roots,4,7,780.55
+tests,FF,internal,roots,4,8,726.68
+tests,FF,internal,roots,4,9,711.42
+tests,FF,internal,roots,4,10,722.97
+tests,FF,internal,roots,4,11,752.11
+tests,FF,internal,roots,4,12,792.67
+tests,FF,internal,roots,4,13,840.87
+tests,FF,internal,roots,4,14,894.61
+tests,FF,internal,roots,4,15,952.73
+tests,FF,internal,roots,4,16,1014.61
+tests,FF,internal,uniform,0,2,5.68
+tests,FF,internal,uniform,0,3,16.02
+tests,FF,internal,uniform,0,4,30.68
+tests,FF,internal,uniform,0,5,49.57
+tests,FF,internal,uniform,0,6,72.64
+tests,FF,internal,uniform,0,7,99.86
+tests,FF,internal,uniform,0,8,131.20
+tests,FF,internal,uniform,0,9,166.62
+tests,FF,internal,uniform,0,10,206.10
+tests,FF,internal,uniform,0,11,249.58
+tests,FF,internal,uniform,0,12,297.02
+tests,FF,internal,uniform,0,13,348.37
+tests,FF,internal,uniform,0,14,403.55
+tests,FF,internal,uniform,0,15,462.50
+tests,FF,internal,uniform,0,16,525.13
+tests,FF,internal,uniform,1,2,15.84
+tests,FF,internal,uniform,1,3,32.88
+tests,FF,internal,uniform,1,4,51.59
+tests,FF,internal,uniform,1,5,73.02
+tests,FF,internal,uniform,1,6,97.68
+tests,FF,internal,uniform,1,7,125.84
+tests,FF,internal,uniform,1,8,157.70
+tests,FF,internal,uniform,1,9,193.41
+tests,FF,internal,uniform,1,10,233.04
+tests,FF,internal,uniform,1,11,276.61
+tests,FF,internal,uniform,1,12,324.07
+tests,FF,internal,uniform,1,13,375.38
+tests,FF,internal,uniform,1,14,430.46
+tests,FF,internal,uniform,1,15,489.26
+tests,FF,internal,uniform,1,16,551.68
+tests,FF,internal,uniform,2,2,1128.70
+tests,FF,internal,uniform,2,3,709.46
+tests,FF,internal,uniform,2,4,461.57
+tests,FF,internal,uniform,2,5,323.88
+tests,FF,internal,uniform,2,6,257.82
+tests,FF,internal,uniform,2,7,239.63
+tests,FF,internal,uniform,2,8,250.84
+tests,FF,internal,uniform,2,9,278.31
+tests,FF,internal,uniform,2,10,314.92
+tests,FF,internal,uniform,2,11,357.46
+tests,FF,internal,uniform,2,12,404.57
+tests,FF,internal,uniform,2,13,455.65
+tests,FF,internal,uniform,2,14,510.43
+tests,FF,internal,uniform,2,15,568.73
+tests,FF,internal,uniform,2,16,630.44
+tests,FF,internal,uniform,3,2,1581.76
+tests,FF,internal,uniform,3,3,1186.53
+tests,FF,internal,uniform,3,4,881.98
+tests,FF,internal,uniform,3,5,670.43
+tests,FF,internal,uniform,3,6,536.26
+tests,FF,internal,uniform,3,7,463.79
+tests,FF,internal,uniform,3,8,437.73
+tests,FF,internal,uniform,3,9,443.21
+tests,FF,internal,uniform,3,10,468.22
+tests,FF,internal,uniform,3,11,504.93
+tests,FF,internal,uniform,3,12,549.01
+tests,FF,internal,uniform,3,13,598.22
+tests,FF,internal,uniform,3,14,651.46
+tests,FF,internal,uniform,3,15,708.16
+tests,FF,internal,uniform,3,16,767.99
+tests,FF,internal,uniform,4,2,1952.34
+tests,FF,internal,uniform,4,3,1595.77
+tests,FF,internal,uniform,4,4,1287.36
+tests,FF,internal,uniform,4,5,1049.62
+tests,FF,internal,uniform,4,6,881.76
+tests,FF,internal,uniform,4,7,775.72
+tests,FF,internal,uniform,4,8,720.44
+tests,FF,internal,uniform,4,9,703.50
+tests,FF,internal,uniform,4,10,713.15
+tests,FF,internal,uniform,4,11,740.15
+tests,FF,internal,uniform,4,12,778.23
+tests,FF,internal,uniform,4,13,823.54
+tests,FF,internal,uniform,4,14,873.85
+tests,FF,internal,uniform,4,15,927.92
+tests,FF,internal,uniform,4,16,985.03
+tests,SS,internal,D_y/D = 1,1,2,628.05
+tests,SS,internal,D_y/D = 1,1,3,368.79
+tests,SS,internal,D_y/D = 1,1,4,233.21
+tests,SS,internal,D_y/D = 1,1,5,165.20
+tests,SS,internal,D_y/D = 1,1,6,139.74
+tests,SS,internal,D_y/D = 1,1,7,142.45
+tests,SS,internal,D_y/D = 1,1,8,161.75
+tests,SS,internal,D_y/D = 1,1,9,190.37
+tests,SS,internal,D_y/D = 1,1,10,224.91
+tests,SS,internal,D_y/D = 1,1,11,263.96
+tests,SS,internal,D_y/D = 1,1,12,306.96
+tests,SS,internal,D_y/D = 1,1,13,353.63
+tests,SS,internal,D_y/D = 1,1,14,403.83
+tests,SS,internal,D_y/D = 1,1,15,457.46
+tests,SS,internal,D_y/D = 1,1,16,514.41
+tests,SS,internal,D_y/D = 1,2,2,1301.29
+tests,SS,internal,D_y/D = 1,2,3,912.21
+tests,SS,internal,D_y/D = 1,2,4,652.85
+tests,SS,internal,D_y/D = 1,2,5,485.50
+tests,SS,internal,D_y/D = 1,2,6,384.50
+tests,SS,internal,D_y/D = 1,2,7,332.98
+tests,SS,internal,D_y/D = 1,2,8,317.59
+tests,SS,internal,D_y/D = 1,2,9,326.51
+tests,SS,internal,D_y/D = 1,2,10,350.58
+tests,SS,internal,D_y/D = 1,2,11,384.06
+tests,SS,internal,D_y/D = 1,2,12,423.82
+tests,SS,internal,D_y/D = 1,2,13,468.26
+tests,SS,internal,D_y/D = 1,2,14,516.60
+tests,SS,internal,D_y/D = 1,2,15,568.42
+tests,SS,internal,D_y/D = 1,2,16,623.48
+tests,SS,internal,D_y/D = 1,3,2,1758.67
+tests,SS,internal,D_y/D = 1,3,3,1376.61
+tests,SS,internal,D_y/D = 1,3,4,1079.77
+tests,SS,internal,D_y/D = 1,3,5,864.75
+tests,SS,internal,D_y/D = 1,3,6,718.75
+tests,SS,internal,D_y/D = 1,3,7,629.05
+tests,SS,internal,D_y/D = 1,3,8,583.56
+tests,SS,internal,D_y/D = 1,3,9,570.69
+tests,SS,internal,D_y/D = 1,3,10,580.27
+tests,SS,internal,D_y/D = 1,3,11,604.57
+tests,SS,internal,D_y/D = 1,3,12,638.49
+tests,SS,internal,D_y/D = 1,3,13,678.90
+tests,SS,internal,D_y/D = 1,3,14,724.02
+tests,SS,internal,D_y/D = 1,3,15,772.84
+tests,SS,internal,D_y/D = 1,3,16,824.79
+tests,SS,internal,D_y/D = 1,4,2,2124.03
+tests,SS,internal,D_y/D = 1,4,3,1797.50
+tests,SS,internal,D_y/D = 1,4,4,1511.62
+tests,SS,internal,D_y/D = 1,4,5,1286.27
+tests,SS,internal,D_y/D = 1,4,6,1121.75
+tests,SS,internal,D_y/D = 1,4,7,1011.49
+tests,SS,internal,D_y/D = 1,4,8,946.42
+tests,SS,internal,D_y/D = 1,4,9,916.72
+tests,SS,internal,D_y/D = 1,4,10,913.11
+tests,SS,internal,D_y/D = 1,4,11,927.85
+tests,SS,internal,D_y/D = 1,4,12,955.17
+tests,SS,internal,D_y/D = 1,4,13,991.07
+tests,SS,internal,D_y/D = 1,4,14,1032.92
+tests,SS,internal,D_y/D = 1,4,15,1079.09
+tests,SS,internal,D_y/D = 1,4,16,1128.53
+tests,SS,internal,roots,1,2,629.02
+tests,SS,internal,roots,1,3,369.24
+tests,SS,internal,roots,1,4,233.90
+tests,SS,internal,roots,1,5,166.88
+tests,SS,internal,roots,1,6,143.46
+tests,SS,internal,roots,1,7,149.00
+tests,SS,internal,roots,1,8,171.54
+tests,SS,internal,roots,1,9,203.77
+tests,SS,internal,roots,1,10,242.36
+tests,SS,internal,roots,1,11,286.00
+tests,SS,internal,roots,1,12,334.18
+tests,SS,internal,roots,1,13,386.67
+tests,SS,internal,roots,1,14,443.39
+tests,SS,internal,roots,1,15,504.29
+tests,SS,internal,roots,1,16,569.35
+tests,SS,internal,roots,2,2,1308.84
+tests,SS,internal,roots,2,3,915.26
+tests,SS,internal,roots,2,4,654.71
+tests,SS,internal,roots,2,5,487.49
+tests,SS,internal,roots,2,6,387.53
+tests,SS,internal,roots,2,7,337.94
+tests,SS,internal,roots,2,8,325.31
+tests,SS,internal,roots,2,9,337.64
+tests,SS,internal,roots,2,10,365.72
+tests,SS,internal,roots,2,11,403.85
+tests,SS,internal,roots,2,12,448.94
+tests,SS,internal,roots,2,13,499.50
+tests,SS,internal,roots,2,14,554.78
+tests,SS,internal,roots,2,15,614.46
+tests,SS,internal,roots,2,16,678.35
+tests,SS,internal,roots,3,2,1773.84
+tests,SS,internal,roots,3,3,1383.88
+tests,SS,internal,roots,3,4,1083.83
+tests,SS,internal,roots,3,5,867.97
+tests,SS,internal,roots,3,6,722.49
+tests,SS,internal,roots,3,7,634.24
+tests,SS,internal,roots,3,8,590.97
+tests,SS,internal,roots,3,9,580.99
+tests,SS,internal,roots,3,10,594.09
+tests,SS,internal,roots,3,11,622.59
+tests,SS,internal,roots,3,12,661.46
+tests,SS,internal,roots,3,13,707.68
+tests,SS,internal,roots,3,14,759.56
+tests,SS,internal,roots,3,15,816.19
+tests,SS,internal,roots,3,16,877.08
+tests,SS,internal,roots,4,2,2141.20
+tests,SS,internal,roots,4,3,1806.64
+tests,SS,internal,roots,4,4,1516.62
+tests,SS,internal,roots,4,5,1289.79
+tests,SS,internal,roots,4,6,1125.43
+tests,SS,internal,roots,4,7,1016.40
+tests,SS,internal,roots,4,8,953.28
+tests,SS,internal,roots,4,9,926.08
+tests,SS,internal,roots,4,10,925.47
+tests,SS,internal,roots,4,11,943.75
+tests,SS,internal,roots,4,12,975.23
+tests,SS,internal,roots,4,13,1016.02
+tests,SS,internal,roots,4,14,1063.64
+tests,SS,internal,roots,4,15,1116.55
+tests,SS,internal,roots,4,16,1173.87
+tests,SS,internal,uniform,1,2,628.31
+tests,SS,internal,uniform,1,3,368.90
+tests,SS,internal,uniform,1,4,233.57
+tests,SS,internal,uniform,1,5,166.45
+tests,SS,internal,uniform,1,6,142.86
+tests,SS,internal,uniform,1,7,148.14
+tests,SS,internal,uniform,1,8,170.32
+tests,SS,internal,uniform,1,9,202.04
+tests,SS,internal,uniform,1,10,239.95
+tests,SS,internal,uniform,1,11,282.70
+tests,SS,internal,uniform,1,12,329.72
+tests,SS,internal,uniform,1,13,380.76
+tests,SS,internal,uniform,1,14,435.66
+tests,SS,internal,uniform,1,15,494.31
+tests,SS,internal,uniform,1,16,556.62
+tests,SS,internal,uniform,2,2,1303.42
+tests,SS,internal,uniform,2,3,912.97
+tests,SS,internal,uniform,2,4,653.29
+tests,SS,internal,uniform,2,5,486.17
+tests,SS,internal,uniform,2,6,385.97
+tests,SS,internal,uniform,2,7,335.94
+tests,SS,internal,uniform,2,8,322.70
+tests,SS,internal,uniform,2,9,334.25
+tests,SS,internal,uniform,2,10,361.34
+tests,SS,internal,uniform,2,11,398.19
+tests,SS,internal,uniform,2,12,441.69
+tests,SS,internal,uniform,2,13,490.25
+tests,SS,internal,uniform,2,14,543.09
+tests,SS,internal,uniform,2,15,599.80
+tests,SS,internal,uniform,2,16,660.12
+tests,SS,internal,uniform,3,2,1762.99
+tests,SS,internal,uniform,3,3,1378.53
+tests,SS,internal,uniform,3,4,1080.76
+tests,SS,internal,uniform,3,5,865.62
+tests,SS,internal,uniform,3,6,720.08
+tests,SS,internal,uniform,3,7,631.36
+tests,SS,internal,uniform,3,8,587.39
+tests,SS,internal,uniform,3,9,576.49
+tests,SS,internal,uniform,3,10,588.44
+tests,SS,internal,uniform,3,11,615.51
+tests,SS,internal,uniform,3,12,652.58
+tests,SS,internal,uniform,3,13,696.54
+tests,SS,internal,uniform,3,14,745.64
+tests,SS,internal,uniform,3,15,798.87
+tests,SS,internal,uniform,3,16,855.66
+tests,SS,internal,uniform,4,2,2128.98
+tests,SS,internal,uniform,4,3,1800.00
+tests,SS,internal,uniform,4,4,1512.90
+tests,SS,internal,uniform,4,5,1287.23
+tests,SS,internal,uniform,4,6,1123.02
+tests,SS,internal,uniform,4,7,1013.57
+tests,SS,internal,uniform,4,8,949.74
+tests,SS,internal,uniform,4,9,921.64
+tests,SS,internal,uniform,4,10,919.97
+tests,SS,internal,uniform,4,11,936.97
+tests,SS,internal,uniform,4,12,966.87
+tests,SS,internal,uniform,4,13,1005.70
+tests,SS,internal,uniform,4,14,1050.87
+tests,SS,internal,uniform,4,15,1100.75
+tests,SS,internal,uniform,4,16,1154.32
+tests,CC,unstiffened,D_y/D = 1,1,2,1025.75
+tests,CC,unstiffened,D_y/D = 1,1,3,677.29
+tests,CC,unstiffened,D_y/D = 1,1,4,473.82
+tests,CC,unstiffened,D_y/D = 1,1,5,350.02
+tests,CC,unstiffened,D_y/D = 1,1,6,276.63
+tests,CC,unstiffened,D_y/D = 1,1,7,240.76
+tests,CC,unstiffened,D_y/D = 1,1,8,235.61
+tests,CC,unstiffened,D_y/D = 1,1,9,254.51
+tests,CC,unstiffened,D_y/D = 1,1,10,290.64
+tests,CC,unstiffened,D_y/D = 1,1,11,338.85
+tests,CC,unstiffened,D_y/D = 1,1,12,396.06
+tests,CC,unstiffened,D_y/D = 1,1,13,460.61
+tests,CC,unstiffened,D_y/D = 1,1,14,531.62
+tests,CC,unstiffened,D_y/D = 1,1,15,608.63
+tests,CC,unstiffened,D_y/D = 1,1,16,691.39
+tests,CC,unstiffened,D_y/D = 1,2,2,1907.84
+tests,CC,unstiffened,D_y/D = 1,2,3,1357.52
+tests,CC,unstiffened,D_y/D = 1,2,4,1003.20
+tests,CC,unstiffened,D_y/D = 1,2,5,768.38
+tests,CC,unstiffened,D_y/D = 1,2,6,608.77
+tests,CC,unstiffened,D_y/D = 1,2,7,500.96
+tests,CC,unstiffened,D_y/D = 1,2,8,432.94
+tests,CC,unstiffened,D_y/D = 1,2,9,398.38
+tests,CC,unstiffened,D_y/D = 1,2,10,392.76
+tests,CC,unstiffened,D_y/D = 1,2,11,411.19
+tests,CC,unstiffened,D_y/D = 1,2,12,448.46
+tests,CC,unstiffened,D_y/D = 1,2,13,500.06
+tests,CC,unstiffened,D_y/D = 1,2,14,562.72
+tests,CC,unstiffened,D_y/D = 1,2,15,634.29
+tests,CC,unstiffened,D_y/D = 1,2,16,713.45
+tests,CC,unstiffened,D_y/D = 1,3,2,2510.79
+tests,CC,unstiffened,D_y/D = 1,3,3,1973.57
+tests,CC,unstiffened,D_y/D = 1,3,4,1547.59
+tests,CC,unstiffened,D_y/D = 1,3,5,1231.36
+tests,CC,unstiffened,D_y/D = 1,3,6,999.46
+tests,CC,unstiffened,D_y/D = 1,3,7,829.76
+tests,CC,unstiffened,D_y/D = 1,3,8,707.48
+tests,CC,unstiffened,D_y/D = 1,3,9,623.72
+tests,CC,unstiffened,D_y/D = 1,3,10,573.26
+tests,CC,unstiffened,D_y/D = 1,3,11,552.42
+tests,CC,unstiffened,D_y/D = 1,3,12,557.55
+tests,CC,unstiffened,D_y/D = 1,3,13,584.57
+tests,CC,unstiffened,D_y/D = 1,3,14,629.32
+tests,CC,unstiffened,D_y/D = 1,3,15,688.21
+tests,CC,unstiffened,D_y/D = 1,3,16,758.49
+tests,CC,unstiffened,D_y/D = 1,4,2,2823.78
+tests,CC,unstiffened,D_y/D = 1,4,3,2400.13
+tests,CC,unstiffened,D_y/D = 1,4,4,1998.42
+tests,CC,unstiffened,D_y/D = 1,4,5,1659.34
+tests,CC,unstiffened,D_y/D = 1,4,6,1387.46
+tests,CC,unstiffened,D_y/D = 1,4,7,1174.53
+tests,CC,unstiffened,D_y/D = 1,4,8,1010.53
+tests,CC,unstiffened,D_y/D = 1,4,9,887.41
+tests,CC,unstiffened,D_y/D = 1,4,10,799.62
+tests,CC,unstiffened,D_y/D = 1,4,11,743.44
+tests,CC,unstiffened,D_y/D = 1,4,12,716.04
+tests,CC,unstiffened,D_y/D = 1,4,13,714.52
+tests,CC,unstiffened,D_y/D = 1,4,14,735.61
+tests,CC,unstiffened,D_y/D = 1,4,15,775.83
+tests,CC,unstiffened,D_y/D = 1,4,16,831.86
+tests,CF,unstiffened,D_y/D = 1,1,2,317.17
+tests,CF,unstiffened,D_y/D = 1,1,3,168.21
+tests,CF,unstiffened,D_y/D = 1,1,4,107.94
+tests,CF,unstiffened,D_y/D = 1,1,5,92.25
+tests,CF,unstiffened,D_y/D = 1,1,6,104.81
+tests,CF,unstiffened,D_y/D = 1,1,7,133.30
+tests,CF,unstiffened,D_y/D = 1,1,8,171.08
+tests,CF,unstiffened,D_y/D = 1,1,9,215.66
+tests,CF,unstiffened,D_y/D = 1,1,10,266.17
+tests,CF,unstiffened,D_y/D = 1,1,11,322.30
+tests,CF,unstiffened,D_y/D = 1,1,12,383.91
+tests,CF,unstiffened,D_y/D = 1,1,13,450.95
+tests,CF,unstiffened,D_y/D = 1,1,14,523.38
+tests,CF,unstiffened,D_y/D = 1,1,15,601.20
+tests,CF,unstiffened,D_y/D = 1,1,16,684.39
+tests,CF,unstiffened,D_y/D = 1,2,2,1176.68
+tests,CF,unstiffened,D_y/D = 1,2,3,744.17
+tests,CF,unstiffened,D_y/D = 1,2,4,501.71
+tests,CF,unstiffened,D_y/D = 1,2,5,360.49
+tests,CF,unstiffened,D_y/D = 1,2,6,279.86
+tests,CF,unstiffened,D_y/D = 1,2,7,241.80
+tests,CF,unstiffened,D_y/D = 1,2,8,236.80
+tests,CF,unstiffened,D_y/D = 1,2,9,256.56
+tests,CF,unstiffened,D_y/D = 1,2,10,293.44
+tests,CF,unstiffened,D_y/D = 1,2,11,342.10
+tests,CF,unstiffened,D_y/D = 1,2,12,399.52
+tests,CF,unstiffened,D_y/D = 1,2,13,464.12
+tests,CF,unstiffened,D_y/D = 1,2,14,535.09
+tests,CF,unstiffened,D_y/D = 1,2,15,612.01
+tests,CF,unstiffened,D_y/D = 1,2,16,694.66
+tests,CF,unstiffened,D_y/D = 1,3,2,2119.77
+tests,CF,unstiffened,D_y/D = 1,3,3,1517.03
+tests,CF,unstiffened,D_y/D = 1,3,4,1102.76
+tests,CF,unstiffened,D_y/D = 1,3,5,826.77
+tests,CF,unstiffened,D_y/D = 1,3,6,641.97
+tests,CF,unstiffened,D_y/D = 1,3,7,519.44
+tests,CF,unstiffened,D_y/D = 1,3,8,443.28
+tests,CF,unstiffened,D_y/D = 1,3,9,404.70
+tests,CF,unstiffened,D_y/D = 1,3,10,397.52
+tests,CF,unstiffened,D_y/D = 1,3,11,415.67
+tests,CF,unstiffened,D_y/D = 1,3,12,453.17
+tests,CF,unstiffened,D_y/D = 1,3,13,505.10
+tests,CF,unstiffened,D_y/D = 1,3,14,568.03
+tests,CF,unstiffened,D_y/D = 1,3,15,639.77
+tests,CF,unstiffened,D_y/D = 1,3,16,719.01
+tests,CF,unstiffened,D_y/D = 1,4,2,2623.63
+tests,CF,unstiffened,D_y/D = 1,4,3,2101.91
+tests,CF,unstiffened,D_y/D = 1,4,4,1655.61
+tests,CF,unstiffened,D_y/D = 1,4,5,1310.37
+tests,CF,unstiffened,D_y/D = 1,4,6,1053.09
+tests,CF,unstiffened,D_y/D = 1,4,7,864.48
+tests,CF,unstiffened,D_y/D = 1,4,8,729.24
+tests,CF,unstiffened,D_y/D = 1,4,9,637.20
+tests,CF,unstiffened,D_y/D = 1,4,10,581.91
+tests,CF,unstiffened,D_y/D = 1,4,11,558.70
+tests,CF,unstiffened,D_y/D = 1,4,12,563.02
+tests,CF,unstiffened,D_y/D = 1,4,13,590.06
+tests,CF,unstiffened,D_y/D = 1,4,14,635.17
+tests,CF,unstiffened,D_y/D = 1,4,15,694.49
+tests,CF,unstiffened,D_y/D = 1,4,16,765.14
+tests,FF,unstiffened,D_y/D = 1,0,2,7.21
+tests,FF,unstiffened,D_y/D = 1,0,3,20.40
+tests,FF,unstiffened,D_y/D = 1,0,4,39.12
+tests,FF,unstiffened,D_y/D = 1,0,5,63.26
+tests,FF,unstiffened,D_y/D = 1,0,6,92.80
+tests,FF,unstiffened,D_y/D = 1,0,7,127.73
+tests,FF,unstiffened,D_y/D = 1,0,8,168.02
+tests,FF,unstiffened,D_y/D = 1,0,9,213.69
+tests,FF,unstiffened,D_y/D = 1,0,10,264.71
+tests,FF,unstiffened,D_y/D = 1,0,11,321.10
+tests,FF,unstiffened,D_y/D = 1,0,12,382.85
+tests,FF,unstiffened,D_y/D = 1,0,13,449.97
+tests,FF,unstiffened,D_y/D = 1,0,14,522.46
+tests,FF,unstiffened,D_y/D = 1,0,15,600.31
+tests,FF,unstiffened,D_y/D = 1,0,16,683.54
+tests,FF,unstiffened,D_y/D = 1,1,2,8.87
+tests,FF,unstiffened,D_y/D = 1,1,3,22.75
+tests,FF,unstiffened,D_y/D = 1,1,4,41.75
+tests,FF,unstiffened,D_y/D = 1,1,5,66.00
+tests,FF,unstiffened,D_y/D = 1,1,6,95.57
+tests,FF,unstiffened,D_y/D = 1,1,7,130.48
+tests,FF,unstiffened,D_y/D = 1,1,8,170.74
+tests,FF,unstiffened,D_y/D = 1,1,9,216.35
+tests,FF,unstiffened,D_y/D = 1,1,10,267.33
+tests,FF,unstiffened,D_y/D = 1,1,11,323.66
+tests,FF,unstiffened,D_y/D = 1,1,12,385.36
+tests,FF,unstiffened,D_y/D = 1,1,13,452.42
+tests,FF,unstiffened,D_y/D = 1,1,14,524.84
+tests,FF,unstiffened,D_y/D = 1,1,15,602.62
+tests,FF,unstiffened,D_y/D = 1,1,16,685.77
+tests,FF,unstiffened,D_y/D = 1,2,2,1504.20
+tests,FF,unstiffened,D_y/D = 1,2,3,900.72
+tests,FF,unstiffened,D_y/D = 1,2,4,573.82
+tests,FF,unstiffened,D_y/D = 1,2,5,394.70
+tests,FF,unstiffened,D_y/D = 1,2,6,296.90
+tests,FF,unstiffened,D_y/D = 1,2,7,250.92
+tests,FF,unstiffened,D_y/D = 1,2,8,242.44
+tests,FF,unstiffened,D_y/D = 1,2,9,260.81
+tests,FF,unstiffened,D_y/D = 1,2,10,297.21
+tests,FF,unstiffened,D_y/D = 1,2,11,345.74
+tests,FF,unstiffened,D_y/D = 1,2,12,403.16
+tests,FF,unstiffened,D_y/D = 1,2,13,467.81
+tests,FF,unstiffened,D_y/D = 1,2,14,538.83
+tests,FF,unstiffened,D_y/D = 1,2,15,615.79
+tests,FF,unstiffened,D_y/D = 1,2,16,698.46
+tests,FF,unstiffened,D_y/D = 1,3,2,2284.82
+tests,FF,unstiffened,D_y/D = 1,3,3,1680.49
+tests,FF,unstiffened,D_y/D = 1,3,4,1216.98
+tests,FF,unstiffened,D_y/D = 1,3,5,897.17
+tests,FF,unstiffened,D_y/D = 1,3,6,683.13
+tests,FF,unstiffened,D_y/D = 1,3,7,543.09
+tests,FF,unstiffened,D_y/D = 1,3,8,457.09
+tests,FF,unstiffened,D_y/D = 1,3,9,413.44
+tests,FF,unstiffened,D_y/D = 1,3,10,404.00
+tests,FF,unstiffened,D_y/D = 1,3,11,421.35
+tests,FF,unstiffened,D_y/D = 1,3,12,458.69
+tests,FF,unstiffened,D_y/D = 1,3,13,510.69
+tests,FF,unstiffened,D_y/D = 1,3,14,573.73
+tests,FF,unstiffened,D_y/D = 1,3,15,645.58
+tests,FF,unstiffened,D_y/D = 1,3,16,724.91
+tests,FF,unstiffened,D_y/D = 1,4,2,2727.62
+tests,FF,unstiffened,D_y/D = 1,4,3,2230.21
+tests,FF,unstiffened,D_y/D = 1,4,4,1773.47
+tests,FF,unstiffened,D_y/D = 1,4,5,1402.49
+tests,FF,unstiffened,D_y/D = 1,4,6,1118.74
+tests,FF,unstiffened,D_y/D = 1,4,7,908.80
+tests,FF,unstiffened,D_y/D = 1,4,8,758.29
+tests,FF,unstiffened,D_y/D = 1,4,9,656.16
+tests,FF,unstiffened,D_y/D = 1,4,10,594.71
+tests,FF,unstiffened,D_y/D = 1,4,11,568.11
+tests,FF,unstiffened,D_y/D = 1,4,12,570.84
+tests,FF,unstiffened,D_y/D = 1,4,13,597.29
+tests,FF,unstiffened,D_y/D = 1,4,14,642.31
+tests,FF,unstiffened,D_y/D = 1,4,15,701.73
+tests,FF,unstiffened,D_y/D = 1,4,16,772.53
+tests,SS,unstiffened,D_y/D = 1,1,2,824.52
+tests,SS,unstiffened,D_y/D = 1,1,3,461.57
+tests,SS,unstiffened,D_y/D = 1,1,4,287.57
+tests,SS,unstiffened,D_y/D = 1,1,5,201.84
+tests,SS,unstiffened,D_y/D = 1,1,6,166.58
+tests,SS,unstiffened,D_y/D = 1,1,7,166.21
+tests,SS,unstiffened,D_y/D = 1,1,8,189.26
+tests,SS,unstiffened,D_y/D = 1,1,9,226.85
+tests,SS,unstiffened,D_y/D = 1,1,10,274.04
+tests,SS,unstiffened,D_y/D = 1,1,11,328.57
+tests,SS,unstiffened,D_y/D = 1,1,12,389.41
+tests,SS,unstiffened,D_y/D = 1,1,13,456.11
+tests,SS,unstiffened,D_y/D = 1,1,14,528.44
+tests,SS,unstiffened,D_y/D = 1,1,15,606.30
+tests,SS,unstiffened,D_y/D = 1,1,16,689.62
+tests,SS,unstiffened,D_y/D = 1,2,2,1892.77
+tests,SS,unstiffened,D_y/D = 1,2,3,1292.79
+tests,SS,unstiffened,D_y/D = 1,2,4,900.92
+tests,SS,unstiffened,D_y/D = 1,2,5,651.60
+tests,SS,unstiffened,D_y/D = 1,2,6,493.62
+tests,SS,unstiffened,D_y/D = 1,2,7,396.77
+tests,SS,unstiffened,D_y/D = 1,2,8,345.07
+tests,SS,unstiffened,D_y/D = 1,2,9,329.28
+tests,SS,unstiffened,D_y/D = 1,2,10,341.69
+tests,SS,unstiffened,D_y/D = 1,2,11,374.91
+tests,SS,unstiffened,D_y/D = 1,2,12,423.04
+tests,SS,unstiffened,D_y/D = 1,2,13,482.12
+tests,SS,unstiffened,D_y/D = 1,2,14,549.80
+tests,SS,unstiffened,D_y/D = 1,2,15,624.76
+tests,SS,unstiffened,D_y/D = 1,2,16,706.22
+tests,SS,unstiffened,D_y/D = 1,3,2,2509.57
+tests,SS,unstiffened,D_y/D = 1,3,3,1961.74
+tests,SS,unstiffened,D_y/D = 1,3,4,1511.99
+tests,SS,unstiffened,D_y/D = 1,3,5,1172.23
+tests,SS,unstiffened,D_y/D = 1,3,6,924.36
+tests,SS,unstiffened,D_y/D = 1,3,7,747.30
+tests,SS,unstiffened,D_y/D = 1,3,8,624.93
+tests,SS,unstiffened,D_y/D = 1,3,9,546.67
+tests,SS,unstiffened,D_y/D = 1,3,10,505.61
+tests,SS,unstiffened,D_y/D = 1,3,11,496.22
+tests,SS,unstiffened,D_y/D = 1,3,12,512.89
+tests,SS,unstiffened,D_y/D = 1,3,13,550.05
+tests,SS,unstiffened,D_y/D = 1,3,14,602.93
+tests,SS,unstiffened,D_y/D = 1,3,15,667.99
+tests,SS,unstiffened,D_y/D = 1,3,16,742.82
+tests,SS,unstiffened,D_y/D = 1,4,2,2821.27
+tests,SS,unstiffened,D_y/D = 1,4,3,2397.36
+tests,SS,unstiffened,D_y/D = 1,4,4,1988.13
+tests,SS,unstiffened,D_y/D = 1,4,5,1635.22
+tests,SS,unstiffened,D_y/D = 1,4,6,1348.21
+tests,SS,unstiffened,D_y/D = 1,4,7,1122.69
+tests,SS,unstiffened,D_y/D = 1,4,8,950.38
+tests,SS,unstiffened,D_y/D = 1,4,9,823.56
+tests,SS,unstiffened,D_y/D = 1,4,10,736.29
+tests,SS,unstiffened,D_y/D = 1,4,11,684.15
+tests,SS,unstiffened,D_y/D = 1,4,12,663.23
+tests,SS,unstiffened,D_y/D = 1,4,13,669.39
+tests,SS,unstiffened,D_y/D = 1,4,14,698.18
+tests,SS,unstiffened,D_y/D = 1,4,15,745.31
+tests,SS,unstiffened,D_y/D = 1,4,16,807.14
+egle,SS,external,D_y/D = 1,1,1,1117.77
+egle,SS,external,D_y/D = 1,1,2,665.95
+egle,SS,external,D_y/D = 1,1,3,424.18
+egle,SS,external,D_y/D = 1,1,4,296.28
+egle,SS,external,D_y/D = 1,1,5,228.49
+egle,SS,external,D_y/D = 1,1,6,195.80
+egle,SS,external,D_y/D = 1,1,7,186.21
+egle,SS,external,D_y/D = 1,1,8,192.86
+egle,SS,external,D_y/D = 1,1,9,211.06
+egle,SS,external,D_y/D = 1,1,10,237.68
+egle,SS,external,D_y/D = 1,1,11,270.72
+egle,SS,external,D_y/D = 1,1,12,308.99
+egle,SS,external,D_y/D = 1,1,13,351.74
+egle,SS,external,D_y/D = 1,1,14,398.53
+egle,SS,external,D_y/D = 1,1,15,449.03
+egle,SS,external,D_y/D = 1,2,1,1814.25
+egle,SS,external,D_y/D = 1,2,2,1346.22
+egle,SS,external,D_y/D = 1,2,3,1020.02
+egle,SS,external,D_y/D = 1,2,4,805.31
+egle,SS,external,D_y/D = 1,2,5,665.15
+egle,SS,external,D_y/D = 1,2,6,574.52
+egle,SS,external,D_y/D = 1,2,7,517.82
+egle,SS,external,D_y/D = 1,2,8,485.38
+egle,SS,external,D_y/D = 1,2,9,471.04
+egle,SS,external,D_y/D = 1,2,10,470.73
+egle,SS,external,D_y/D = 1,2,11,481.65
+egle,SS,external,D_y/D = 1,2,12,501.77
+egle,SS,external,D_y/D = 1,2,13,529.60
+egle,SS,external,D_y/D = 1,2,14,563.98
+egle,SS,external,D_y/D = 1,2,15,604.04
+egle,SS,external,D_y/D = 1,3,1,2048.25
+egle,SS,external,D_y/D = 1,3,2,1747.88
+egle,SS,external,D_y/D = 1,3,3,1474.81
+egle,SS,external,D_y/D = 1,3,4,1266.48
+egle,SS,external,D_y/D = 1,3,5,1115.93
+egle,SS,external,D_y/D = 1,3,6,1009.54
+egle,SS,external,D_y/D = 1,3,7,935.85
+egle,SS,external,D_y/D = 1,3,8,886.47
+egle,SS,external,D_y/D = 1,3,9,855.59
+egle,SS,external,D_y/D = 1,3,10,839.17
+egle,SS,external,D_y/D = 1,3,11,834.40
+egle,SS,external,D_y/D = 1,3,12,839.29
+egle,SS,external,D_y/D = 1,3,13,852.40
+egle,SS,external,D_y/D = 1,3,14,872.65
+egle,SS,external,D_y/D = 1,3,15,899.19
+egle,SS,external,uniform,1,1,1119.57
+egle,SS,external,uniform,1,2,666.30
+egle,SS,external,uniform,1,3,424.32
+egle,SS,external,uniform,1,4,296.57
+egle,SS,external,uniform,1,5,229.37
+egle,SS,external,uniform,1,6,197.93
+egle,SS,external,uniform,1,7,190.38
+egle,SS,external,uniform,1,8,199.72
+egle,SS,external,uniform,1,9,221.09
+egle,SS,external,uniform,1,10,251.21
+egle,SS,external,uniform,1,11,288.05
+egle,SS,external,uniform,1,12,330.41
+egle,SS,external,uniform,1,13,377.55
+egle,SS,external,uniform,1,14,429.01
+egle,SS,external,uniform,1,15,484.48
+egle,SS,external,uniform,2,1,1822.04
+egle,SS,external,uniform,2,2,1348.99
+egle,SS,external,uniform,2,3,1021.10
+egle,SS,external,uniform,2,4,805.90
+egle,SS,external,uniform,2,5,665.79
+egle,SS,external,uniform,2,6,575.60
+egle,SS,external,uniform,2,7,519.76
+egle,SS,external,uniform,2,8,488.69
+egle,SS,external,uniform,2,9,476.30
+egle,SS,external,uniform,2,10,478.54
+egle,SS,external,uniform,2,11,492.58
+egle,SS,external,uniform,2,12,516.35
+egle,SS,external,uniform,2,13,548.31
+egle,SS,external,uniform,2,14,587.27
+egle,SS,external,uniform,2,15,632.31
+egle,SS,external,uniform,3,1,2058.78
+egle,SS,external,uniform,3,2,1753.38
+egle,SS,external,uniform,3,3,1477.50
+egle,SS,external,uniform,3,4,1267.96
+egle,SS,external,uniform,3,5,1117.06
+egle,SS,external,uniform,3,6,1010.84
+egle,SS,external,uniform,3,7,937.68
+egle,SS,external,uniform,3,8,889.20
+egle,SS,external,uniform,3,9,859.62
+egle,SS,external,uniform,3,10,844.92
+egle,SS,external,uniform,3,11,842.35
+egle,SS,external,uniform,3,12,849.93
+egle,SS,external,uniform,3,13,866.25
+egle,SS,external,uniform,3,14,890.23
+egle,SS,external,uniform,3,15,921.00
+egle,SS,external,roots,1,1,1123.14
+egle,SS,external,roots,1,2,667.13
+egle,SS,external,roots,1,3,424.68
+egle,SS,external,roots,1,4,296.88
+egle,SS,external,roots,1,5,229.72
+egle,SS,external,roots,1,6,198.41
+egle,SS,external,roots,1,7,191.11
+egle,SS,external,roots,1,8,200.84
+egle,SS,external,roots,1,9,222.76
+egle,SS,external,roots,1,10,253.62
+egle,SS,external,roots,1,11,291.44
+egle,SS,external,roots,1,12,335.03
+egle,SS,external,roots,1,13,383.73
+egle,SS,external,roots,1,14,437.14
+egle,SS,external,roots,1,15,495.02
+egle,SS,external,roots,2,1,1839.70
+egle,SS,external,roots,2,2,1355.41
+egle,SS,external,roots,2,3,1023.80
+egle,SS,external,roots,2,4,807.45
+egle,SS,external,roots,2,5,667.03
+egle,SS,external,roots,2,6,576.88
+egle,SS,external,roots,2,7,521.29
+egle,SS,external,roots,2,8,490.68
+egle,SS,external,roots,2,9,478.99
+egle,SS,external,roots,2,10,482.22
+egle,SS,external,roots,2,11,497.60
+egle,SS,external,roots,2,12,523.11
+egle,SS,external,roots,2,13,557.24
+egle,SS,external,roots,2,14,598.87
+egle,SS,external,roots,2,15,647.13
+egle,SS,external,roots,3,1,2083.86
+egle,SS,external,roots,3,2,1766.41
+egle,SS,external,roots,3,3,1483.99
+egle,SS,external,roots,3,4,1271.61
+egle,SS,external,roots,3,5,1119.62
+egle,SS,external,roots,3,6,1013.12
+egle,SS,external,roots,3,7,940.09
+egle,SS,external,roots,3,8,892.04
+egle,SS,external,roots,3,9,863.13
+egle,SS,external,roots,3,10,849.41
+egle,SS,external,roots,3,11,848.17
+egle,SS,external,roots,3,12,857.52
+egle,SS,external,roots,3,13,876.11
+egle,SS,external,roots,3,14,902.94
+egle,SS,external,roots,3,15,937.24
+egle,SS,external,as [2],1,1,1231.05
+egle,SS,external,as [2],1,2,697.96
+egle,SS,external,as [2],1,3,434.98
+egle,SS,external,as [2],1,4,300.97
+egle,SS,external,as [2],1,5,231.57
+egle,SS,external,as [2],1,6,199.25
+egle,SS,external,as [2],1,7,191.31
+egle,SS,external,as [2],1,8,200.47
+egle,SS,external,as [2],1,9,221.74
+egle,SS,external,as [2],1,10,251.81
+egle,SS,external,as [2],1,11,288.61
+egle,SS,external,as [2],1,12,330.94
+egle,SS,external,as [2],1,13,378.06
+egle,SS,external,as [2],1,14,429.51
+egle,SS,external,as [2],1,15,484.98
+egle,SS,external,as [2],2,1,1867.92
+egle,SS,external,as [2],2,2,1382.42
+egle,SS,external,as [2],2,3,1039.25
+egle,SS,external,as [2],2,4,815.81
+egle,SS,external,as [2],2,5,671.56
+egle,SS,external,as [2],2,6,579.23
+egle,SS,external,as [2],2,7,522.23
+egle,SS,external,as [2],2,8,490.49
+egle,SS,external,as [2],2,9,477.69
+egle,SS,external,as [2],2,10,479.67
+egle,SS,external,as [2],2,11,493.53
+egle,SS,external,as [2],2,12,517.19
+egle,SS,external,as [2],2,13,549.06
+egle,SS,external,as [2],2,14,587.96
+egle,SS,external,as [2],2,15,632.95
+egle,SS,external,as [2],3,1,2071.75
+egle,SS,external,as [2],3,2,1771.73
+egle,SS,external,as [2],3,3,1492.48
+egle,SS,external,as [2],3,4,1278.56
+egle,SS,external,as [2],3,5,1124.42
+egle,SS,external,as [2],3,6,1016.05
+egle,SS,external,as [2],3,7,941.50
+egle,SS,external,as [2],3,8,892.11
+egle,SS,external,as [2],3,9,861.90
+egle,SS,external,as [2],3,10,846.77
+egle,SS,external,as [2],3,11,843.88
+egle,SS,external,as [2],3,12,851.24
+egle,SS,external,as [2],3,13,867.39
+egle,SS,external,as [2],3,14,891.23
+egle,SS,external,as [2],3,15,921.90

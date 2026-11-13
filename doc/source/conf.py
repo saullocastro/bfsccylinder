@@ -43,6 +43,8 @@ extensions = [
     'numpydoc',
     'sphinx.ext.mathjax',
     'nbsphinx',
+    'nbsphinx_link',
+    'matplotlib.sphinxext.plot_directive',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -53,11 +55,23 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['**.ipynb_checkpoints']
 
-# the notebooks of the tutorials are stored with their outputs and are not
-# executed when the documentation is built
+# the notebooks are stored with their outputs and are not executed when the
+# documentation is built; each one is linked into the documentation by a
+# .nblink file of nbsphinx-link
 nbsphinx_execute = 'never'
 
 default_role = 'math'
+
+# equations numbered per chapter of the numbered user guide, e.g. (3.2)
+numfig = True
+math_numfig = True
+math_eqref_format = '({number})'
+
+# figures drawn by the scripts of _scripts/ during the build, sources hidden
+plot_include_source = False
+plot_html_show_source_link = False
+plot_html_show_formats = False
+plot_formats = [('png', 150)]
 
 # the methods of the element class are documented by autodoc, with
 # ``:members:``, and its attributes in the docstring of the class

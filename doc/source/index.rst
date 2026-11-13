@@ -37,41 +37,55 @@ Code repository
 https://github.com/saullocastro/bfsccylinder
 
 
+.. _user-guide:
+
 User guide
 ----------
 
 .. toctree::
     :maxdepth: 1
+    :numbered:
 
-    element.rst
     kinematics.rst
+    constitutive.rst
+    element.rst
+    matrices.rst
+    follower_pressure.rst
     assembling.rst
     analyses.rst
-    follower_pressure.rst
+    conventions.rst
 
-
-Usage examples
---------------
 
 .. toctree::
     :maxdepth: 1
+    :caption: Worked examples
 
-    ex_linear_static.rst
-    ex_linear_buckling.rst
-    ex_natural_frequency.rst
-    ex_nonlinear_static.rst
-    ex_structsolve_nonlinear.rst
-    ex_follower_pressure.rst
-    ex_kinematics.rst
-
-
-Tutorials
----------
+    notebooks/ex_linear_static.nblink
+    notebooks/ex_linear_buckling.nblink
+    notebooks/ex_natural_frequency.nblink
+    notebooks/ex_nonlinear_static.nblink
+    notebooks/ex_structsolve_nonlinear.nblink
+    notebooks/ex_follower_pressure.nblink
+    notebooks/ex_kinematics.nblink
 
 .. toctree::
     :maxdepth: 1
+    :caption: Tutorials
 
-    tutorials.rst
+    notebooks/stiffened_cylinder_frequencies.nblink
+    notebooks/stiffened_cylinder_buckling.nblink
+    notebooks/abramovich2003_stiffened_panels.nblink
+    notebooks/lanzi2003_stiffened_cylinder.nblink
+    notebooks/simo1990_cylinder_postbuckling.nblink
+    notebooks/schweizerhof1984_cylinder_follower.nblink
+    notebooks/sewall1968_stiffened_cylinder_frequencies.nblink
+    notebooks/egle1968_few_stringer_cylinder_frequencies.nblink
+    notebooks/card1966_stiffened_cylinder_buckling.nblink
+    notebooks/weller1977_stiffened_cylinder_buckling.nblink
+    notebooks/peterson1959_stiffened_cylinder_buckling.nblink
+    notebooks/singer1971_stiffened_cylinder_buckling.nblink
+    notebooks/moore1944_ring_cylinders.nblink
+    notebooks/moore1944_stiffened_cylinders.nblink
 
 
 bfsccylinder API
@@ -92,13 +106,18 @@ Installing bfsccylinder
     install.rst
 
 
-Changelog
----------
+.. toctree::
+    :maxdepth: 1
+    :caption: Changelog
+
+    changelog.rst
+
 
 .. toctree::
     :maxdepth: 1
+    :caption: About this documentation
 
-    changelog.rst
+    documentation_levels.rst
 
 
 License
@@ -111,7 +130,7 @@ License
 Citing this library
 -------------------
 
-Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.1). https://github.com/saullocastro/bfsccylinder.
+Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.2). https://github.com/saullocastro/bfsccylinder.
 
 In BibTeX:
 
@@ -121,7 +140,7 @@ In BibTeX:
       author  = {Castro, Saullo G. P.},
       title   = {Implementation of the BFSC cylinder finite element},
       year    = {2026},
-      version = {0.7.1},
+      version = {0.7.2},
       url     = {https://github.com/saullocastro/bfsccylinder}
     }
 

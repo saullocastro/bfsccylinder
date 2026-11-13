@@ -1,3 +1,54 @@
+r"""Linear buckling of a filament-wound cylinder under axial compression, Sanders-type kinematics
+
+The cylinder CS of Wang et al. (2020), ``R = 68`` mm and ``L = 300`` mm,
+with `E_{11} = 90` GPa, `E_{22} = 7` GPa, `\nu_{12} = 0.32` and `G_{12} =
+4.4` GPa. Two plies `[\theta, -\theta]`, `\theta = 57.9` degrees, of 0.4 mm,
+the same laminate at every integration point. `u`, `v`, `w` and `w_{,x}` and
+their derivatives along the edge, `u_{,y}`, `v_{,y}`, `w_{,y}` and
+`w_{,xy}`, are constrained at the nodes of both ends, and the end `x = L` is
+compressed by a prescribed axial displacement. The linear static solution
+gives the geometric stiffness matrix of ``update_KG``, the lowest load
+multiplier is computed with ``lobpcg``, and the critical load, the load
+multiplier times the sum of the reaction forces at `x = L`, is checked
+within 1 % against -42536.254491261796 N, a regression value: a result of
+the element of ``bfsccylinder.sanders`` stored in the test.
+
+Notes
+-----
+The cylinder is the constant-stiffness design CS of [1]_: 300 mm long, 136
+mm in diameter, one angle-ply layer `\pm 57.9` degrees made of two plies of
+0.4 mm (Table 4 of [1]_; the text of [1]_ gives 57.8 degrees). The material
+is that of Table 1 of [1]_; [2]_ uses the same `E_{11}`, `E_{22}`,
+`\nu_{12}`, `G_{12}` and tow thickness, 0.4 mm. The boundary conditions are
+those of the finite element model of [1]_: all the degrees of freedom are
+constrained at `x = 0`, and at `x = L` all but the axial displacement, which
+is the same at every node of that end. The derivatives along the edge are
+constrained with them because the element interpolates `w` along an edge `x`
+= constant from `w` and `w_{,y}` of its nodes, and `w_{,x}` from `w_{,x}`
+and `w_{,xy}` (likewise `u` and `v`): with the values alone the conditions
+hold only at the nodes.
+
+The stored value is a regression value of the element. For comparison, Table
+4 of [1]_ gives for CS the linear buckling load `F_{eig} = 40607` N,
+computed with ABAQUS S4R elements (152 elements along the length, 213 around
+the circumference); the stored value, 42536 N, is 4.8 % higher. The
+difference contains the discretisation error of the 40 nodes around the
+circumference of this test and the transverse shear flexibility of the S4R
+element, which the element does not have.
+
+References
+----------
+.. [1] Wang, Z., Almeida Jr., J. H. S., St-Pierre, L., Wang, Z., and
+   Castro, S. G. P., Reliability-based buckling optimization with an
+   accelerated Kriging metamodel for filament-wound variable angle tow
+   composite cylinders, Composite Structures, 254, 112821, 2020,
+   doi:10.1016/j.compstruct.2020.112821.
+.. [2] Wang, Z., Almeida Jr., J. H. S., Ashok, A., Wang, Z., and Castro, S.
+   G. P., Lightweight design of variable-angle filament-wound cylinders
+   combining Kriging-based metamodels with particle swarm optimization,
+   Structural and Multidisciplinary Optimization, 65(5), 140, 2022,
+   doi:10.1007/s00158-022-03227-8.
+"""
 import time
 import sys
 sys.path.append(r'..')
@@ -17,7 +68,7 @@ from bfsccylinder.utils import assign_constant_ABD
 
 def test_linear_buckling(plot=False):
     time0 = time.process_time()
-    # geometry our FW cylinders
+    # geometry of the filament-wound cylinder
     L = 0.3 # m
     R = 0.136/2 # m
     circ = 2*pi*R # m
@@ -29,7 +80,7 @@ def test_linear_buckling(plot=False):
         nx += 1
     print('nx, ny', nx, ny)
 
-    # material properties our paper
+    # material properties
     E11 = 90e9
     E22 = 7e9
     nu12 = 0.32
@@ -107,12 +158,17 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
-    # clamped
+    # clamped: u, v, w and w_x, with their derivatives along the edge
+    # u_y, v_y, w_y and w_xy
     checkSS = isclose(x, 0) | isclose(x, L)
     bk[0::DOF] = checkSS
     bk[3::DOF] = checkSS
     bk[6::DOF] = checkSS
     bk[7::DOF] = checkSS
+    bk[2::DOF] = checkSS
+    bk[5::DOF] = checkSS
+    bk[8::DOF] = checkSS
+    bk[9::DOF] = checkSS
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
     # axial compression applied at x=L
@@ -147,7 +203,7 @@ def test_linear_buckling(plot=False):
     KGuu = KG[bu, :][:, bu]
     print('geometric stiffness matrix OK')
 
-    # A * x[i] = lambda[i] * M * x[i]
+    # lowest load multipliers of the linear buckling problem
     num_eigvals = 2
     Nu = N - bk.sum()
     if True:
@@ -195,7 +251,7 @@ def test_linear_buckling(plot=False):
     f[bk] = fk
     Pcr = load_mult[0]*(f[0::DOF][checkTopEdge]).sum()
     print('Pcr =', Pcr)
-    assert isclose(Pcr, -42719.877887017145, rtol=0.01)
+    assert isclose(Pcr, -42536.254491261796, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)

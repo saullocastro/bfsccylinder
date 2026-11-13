@@ -37,7 +37,7 @@ tutorials model the stringers of stiffened cylinders with
 Citing this library
 ===================
 
-Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.1). https://github.com/saullocastro/bfsccylinder.
+Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.2). https://github.com/saullocastro/bfsccylinder.
 
 
 Documentation
@@ -51,7 +51,15 @@ History
 
 See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
 
-* version 0.7.1 (2026-11-03)
+* version 0.7.2 (2026-11-13)
+    - Tutorials and tests of the buckling under torsion of the ring- and
+      stringer-stiffened cylinders of Moore and Wescoat (1944)
+    - Module `notebooks/z_cylinder_sector.py`, one stringer pitch of a
+      cylinder with Z-section stringers, used by the notebook
+      `peterson1959_stiffened_cylinder_buckling`
+    - The linear buckling tests of the cylinder Z33 under a constant
+      membrane force are deterministic and check the lowest load
+      multiplier
     - Tutorial and tests of the Riks method deep into the post-buckling of
       the axially compressed cylinder of Simo, Fox and Rifai (1990)
     - Tutorial and tests of the cantilever cylinders of Schweizerhof and

@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.7.1 (2026-11-03)
+## 0.7.2 (2026-11-13)
 
 ### Tutorials
 
@@ -61,6 +61,39 @@ The dates of the released versions are those of their tagged commits.
   `CantileverModel.calc_KT` assembles `KC0 + KCNL + KG` vectorized with
   NumPy, equal to the kernels to the round-off and about 7 times faster
   than `update_KCNL` of the Sanders-type element.
+- New module `notebooks/z_cylinder_sector.py`, used by the notebook
+  `peterson1959_stiffened_cylinder_buckling.ipynb`: one stringer pitch with
+  cyclic symmetry of a cylinder with Z-section stringers made of three
+  plates (the attached flange in a two-layer laminate of the skin, the web
+  and the free flange as `BFSCPlate2D` plates of bfscplate2d), clamped or
+  simply supported ends and the membrane pre-buckling state. Cylinders 1
+  and 2 of NASA Memo 2-12-59L (120 internal stringers, `R` = 23.74 in)
+  buckle at 2128.4 and 3196.1 lb/in with 12 and 13 circumferential waves
+  (coarse mesh); the measured loads, 270 and 413 kips, are 85.0 and 86.6 %
+  of these, inside the range of the tests of NASA TN D-3639, Table I,
+  against their clamped smeared theory (71 to 96 %). No test of this
+  repository imports bfscplate2d.
+- `ex_kinematics.ipynb` and `ex_linear_buckling.ipynb` solve the linear
+  buckling problems as the Z33 constant-stress tests and show the lowest
+  buckling loads: Z33 under a constant membrane force 201.10 kN
+  (Donnell-type) and 199.87 kN (Sanders-type), Z33 with the static
+  prebuckling state 201.06 kN, Z18 228.47 kN (before 201.75, 200.61, 201.69
+  and 229.06 kN, the second-lowest load multipliers).
+- New notebooks `moore1944_ring_cylinders.ipynb` and
+  `moore1944_stiffened_cylinders.ipynb`, with the module
+  `notebooks/moore1944_utils.py`: buckling under torsion of the 24S-T
+  cylinders of NACA ARR 4E31 (Moore and Wescoat, 1944), Tables I and II, on
+  the periodic sector of `channel_cylinder_sector.py` with a constant
+  membrane shear pre-stress. Rings (1/2 x 1/2 in bars inside the skin) are
+  bands of skin elements with a ring layer on the inner face; the channel
+  stringers outside are plates (webs, flat lips) on a two-layer base.
+  Ring-only specimens 16, 17, 18, 13 and 13A, one Bloch index per
+  circumferential wave number: 1403, 1592, 2252, 2810 and 2829 psi with
+  hinged ends, -2.1 to +5.9 % from Moore's Donnell column and 10 to 32 %
+  above the observed stresses; the constant shear and a prescribed end
+  rotation give the same buckling torque. Stiffened specimens 19, 14, 20,
+  15 and 21, one stringer pitch: 2619, 3134, 3970, 4118 and 4422 psi, 6 to
+  38 % above the observed first panel buckling.
 
 ### Tests
 
@@ -75,6 +108,30 @@ The dates of the released versions are those of their tagged commits.
   6.3.4(a) within 0.025.
 - `structsolve>=0.10.0` in `requirements.txt` (was 0.9.3), and in the
   installation page.
+- `test_finite_cylinder_shear_diaphragm` of
+  `tests/test_follower_pressure_validation.py` uses the meshes 4 x 24 and
+  6 x 32 (a few seconds per case): load multipliers above the closed form,
+  decreasing with the mesh and within 20 % of it, and the ratio of the
+  follower to the dead load multiplier within 2e-4 of the closed form. The
+  comparison of the 12 x 96 mesh with the closed form is in the notebook
+  `ex_follower_pressure.ipynb`.
+- New `tests/test_moore1944_torsion.py`: first buckling stress in torsion
+  of specimen 18 (rings) and of specimen 19 (rings and stringers as skin
+  bands) of Moore and Wescoat (1944), within 1 % of the values of the
+  converged sector models, and equal multipliers for both signs of the
+  torque. It does not import bfscplate2d.
+- The linear buckling tests of the cylinder Z33 under a constant membrane
+  force, `test_linear_buckling_Z33_constant_stress.py` and
+  `test_sanders_linear_buckling_Z33_constant_stress.py`, are deterministic
+  and check the lowest load multiplier: `eigsh` in the mode `'buckling'`
+  from a fixed starting vector, with the shift at half the stored load
+  multiplier, the residual of the eigenpair checked and, by Sylvester's law
+  of inertia, no lower load multiplier missing. Before, the tests took the
+  highest of three load multipliers returned from a random starting vector
+  with the shift 1, and failed in about 15 to 20 % of the runs. The stored
+  values were the second-lowest double load multipliers: -201751 N becomes
+  -201104 N (Donnell-type), -200606.75 N becomes -199872.11 N
+  (Sanders-type).
 
 ### Documentation
 

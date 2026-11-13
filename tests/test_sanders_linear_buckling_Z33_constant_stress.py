@@ -1,10 +1,82 @@
+r"""Linear buckling of the laminated cylinder Z33 under a constant axial membrane force, Sanders-type kinematics
+
+The cylinder Z33 of Castro et al. (2014, Composite Structures), Table 4, ``R
+= 250`` mm, ``L = 510`` mm, ten plies of 0.125 mm, with the material of
+Geier and Singh (1997). `u`, `v`, `w` and `w_{,x}` and their derivatives
+along the edge, `u_{,y}`, `v_{,y}`, `w_{,y}` and `w_{,xy}`, are constrained
+at the nodes of both ends. The geometric stiffness matrix of
+``update_KG_constant_stress`` is that of the constant membrane force ``Nxx =
+-1`` N/m, without a static analysis. The four lowest load multipliers are
+computed with ``eigsh`` in the shift-invert mode ``'buckling'``, from a
+fixed starting vector, with the shift at half the load multiplier of the
+stored value, and sorted; the lowest one is verified by the residual of its
+eigenpair and by the number of negative pivots of `K + s K_G`
+(``negative_pivots`` of ``natural_frequency_solver.py``), zero for `s` just
+below it, so that no lower load multiplier is missing. The critical load,
+the lowest load multiplier times ``Nxx`` times `2 \pi R`, is checked within
+1 % against -199872.11 N, a regression value: a result of the element of
+``bfsccylinder.sanders`` stored in the test.
+
+Notes
+-----
+The stacking sequence, from the inner to the outer surface, is that of the
+cylinder Z33 in Table 4 of [1]_, and the elastic constants, `E_{11} =
+123.55` GPa, `E_{22} = 8.708` GPa, `\nu_{12} = 0.319` and `G_{12} = 5.695`
+GPa, are those of the material Geier1997 that Table 4 of [1]_ gives for Z33
+(Table 3 of [1]_). They are the ply properties of the test cylinders of
+[3]_, Section V.4 (`E_L = 123550` MPa, `E_T = 8707.9` MPa, `\nu_{LT} =
+0.319`, `G_{LT} = 5696` MPa), and of Z33 in [4]_, Section 3 (`G = 5695` MPa,
+`\nu = 0.32`). The entries of the laminate stiffness matrices `A`, `B` and
+`D` of this test agree in magnitude with those printed for Z33 in Section 3
+of [4]_, to their four digits, except `B_{66}` (4152 N here, 4125 N there).
+The transverse shear moduli do not enter the element, which is based on the
+classical laminated plate theory. The ends have `u = v = w = w_{,x} = 0`,
+the conditions CC1 of Table 1 of [1]_. The derivatives along the edge are
+constrained with them because the element interpolates `w` along an edge `x`
+= constant from `w` and `w_{,y}` of its nodes, and `w_{,x}` from `w_{,x}`
+and `w_{,xy}` (likewise `u` and `v`): with the values alone the conditions
+hold only at the nodes.
+
+The stored value is a regression value of the element. For comparison, Table
+1 of [4]_ gives for Z33 192 kN with built-in edges, deep shell theory and a
+homogeneous membrane prebuckling state (BACCUS-C4), and the test results 173
+kN and 184 kN; the stored value, 199872 N, is 4.1 % higher than 192 kN.
+Table 6 of [2]_ gives 191.67 kN, computed with ABAQUS S8R5 elements and
+clamped ends, but with the elastic constants `E_{11} = 142.5` GPa, `E_{22} =
+8.7` GPa, `\nu_{12} = 0.28` and `G_{12} = 5.1` GPa of its Table 1; the
+stored value is 4.3 % higher. The difference to 192 kN contains the
+discretisation error of the 50 nodes around the circumference of this test;
+here, as in BACCUS-C4, the geometric stiffness matrix is that of a uniform
+membrane force.
+
+References
+----------
+.. [1] Castro, S. G. P., Mittelstedt, C., Monteiro, F. A. C., Arbelo, M. A.,
+   Ziegmann, G., and Degenhardt, R., Linear buckling predictions of
+   unstiffened laminated composite cylinders and cones under various loading
+   and boundary conditions using semi-analytical models, Composite
+   Structures, 118, 303-315, 2014, doi:10.1016/j.compstruct.2014.07.037.
+.. [2] Castro, S. G. P., Zimmermann, R., Arbelo, M. A., Khakimova, R.,
+   Hilburger, M. W., and Degenhardt, R., Geometric imperfections and
+   lower-bound methods used to calculate knock-down factors for axially
+   compressed composite cylindrical shells, Thin-Walled Structures, 74,
+   118-132, 2014, doi:10.1016/j.tws.2013.08.011.
+.. [3] Geier, B., and Singh, G., Some simple solutions for buckling loads of
+   thin and moderately thick cylindrical shells and panels made of laminated
+   composite material, Aerospace Science and Technology, 1(1), 47-63, 1997,
+   doi:10.1016/S1270-9638(97)90023-7.
+.. [4] Geier, B., Meyer-Piening, H.-R., and Zimmermann, R., On the influence
+   of laminate stacking on buckling of composite cylindrical shells subjected
+   to axial compression, Composite Structures, 55(4), 467-474, 2002,
+   doi:10.1016/S0263-8223(01)00175-1.
+"""
 import sys
 sys.path.append(r'..')
 
 import numpy as np
 from numpy import isclose, pi
 from scipy.sparse import coo_matrix, diags
-from scipy.sparse.linalg import eigsh, cg, lobpcg, LinearOperator, spilu, spsolve
+from scipy.sparse.linalg import eigsh
 from composites import laminated_plate
 
 from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0,
@@ -13,9 +85,11 @@ from bfsccylinder.sanders import (BFSCCylinderSanders, update_KC0,
 from bfsccylinder.quadrature import get_points_weights
 from bfsccylinder.utils import assign_constant_ABD
 
+from natural_frequency_solver import negative_pivots
+
 
 def test_linear_buckling(plot=False):
-    # geometry Z33 Castro 2014
+    # geometry of the cylinder Z33
     L = 0.510 # m
     R = 0.250 # m
     b = 2*pi*R # m
@@ -24,11 +98,11 @@ def test_linear_buckling(plot=False):
     ny = 50 # circumferential
     nx = int(ny*L/b)
 
-    # material properties Geier 1997
-    E11 = 145.5e9
-    E22 = 8.7e9
-    nu12 = 0.28
-    G12 = 5.1e9
+    # material properties
+    E11 = 123.55e9
+    E22 = 8.708e9
+    nu12 = 0.319
+    G12 = 5.695e9
     plyt = 0.125e-3
     laminaprop = (E11, E22, nu12, G12, G12, G12)
     stack = [0, 0, 19, -19, 37, -37, 45, -45, 51, -51]
@@ -111,16 +185,18 @@ def test_linear_buckling(plot=False):
     # applying boundary conditions
     bk = np.zeros(N, dtype=bool)
 
+    # u, v, w and w_x constrained at both ends, with their derivatives
+    # along the edge u_y, v_y, w_y and w_xy
     checkBC = isclose(x, 0) | isclose(x, L)
     bk[0::DOF] = checkBC
     #bk[1::DOF] = checkBC
-    #bk[2::DOF] = checkBC
+    bk[2::DOF] = checkBC
     bk[3::DOF] = checkBC
-    #bk[5::DOF] = checkBC
+    bk[5::DOF] = checkBC
     bk[6::DOF] = checkBC
     bk[7::DOF] = checkBC
-    #bk[8::DOF] = checkBC
-    #bk[9::DOF] = checkBC
+    bk[8::DOF] = checkBC
+    bk[9::DOF] = checkBC
     bu = ~bk # same as np.logical_not, defining unknown DOFs
 
     Kuu = KC0[bu, :][:, bu]
@@ -128,49 +204,34 @@ def test_linear_buckling(plot=False):
 
     print('structural matrices OK')
 
-    # A * x[i] = lambda[i] * M * x[i]
-    num_eigvals = 3
-    Nu = N - bk.sum()
-    if True:
-        #NOTE this works and seems to be the fastest option
-        PREC = 1/Kuu.diagonal().max()
-        PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0, drop_tol=1e-8,
-                fill_factor=50)
-        print('spilu OK')
-        def matvec(x):
-            return PREC2.solve(x)
-        Ainv = LinearOperator(matvec=matvec, shape=(Nu, Nu))
-        maxiter = 1000
-        X = np.random.default_rng(0).random((Nu, num_eigvals)) - 0.5
-        X /= np.linalg.norm(X, axis=0)
-        #NOTE default tolerance is too large
-        tol = 1e-6
-        eigvals, eigvecsu, hist = lobpcg(A=PREC*Kuu, B=-PREC*KGuu, X=X, M=Ainv, largest=False,
-                maxiter=maxiter, retResidualNormsHistory=True, tol=tol)
-        assert len(hist) <= maxiter, 'did not converge'
-        load_mult = eigvals
-    else:
-        if True:
-            #NOTE works, but slower than lobpcg
-            eigvals, eigvecsu = eigsh(A=Kuu, k=num_eigvals, which='SM', M=KGuu,
-                    tol=1e-9, sigma=1., mode='buckling')
-            load_mult = -eigvals
-        else:
-            #NOTE this is giving close but varying results for each run
-            PREC2 = spilu(PREC*Kuu, diag_pivot_thresh=0)
-            print('spilu OK')
-            def matvec(x):
-                return PREC2.solve(x)
-            Minv = LinearOperator(matvec=matvec, shape=(Nu, Nu))
-            eigvals, eigvecsu = eigsh(A=-PREC*KGuu, k=num_eigvals, which='LM',
-                    M=PREC*Kuu, Minv=Minv)
-            load_mult = 1./eigvals
+    # lowest load multipliers: shift-invert eigsh in the mode 'buckling',
+    # from a fixed starting vector, with the shift at half the load
+    # multiplier of the stored critical load, sorted in ascending order
+    Pcr_ref = -199872.11
+    num_eigvals = 4
+    sigma = -0.5*Pcr_ref/(Nxx*2*np.pi*R)
+    eigvals, eigvecsu = eigsh(A=Kuu, k=num_eigvals, which='LM', M=KGuu,
+            sigma=sigma, mode='buckling', v0=np.ones(Kuu.shape[0]))
+    load_mult = -eigvals
+    order = np.argsort(load_mult)
+    load_mult = load_mult[order]
+    eigvecsu = eigvecsu[:, order]
+
+    # verification: relative residual of the lowest eigenpair, and no load
+    # multiplier below the lowest one, from the number of negative pivots
+    # of Kuu + s*KGuu with s just below it
+    x = eigvecsu[:, 0]
+    Kx = Kuu @ x
+    res = np.linalg.norm(Kx + load_mult[0]*(KGuu @ x))/np.linalg.norm(Kx)
+    assert res < 1e-8, 'eigenpair residual %.1e' % res
+    s = load_mult[0]*(1 - 1e-6)
+    assert negative_pivots(Kuu + s*KGuu) == 0, 'lower load multiplier missing'
 
     print('linear buckling analysis OK')
     Pcr = load_mult[0]*Nxx*2*np.pi*R
     print('load_mult[0]', load_mult[0])
     print('Pcr top=', Pcr)
-    assert np.isclose(Pcr, -215444.50718870337, rtol=0.01)
+    assert np.isclose(Pcr, Pcr_ref, rtol=0.01)
 
     mode = 0
     mode_shape = np.zeros(N, dtype=float)

@@ -184,6 +184,14 @@ def test_reference_zero_is_the_change_of_force(kinematics, quadratic):
 @pytest.mark.parametrize('quadratic', TRUNCATIONS)
 @pytest.mark.parametrize('seed', [0, 1, 2])
 def test_taylor_follower_force(kinematics, quadratic, seed):
+    """Directional Taylor test of the follower force, check 3 of the
+    module docstring
+
+    Notes
+    -----
+    With ``K = -dF/du``, ``F(u + h d) - F(u) + h K d = O(h**2)``.
+
+    """
     mod, elem, points, weights, p, prop = make_element(kinematics)
     u = random_state(prop, seed, scale=10.)
     d = random_state(prop, seed + 100, scale=10.)
@@ -191,7 +199,7 @@ def test_taylor_follower_force(kinematics, quadratic, seed):
     Kd = KCfollower(mod, elem, points, weights, p, u, quadratic) @ d
     F0 = F(u)
     steps = [1e-1, 1e-2, 1e-3, 1e-4]
-    # K = -dF/du, hence F(u + h d) - F(u) + h K d = O(h**2)
+    # relative Taylor remainder for each step h
     errors = [np.linalg.norm(F(u + h*d) - F0 + h*Kd)/np.linalg.norm(h*Kd)
               for h in steps]
     if quadratic == 0:

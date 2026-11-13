@@ -1,3 +1,14 @@
+"""Lowest natural frequency of a cylinder, Donnell-type kinematics
+
+An isotropic cylinder, ``R = 0.4``, ``L = 0.8``, ``h = 0.001``, ``E =
+70e9``, ``nu = 0.33`` and ``rho = 2.7e3`` (SI units), with `u`, `v` and `w`
+constrained at the nodes of both ends. The stiffness and mass matrices are
+assembled with ``update_KC0`` and ``update_M``, and the 16 lowest natural
+frequencies are computed with ``lowest_frequencies`` of
+``natural_frequency_solver.py``, deterministic and verified. The lowest
+angular frequency is checked within 1 % against 1096.10818933 rad/s, a
+result of the element of the ``bfsccylinder`` namespace stored in the test.
+"""
 import sys
 sys.path.append(r'..')
 

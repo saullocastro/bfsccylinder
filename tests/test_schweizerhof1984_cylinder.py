@@ -3,29 +3,31 @@ r"""Cantilever cylinder under a follower pressure, Schweizerhof and Ramm (1984)
 Shell 1 of Section 6.4 of Schweizerhof and Ramm (1984), ``L/R = 6``, ``R/t =
 100``, lower edge hinged (B1), upper edge free, under a uniform external
 pressure, Table 4 on p. 1111 and Fig. 13 on p. 1112, with the 60 deg sector
-of the paper meshed with the Sanders-type element, see the module
-``doc/source/tutorials/schweizerhof1984_cylinder.py`` and the tutorial
-``schweizerhof1984_cylinder_follower.ipynb``. About 20 s.
+of the paper meshed with the Sanders-type element, built by the module
+``schweizerhof1984_cylinder`` of this folder. About 20 s.
 
 The checks:
 
-- the vectorized tangent stiffness matrix of the module is that of the
-  kernels ``update_KC0 + update_KCNL + update_KG`` to the round-off; the
-  callables of the imperfect shell under the follower pressure have the
-  Jacobian of their residual as tangent stiffness matrix, and the internal
-  forces are the gradient of a strain energy computed independently of the
-  kernels (central differences of fourth order, exact up to the round-off
-  for the cubic internal forces and the quartic strain energy); the load
-  stiffness matrix is unsymmetric, the free edge making the pressure
-  nonconservative;
-- the linear buckling factors of the dead (``k_c``) and of the follower
+- :func:`test_identities`, both kinematics: the vectorized tangent
+  stiffness matrix of the module is that of the kernels ``update_KC0 +
+  update_KCNL + update_KG`` to the round-off; the callables of the
+  imperfect shell under the follower pressure have the Jacobian of their
+  residual as tangent stiffness matrix, and the internal forces are the
+  gradient of a strain energy computed independently of the kernels
+  (central differences of fourth order, exact up to the round-off for the
+  cubic internal forces and the quartic strain energy); the residual of
+  the callables is that of the follower pressure on the imperfect shell;
+  the load stiffness matrix is unsymmetric;
+- :func:`test_linear_buckling_table4`: the linear buckling factors of the
+  dead (``k_c``) and of the follower
   (``k_f``) pressure, with the full unsymmetric load stiffness matrix, are
   those of Table 4, 10.88 and 9.70, within 0.5 %, with ``n = 3`` waves. The
   values of 64 x 8 elements, 10.901 and 9.705, are within 0.2 % of those
   of 128 x 8 elements, 10.887 and 9.693, and the paper gives its 24
   elements as converged, so that the tolerance covers both
   discretizations;
-- the Riks method with ``inertia`` and ``inertia_num_eigvals`` (the tangent
+- :func:`test_riks_follower_beyond_maximum`: the Riks method of
+  structsolve with ``inertia`` and ``inertia_num_eigvals`` (the tangent
   stiffness matrix is unsymmetric, the count comes from ARPACK on its LU
   factorization) follows the imperfect shell, imperfection of 1 % of
   ``t``, through the flat maximum of the load, at a largest ``|w|`` of
@@ -35,8 +37,32 @@ The checks:
   (0.4 % with 32 x 8 elements, whose ``k_f`` is 0.5 % above the converged
   one). The residual of every converged increment is that of the whole
   follower pressure. Fig. 13 of the paper, labelled B1, has a plateau at
-  ``K = 8.0``, which is that of B2 (see the tutorial), and is not compared
-  here.
+  ``K = 8.0``, which is that of B2, and is not compared here.
+
+Notes
+-----
+On the free edge the axial displacement is not restrained, so that the
+contour term of the skew part of the load stiffness matrix does not vanish
+and the follower pressure is nonconservative: the load stiffness matrix is
+unsymmetric, and the count of negative eigenvalues of the unsymmetric
+tangent stiffness matrix cannot come from a symmetric factorization.
+
+The maximum of the load is a limit point, not a bifurcation: the count of
+negative eigenvalues and the sign of the determinant change together, from
+0 and `+1` to 1 and `-1`, at the first increment after it.
+
+Fig. 13 of [1]_ is not compared: its horizontal line of the perfect shell,
+`K = 8.06`, is within 0.6 % of the `k_f` of B2 of Table 4, 8.09 to 8.12,
+and far from that of B1, 9.70, and the path of B2 of this model matches
+the curve of the figure within 1.3 %, whereas the plateau of B1, 9.67, is
+21 % above it; the label B1 of the text of [1]_, p. 1111, is most likely
+wrong.
+
+References
+----------
+.. [1] Schweizerhof, K., and Ramm, E., Displacement dependent pressure
+   loads in nonlinear finite element analyses, Computers & Structures,
+   18(6), 1099-1114, 1984, doi:10.1016/0045-7949(84)90154-8.
 
 """
 import os
@@ -44,8 +70,7 @@ import sys
 
 import numpy as np
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                '..', 'doc', 'source', 'tutorials'))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schweizerhof1984_cylinder as sr # noqa: E402
 
 

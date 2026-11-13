@@ -1,21 +1,26 @@
 r"""The mass matrix against an independent quadrature of the kinetic energy
 
-The kinetic energy of the Kirchhoff-Love field of each kinematics, for a
+The mass matrix of ``update_M`` of each kinematics is compared with the
+matrix of the kinetic energy of the Kirchhoff-Love displacement field, for a
 density ``rho`` uniform over the thickness ``h``, the mid-surface as the
 reference surface and without the factor ``1 + z/R`` of the area (shallow
-shell),
+shell). The rows are built here from cubic Hermite polynomials written from
+scratch, and the integral with a Gauss-Legendre rule of numpy, exact for the
+polynomial integrand.
+
+Notes
+-----
+The displacement field through the thickness is::
 
     u(z) = u - z w_x,   v(z) = v + z beta_y,   w(z) = w
 
 with ``beta_y = -w_y`` for the Donnell-type and ``beta_y = -w_y + v/R`` for
-the Sanders-type kinematics, gives
+the Sanders-type kinematics, which gives::
 
     M = int rho (h (Su'Su + Sv'Sv + Sw'Sw)
                  + h**3/12 (Sw_x'Sw_x + (Sw_y - k Sv/R)'(Sw_y - k Sv/R))) dA
 
-with ``k = 0`` (Donnell) or ``1`` (Sanders). The rows are built here from
-cubic Hermite polynomials written from scratch, and the integral with a
-Gauss-Legendre rule of numpy, exact for the polynomial integrand.
+with ``k = 0`` (Donnell) or ``1`` (Sanders).
 """
 import sys
 sys.path.append(r'..')
