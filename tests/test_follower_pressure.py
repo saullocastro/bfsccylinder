@@ -30,6 +30,41 @@ Sanders-type kinematics and for both truncations:
 
 The validation against closed forms is in
 ``test_follower_pressure_validation.py``.
+
+Notes
+-----
+With `\boldsymbol{X}` the position of the deformed mid-surface and `k_v =
+0` for the Donnell-type and `k_v = 1/R` for the Sanders-type kinematics,
+the reference of check 2 is
+
+.. math::
+
+    \boldsymbol{F}_p = \int_A p \left( (\boldsymbol{S}^u)^\top a_x
+    + (\boldsymbol{S}^v)^\top a_y + (\boldsymbol{S}^w)^\top a_z \right) dA,
+    \qquad \boldsymbol{a} = \boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}
+
+.. math::
+
+    \boldsymbol{X}_{,x} = \begin{Bmatrix} 1 + u_{,x} \\ v_{,x} \\ w_{,x}
+    \end{Bmatrix}, \qquad
+    \boldsymbol{X}_{,y} = \begin{Bmatrix} u_{,y} \\ 1 + v_{,y} + w/R \\
+    w_{,y} - k_v v \end{Bmatrix}
+
+the complete area vector for ``quadratic=1`` and its terms of order 0 and
+1 in the displacement gradients for ``quadratic=0``. For check 3, with
+`\boldsymbol{K}_F = -\partial \boldsymbol{F}_p/\partial \boldsymbol{u}`,
+
+.. math::
+
+    \boldsymbol{F}_p(\boldsymbol{u} + h \boldsymbol{d}) -
+    \boldsymbol{F}_p(\boldsymbol{u}) + h \boldsymbol{K}_F \boldsymbol{d}
+    = O(h^2)
+
+which vanishes for ``quadratic=0``, `\boldsymbol{F}_p` being affine in
+`\boldsymbol{u}`. Check 5 is the same test for the residual
+`\boldsymbol{R} = \boldsymbol{F}_{int} - \boldsymbol{F}_p` and the sum of
+the four matrices.
+
 """
 import sys
 sys.path.append(r'..')

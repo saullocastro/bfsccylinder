@@ -9,6 +9,22 @@ and ||KG|| are 9.7e-4 and 5.3e-4 of ||KC0||. An inconsistent tangent
 converges here too, so this is not a guard on KC0 + KCNL + KG being the
 Jacobian of fint; tests/test_tangent_consistency.py is. Nor does it assert
 anything about the solution, so it would not notice a wrong fint either.
+Notes
+-----
+The geometry is that of a cylinder of Arbocz and Starnes [1]_. The method
+is the full Newton-Raphson: the tangent stiffness matrix ``calc_kC +
+calc_kG``, that is KC0 + KCNL + KG, is computed again at every iteration,
+not held fixed as in a modified Newton-Raphson method. Since this sum is
+the exact Jacobian of fint, the convergence is quadratic: with the
+predictor of the linear solution of KC0uu and the criterion of Crisfield,
+the residual and the forces scaled with the diagonal of KC0uu, the scaled
+residual reaches 2.0e-9 in two iterations.
+
+References
+----------
+.. [1] Arbocz, J., and Starnes, J. H., 2002, "On a High-Fidelity
+   Hierarchical Approach to Buckling Load Calculations", New Approaches to
+   Structural Mechanics, Shells and Biological Structures, pp. 271-292.
 
 """
 import time
@@ -105,7 +121,6 @@ class Callables(object):
 
 def test_nonlinear_axial_compression_load_controlled():
     # geometry
-    #Arbocz, J., and Starnes, J. H., 2002, “On a High-Fidelity Hierarchical Approach to Buckling Load Calculations,” New Approaches to Structural Mechanics, Shells and Biological Structures, pp. 271–292.
     L = 0.3556 # m
     R = 0.20318603 # m
     ny = 4*16
@@ -225,12 +240,9 @@ def test_nonlinear_axial_compression_load_controlled():
 
     # solving using the full Newton-Raphson method of structsolve, in one
     # load step: the tangent stiffness matrix calc_kC + calc_kG is computed
-    # again at every iteration, not held fixed as a modified Newton-Raphson
-    # would. That is what buys quadratic convergence, now that KC0 + KCNL +
-    # KG is the exact Jacobian of fint. The predictor is the linear solution
-    # of KC0uu, and the convergence criterion is Crisfield's, with the
-    # residual and the forces scaled with the diagonal of KC0uu, to 1e-9.
-    # A consistent tangent reaches 2.0e-9 in two iterations here
+    # again at every iteration. The predictor is the linear solution of
+    # KC0uu, and the convergence criterion is that of Crisfield, with the
+    # residual and the forces scaled with the diagonal of KC0uu, to 1e-9
     callables = Callables(elements, points, weights, KC0, bu, fext)
     an = Analysis(calc_fext=callables.calc_fext,
                   calc_fint=callables.calc_fint,

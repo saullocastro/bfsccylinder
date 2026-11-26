@@ -23,9 +23,13 @@ from the channel, is assembled from BFSC plate elements,
   `\theta`, of width `b_l` from the middle surface of the web to the free
   edge.
 
-Ties
-----
-A web has the local coordinates `X = x` and `Y = r - R`; its displacements
+The webs are tied to the skin and the lips to the webs, and the sector is
+solved with cyclic symmetry, one Bloch index `j` at a time
+(:meth:`ChannelCylinderSector.Z`).
+
+Notes
+-----
+**Ties.** A web has the local coordinates `X = x` and `Y = r - R`; its displacements
 `U`, `V` and `W` are along `x`, along the outward radius and along the
 circumference. Its nodes along the root are tied to the skin nodes of its
 line, as for a blade stringer:
@@ -50,9 +54,7 @@ with the derivatives along `x`: a rotation `\psi` about `x` gives
 `\partial u_r/\partial s = \psi` along the lip and `\partial
 u_\theta/\partial r = -\psi` along the web.
 
-Cyclic symmetry
----------------
-As in the sector of the blade-stiffened cylinder of this folder, the nodes
+**Cyclic symmetry.** As in the sector of the blade-stiffened cylinder of this folder, the nodes
 of the edge `\theta = \phi` are eliminated with `\boldsymbol{u}(\theta =
 \phi) = e^{i j \phi}\,\boldsymbol{u}(\theta = 0)`, which gives one
 Hermitian problem per Bloch index `j = 0, 1, \ldots, n_s/2`. With few
@@ -104,9 +106,14 @@ class TwoLayerSkin:
     ----------
     A11, ..., D66 : float
         The entries of `\boldsymbol{A}`, `\boldsymbol{B}` and
-        `\boldsymbol{D}`, `(A, B, D)_{ij} = Q_{ij} \int (1, z, z^2) dz`
-        over both layers, with the plane-stress stiffnesses `Q_{11} = Q_{22}
-        = E/(1 - \nu^2)`, `Q_{12} = \nu Q_{11}`, `Q_{66} = E/(2 (1 + \nu))`.
+        `\boldsymbol{D}`.
+
+    Notes
+    -----
+    `(A, B, D)_{ij} = Q_{ij} \int (1, z, z^2) dz` over both layers, with
+    the plane-stress stiffnesses `Q_{11} = Q_{22} = E/(1 - \nu^2)`,
+    `Q_{12} = \nu Q_{11}`, `Q_{66} = E/(2 (1 + \nu))`.
+
     """
 
     def __init__(self, h, t, E, nu, side='internal'):
@@ -459,14 +466,20 @@ class ChannelCylinderSector:
     # ------------------------------------------------------------------
     def full_w(self, mode, j, npts=1440, real=True):
         r"""Normal displacement `w` of the skin around the whole
-        circumference from the mode ``mode`` of the Bloch index ``j``: the
-        sector `k` is the sector `0` multiplied by `e^{i j k \phi}`, `w` is
-        interpolated between the nodes with the cubic Hermite polynomials of
-        its values and of `w_{,y}`, and its real part is taken
-        (``real=True``) or not. Returns
+        circumference from the mode ``mode`` of the Bloch index ``j``, its
+        real part (``real=True``) or the complex field. Returns
         `\theta' = \theta - \phi/2` (the first stringer at `\theta' = 0`),
         ``npts`` equally spaced points over `[0, 2 \pi)`, and `w`, shape
-        ``(nx, npts)``"""
+        ``(nx, npts)``
+
+        Notes
+        -----
+        The sector `k` is the sector `0` multiplied by `e^{i j k \phi}`,
+        and `w` is interpolated between the nodes with the cubic Hermite
+        polynomials of its values and of `w_{,y}`, the interpolation of the
+        element along the circumference.
+
+        """
         w = mode[DOF*self.skin_nodes + W]
         wy = mode[DOF*self.skin_nodes + W_Y]
         th, f, df = [], [], []
@@ -500,9 +513,9 @@ def classify(model, mode, j, mmax=12, nmax=40):
     r"""Axial and circumferential wave numbers of a freely supported mode
 
     `w(x, \theta')` around the whole circumference (:meth:`full_w`) is
-    expanded in the series of the analysis of Egle and Sewall (1968), `w =
-    \sum_m \sum_n (a_{mn} \cos n\theta' + b_{mn} \sin n\theta') \sin(m \pi
-    x/L)`, `\theta'` measured from a stringer, by numerical integration.
+    expanded in the series of the analysis of Egle and Sewall (1968), with
+    the coefficients `a_{mn}` of `\cos n\theta'` and `b_{mn}` of `\sin
+    n\theta'`, `\theta'` measured from a stringer.
     Returns a dictionary: ``m`` and ``n`` of the largest amplitude
     `\sqrt{a_{mn}^2 + b_{mn}^2}`; ``ratio``, the second largest amplitude
     over the largest (for a mode of a complex Bloch index, a combination of
@@ -510,7 +523,16 @@ def classify(model, mode, j, mmax=12, nmax=40):
     those of either mode of the pair);
     ``sym``, the fraction `\sum a_{mn}^2/\sum (a_{mn}^2 + b_{mn}^2)` (1 for a
     mode symmetric about the plane of a stringer, 0 antisymmetric); and the
-    arrays ``a`` and ``b``, shape ``(mmax, nmax + 1)``."""
+    arrays ``a`` and ``b``, shape ``(mmax, nmax + 1)``.
+
+    Notes
+    -----
+    The series is `w = \sum_m \sum_n (a_{mn} \cos n\theta' + b_{mn} \sin
+    n\theta') \sin(m \pi x/L)`. Its coefficients are computed with the
+    discrete Fourier transform around the circumference and the sine
+    series along `x` by the trapezoidal rule on the nodes.
+
+    """
     mode = normalize_phase(mode)
     thetap, w = model.full_w(mode, j)
     x = model.xlin
@@ -536,15 +558,21 @@ def frequencies(model, j, fmax, k=40, skin_inplane_inertia=True,
     freedom of the sector) of the Bloch index ``j`` of the freely supported
     cylinder
 
+    ``k`` eigenvalues are computed first, and twice as many until the
+    largest frequency exceeds ``fmax``; ``sigma`` is the shift of the
+    eigenvalue solver. The rigid-body axial translation (``j = 0``) is left
+    out (frequencies below 1 Hz).
+
+    Notes
+    -----
     The eigenvalues `\omega^2` of `\boldsymbol{K} \boldsymbol{x} = \omega^2
     \boldsymbol{M} \boldsymbol{x}`, reduced by :meth:`Z` and the end
     conditions, Hermitian, `\boldsymbol{M}` possibly singular, are the
     largest eigenvalues `1/(\omega^2 - \sigma)` of `(\boldsymbol{K} - \sigma
     \boldsymbol{M})^{-1} \boldsymbol{M}` (ARPACK through
-    :func:`scipy.sparse.linalg.eigs`); ``k`` of them are computed first,
-    and twice as many until the largest frequency exceeds ``fmax``. The
-    rigid-body axial translation (``j = 0``) is left out (frequencies below
-    1 Hz)."""
+    :func:`scipy.sparse.linalg.eigs`).
+
+    """
     Zj = model.Z(j)
     K = (Zj.conj().T @ model.KC0() @ Zj).tocsr()
     M = (Zj.conj().T @ model.M(skin_inplane_inertia) @ Zj).tocsr()
@@ -650,11 +678,19 @@ def section_properties(rects, G):
     Returns ``A``, the centroid ``zbar``, the second moments ``I0`` about
     the middle surface of the skin and ``Ic`` about the centroid (bending
     in the plane `(x, r)`), ``Iy`` about the plane of symmetry, the radii of
-    gyration `\sqrt{I_0/A}` (``d0``) and `\sqrt{I_c/A}` (``dc``), the polar
+    gyration ``d0`` and ``dc`` of ``I0`` and ``Ic``, the polar
     radii of gyration about the centroid (``pc``) and about the point of
     the middle surface of the skin under the stringer (``p0``), and the
-    Saint-Venant torsional stiffness ``GJ`` `= G \sum b t^3/3` of the
-    rectangles (`t` the smaller side)."""
+    Saint-Venant torsional stiffness ``GJ`` of the rectangles.
+
+    Notes
+    -----
+    `I_c = I_0 - A \bar{z}^2`, `d_0 = \sqrt{I_0/A}`, `d_c = \sqrt{I_c/A}`,
+    `p_c = \sqrt{(I_c + I_y)/A}`, `p_0 = \sqrt{(I_0 + I_y)/A}` and `GJ = G
+    \sum b t^3/3`, with `b` the larger and `t` the smaller side of each
+    rectangle (thin open section).
+
+    """
     A = sum(by*bz for _, _, by, bz in rects)
     zbar = sum(by*bz*z for _, z, by, bz in rects)/A
     I0 = sum(by*bz*z**2 + by*bz**3/12 for _, z, by, bz in rects)
@@ -672,7 +708,22 @@ def egle_sewall(R, h, L, E, nu, rho, nstiff, As, zs, ds, ps, GJs, m, n,
     r"""Frequency, Hz, of the discrete-stringer analysis of Egle and Sewall
 
     The freely supported shell with ``nstiff`` equally spaced stringers
-    (the first at `\theta = 0`), energies of Egle and Sewall (1968): the
+    (the first at `\theta = 0`), with the energies and the displacement
+    series of Egle and Sewall (1968), for the axial half-waves ``m`` and
+    the circumferential waves ``n``; ``symmetry`` is ``'sym'`` or
+    ``'antisym'`` and ``nterms`` the number of circumferential harmonics
+    coupled with ``n`` by the stringers. ``shell_inplane_inertia=False``
+    neglects the in-surface inertia of the shell, and
+    ``stringer_inplane_inertia=False`` also that of the stringers. The
+    returned frequency is the lowest of the modes whose largest coefficient
+    `|W_j|` is that of `j = n`.
+
+    Consistent units are assumed (e.g. in, lbf, s: the density in
+    lb-s^2/in^4).
+
+    Notes
+    -----
+    Energies of Egle and Sewall (1968): the
     Donnell shell, Eqs. (1), (2) and (6) with `D_x/D = D_y/D = 1`, and
     the stringers as beams, Eqs. (5) and (8),
 
@@ -696,12 +747,8 @@ def egle_sewall(R, h, L, E, nu, rho, nstiff, As, zs, ds, ps, GJs, m, n,
     multiple of ``nstiff`` (their Eq. (13)). ``shell_inplane_inertia=False``
     neglects `\dot{u}` and `\dot{v}` in the kinetic energy of the shell, as
     Egle and Sewall do for their numerical results (p. 522);
-    ``stringer_inplane_inertia=False`` neglects them also in `T_s`. The
-    returned frequency is the lowest of the modes whose largest coefficient
-    `|W_j|` is that of `j = n`.
+    ``stringer_inplane_inertia=False`` neglects them also in `T_s`.
 
-    Consistent units are assumed (e.g. in, lbf, s: the density in
-    lb-s^2/in^4).
     """
     from scipy.linalg import eig
     s = m*np.pi/L

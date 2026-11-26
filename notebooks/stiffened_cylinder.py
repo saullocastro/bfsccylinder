@@ -11,7 +11,14 @@ skin.
 
 Along the line where a stringer meets the skin, `Y = 0`, the nodes of the
 stringer are tied to the nodes of the skin, the translations and the
-rotation about `x` being the same:
+rotation about `x` being the same.
+
+The model is the half of the cylinder `0 \le \theta \le \pi` with two
+planes of symmetry midway between two stringers, or the whole cylinder.
+
+Notes
+-----
+The ties of the root of a stringer are
 
 .. math::
 
@@ -29,8 +36,6 @@ each root node are eliminated with the constraint basis
 `\boldsymbol{u} = \boldsymbol{Z}\boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom
 `\boldsymbol{u}_r` are `\boldsymbol{Z}^\top \boldsymbol{K} \boldsymbol{Z}`, `\boldsymbol{Z}^\top \boldsymbol{K}_G \boldsymbol{Z}` and `\boldsymbol{Z}^\top \boldsymbol{M} \boldsymbol{Z}`.
 
-The model is the half of the cylinder `0 \le \theta \le \pi` with two
-planes of symmetry midway between two stringers, or the whole cylinder.
 """
 import numpy as np
 from numpy import pi
@@ -286,9 +291,15 @@ class StiffenedCylinder:
 
     def KG_membrane(self, eps):
         r"""Geometric stiffness matrix of the uniform axial strain ``eps``
-        of the membrane pre-buckling state, `N_{xx} = E h \epsilon` in the
-        skin and `E b_s \epsilon` in the stringers, without hoop stress,
-        with the in-plane terms of the stringers of :meth:`KG_inplane`"""
+        of the membrane pre-buckling state, with the in-plane terms of the
+        stringers of :meth:`KG_inplane`
+
+        Notes
+        -----
+        The membrane forces are `N_{xx} = E h \epsilon` in the skin and `E
+        b_s \epsilon` in the stringers, without hoop stress.
+
+        """
         m, p, w = self.mod, self.points, self.weights
         Nskin = self.E*self.h*eps
         Nstr = self.E*self.bs*eps
@@ -346,7 +357,11 @@ class StiffenedCylinder:
     def KG_inplane(self, N):
         r"""Geometric stiffness matrix of the radial displacement `V` of the
         stringers in their plane, for the membrane forces ``N`` of
-        :meth:`stringer_membrane_forces`:
+        :meth:`stringer_membrane_forces`
+
+        Notes
+        -----
+        The matrix of the quadratic form
 
         .. math::
 
@@ -355,7 +370,9 @@ class StiffenedCylinder:
 
         These terms, the counterpart of the terms of `w` of the skin, are
         not in the geometric stiffness matrix of the BFSC plate element,
-        which has only the terms of its out-of-plane displacement `W`."""
+        which has only the terms of its out-of-plane displacement `W`.
+
+        """
         Bm, Sv_x, Sv_y, wts, dofs = self._stringer_operators()
         Nw = N*wts[None, :, None]
         Ke = (np.einsum('ep,pi,pj->eij', Nw[:, :, 0], Sv_x, Sv_x)
@@ -368,8 +385,15 @@ class StiffenedCylinder:
                           shape=(self.N, self.N)).tocsr()
 
     def axial_force_membrane(self, eps):
-        """Axial force of the whole cylinder for the membrane state of the
-        uniform axial strain ``eps``"""
+        r"""Axial force of the whole cylinder for the membrane state of the
+        uniform axial strain ``eps``
+
+        Notes
+        -----
+        `P = E \epsilon (2 \pi R h + n_s b_s H_s)`, the uniform axial
+        stress `E \epsilon` on the skin and on the `n_s` stringers.
+
+        """
         return self.E*eps*(2*pi*self.R*self.h
                            + self.nstringers*self.bs*self.Hs)
 
@@ -428,10 +452,19 @@ class StiffenedCylinder:
 
 def wave_numbers(model, u, mmax=12, nmax=40):
     r"""Axial half-waves `m` and circumferential waves `n` of the normal
-    displacement `w` of the skin, from the largest coefficient of its
-    expansion in `\sin(m \pi x/L) \cos(n \theta)` (`\theta` from a plane of
-    symmetry), for simply supported ends, or in `\cos(n \theta)` and the
-    number of sign changes along `x` of the dominant term, for other ends"""
+    displacement `w` of the skin, from the largest coefficients of its
+    expansion in circumferential harmonics and in axial sine terms
+
+    Notes
+    -----
+    `n` is the harmonic with the largest sum of squares along `x` of the
+    coefficients of `\cos(n \theta)` (`\theta` from a plane of symmetry,
+    trapezoidal rule on the nodes) for the half cylinder, or of the
+    discrete Fourier transform for the whole cylinder. `m` is the term
+    `\sin(m \pi x/L)` with the largest coefficient of that harmonic, by the
+    trapezoidal rule on the nodes.
+
+    """
     w = model.skin_field(u, W)
     x = model.xlin
     th = model.theta

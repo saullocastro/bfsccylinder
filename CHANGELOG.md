@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.7.2 (2026-11-13)
+## 0.7.3 (2026-11-26)
 
 ### Tutorials
 
@@ -94,6 +94,15 @@ The dates of the released versions are those of their tagged commits.
   rotation give the same buckling torque. Stiffened specimens 19, 14, 20,
   15 and 21, one stringer pitch: 2619, 3134, 3970, 4118 and 4422 psi, 6 to
   38 % above the observed first panel buckling.
+- The docstrings of the modules of `notebooks/`
+  (`blade_cylinder_sector.py`, `channel_cylinder_sector.py`,
+  `composite_stiffened_shell.py`, `moore1944_utils.py`,
+  `smeared_stiffened_cylinder.py`, `stiffened_cylinder.py` and
+  `z_cylinder_sector.py`) have their equations under Notes and their
+  sources under References.
+- The notebooks do not print or name the versions of the packages. The
+  seven `ex_*` notebooks, `stiffened_cylinder_frequencies.ipynb` and
+  `moore1944_stiffened_cylinders.ipynb` are stored with their figures.
 
 ### Tests
 
@@ -132,12 +141,33 @@ The dates of the released versions are those of their tagged commits.
   values were the second-lowest double load multipliers: -201751 N becomes
   -201104 N (Donnell-type), -200606.75 N becomes -199872.11 N
   (Sanders-type).
+- Docstrings of the tests, with no test added or removed and no asserted
+  value changed: Notes of `tests/test_follower_pressure.py` (tangent
+  vectors, area vector, Taylor remainder), of
+  `tests/test_follower_pressure_structsolve.py` (the follower force in
+  the residual and its tangent) and of `cylinder_closed_form` of
+  `tests/test_follower_pressure_validation.py`; Arbocz and Starnes (2002)
+  in the References of `tests/test_nonlinear_axial_compression.py` and
+  `tests/test_sanders_nonlinear_axial_compression.py`;
+  `tests/test_sanders_linear_buckling.py` says that its reference is the
+  value stored in the test with the Donnell-type kinematics (the two
+  kinematics differ by 6.6e-6 for this cylinder);
+  `tests/natural_frequency_solver.py` describes the solver in the present
+  tense, with the reasons in Notes.
 
 ### Documentation
 
 - The documentation is deployed to the `gh-pages` branch from the release
   tags only, as in panels: the manual run of `auto_doc.yml`, which deployed
   from any branch, is removed. Pull requests still build it.
+- The Notes of `BFSCCylinderSanders` and of `update_Bm`, `update_KC0`,
+  `update_fint`, `update_fext_follower` and `update_KCfollower` of the
+  Sanders-type element state their own equations: the curvatures, the
+  rows of `\boldsymbol{B}_{NL}`, the tangent and area vectors with `v/R`
+  and the `v`-`v` block of the load stiffness matrix.
+- The installation page refers to `requirements.txt` for the required
+  version of structsolve, without repeating the number.
+- Typo "Integration poins" in the Parameters of the `update_*` functions.
 
 ## 0.7.0 (2026-10-26)
 

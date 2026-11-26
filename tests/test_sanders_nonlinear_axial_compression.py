@@ -8,6 +8,19 @@ and ||KG|| are 9.7e-4 and 5.3e-4 of ||KC0||. An inconsistent tangent
 converges here too, so this is not a guard on KC0 + KCNL + KG being the
 Jacobian of fint; tests/test_tangent_consistency.py is. Nor does it assert
 anything about the solution, so it would not notice a wrong fint either.
+Notes
+-----
+The geometry is that of a cylinder of Arbocz and Starnes [1]_. The method
+is the full Newton-Raphson: the tangent stiffness matrix KC0 + KCNL + KG
+is computed again at every iteration, not held fixed as in a modified
+Newton-Raphson method. Since this sum is the exact Jacobian of fint, the
+convergence is quadratic.
+
+References
+----------
+.. [1] Arbocz, J., and Starnes, J. H., 2002, "On a High-Fidelity
+   Hierarchical Approach to Buckling Load Calculations", New Approaches to
+   Structural Mechanics, Shells and Biological Structures, pp. 271-292.
 
 """
 import time
@@ -30,7 +43,6 @@ from bfsccylinder.utils import assign_constant_ABD
 
 def test_nonlinear_axial_compression_load_controlled():
     # geometry
-    #Arbocz, J., and Starnes, J. H., 2002, “On a High-Fidelity Hierarchical Approach to Buckling Load Calculations,” New Approaches to Structural Mechanics, Shells and Biological Structures, pp. 271–292.
     L = 0.3556 # m
     R = 0.20318603 # m
     ny = 4*16
@@ -183,9 +195,7 @@ def test_nonlinear_axial_compression_load_controlled():
         return fint
 
     # solving using the full Newton-Raphson method: calc_KT is called again
-    # at every iteration, not held fixed as a modified Newton-Raphson would.
-    # That is what buys quadratic convergence, now that KC0 + KCNL + KG is
-    # the exact Jacobian of fint
+    # at every iteration
     def scaling(vec, D):
         """Norm of ``vec`` weighted by the inverse of the absolute values
         of ``D``

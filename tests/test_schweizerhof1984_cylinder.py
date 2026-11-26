@@ -109,8 +109,8 @@ def test_identities():
         assert abs(KT - KTk).max() < 1e-13*abs(KTk).max()
 
         def central(f):
-            # fourth order: the error of second order, of order h**2, was
-            # 1e-7 for some imperfections
+            # fourth order: the error of the second-order formula, of order
+            # h**2, is 1e-7 for some imperfections
             return (8*(f(c + h*v) - f(c - h*v))
                     - (f(c + 2*h*v) - f(c - 2*h*v)))/(12*h)
 

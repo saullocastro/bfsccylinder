@@ -8,9 +8,13 @@ kinematics, :class:`bfsccylinder.sanders.BFSCCylinderSanders`, and the
 stringer with the BFSC plate element :class:`bfscplate2d.BFSCPlate2D`, in
 the plane `(x, r)` of the stringer, from the middle surface of the skin to
 the tip. Without stringer, ``bs=None``, the sector is a sector of an
-unstiffened cylinder.
+unstiffened cylinder. The stringer root is tied to the skin and the
+sector is solved with cyclic symmetry, one circumferential harmonic `n` at
+a time (:meth:`BladeCylinderSector.Z`).
 
-The plate of the stringer has the local coordinates `X = x` and `Y = r -
+Notes
+-----
+**Ties.** The plate of the stringer has the local coordinates `X = x` and `Y = r -
 R`, and its displacements `U`, `V` and `W` are along `x`, along the outward
 radius and along the circumference. Along its root, `Y = 0`, its nodes are
 tied to the skin nodes of the line `\theta = \phi/2`:
@@ -26,9 +30,7 @@ being that of the Sanders-type kinematics, as in the module
 Donnell-type kinematics, :class:`bfsccylinder.BFSCCylinder`, and the tie of
 the rotation is that of the Donnell-type kinematics, `W_{,Y} = -w_{,y}`.
 
-Cyclic symmetry
----------------
-The structure is invariant under a rotation by `\phi` about its axis, and
+**Cyclic symmetry.** The structure is invariant under a rotation by `\phi` about its axis, and
 the degrees of freedom of the elements, in the axial, circumferential and
 radial directions, rotate with it. A mode of the whole cylinder can then be
 taken with `n` circumferential waves, the degrees of freedom of the sector
@@ -470,7 +472,11 @@ class BladeCylinderSector:
     def KG_inplane(self, N):
         r"""Geometric stiffness of the radial displacement `V` of the
         stringer in its plane, for the membrane forces ``N`` of
-        :meth:`stringer_membrane_forces`:
+        :meth:`stringer_membrane_forces`
+
+        Notes
+        -----
+        The matrix of the quadratic form
 
         .. math::
 
@@ -479,7 +485,9 @@ class BladeCylinderSector:
 
         These terms, the counterpart of those of `w` of the skin, are not
         in the geometric stiffness matrix of the BFSC plate element, which
-        has only the terms of its out-of-plane displacement `W`."""
+        has only the terms of its out-of-plane displacement `W`.
+
+        """
         Bm, Sv_x, Sv_y, wts, dofs = self._stringer_operators()
         Nw = N*wts[None, :, None]
         Ke = (np.einsum('ep,pi,pj->eij', Nw[:, :, 0], Sv_x, Sv_x)
@@ -509,7 +517,14 @@ class BladeCylinderSector:
         r"""Real field over the whole circumference from the field of the
         sector ``field``, shape ``(nx, nbay + 1)``, of the harmonic ``n``:
         returns `\theta`, shape ``(n_s nbay + 1,)``, and the field, shape
-        ``(nx, n_s nbay + 1)``"""
+        ``(nx, n_s nbay + 1)``
+
+        Notes
+        -----
+        The field of the sector `k` is that of the sector `0` multiplied
+        by `e^{i n k \phi}`; the real part is returned.
+
+        """
         parts = [field[:, :-1]*np.exp(1j*n*k*self.phi)
                  for k in range(self.nstringers)]
         parts.append(field[:, :1]*np.exp(1j*n*2*pi))
@@ -531,9 +546,16 @@ def lowest_eigenpairs(A, B, k, sigma=0.):
     r"""The ``k`` lowest eigenvalues `\lambda > \sigma` of `\boldsymbol{A}
     \boldsymbol{x} = \lambda \boldsymbol{B} \boldsymbol{x}`, Hermitian
     matrices with `\boldsymbol{A} - \sigma \boldsymbol{B}` nonsingular, and
-    their eigenvectors, from the largest eigenvalues `1/(\lambda - \sigma)`
-    of `(\boldsymbol{A} - \sigma \boldsymbol{B})^{-1} \boldsymbol{B}`
-    (ARPACK through :func:`scipy.sparse.linalg.eigs`)"""
+    their eigenvectors (ARPACK through :func:`scipy.sparse.linalg.eigs`)
+
+    Notes
+    -----
+    Shift-and-invert: the largest eigenvalues `\nu = 1/(\lambda - \sigma)`
+    of `(\boldsymbol{A} - \sigma \boldsymbol{B})^{-1} \boldsymbol{B}`,
+    computed with ARPACK, give `\lambda = \sigma + 1/\nu`; the eigenvalues
+    with `\nu \le 0`, below the shift, are dropped.
+
+    """
     lu = splu((A - sigma*B).tocsc())
     dtype = np.result_type(A.dtype, B.dtype)
     op = LinearOperator(A.shape, matvec=lambda x: lu.solve(B @ x),
@@ -549,11 +571,23 @@ def lowest_eigenpairs(A, B, k, sigma=0.):
 
 
 def frequencies(model, ends, n, k=8):
-    """Natural frequencies (Hz) and modes of the harmonic ``n`` for the
+    r"""Natural frequencies (Hz) and modes of the harmonic ``n`` for the
     end conditions ``ends`` (see :meth:`BladeCylinderSector.constrained`);
     the modes are returned for all the degrees of freedom of the sector.
     For ``ends='SS'`` and ``n = 0`` the axial rigid-body translation is
-    removed (``free_axial``)."""
+    removed (``free_axial``).
+
+    Notes
+    -----
+    The eigenvalues `\omega^2` of `\boldsymbol{Z}_n^H \boldsymbol{K}_{C0}
+    \boldsymbol{Z}_n \boldsymbol{x} = \omega^2 \boldsymbol{Z}_n^H
+    \boldsymbol{M} \boldsymbol{Z}_n \boldsymbol{x}` on the unconstrained
+    degrees of freedom, `f = \omega/(2 \pi)`, by
+    :func:`lowest_eigenpairs` with the shift `\sigma = -1` when no end is
+    clamped, which keeps the shifted matrix nonsingular if a rigid-body
+    motion is left free, and `\sigma = 0` otherwise.
+
+    """
     Zn = model.Z(n, free_axial=(ends == 'SS'))
     K = (Zn.conj().T @ model.KC0() @ Zn).tocsr()
     M = (Zn.conj().T @ model.M() @ Zn).tocsr()
@@ -573,7 +607,26 @@ def buckling_membrane(model, ends, n, k=6, lateral=True):
     r"""Linear buckling of the harmonic ``n`` with the membrane pre-buckling
     state of a uniform axial strain; returns the critical average axial
     force per unit circumference `\bar{N} = P/(2 \pi R)` and the modes;
-    ``lateral``: see :meth:`BladeCylinderSector.KG_membrane`"""
+    ``lateral``: see :meth:`BladeCylinderSector.KG_membrane`
+
+    Notes
+    -----
+    With the constraint basis `\boldsymbol{Z}_n` of the harmonic and the
+    geometric stiffness matrix `\boldsymbol{K}_G` of the membrane state of
+    a reference axial strain `\epsilon_0`, the load multipliers `\lambda`
+    solve
+
+    .. math::
+
+        \boldsymbol{Z}_n^H \left( \boldsymbol{K}_{C0} + \lambda
+        \boldsymbol{K}_G \right) \boldsymbol{Z}_n \boldsymbol{x} =
+        \boldsymbol{0}, \qquad \bar{N} = \frac{\lambda P_0}{2 \pi R},
+        \qquad P_0 = E |\epsilon_0| A
+
+    on the unconstrained degrees of freedom, with `A` the cross-sectional
+    area of the whole cylinder.
+
+    """
     eps = -1e-3
     key = '_KG_membrane' if lateral else '_KG_membrane_nolateral'
     if not hasattr(model, key):
@@ -593,7 +646,18 @@ def prebuckling_clamped(model, delta=1e-3):
     r"""Linear static axisymmetric state of the cylinder clamped at both
     ends, the end `x = L` shortened by ``delta``; returns the displacements
     of all the degrees of freedom of the sector and the axial force `P` of
-    the whole cylinder"""
+    the whole cylinder
+
+    Notes
+    -----
+    Harmonic `n = 0`. With the prescribed degrees of freedom
+    `\boldsymbol{u}_k` (`u = -\delta` at the end `x = L`, zero elsewhere),
+    the unknown ones solve `\boldsymbol{K}_{uu} \boldsymbol{u}_u =
+    -\boldsymbol{K}_{uk} \boldsymbol{u}_k`, and `P` is the sum of the
+    reactions on the prescribed `u` of the end of the sector times the
+    number of stringers `n_s`.
+
+    """
     Z0 = model.Z(0)
     K = (Z0.T @ model.KC0() @ Z0).tocsr()
     bk = model.constrained('CC')
@@ -611,7 +675,18 @@ def buckling_prebuckled(model, u0, P, n, k=6):
     r"""Linear buckling of the harmonic ``n`` of the clamped cylinder with
     the pre-buckling state ``u0`` of :func:`prebuckling_clamped`, the end
     `x = L` held at its pre-buckling position; returns `\bar{N}` and the
-    modes"""
+    modes
+
+    Notes
+    -----
+    `\boldsymbol{Z}_n^H (\boldsymbol{K}_{C0} + \lambda
+    \boldsymbol{K}_G(\boldsymbol{u}_0)) \boldsymbol{Z}_n \boldsymbol{x} =
+    \boldsymbol{0}` on the unconstrained degrees of freedom, with
+    `\boldsymbol{K}_G(\boldsymbol{u}_0)` of :meth:`BladeCylinderSector.KG`,
+    the stresses of the linear static state with its bending near the
+    clamped ends, and `\bar{N} = \lambda |P|/(2 \pi R)`.
+
+    """
     if getattr(model, '_KG_u0', (None,))[0] is not u0:
         model._KG_u0 = (u0, model.KG(u0))
     KG0 = model._KG_u0[1]

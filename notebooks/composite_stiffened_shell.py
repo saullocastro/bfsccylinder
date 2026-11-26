@@ -16,9 +16,16 @@ R \theta` the arc length. A stringer is assembled from plates:
   plane `(x, r)` of the stringer, from the mid-surface of the skin to the
   tip, with the local coordinates `X = x` and `Y = r - R`, positive
   outwards, and the displacements `U`, `V` and `W` along `x`, along the
-  outward radius and along `y`. Its root, `Y = 0`, is connected to the skin
+  outward radius and along `y`. Its root, `Y = 0`, is tied to the skin
   along their common line, at the edge of the foot of an L-section or at
-  the middle of the foot of a T-section:
+  the middle of the foot of a T-section.
+
+The constraints, the boundary conditions and the rigid end rings are
+imposed with a constraint basis (:meth:`StiffenedShell.finalize`).
+
+Notes
+-----
+**Ties.** The root of a blade is connected to the skin with
 
 .. math::
 
@@ -30,7 +37,8 @@ imposed with a constraint basis `\boldsymbol{u} = \boldsymbol{Z}
 \boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom are
 `\boldsymbol{Z}^\top \boldsymbol{K} \boldsymbol{Z}`.
 
-The geometric stiffness matrix of the BFSC plate element has the terms of
+**Geometric stiffness of the blades.** The geometric stiffness matrix of
+the BFSC plate element has the terms of
 its out-of-plane displacement `W` only; the terms of the in-plane radial
 displacement `V` of a blade under its membrane forces,
 
@@ -40,6 +48,7 @@ displacement `V` of a blade under its membrane forces,
     dX \, dY
 
 are added by :meth:`StiffenedShell.KG_inplane`.
+
 """
 import numpy as np
 from numpy import pi
@@ -232,15 +241,20 @@ class StiffenedShell:
     def rigid_end(self, i=-1, rotation_free=False):
         r"""End section ``i`` attached to a rigid ring: a uniform axial
         displacement and a rotation about the axis, with `w = 0` and
-        `w_{,x} = 0` (unless ``rotation_free``) of the skin, and for the
-        blades `U` uniform, `V = 0`, `W = (R + Y) \phi`, `W_{,Y} = \phi`
-        and `W_{,X} = 0`, with `\phi` the rotation of the ring; the
-        derivatives along the edge follow: `u_{,y} = v_{,y} = w_{,y} = 0`
-        and `U_{,Y} = V_{,Y} = 0`, with `w_{,xy} = W_{,XY} = 0` when `w_{,x}`
-        and `W_{,X}` are constrained. Returns the
+        `w_{,x} = 0` (unless ``rotation_free``) of the skin. Returns the
         master degrees of freedom of the axial displacement and of the
         circumferential displacement `R \phi` of the ring, those of `u` and
-        `v` of the first node of the section of the skin"""
+        `v` of the first node of the section of the skin
+
+        Notes
+        -----
+        With `\phi` the rotation of the ring, the blades have `U` uniform,
+        `V = 0`, `W = (R + Y) \phi`, `W_{,Y} = \phi` and `W_{,X} = 0`. The
+        derivatives along the edge follow: `u_{,y} = v_{,y} = w_{,y} = 0`
+        and `U_{,Y} = V_{,Y} = 0`, with `w_{,xy} = W_{,XY} = 0` when
+        `w_{,x}` and `W_{,X}` are constrained.
+
+        """
         R = self.R
         rot = [] if rotation_free else [W_X, W_XY]
         nodes = self.skin_nodes[i, :]
@@ -267,7 +281,7 @@ class StiffenedShell:
         self.fix(self.skin_nodes[:, j], dofs)
 
     def finalize(self):
-        """Constraint basis `\boldsymbol{Z}` from the ties and fixed
+        r"""Constraint basis `\boldsymbol{Z}` from the ties and fixed
         degrees of freedom"""
         N = self.N
         dep = dict(self.ties)
@@ -435,10 +449,20 @@ class StiffenedShell:
         return self.Z @ ur, Kr
 
     def buckling(self, loads, num_eigvalues=10, reverse=False):
-        """Linear buckling analysis about the linear static state of
+        r"""Linear buckling analysis about the linear static state of
         ``loads``: load multipliers and modes (all the degrees of freedom),
         with the load reversed if ``reverse``; also returns the static
-        displacements"""
+        displacements
+
+        Notes
+        -----
+        `\boldsymbol{Z}^\top (\boldsymbol{K}_{C0} + \lambda
+        \boldsymbol{K}_G(\boldsymbol{u}_0)) \boldsymbol{Z} \boldsymbol{x} =
+        \boldsymbol{0}`, with `\boldsymbol{u}_0` the linear static solution
+        of ``loads`` and `\boldsymbol{K}_G` of :meth:`KG`, of opposite sign
+        if ``reverse``, solved with ``structsolve.lb``.
+
+        """
         u, Kr = self.static(loads)
         KGr = self.reduce(self.KG(u))
         if reverse:
