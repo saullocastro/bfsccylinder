@@ -67,7 +67,7 @@ construction, not verified here, would need that matrix.
 The values ``FIG_*`` were read from Fig. 6.3.4 of [1]_, on the page
 rendered at 300 dpi with a grid of `0.001 \times 0.05` drawn over the axes,
 to about `\pm 0.0003` in the axial deflection and `\pm 0.01` in the load;
-they are the readings of the benchmark ``simo1990_cylinder.py`` of
+they are the readings used by the benchmark of the same case of
 structsolve, checked against the figure. The triangles and diamonds of Fig.
 6.3.4(a) are the results of the 9-node ANS element of [2]_.
 

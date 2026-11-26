@@ -21,9 +21,8 @@ r"""Validation of the follower pressure against closed forms
    exact solution of the same strains with trigonometric modes. Their modes
    depend on `x` and test the terms of `u` of the follower load.
 
-Both closed forms are those of ``tests/tests_shell/
-test_follower_pressure_validation.py`` of the panels repository, with the
-same cases. Units: N, m, Pa.
+Both closed forms, with the same cases, are those used by the tests of the
+follower pressure of the panels package. Units: N, m, Pa.
 
 Notes
 -----

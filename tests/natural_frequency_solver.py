@@ -1,18 +1,27 @@
 r"""Deterministic and verified lowest natural frequencies
 
-``scipy.sparse.linalg.eigsh`` with ``M`` in shift-invert mode starts ARPACK
-from a random vector, and for the clustered lowest frequencies of a cylinder
-it made the natural-frequency tests fail now and then (ARPACK error -8),
-scattered the lowest eigenvalue by about 0.2 % from run to run and returned
-eigenpairs with relative residuals of the order of 1e-3. Here ARPACK solves
-the standard problem of the shift-inverted operator from a fixed starting
-vector, with a larger Krylov subspace, and the result is verified:
+Eigenvalue solver of the natural-frequency tests: ARPACK solves the
+standard problem of the shift-inverted operator from a fixed starting
+vector, such that the result does not change from run to run, and the
+result is verified:
 
 - the relative residual of each eigenpair must be below ``rtol``;
-- no eigenvalue below the highest one returned may be missing: by
-  Sylvester's law of inertia, the number of negative pivots of the
-  symmetric factorization of `\boldsymbol{K} - s \boldsymbol{M}`, for `s` slightly above the
-  highest eigenvalue returned, is the number of eigenvalues below `s`.
+- no eigenvalue below the highest one returned may be missing.
+
+Notes
+-----
+The lowest frequencies of a cylinder are clustered. ARPACK started from a
+random vector, as ``scipy.sparse.linalg.eigsh`` does in shift-invert mode,
+may then fail to converge (ARPACK error -8), scatters the lowest eigenvalue
+by about 0.2 % from run to run and returns eigenpairs with relative
+residuals of the order of 1e-3; hence the fixed starting vector and the
+larger Krylov subspace used here.
+
+The count of the eigenvalues uses Sylvester's law of inertia: the number of
+negative pivots of the symmetric factorization of `\boldsymbol{K} - s
+\boldsymbol{M}`, for `s` slightly above the highest eigenvalue returned, is
+the number of eigenvalues below `s`.
+
 """
 import numpy as np
 from scipy.sparse import csc_matrix
@@ -21,7 +30,15 @@ from scipy.sparse.linalg import LinearOperator, eigs, splu
 
 def negative_pivots(A):
     r"""Number of negative eigenvalues of the symmetric sparse matrix ``A``,
-    from an `\boldsymbol{L}\boldsymbol{D}\boldsymbol{L}^\top` factorization with a symmetric permutation"""
+    from an `\boldsymbol{L}\boldsymbol{D}\boldsymbol{L}^\top` factorization with a symmetric permutation
+
+    Notes
+    -----
+    By Sylvester's law of inertia, `\boldsymbol{A}` and the diagonal
+    `\boldsymbol{D}` of its factorization have the same number of negative
+    eigenvalues, the number of negative pivots.
+
+    """
     lu = splu(csc_matrix(A), permc_spec='MMD_AT_PLUS_A',
               diag_pivot_thresh=0., options=dict(SymmetricMode=True))
     assert np.array_equal(lu.perm_r, lu.perm_c), 'row interchange'
