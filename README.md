@@ -37,7 +37,7 @@ tutorials model the stringers of stiffened cylinders with
 Citing this library
 ===================
 
-Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.2). https://github.com/saullocastro/bfsccylinder.
+Saullo G. P. Castro (2026). Implementation of the BFSC cylinder finite element (Version 0.7.3). https://github.com/saullocastro/bfsccylinder.
 
 
 Documentation
@@ -51,7 +51,7 @@ History
 
 See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
 
-* version 0.7.2 (2026-11-13)
+* version 0.7.3 (2026-11-26)
     - Tutorials and tests of the buckling under torsion of the ring- and
       stringer-stiffened cylinders of Moore and Wescoat (1944)
     - Module `notebooks/z_cylinder_sector.py`, one stringer pitch of a
@@ -67,6 +67,9 @@ See [CHANGELOG.md](CHANGELOG.md) for the details of each version.
       the unsymmetric load stiffness matrix, Table 4, and Riks with the
       inertia count
     - Requires `structsolve>=0.10.0`
+    - Docstrings: the equations of the Sanders-type element, of the tests
+      and of the modules of `notebooks/` in Notes, the sources in
+      References
 * version 0.7.0 (2026-10-26)
     - Follower pressure, for both kinematics: `update_fext_follower` and
       `update_KCfollower`, the force vector and the unsymmetric load
