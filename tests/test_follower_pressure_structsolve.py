@@ -17,10 +17,33 @@ factor ``inc``, which structsolve passes to the callables that declare it:
 
 The checks: the solution is in equilibrium with the whole follower
 pressure, the load stiffness matrix is unsymmetric, and the Newton-Raphson
-iterations converge quadratically with it, which only happens when the
-unsymmetric tangent stiffness matrix is the Jacobian of the residual.
+iterations converge quadratically with it.
 
 Units: N, m, Pa.
+
+Notes
+-----
+structsolve solves `\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda
+\boldsymbol{F}_{ext} = \boldsymbol{0}` with a constant
+`\boldsymbol{F}_{ext}`. The follower force `\lambda
+\boldsymbol{F}_p(\boldsymbol{u})` depends on the displacements, so that it
+is split: the dead part `\lambda \boldsymbol{F}_p(\boldsymbol{0})` is the
+external force, and `-\lambda (\boldsymbol{F}_p(\boldsymbol{u}) -
+\boldsymbol{F}_p(\boldsymbol{0}))` is added to the internal forces. The
+tangent stiffness matrix of this residual is
+
+.. math::
+
+    \frac{\partial \boldsymbol{R}}{\partial \boldsymbol{u}} =
+    \boldsymbol{K}_{C0} + \boldsymbol{K}_{CNL} + \boldsymbol{K}_G +
+    \boldsymbol{K}_F, \qquad \boldsymbol{K}_F = -\lambda \frac{\partial
+    \boldsymbol{F}_p}{\partial \boldsymbol{u}}
+
+with `\boldsymbol{K}_F` of ``update_KCfollower``, unsymmetric here because
+of the free end. The Newton-Raphson iterations converge quadratically only
+when this unsymmetric matrix is the Jacobian of the residual, which is what
+the convergence check verifies.
+
 """
 import sys
 sys.path.append(r'..')

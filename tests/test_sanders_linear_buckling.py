@@ -7,8 +7,9 @@ end `x = L` is compressed by a prescribed axial displacement. The linear
 static solution gives the geometric stiffness matrix of ``update_KG``, the
 lowest load multiplier is computed with ``lobpcg``, and the critical load,
 the load multiplier times the sum of the reaction forces at `x = L`, is
-checked within 2 % against -228459.04645094523 N, a result of the element of
-``bfsccylinder.sanders`` stored in the test.
+checked within 2 % against -228459.04645094523 N, the value stored in the
+test of the same cylinder with the Donnell-type kinematics, used here as
+the reference within the tolerance.
 
 Notes
 -----
@@ -20,6 +21,11 @@ of [1]_, `u` being prescribed at `x = L`. For comparison, Table 6 of [1]_
 gives for Z18, with the classical laminated plate theory, 226.44 kN for the
 conditions SS2 (`v = w = 0`) and 228.22 kN for CC2 (`v = w = w_{,x} = 0`),
 and the test result 212.6 kN of Geier et al.
+
+The two kinematics give nearly the same critical load for this cylinder:
+this test computes -228457.16 N with the Sanders-type element, and the
+same model with the Donnell-type element -228458.65 N, a relative
+difference of 6.6e-6, both within 1e-5 of the stored reference.
 
 References
 ----------

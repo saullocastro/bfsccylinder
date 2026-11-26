@@ -289,6 +289,32 @@ def cylinder_closed_form(kinematics, load, m, n, L, R, ABD, Nxx, Nyy, p):
     exactly, and ``ABD`` must be orthotropic (no 16, 26 or B terms). Returns
     the smallest positive ``lam``.
 
+    Notes
+    -----
+    With the three fields of the mode as generalized coordinates `q_i`, the
+    load multipliers solve `(\boldsymbol{H}_0 + \lambda \boldsymbol{H}_1)
+    \boldsymbol{q} = \boldsymbol{0}`, with
+
+    .. math::
+
+        H_{0,ij} = \int_A \boldsymbol{e}_i^\top \boldsymbol{C}
+        \boldsymbol{e}_j \, dA, \qquad
+        H_{1,ij} = \int_A \left( N_{xx} w_{i,x} w_{j,x} + N_{yy}
+        \beta_i \beta_j \right) dA - \int_A p \, \boldsymbol{u}_i^\top
+        \boldsymbol{a}_{1,j} \, dA
+
+    where `\boldsymbol{e} = \{u_{,x}, v_{,y} + w/R, u_{,y} + v_{,x},
+    \kappa_{xx}, \kappa_{yy}, \kappa_{xy}\}^\top` are the linear strains
+    and curvatures of the kinematics, `\boldsymbol{C}` is ``ABD``, `\beta =
+    w_{,y} - k_v v`, and `\boldsymbol{a}_1 = \{-w_{,x}, -w_{,y} + k_v v,
+    u_{,x} + v_{,y} + w/R\}^\top` is the first-order area vector, with `k_v
+    = 1/R` for the Sanders-type and `k_v = 0` for the Donnell-type
+    kinematics. The Donnell-type curvatures are `\{-w_{,xx}, -w_{,yy}, -2
+    w_{,xy}\}`; the Sanders-type ones add `v_{,y}/R` to `\kappa_{yy}` and
+    `3 v_{,x}/(2R) - u_{,y}/(2R)` to `\kappa_{xy}`. The last integral of
+    `\boldsymbol{H}_1`, the load stiffness of the pressure, is left out for
+    the dead load, and makes `\boldsymbol{H}_1` unsymmetric in general.
+
     """
     l = m*np.pi/L
     k = n/R

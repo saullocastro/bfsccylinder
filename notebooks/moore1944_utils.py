@@ -128,9 +128,15 @@ def donnell_tau(t, Lb, E=E, nu=NU, D=D):
 
 
 def torque_ftlb(tau, t, D=D):
-    """Torque (ft-lb) of the shear stress ``tau`` (psi) in a skin of
-    thickness ``t`` (in), Moore and Wescoat (1944), `\\tau = 24 T/(\\pi D^2
-    t)`"""
+    r"""Torque (ft-lb) of the shear stress ``tau`` (psi) in a skin of
+    thickness ``t`` (in), with the relation of Moore and Wescoat (1944)
+
+    Notes
+    -----
+    `\tau = 24 T/(\pi D^2 t)`: the shear flow of the thin circular tube,
+    `\tau t = 2 T/(\pi D^2)`, with `T` in ft-lb (factor 12 in/ft).
+
+    """
     return tau*pi*D**2*t/24
 
 
@@ -190,7 +196,15 @@ class Layers:
     Attributes
     ----------
     A11, ..., D66 : float
-        `(A, B, D)_{ij} = \sum Q_{ij} \int (1, z, z^2) dz`.
+        The entries of `\boldsymbol{A}`, `\boldsymbol{B}` and
+        `\boldsymbol{D}`.
+
+    Notes
+    -----
+    `(A, B, D)_{ij} = \sum Q_{ij} \int (1, z, z^2) dz` over the layers,
+    with `Q_{11} = Q_{22} = E/(1 - \nu^2)`, `Q_{12} = \nu Q_{11}` and
+    `Q_{66} = E/(2 (1 + \nu))`, or the given `G`.
+
     """
 
     def __init__(self, layers):
@@ -213,11 +227,17 @@ def layered_ABD(h, ring=None, base=None, E=E, nu=NU, ring_gfac=1.):
     r"""Laminate of the skin of thickness ``h`` with, optionally, a ring
     layer ``ring = (d_r, nu_r)`` on the inner face, `-h/2 - d_r \le z \le
     -h/2`, and a base layer of thickness ``base`` on the outer face. The
-    ring layer has the shear modulus `G = E/(2 (1 + \nu))` of the material
-    and the Poisson's ratio ``nu_r``: with ``nu_r = 0`` the circumferential
-    membrane and bending stiffnesses of the band are `E b_r d_r` and `E b_r
-    \int z^2 dz` of a bar, not the plate values `E/(1 - \nu^2)` times
-    these. ``ring_gfac`` multiplies the shear modulus of the ring layer."""
+    ring layer has the shear modulus of the material, multiplied by
+    ``ring_gfac``, and the Poisson's ratio ``nu_r``.
+
+    Notes
+    -----
+    The shear modulus of the ring layer is `G = E/(2 (1 + \nu))`. With
+    ``nu_r = 0`` the circumferential membrane and bending stiffnesses of
+    the band of width `b_r` are `E b_r d_r` and `E b_r \int z^2 dz`, those
+    of a bar, not the plate values `1/(1 - \nu^2)` times these.
+
+    """
     G = E/(2*(1 + nu))
     lay = [(-h/2, h/2, E, nu)]
     if ring is not None:
@@ -405,14 +425,21 @@ class MooreSector(ChannelCylinderSector):
                  both=False):
         r"""Lowest positive load multipliers of the Bloch index ``j``
 
-        `(\boldsymbol{K} + \lambda \boldsymbol{K}_G) \boldsymbol{x} = 0`,
-        reduced by :meth:`Z` and :meth:`constrained_bc`, Hermitian; the
-        largest eigenvalues `\mu = 1/\lambda` of `\boldsymbol{K}^{-1}
-        (-\boldsymbol{K}_G)` are computed with ARPACK. ``KG`` defaults to
-        :meth:`KG_shear` with `N_{xy} = 1`, so that `\lambda` is the
-        critical `N_{xy}` (lb/in). Returns ``lam`` (ascending, positive) and
-        the modes (all the degrees of freedom); with ``both`` also the
-        multipliers of the opposite sign, as ``(lam, modes, lam_neg)``."""
+        ``KG`` defaults to :meth:`KG_shear` with `N_{xy} = 1`, so that the
+        multiplier is the critical `N_{xy}` (lb/in). Returns ``lam``
+        (ascending, positive) and the modes (all the degrees of freedom);
+        with ``both`` also the multipliers of the opposite sign, as
+        ``(lam, modes, lam_neg)``.
+
+        Notes
+        -----
+        `(\boldsymbol{K} + \lambda \boldsymbol{K}_G) \boldsymbol{x} =
+        \boldsymbol{0}`, reduced by :meth:`Z` and :meth:`constrained_bc`,
+        Hermitian; the largest eigenvalues `\mu = 1/\lambda` of
+        `\boldsymbol{K}^{-1} (-\boldsymbol{K}_G)` are computed with ARPACK,
+        and the smallest ones for the multipliers of the opposite sign.
+
+        """
         Zj = self.Z(j)
         if KG is None:
             if not hasattr(self, '_KGs'):
@@ -457,12 +484,18 @@ class MooreSector(ChannelCylinderSector):
     # ------------------------------------------------------------------
     def static_rotation(self, phi=1e-3, ends='hinged'):
         r"""Torsion of the axisymmetric (Bloch index 0) sector by the
-        rotation ``phi`` of the end `x = L` about the axis: `v = R \phi`,
-        `v_{,y} = 0` at its skin nodes, the other end conditions of
-        :meth:`constrained_bc`. Returns the displacements (all the
-        degrees of freedom) and the torque of the whole cylinder (lb in),
-        `R` times the sum of the reactions on the prescribed `v` times the
-        number of sectors."""
+        rotation ``phi`` of the end `x = L` about the axis, with the other
+        end conditions of :meth:`constrained_bc`. Returns the displacements
+        (all the degrees of freedom) and the torque of the whole cylinder
+        (lb in).
+
+        Notes
+        -----
+        The rotation is prescribed as `v = R \phi`, `v_{,y} = 0` at the
+        skin nodes of the end. The torque is `R` times the sum of the
+        reactions on the prescribed `v` times the number of sectors.
+
+        """
         Z0 = self.Z(0)
         K = (Z0.T @ self.KC0() @ Z0).tocsr()
         bk = self.constrained_bc(ends)
@@ -491,14 +524,20 @@ class MooreSector(ChannelCylinderSector):
 
 def stringer_band_ABD(h, b, bl=None, ring=None, E=E, nu=NU):
     r"""Laminate of the skin band of width ``b`` under a stringer
-    represented as a layer: skin of thickness ``h`` plus a layer with
-    `Q_{11} = E_s`, the other `Q_{ij}` zero, of thickness `d_s = \sqrt{12
-    I_{XX}/A}` centred at the centroid of the idealised channel of
-    :func:`channel_section` (lips ``bl``), `E_s b d_s = E A`: the axial
-    stiffness, the eccentricity and the bending stiffness `E I_{XX}` of the
-    stringer are those of the section; its lateral bending and torsional
-    stiffnesses are not. ``ring``: ``(d_r, nu_r)`` of a ring layer on the
-    inner face, as in :func:`layered_ABD`."""
+    represented as a layer: skin of thickness ``h`` plus a layer with the
+    axial stiffness, the eccentricity and the bending stiffness of the
+    idealised channel of :func:`channel_section` (lips ``bl``); the lateral
+    bending and torsional stiffnesses of the stringer are not represented.
+    ``ring``: ``(d_r, nu_r)`` of a ring layer on the inner face, as in
+    :func:`layered_ABD`.
+
+    Notes
+    -----
+    The layer has `Q_{11} = E_s`, the other `Q_{ij}` zero, and the
+    thickness `d_s = \sqrt{12 I_{XX}/A}`, centred at the centroid of the
+    section, with `E_s b d_s = E A`; then `E_s b d_s^3/12 = E I_{XX}`.
+
+    """
     if bl is None:
         bl = lip_width_for_area()
     sec = channel_section(bl)

@@ -558,9 +558,14 @@ class ZCylinderSector:
     def KG_inplane(self, N):
         r"""Geometric stiffness of the in-plane displacement `V` of the
         plates normal to `x`, for the membrane forces ``N``, shape
-        ``(num_plate_elements, nint**2, 3)`` (`N_{xx}, N_{yy}, N_{xy}`):
-        `\int (N_{xx} V_{,X}^2 + 2 N_{xy} V_{,X} V_{,Y} + N_{yy}
-        V_{,Y}^2) dX dY`"""
+        ``(num_plate_elements, nint**2, 3)`` (`N_{xx}, N_{yy}, N_{xy}`)
+
+        Notes
+        -----
+        The matrix of the quadratic form `\int (N_{xx} V_{,X}^2 + 2 N_{xy}
+        V_{,X} V_{,Y} + N_{yy} V_{,Y}^2) dX dY`, see the module ``Notes``.
+
+        """
         p, w = self.points, self.weights
         ops = {}
         rows, cols, vals = [], [], []
@@ -623,7 +628,16 @@ def lowest_eigenpairs(A, B, k, sigma=0.):
     r"""The ``k`` lowest eigenvalues `\lambda > \sigma` of `\boldsymbol{A}
     \boldsymbol{x} = \lambda \boldsymbol{B} \boldsymbol{x}`, Hermitian
     matrices, and their eigenvectors, by shift-and-invert ARPACK
-    (:func:`scipy.sparse.linalg.eigs`)"""
+    (:func:`scipy.sparse.linalg.eigs`)
+
+    Notes
+    -----
+    Shift-and-invert: the largest eigenvalues `\nu = 1/(\lambda - \sigma)`
+    of `(\boldsymbol{A} - \sigma \boldsymbol{B})^{-1} \boldsymbol{B}`,
+    computed with ARPACK, give `\lambda = \sigma + 1/\nu`; the eigenvalues
+    with `\nu \le 0`, below the shift, are dropped.
+
+    """
     lu = splu((A - sigma*B).tocsc())
     dtype = np.result_type(A.dtype, B.dtype)
     op = LinearOperator(A.shape, matvec=lambda x: lu.solve(B @ x),
@@ -647,6 +661,24 @@ def buckling_membrane(model, ends, n, k=4):
     translation of ``n = 0`` removed). Returns the critical average axial
     forces per unit circumference `\bar{N} = P/(2 \pi R)`, in increasing
     order, and the modes for all the degrees of freedom of the sector.
+
+    Notes
+    -----
+    With the constraint basis `\boldsymbol{Z}_n` of the harmonic and the
+    geometric stiffness matrix `\boldsymbol{K}_G` of the membrane state of
+    a reference axial strain `\epsilon_0`, the load multipliers `\lambda`
+    solve
+
+    .. math::
+
+        \boldsymbol{Z}_n^H \left( \boldsymbol{K}_{C0} + \lambda
+        \boldsymbol{K}_G \right) \boldsymbol{Z}_n \boldsymbol{x} =
+        \boldsymbol{0}, \qquad \bar{N} = \frac{\lambda P_0}{2 \pi R},
+        \qquad P_0 = E |\epsilon_0| A
+
+    on the unconstrained degrees of freedom, with `A` the cross-sectional
+    area of the whole cylinder as modelled (:meth:`ZCylinderSector.area`).
+
     """
     eps = -1e-3
     if not hasattr(model, '_KG_axial'):
