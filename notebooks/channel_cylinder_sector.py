@@ -23,9 +23,13 @@ from the channel, is assembled from BFSC plate elements,
   `\theta`, of width `b_l` from the middle surface of the web to the free
   edge.
 
-Ties
-----
-A web has the local coordinates `X = x` and `Y = r - R`; its displacements
+The webs are tied to the skin and the lips to the webs, and the sector is
+solved with cyclic symmetry, one Bloch index `j` at a time
+(:meth:`ChannelCylinderSector.Z`).
+
+Notes
+-----
+**Ties.** A web has the local coordinates `X = x` and `Y = r - R`; its displacements
 `U`, `V` and `W` are along `x`, along the outward radius and along the
 circumference. Its nodes along the root are tied to the skin nodes of its
 line, as for a blade stringer:
@@ -50,9 +54,7 @@ with the derivatives along `x`: a rotation `\psi` about `x` gives
 `\partial u_r/\partial s = \psi` along the lip and `\partial
 u_\theta/\partial r = -\psi` along the web.
 
-Cyclic symmetry
----------------
-As in the sector of the blade-stiffened cylinder of this folder, the nodes
+**Cyclic symmetry.** As in the sector of the blade-stiffened cylinder of this folder, the nodes
 of the edge `\theta = \phi` are eliminated with `\boldsymbol{u}(\theta =
 \phi) = e^{i j \phi}\,\boldsymbol{u}(\theta = 0)`, which gives one
 Hermitian problem per Bloch index `j = 0, 1, \ldots, n_s/2`. With few
@@ -672,7 +674,22 @@ def egle_sewall(R, h, L, E, nu, rho, nstiff, As, zs, ds, ps, GJs, m, n,
     r"""Frequency, Hz, of the discrete-stringer analysis of Egle and Sewall
 
     The freely supported shell with ``nstiff`` equally spaced stringers
-    (the first at `\theta = 0`), energies of Egle and Sewall (1968): the
+    (the first at `\theta = 0`), with the energies and the displacement
+    series of Egle and Sewall (1968), for the axial half-waves ``m`` and
+    the circumferential waves ``n``; ``symmetry`` is ``'sym'`` or
+    ``'antisym'`` and ``nterms`` the number of circumferential harmonics
+    coupled with ``n`` by the stringers. ``shell_inplane_inertia=False``
+    neglects the in-surface inertia of the shell, and
+    ``stringer_inplane_inertia=False`` also that of the stringers. The
+    returned frequency is the lowest of the modes whose largest coefficient
+    `|W_j|` is that of `j = n`.
+
+    Consistent units are assumed (e.g. in, lbf, s: the density in
+    lb-s^2/in^4).
+
+    Notes
+    -----
+    Energies of Egle and Sewall (1968): the
     Donnell shell, Eqs. (1), (2) and (6) with `D_x/D = D_y/D = 1`, and
     the stringers as beams, Eqs. (5) and (8),
 
@@ -696,12 +713,8 @@ def egle_sewall(R, h, L, E, nu, rho, nstiff, As, zs, ds, ps, GJs, m, n,
     multiple of ``nstiff`` (their Eq. (13)). ``shell_inplane_inertia=False``
     neglects `\dot{u}` and `\dot{v}` in the kinetic energy of the shell, as
     Egle and Sewall do for their numerical results (p. 522);
-    ``stringer_inplane_inertia=False`` neglects them also in `T_s`. The
-    returned frequency is the lowest of the modes whose largest coefficient
-    `|W_j|` is that of `j = n`.
+    ``stringer_inplane_inertia=False`` neglects them also in `T_s`.
 
-    Consistent units are assumed (e.g. in, lbf, s: the density in
-    lb-s^2/in^4).
     """
     from scipy.linalg import eig
     s = m*np.pi/L

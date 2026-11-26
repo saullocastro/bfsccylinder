@@ -11,7 +11,14 @@ skin.
 
 Along the line where a stringer meets the skin, `Y = 0`, the nodes of the
 stringer are tied to the nodes of the skin, the translations and the
-rotation about `x` being the same:
+rotation about `x` being the same.
+
+The model is the half of the cylinder `0 \le \theta \le \pi` with two
+planes of symmetry midway between two stringers, or the whole cylinder.
+
+Notes
+-----
+The ties of the root of a stringer are
 
 .. math::
 
@@ -29,8 +36,6 @@ each root node are eliminated with the constraint basis
 `\boldsymbol{u} = \boldsymbol{Z}\boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom
 `\boldsymbol{u}_r` are `\boldsymbol{Z}^\top \boldsymbol{K} \boldsymbol{Z}`, `\boldsymbol{Z}^\top \boldsymbol{K}_G \boldsymbol{Z}` and `\boldsymbol{Z}^\top \boldsymbol{M} \boldsymbol{Z}`.
 
-The model is the half of the cylinder `0 \le \theta \le \pi` with two
-planes of symmetry midway between two stringers, or the whole cylinder.
 """
 import numpy as np
 from numpy import pi
@@ -346,7 +351,11 @@ class StiffenedCylinder:
     def KG_inplane(self, N):
         r"""Geometric stiffness matrix of the radial displacement `V` of the
         stringers in their plane, for the membrane forces ``N`` of
-        :meth:`stringer_membrane_forces`:
+        :meth:`stringer_membrane_forces`
+
+        Notes
+        -----
+        The matrix of the quadratic form
 
         .. math::
 
@@ -355,7 +364,9 @@ class StiffenedCylinder:
 
         These terms, the counterpart of the terms of `w` of the skin, are
         not in the geometric stiffness matrix of the BFSC plate element,
-        which has only the terms of its out-of-plane displacement `W`."""
+        which has only the terms of its out-of-plane displacement `W`.
+
+        """
         Bm, Sv_x, Sv_y, wts, dofs = self._stringer_operators()
         Nw = N*wts[None, :, None]
         Ke = (np.einsum('ep,pi,pj->eij', Nw[:, :, 0], Sv_x, Sv_x)

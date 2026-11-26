@@ -1,12 +1,21 @@
 r"""Smeared-stiffener buckling theory of a stringer-stiffened cylinder
 
-The theory of Block, Card and Mikulas [1]_ for an isotropic cylinder with
-eccentric stringers whose stiffnesses are averaged over the stringer spacing
-`d`, specialized to axial compression without rings: Donnell-type
+Critical axial force per unit circumference `\bar{N}_x` (positive in
+compression) of an isotropic cylinder with eccentric stringers whose
+stiffnesses are averaged over the stringer spacing `d`, under axial
+compression and without rings, according to the theory of Block, Card and
+Mikulas (1965): in closed form for simply supported ends
+(:func:`buckling_ss`) and by the Rayleigh-Ritz method for clamped or simply
+supported ends (:func:`buckling_ritz`). :func:`blade_properties` gives the
+section properties of a rectangular stringer.
+
+Notes
+-----
+The theory of Block, Card and Mikulas [1]_: Donnell-type
 kinematics of the skin, the stringers as beams whose strain varies linearly
 across their depth, compatible with the skin surface, their twisting
 approximated by `G_s J_s w_{,xy}^2/d`, and a membrane pre-buckling state of
-the axial force per unit circumference `\bar{N}_x` (positive in compression)
+the axial force per unit circumference `\bar{N}_x`
 carried by the skin and the stringers under a uniform axial stress.
 
 The change of the total potential energy, equations (5), (7) and (9) of
@@ -48,7 +57,7 @@ series of their equation (A5) (report page 14),
 Every function of (A5) satisfies the boundary conditions, which are all
 geometric, so that the Galerkin equations (A6) of [2]_ are those of the
 Rayleigh-Ritz method applied to `\Pi`; here they are formed from `\Pi`
-by Gauss-Legendre integration along `x` (:func:`buckling_cc`). The same
+by Gauss-Legendre integration along `x` (:func:`buckling_ritz`). The same
 Ritz form with the functions of equation (14) of [1]_ reproduces equation
 (15) of [1]_ (``ends='SS'`` of :func:`buckling_ritz`).
 
@@ -76,8 +85,19 @@ def blade_properties(b, h, t, side):
     `\bar{z}_s = \pm (t + h)/2` (positive for ``side='external'``), the
     moment of inertia about the centroid `I_s = b h^3/12`, the moment of
     inertia about the middle surface of the skin `I_{o_s} = I_s + A_s
-    \bar{z}_s^2` and the torsional constant of the symbol list of [2]_
-    (report page 3), `J = b^3 h (1/3 - 64 b/(\pi^5 h) \tanh(\pi h/(2 b)))`.
+    \bar{z}_s^2` and the torsional constant `J` of Card and Jones (1966).
+
+    Notes
+    -----
+    The torsional constant is that of the symbol list of [1]_ (report page
+    3), `J = b^3 h (1/3 - 64 b/(\pi^5 h) \tanh(\pi h/(2 b)))`.
+
+    References
+    ----------
+    .. [1] Card, M. F., and Jones, R. M., "Experimental and theoretical
+       results for buckling of eccentrically stiffened cylinders", NASA TN
+       D-3639, October 1966. https://ntrs.nasa.gov/citations/19660027866
+
     """
     sign = 1. if side == 'external' else -1.
     A = b*h
@@ -89,8 +109,23 @@ def blade_properties(b, h, t, side):
 
 def buckling_ss(R, L, t, E, mu, d, A, z, Io, J, m, n):
     r"""Critical `\bar{N}_x` of the simply supported cylinder for the
-    half-waves ``m`` and the waves ``n``, equation (15) of [1]_ without rings
-    and without `\bar{N}_y`; ``m`` and ``n`` may be arrays (broadcast)"""
+    half-waves ``m`` and the waves ``n``, equation (15) of Block, Card and
+    Mikulas (1965) without rings and without `\bar{N}_y`; ``m`` and ``n``
+    may be arrays (broadcast)
+
+    Notes
+    -----
+    Equation (15) of [1]_ (report page 12) with the isotropic constants of
+    its equations (12), for which `2 \mu_y D_x/(1 - \mu_x \mu_y) + 2 D_{xy}
+    = 2 D`.
+
+    References
+    ----------
+    .. [1] Block, D. L., Card, M. F., and Mikulas, M. M., Jr., "Buckling of
+       eccentrically stiffened orthotropic cylinders", NASA TN D-2960,
+       August 1965. https://ntrs.nasa.gov/citations/19650021133
+
+    """
     G = E/(2*(1 + mu))
     C = E*t/(1 - mu**2)
     D = E*t**3/(12*(1 - mu**2))
@@ -102,7 +137,7 @@ def buckling_ss(R, L, t, E, mu, d, A, z, Io, J, m, n):
     A13 = mu*C/R*am + EAd*z*am**3
     A22 = G*t*am**2 + C*bn**2
     A23 = C/R*bn
-    # 2 mu_y D_x/(1 - mu_x mu_y) + 2 D_xy = 2 D for the isotropic skin
+    # twisting term of the isotropic skin: 2 D
     A33 = ((D + E*Io/d)*am**4 + (2*D + G*J/d)*am**2*bn**2 + D*bn**4
            + C/R**2)
     det = A11*A22 - A12**2
@@ -112,17 +147,36 @@ def buckling_ss(R, L, t, E, mu, d, A, z, Io, J, m, n):
 
 
 def _basis(ends, i, x, L):
-    """Axial functions of u, v, w and the derivatives needed, term ``i``"""
+    r"""Axial functions of u, v, w and the derivatives needed, term ``i``
+
+    Notes
+    -----
+    ``ends='CC'``: the functions of the series (A5) of [2]_, `\sin(i \pi
+    x/L)` for `u` and `v` and `\cos((i - 1) \pi x/L) - \cos((i + 1) \pi
+    x/L)` for `w`. Otherwise the functions of equation (14) of [1]_,
+    `\cos(i \pi x/L)` for `u` and `\sin(i \pi x/L)` for `v` and `w`.
+
+    References
+    ----------
+    .. [1] Block, D. L., Card, M. F., and Mikulas, M. M., Jr., "Buckling of
+       eccentrically stiffened orthotropic cylinders", NASA TN D-2960,
+       August 1965. https://ntrs.nasa.gov/citations/19650021133
+
+    .. [2] Card, M. F., and Jones, R. M., "Experimental and theoretical
+       results for buckling of eccentrically stiffened cylinders", NASA TN
+       D-3639, October 1966. https://ntrs.nasa.gov/citations/19660027866
+
+    """
     k = i*pi/L
     if ends == 'CC':
-        # equation (A5) of [2]
+        # clamped ends
         U, Ux = np.sin(k*x), k*np.cos(k*x)
         km, kp = (i - 1)*pi/L, (i + 1)*pi/L
         Wf = np.cos(km*x) - np.cos(kp*x)
         Wx = -km*np.sin(km*x) + kp*np.sin(kp*x)
         Wxx = -km**2*np.cos(km*x) + kp**2*np.cos(kp*x)
         return U, Ux, U, Ux, Wf, Wx, Wxx
-    # equation (14) of [1]: u ~ cos, v ~ sin, w ~ sin along x
+    # simply supported ends: u ~ cos, v ~ sin, w ~ sin along x
     U, Ux = np.cos(k*x), -k*np.sin(k*x)
     V, Vx = np.sin(k*x), k*np.cos(k*x)
     return U, Ux, V, Vx, V, Vx, -k**2*V
@@ -130,13 +184,29 @@ def _basis(ends, i, x, L):
 
 def buckling_ritz(R, L, t, E, mu, d, A, z, Io, J, n, ends='CC', nterms=12,
                   nquad=None):
-    r"""Rayleigh-Ritz form of the theory of [1]_ for the waves ``n``
+    r"""Rayleigh-Ritz form of the theory of Block, Card and Mikulas (1965)
+    for the waves ``n``
 
-    ``ends='CC'``: the series (A5) of [2]_ with ``nterms`` terms in each of
-    `u`, `v`, `w` (clamped ends); ``ends='SS'``: the functions of equation
-    (14) of [1]_, `m = 1, \ldots,` ``nterms``. Returns the critical values
+    ``ends='CC'``: the series (A5) of Card and Jones (1966) with ``nterms``
+    terms in each of `u`, `v`, `w` (clamped ends); ``ends='SS'``: the
+    functions of equation (14) of Block, Card and Mikulas (1965), `m = 1,
+    \ldots,` ``nterms``. Returns the critical values
     of `\bar{N}_x`, in increasing order, and the Ritz coefficients (columns,
-    ordered `a_1 \ldots a_I, b_1 \ldots b_I, c_1 \ldots c_I`)."""
+    ordered `a_1 \ldots a_I, b_1 \ldots b_I, c_1 \ldots c_I`).
+
+    Notes
+    -----
+    The stiffness matrix is the quadratic form of the potential energy
+    `\Pi` of the module ``Notes`` without the term of `\bar{N}_x`, and the
+    geometric matrix that of `w_{,x}^2`, both integrated along `x` by
+    Gauss-Legendre quadrature with ``nquad`` points; the factors
+    `\cos(n y/R)` or `\sin(n y/R)`, whose squares integrate to `\pi R` for
+    `n \ge 1`, are common to both matrices and left out. The geometric
+    matrix is positive semi-definite, so that the problem is solved as
+    `\boldsymbol{K}_G \boldsymbol{x} = (1/\bar{N}_x) \boldsymbol{K}
+    \boldsymbol{x}` and the eigenvalues that vanish are dropped.
+
+    """
     G = E/(2*(1 + mu))
     C = E*t/(1 - mu**2)
     D = E*t**3/(12*(1 - mu**2))
@@ -172,7 +242,7 @@ def buckling_ritz(R, L, t, E, mu, d, A, z, Io, J, n, ends='CC', nterms=12,
          + (E*A*q(ex, ex) - z*E*A*(q(ex, kxx) + q(kxx, ex))
             + E*Io*q(kxx, kxx) + G*J*q(kxy, kxy))/d)
     KG = q(wx, wx)
-    # K x = N KG x, KG semi-definite: largest 1/N of KG x = (1/N) K x
+    # largest 1/N of KG x = (1/N) K x
     mu_, X = eigh(KG, K)
     keep = mu_ > 1e-14*mu_.max()
     N = 1/mu_[keep][::-1]

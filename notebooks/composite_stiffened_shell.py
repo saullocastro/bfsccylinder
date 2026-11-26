@@ -16,9 +16,16 @@ R \theta` the arc length. A stringer is assembled from plates:
   plane `(x, r)` of the stringer, from the mid-surface of the skin to the
   tip, with the local coordinates `X = x` and `Y = r - R`, positive
   outwards, and the displacements `U`, `V` and `W` along `x`, along the
-  outward radius and along `y`. Its root, `Y = 0`, is connected to the skin
+  outward radius and along `y`. Its root, `Y = 0`, is tied to the skin
   along their common line, at the edge of the foot of an L-section or at
-  the middle of the foot of a T-section:
+  the middle of the foot of a T-section.
+
+The constraints, the boundary conditions and the rigid end rings are
+imposed with a constraint basis (:meth:`StiffenedShell.finalize`).
+
+Notes
+-----
+**Ties.** The root of a blade is connected to the skin with
 
 .. math::
 
@@ -30,7 +37,8 @@ imposed with a constraint basis `\boldsymbol{u} = \boldsymbol{Z}
 \boldsymbol{u}_r`, and the matrices of the reduced degrees of freedom are
 `\boldsymbol{Z}^\top \boldsymbol{K} \boldsymbol{Z}`.
 
-The geometric stiffness matrix of the BFSC plate element has the terms of
+**Geometric stiffness of the blades.** The geometric stiffness matrix of
+the BFSC plate element has the terms of
 its out-of-plane displacement `W` only; the terms of the in-plane radial
 displacement `V` of a blade under its membrane forces,
 
@@ -40,6 +48,7 @@ displacement `V` of a blade under its membrane forces,
     dX \, dY
 
 are added by :meth:`StiffenedShell.KG_inplane`.
+
 """
 import numpy as np
 from numpy import pi

@@ -8,9 +8,13 @@ kinematics, :class:`bfsccylinder.sanders.BFSCCylinderSanders`, and the
 stringer with the BFSC plate element :class:`bfscplate2d.BFSCPlate2D`, in
 the plane `(x, r)` of the stringer, from the middle surface of the skin to
 the tip. Without stringer, ``bs=None``, the sector is a sector of an
-unstiffened cylinder.
+unstiffened cylinder. The stringer root is tied to the skin and the
+sector is solved with cyclic symmetry, one circumferential harmonic `n` at
+a time (:meth:`BladeCylinderSector.Z`).
 
-The plate of the stringer has the local coordinates `X = x` and `Y = r -
+Notes
+-----
+**Ties.** The plate of the stringer has the local coordinates `X = x` and `Y = r -
 R`, and its displacements `U`, `V` and `W` are along `x`, along the outward
 radius and along the circumference. Along its root, `Y = 0`, its nodes are
 tied to the skin nodes of the line `\theta = \phi/2`:
@@ -26,9 +30,7 @@ being that of the Sanders-type kinematics, as in the module
 Donnell-type kinematics, :class:`bfsccylinder.BFSCCylinder`, and the tie of
 the rotation is that of the Donnell-type kinematics, `W_{,Y} = -w_{,y}`.
 
-Cyclic symmetry
----------------
-The structure is invariant under a rotation by `\phi` about its axis, and
+**Cyclic symmetry.** The structure is invariant under a rotation by `\phi` about its axis, and
 the degrees of freedom of the elements, in the axial, circumferential and
 radial directions, rotate with it. A mode of the whole cylinder can then be
 taken with `n` circumferential waves, the degrees of freedom of the sector
@@ -470,7 +472,11 @@ class BladeCylinderSector:
     def KG_inplane(self, N):
         r"""Geometric stiffness of the radial displacement `V` of the
         stringer in its plane, for the membrane forces ``N`` of
-        :meth:`stringer_membrane_forces`:
+        :meth:`stringer_membrane_forces`
+
+        Notes
+        -----
+        The matrix of the quadratic form
 
         .. math::
 
@@ -479,7 +485,9 @@ class BladeCylinderSector:
 
         These terms, the counterpart of those of `w` of the skin, are not
         in the geometric stiffness matrix of the BFSC plate element, which
-        has only the terms of its out-of-plane displacement `W`."""
+        has only the terms of its out-of-plane displacement `W`.
+
+        """
         Bm, Sv_x, Sv_y, wts, dofs = self._stringer_operators()
         Nw = N*wts[None, :, None]
         Ke = (np.einsum('ep,pi,pj->eij', Nw[:, :, 0], Sv_x, Sv_x)

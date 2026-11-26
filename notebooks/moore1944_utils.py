@@ -111,12 +111,17 @@ TABLE_II = {
 def donnell_tau(t, Lb, E=E, nu=NU, D=D):
     r"""Shear-buckling stress (psi) of a cylinder with hinged edges, the
     formula of Donnell (1933) used by Moore and Wescoat (1944), appendix,
-    p. 23, for `L^2 t/D^3 < 5.2`:
+    p. 23, for `L^2 t/D^3 < 5.2`
+
+    Notes
+    -----
+    With the thickness `t`, the length `L` (``Lb``) and the diameter `D`,
 
     .. math::
 
         \tau_0 = \frac{E t^2}{(1 - \nu^2) L^2} \left[2.8 + \sqrt{2.6 + 1.4
         \left(\frac{\sqrt{1 - \nu^2} L^2}{t D}\right)^{3/2}}\right]
+
     """
     z = np.sqrt(1 - nu**2)*Lb**2/(t*D)
     return E*t**2/((1 - nu**2)*Lb**2)*(2.8 + np.sqrt(2.6 + 1.4*z**1.5))
