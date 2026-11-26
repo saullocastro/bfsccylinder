@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Donnell-type and Sanders-type kinematics &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Donnell-type and Sanders-type kinematics &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -1015,15 +1015,15 @@ nodes: 800  elements: 750  degrees of freedom: 8000
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Donnell  P_cr = -201.10 kN, residual 4.0e-10, load multipliers below: 0
-Sanders  P_cr = -199.87 kN, residual 4.2e-09, load multipliers below: 0
+Donnell  P_cr = -201.10 kN, residual 2.6e-10, load multipliers below: 0
+Sanders  P_cr = -199.87 kN, residual 7.3e-10, load multipliers below: 0
 </pre></div></div>
 </div>
 </section>
 <section id="Buckling-modes">
 <h2>Buckling modes<a class="headerlink" href="#Buckling-modes" title="Link to this heading">#</a></h2>
 <p><span class="math notranslate nohighlight">\(w\)</span> of the first mode on the developed mid-surface, for each kinematics.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
@@ -1039,6 +1039,13 @@ Sanders  P_cr = -199.87 kN, residual 4.2e-09, load multipliers below: 0
 <span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">'$w / |w|_</span><span class="si">{max}</span><span class="s1">$'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ex_kinematics_9_0.png" src="../_images/notebooks_ex_kinematics_9_0.png" />
 </div>
 </div>
 </section>
@@ -1102,7 +1109,7 @@ Sanders  P_cr = -199.87 kN, residual 4.2e-09, load multipliers below: 0
 <td><p>199.87</p></td>
 <td><p>199.87</p></td>
 <td><p>regression value of the test</p></td>
-<td><p>3.9396e-07</p></td>
+<td><p>3.9368e-07</p></td>
 </tr>
 </tbody>
 </table>

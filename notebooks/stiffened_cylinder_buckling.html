@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Axial buckling of stringer-stiffened cylinders &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Axial buckling of stringer-stiffened cylinders &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -792,7 +792,7 @@ cylinders</span></a>:</p>
 <li><p>the skin with the BFSC cylinder element of Sanders-type kinematics, <code class="docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code>;</p></li>
 <li><p>each stringer with the BFSC plate element <code class="docutils literal notranslate"><span class="pre">BFSCPlate2D</span></code> of <a class="reference external" href="https://github.com/saullocastro/bfscplate2d">bfscplate2d</a>, in the plane <span class="math notranslate nohighlight">\((x, r)\)</span> of the stringer, connected to the skin as described in that tutorial.</p></li>
 </ul>
-<p>The linear buckling problems <span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} = \boldsymbol{0}\)</span>, see <a class="reference internal" href="../analyses.html"><span class="doc">Analyses</span></a>, are solved with <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>. The model is given by the module <code class="docutils literal notranslate"><span class="pre">stiffened_cylinder.py</span></code>, next to this notebook. Besides <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code>, it needs <code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code> 0.5.0 or newer, <code class="docutils literal notranslate"><span class="pre">composites</span></code>, <code class="docutils literal notranslate"><span class="pre">structsolve</span></code> and Matplotlib.</p>
+<p>The linear buckling problems <span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \lambda \boldsymbol{K}_G)\boldsymbol{\phi} = \boldsymbol{0}\)</span>, see <a class="reference internal" href="../analyses.html"><span class="doc">Analyses</span></a>, are solved with <code class="docutils literal notranslate"><span class="pre">structsolve.lb</span></code>. The model is given by the module <code class="docutils literal notranslate"><span class="pre">stiffened_cylinder.py</span></code>, next to this notebook. Besides <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code>, it needs <code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code>, <code class="docutils literal notranslate"><span class="pre">composites</span></code>, <code class="docutils literal notranslate"><span class="pre">structsolve</span></code> and Matplotlib.</p>
 <section id="Cylinders,-geometry-and-material">
 <h2>Cylinders, geometry and material<a class="headerlink" href="#Cylinders,-geometry-and-material" title="Link to this heading">#</a></h2>
 <p>Table I of [1] gives four cylinders with integral stiffeners, machined from aluminium plates, two 38.00 in long (cylinders 1 and 2) and two 23.75 in long (cylinders 3 and 4), each pair with external and internal stiffeners. Cylinders 3 and 4, the shorter ones, are modelled here: their models need fewer elements along the axis and are solved within about a minute each. The values below, in inches and pounds-force, are those of Table I for <span class="math notranslate nohighlight">\(t\)</span>, <span class="math notranslate nohighlight">\(L\)</span> and <span class="math notranslate nohighlight">\(R\)</span>, the radius of the

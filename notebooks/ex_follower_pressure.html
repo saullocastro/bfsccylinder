@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Follower pressure &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Follower pressure &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -832,7 +832,7 @@ either truncation of the area vector: <code class="docutils literal notranslate"
 \boldsymbol{R}(\boldsymbol{u}) - h \boldsymbol{K}_T(\boldsymbol{u})
 \boldsymbol{d} \|}{\| h \boldsymbol{K}_T(\boldsymbol{u}) \boldsymbol{d} \|}\]</div>
 <p>falls in proportion to <span class="math notranslate nohighlight">\(h\)</span> when <span class="math notranslate nohighlight">\(\boldsymbol{K}_T\)</span> is the Jacobian of <span class="math notranslate nohighlight">\(\boldsymbol{R}\)</span>, the remainder of the Taylor expansion being of order <span class="math notranslate nohighlight">\(h^2\)</span>, and stays at a plateau when it is not. <span class="math notranslate nohighlight">\(\boldsymbol{u}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{d}\)</span> are random states of the order of the thickness.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
@@ -861,6 +861,13 @@ either truncation of the area vector: <code class="docutils literal notranslate"
 <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ex_follower_pressure_3_0.png" src="../_images/notebooks_ex_follower_pressure_3_0.png" />
 </div>
 </div>
 <p>The order of <span class="math notranslate nohighlight">\(e(h)\)</span>, the slope <span class="math notranslate nohighlight">\(\log_{10}(e(h_i)/e(h_{i+1}))\)</span> between successive decades, against the order 1 of a consistent Jacobian, and the share <span class="math notranslate nohighlight">\(\| \boldsymbol{K}_F \boldsymbol{d} \| / \| \boldsymbol{K}_T
@@ -904,7 +911,7 @@ either truncation of the area vector: <code class="docutils literal notranslate"
 <td><p>3.5292e-07</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>0.00012076</p></td>
+<td><p>0.00032373</p></td>
 <td><p>0.053957</p></td>
 </tr>
 <tr class="row-odd"><td><p>donnell</p></td>
@@ -913,7 +920,7 @@ either truncation of the area vector: <code class="docutils literal notranslate"
 <td><p>3.5377e-07</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>0.00056633</p></td>
+<td><p>0.0007528</p></td>
 <td><p>0.05421</p></td>
 </tr>
 <tr class="row-even"><td><p>sanders</p></td>
@@ -922,16 +929,16 @@ either truncation of the area vector: <code class="docutils literal notranslate"
 <td><p>3.5982e-07</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>0.0011758</p></td>
+<td><p>0.0012334</p></td>
 <td><p>0.054783</p></td>
 </tr>
 <tr class="row-odd"><td><p>sanders</p></td>
 <td><p>1</p></td>
 <td><p>0.00036028</p></td>
-<td><p>3.6024e-07</p></td>
+<td><p>3.6023e-07</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>0.0017411</p></td>
+<td><p>0.0019904</p></td>
 <td><p>0.054996</p></td>
 </tr>
 </tbody>
@@ -999,7 +1006,7 @@ either truncation of the area vector: <code class="docutils literal notranslate"
 <td><p>follower</p></td>
 <td><p>3.2</p></td>
 <td><p>3.2</p></td>
-<td><p>4.4881e-06</p></td>
+<td><p>4.4911e-06</p></td>
 <td><p>3.2</p></td>
 <td><p>-0.00052884</p></td>
 </tr>
@@ -1007,15 +1014,15 @@ either truncation of the area vector: <code class="docutils literal notranslate"
 <td><p>dead</p></td>
 <td><p>4</p></td>
 <td><p>4</p></td>
-<td><p>4.3479e-06</p></td>
+<td><p>4.3222e-06</p></td>
 <td><p>4</p></td>
-<td><p>4.3478e-06</p></td>
+<td><p>4.3221e-06</p></td>
 </tr>
 <tr class="row-even"><td><p>sanders</p></td>
 <td><p>follower</p></td>
 <td><p>3</p></td>
 <td><p>3</p></td>
-<td><p>7.8918e-06</p></td>
+<td><p>7.8949e-06</p></td>
 <td><p>3</p></td>
 <td><p>-0.00082543</p></td>
 </tr>
@@ -1023,9 +1030,9 @@ either truncation of the area vector: <code class="docutils literal notranslate"
 <td><p>dead</p></td>
 <td><p>4</p></td>
 <td><p>4</p></td>
-<td><p>7.7614e-06</p></td>
+<td><p>7.8062e-06</p></td>
 <td><p>4</p></td>
-<td><p>7.7612e-06</p></td>
+<td><p>7.8059e-06</p></td>
 </tr>
 </tbody>
 </table>
@@ -1180,7 +1187,7 @@ number <span class="math notranslate nohighlight">\(n\)</span> of circumferentia
 <td><p>10</p></td>
 <td><p>0.990677</p></td>
 <td><p>0.990676</p></td>
-<td><p>1.6065e-06</p></td>
+<td><p>1.60652e-06</p></td>
 </tr>
 </tbody>
 </table>

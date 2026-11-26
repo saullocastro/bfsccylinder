@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Sanders-type cylinder element (bfsccylinder.bfsccylinder_sanders) &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Sanders-type cylinder element (bfsccylinder.bfsccylinder_sanders) &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="_static/documentation_options.js?v=c98573da"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -121,7 +121,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -1047,10 +1047,18 @@ dimensionless for the first derivatives and of one over length for
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The attributes have the meaning given in the Notes of
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder" title="bfsccylinder.bfsccylinder.BFSCCylinder"><code class="xref py py-class docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder.BFSCCylinder</span></code></a>, with <code class="docutils literal notranslate"><span class="pre">Bb</span></code> the
-operator of the Sanders-type curvatures of the Notes of
-<a class="reference internal" href="#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>.</p>
+<p>The arrays <code class="docutils literal notranslate"><span class="pre">A11,</span> <span class="pre">...,</span> <span class="pre">D66</span></code> hold the laminate stiffness matrices
+<span class="math notranslate nohighlight">\(oldsymbol{A}\)</span>, <span class="math notranslate nohighlight">\(oldsymbol{B}\)</span> and <span class="math notranslate nohighlight">\(oldsymbol{D}\)</span> of the
+constitutive relation at each integration point, such that stiffnesses
+that vary over the element, e.g. of a laminate whose fiber angles vary,
+are integrated point by point. <code class="docutils literal notranslate"><span class="pre">Bm</span></code> and <code class="docutils literal notranslate"><span class="pre">Bb</span></code> are the operators
+<span class="math notranslate nohighlight">\(oldsymbol{B}_m\)</span> and <span class="math notranslate nohighlight">\(oldsymbol{B}_b\)</span> of the linear membrane strains
+<span class="math notranslate nohighlight">\(\{u_{,x}, v_{,y} + w/R, u_{,y} + v_{,x}\}^ op\)</span> and of the Sanders-type
+curvatures <span class="math notranslate nohighlight">\(\{-w_{,xx}, -w_{,yy} + v_{,y}/R, -2 w_{,xy} + 3 v_{,x}/(2R) -
+u_{,y}/(2R)\}^      op\)</span>, and <code class="docutils literal notranslate"><span class="pre">Su</span></code>, …, <code class="docutils literal notranslate"><span class="pre">Sw_y</span></code> the rows of the
+interpolation of the displacements and of their derivatives; the
+<code class="docutils literal notranslate"><span class="pre">update_*</span></code> functions of the module evaluate the same operators at each
+integration point in local variables.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.sanders</span><span class="w"> </span><span class="kn">import</span> <span class="n">BFSCCylinderSanders</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">shell</span> <span class="o">=</span> <span class="n">BFSCCylinderSanders</span><span class="p">(</span><span class="n">nint</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
@@ -1120,8 +1128,17 @@ zeros of the constructor. The functions of this module do not read
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>The rows are the same as those of the Donnell-type kinematics, see the
-Notes of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.BFSCCylinder.update_Bm" title="bfsccylinder.bfsccylinder.BFSCCylinder.update_Bm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder.BFSCCylinder.update_Bm()</span></code></a>.</p>
+<p>With the rows <span class="math notranslate nohighlight">\(\boldsymbol{S}^u\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{S}^v\)</span> and
+<span class="math notranslate nohighlight">\(\boldsymbol{S}^w\)</span> of the interpolation of the displacements, the
+rows of the linear membrane strains are</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{B}_m = \begin{bmatrix} \boldsymbol{S}^u_{,x} \\
+\boldsymbol{S}^v_{,y} + \boldsymbol{S}^w/R \\
+\boldsymbol{S}^u_{,y} + \boldsymbol{S}^v_{,x} \end{bmatrix}\end{split}\]</div>
+<p>such that <span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon}_L = \{u_{,x}, v_{,y} + w/R, u_{,y} +
+v_{,x}\}^\top = \boldsymbol{B}_m\boldsymbol{u}_e\)</span>. The Sanders-type
+kinematics change the curvatures and the nonlinear membrane strains,
+not these rows, which are those of the Donnell-type kinematics.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1382,7 +1399,7 @@ the positions <code class="docutils literal notranslate"><span class="pre">shell
 <dd class="field-odd"><dl>
 <dt><strong>shell</strong><span class="classifier"><a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code></a> object</span></dt><dd><p>The cylindrical shell element being added to KC0</p>
 </dd>
-<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration poins
+<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration points
 1-D array of <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> of size <code class="docutils literal notranslate"><span class="pre">nint</span></code>, the <code class="docutils literal notranslate"><span class="pre">nint</span></code> given to the
 constructor of <code class="docutils literal notranslate"><span class="pre">shell</span></code>, with natural coordinates from <code class="docutils literal notranslate"><span class="pre">-1</span></code> to
 <code class="docutils literal notranslate"><span class="pre">1</span></code>, e.g. from <a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>.
@@ -1415,9 +1432,24 @@ a first derivative, and by a length squared for each that is <span class="math n
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>The matrix of the Notes of <a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KC0" title="bfsccylinder.bfsccylinder.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder.update_KC0()</span></code></a>,
-with the rows <span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span> of the Sanders-type curvatures of
-<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinderSanders.update_Bb()</span></code></a>.</p>
+<p>KC0 is the Hessian of the strain energy with the linear strains only,
+<span class="math notranslate nohighlight">\(\boldsymbol{\varepsilon} = \boldsymbol{\varepsilon}_L\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{K}_{C0} = \int_A \left( \boldsymbol{B}_m^\top \boldsymbol{A} \boldsymbol{B}_m + \boldsymbol{B}_m^\top \boldsymbol{B} \boldsymbol{B}_b
+           + \boldsymbol{B}_b^\top \boldsymbol{B} \boldsymbol{B}_m + \boldsymbol{B}_b^\top \boldsymbol{D} \boldsymbol{B}_b \right) dA\]</div>
+<p>with the rows <span class="math notranslate nohighlight">\(\boldsymbol{B}_m\)</span> of the linear membrane strains of
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bm" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bm"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinderSanders.update_Bm()</span></code></a> and the rows <span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span>
+of the Sanders-type curvatures of
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinderSanders.update_Bb()</span></code></a>, <span class="math notranslate nohighlight">\(\boldsymbol{\kappa} =
+\{-w_{,xx}, -w_{,yy} + v_{,y}/R, -2 w_{,xy} + 3 v_{,x}/(2R) -
+u_{,y}/(2R)\}^\top\)</span>, evaluated at each integration point as the local
+variables <code class="docutils literal notranslate"><span class="pre">Bm1_*</span></code>, <code class="docutils literal notranslate"><span class="pre">Bm2_*</span></code>, <code class="docutils literal notranslate"><span class="pre">Bm3_*</span></code>, <code class="docutils literal notranslate"><span class="pre">Bb1_*</span></code>, <code class="docutils literal notranslate"><span class="pre">Bb2_*</span></code> and
+<code class="docutils literal notranslate"><span class="pre">Bb3_*</span></code>, and the <span class="math notranslate nohighlight">\(\boldsymbol{A}\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{B}\)</span> and
+<span class="math notranslate nohighlight">\(\boldsymbol{D}\)</span> of that point. Through the terms of <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span> of the
+curvatures, the bending and coupling parts of KC0 also have entries at
+the degrees of freedom of <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(v\)</span>. KC0 does not depend on the
+displacements: it is the stiffness matrix of a linear static analysis
+and the tangent stiffness matrix at zero displacements.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1452,7 +1484,7 @@ for the first derivatives and of one over length for <span class="math notransla
 </dd>
 <dt><strong>shell</strong><span class="classifier"><a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code></a> object</span></dt><dd><p>The shell element being added to K</p>
 </dd>
-<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration poins
+<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration points
 1-D array of <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> of size <code class="docutils literal notranslate"><span class="pre">nint</span></code>, the <code class="docutils literal notranslate"><span class="pre">nint</span></code> given to the
 constructor of <code class="docutils literal notranslate"><span class="pre">shell</span></code>, with natural coordinates from <code class="docutils literal notranslate"><span class="pre">-1</span></code> to
 <code class="docutils literal notranslate"><span class="pre">1</span></code>, e.g. from <a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>.
@@ -1550,7 +1582,7 @@ for the first derivatives and of one over length for <span class="math notransla
 </dd>
 <dt><strong>shell</strong><span class="classifier"><a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code></a> object</span></dt><dd><p>The shell element being added to KCfollower</p>
 </dd>
-<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration poins
+<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration points
 1-D array of <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> of size <code class="docutils literal notranslate"><span class="pre">nint</span></code>, the <code class="docutils literal notranslate"><span class="pre">nint</span></code> given to the
 constructor of <code class="docutils literal notranslate"><span class="pre">shell</span></code>, with natural coordinates from <code class="docutils literal notranslate"><span class="pre">-1</span></code> to
 <code class="docutils literal notranslate"><span class="pre">1</span></code>, e.g. from <a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>.
@@ -1588,15 +1620,45 @@ in <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>The load stiffness matrix of the Notes of
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_KCfollower" title="bfsccylinder.bfsccylinder.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder.update_KCfollower()</span></code></a>, with the area vector
-of <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_fext_follower" title="bfsccylinder.bfsccylinder_sanders.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a>, <span class="math notranslate nohighlight">\(k_v = 1/R\)</span>. The term <span class="math notranslate nohighlight">\(v/R\)</span> of <span class="math notranslate nohighlight">\(a_y\)</span>
-adds, with <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, the block <span class="math notranslate nohighlight">\(-(\boldsymbol{S}^v)^\top
-\boldsymbol{S}^v/R\)</span> per unit <span class="math notranslate nohighlight">\(p\)</span> between <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(v\)</span>, which cancels the
-energy of the rigid rotation
-<span class="math notranslate nohighlight">\(v\)</span> = constant of a ring under the hoop prestress of the pressure in
-<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KG" title="bfsccylinder.bfsccylinder_sanders.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, and the terms of <span class="math notranslate nohighlight">\(\boldsymbol{a}_2\)</span> in <span class="math notranslate nohighlight">\(v\)</span> are added for
-<code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code>.</p>
+<p>With the force vector <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\boldsymbol{u}_e)\)</span> and the area
+vector <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> of the Notes of <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_fext_follower" title="bfsccylinder.bfsccylinder_sanders.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fext_follower()</span></code></a>,
+the load stiffness matrix is</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{K}_F = -\frac{\partial \boldsymbol{F}_p}{\partial \boldsymbol{u}_e} =
+-\int_A p \left(
+(\boldsymbol{S}^u)^\top \frac{\partial a_x}{\partial \boldsymbol{u}_e}
++ (\boldsymbol{S}^v)^\top \frac{\partial a_y}{\partial \boldsymbol{u}_e}
++ (\boldsymbol{S}^w)^\top \frac{\partial a_z}{\partial \boldsymbol{u}_e} \right) dA\]</div>
+<p>where the derivatives of <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> are those of its displacement
+gradients, e.g. <span class="math notranslate nohighlight">\(\partial u_{,x}/\partial \boldsymbol{u}_e =
+\boldsymbol{S}^u_{,x}\)</span>, the local variables <code class="docutils literal notranslate"><span class="pre">Su2_*</span></code> in the code, with
+<code class="docutils literal notranslate"><span class="pre">Su1_*</span></code>, <code class="docutils literal notranslate"><span class="pre">Su2_*</span></code> and <code class="docutils literal notranslate"><span class="pre">Su3_*</span></code> the rows <span class="math notranslate nohighlight">\(\boldsymbol{S}^u\)</span>,
+<span class="math notranslate nohighlight">\(\boldsymbol{S}^u_{,x}\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{S}^u_{,y}\)</span> at the integration
+point, and likewise <code class="docutils literal notranslate"><span class="pre">Sv*</span></code> and <code class="docutils literal notranslate"><span class="pre">Sw*</span></code>. The term <span class="math notranslate nohighlight">\(\boldsymbol{a}_0\)</span>
+does not contribute. With <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code> the matrix is constant, the
+blocks being, per unit <span class="math notranslate nohighlight">\(p\)</span>, <span class="math notranslate nohighlight">\((\boldsymbol{S}^u)^\top
+\boldsymbol{S}^w_{,x}\)</span> between <span class="math notranslate nohighlight">\(u\)</span> and <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\((\boldsymbol{S}^v)^\top
+\boldsymbol{S}^w_{,y}\)</span> between <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(-(\boldsymbol{S}^v)^\top
+\boldsymbol{S}^v/R\)</span> between <span class="math notranslate nohighlight">\(v\)</span> and <span class="math notranslate nohighlight">\(v\)</span>, and <span class="math notranslate nohighlight">\(-(\boldsymbol{S}^w)^\top
+\boldsymbol{S}^u_{,x}\)</span>, <span class="math notranslate nohighlight">\(-(\boldsymbol{S}^w)^\top \boldsymbol{S}^v_{,y}\)</span>,
+<span class="math notranslate nohighlight">\(-(\boldsymbol{S}^w)^\top \boldsymbol{S}^w/R\)</span> between <span class="math notranslate nohighlight">\(w\)</span> and <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(v\)</span>
+and <span class="math notranslate nohighlight">\(w\)</span>; with <code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code> it is linear in <span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span>, with
+the terms of <span class="math notranslate nohighlight">\(\boldsymbol{a}_2\)</span> in <span class="math notranslate nohighlight">\(v\)</span> included. The block between <span class="math notranslate nohighlight">\(v\)</span>
+and <span class="math notranslate nohighlight">\(v\)</span> comes from the term <span class="math notranslate nohighlight">\(v/R\)</span> of <span class="math notranslate nohighlight">\(a_y\)</span>, the Sanders-type rotation;
+it cancels the energy of the rigid rotation <span class="math notranslate nohighlight">\(v\)</span> = constant of a ring
+under the hoop prestress of the pressure in <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KG" title="bfsccylinder.bfsccylinder_sanders.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>.</p>
+<p>The tangent stiffness matrix of the residual <span class="math notranslate nohighlight">\(\boldsymbol{R} =
+\boldsymbol{F}_{int}(\boldsymbol{u}) - \boldsymbol{F}_p(\boldsymbol{u})\)</span>
+is the sum of the matrices of <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KC0" title="bfsccylinder.bfsccylinder_sanders.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>,
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KCNL" title="bfsccylinder.bfsccylinder_sanders.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a>, <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KG" title="bfsccylinder.bfsccylinder_sanders.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span>. For a
+linear buckling analysis under a pressure <span class="math notranslate nohighlight">\(p = \lambda p_0\)</span>, with <code class="docutils literal notranslate"><span class="pre">u</span></code>
+the linear static solution of <span class="math notranslate nohighlight">\(p_0\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{K}_G\)</span> of
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KG" title="bfsccylinder.bfsccylinder_sanders.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a>, the load multipliers and the buckling modes solve
+<span class="math notranslate nohighlight">\((\boldsymbol{K}_{C0} + \lambda (\boldsymbol{K}_G +
+\boldsymbol{K}_{F_{ref}}))\boldsymbol{\phi} = \boldsymbol{0}\)</span>, with
+<span class="math notranslate nohighlight">\(\boldsymbol{K}_{F_{ref}}\)</span> the <span class="math notranslate nohighlight">\(\boldsymbol{K}_F\)</span> of <span class="math notranslate nohighlight">\(p_0\)</span> and
+<code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>, an eigenvalue problem that is unsymmetric in general;
+the matrix of one element is unsymmetric.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1632,7 +1694,7 @@ for the first derivatives and of one over length for <span class="math notransla
 </dd>
 <dt><strong>shell</strong><span class="classifier"><a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code></a> object</span></dt><dd><p>The cylindrical shell element being added to KG</p>
 </dd>
-<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration poins
+<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration points
 1-D array of <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> of size <code class="docutils literal notranslate"><span class="pre">nint</span></code>, the <code class="docutils literal notranslate"><span class="pre">nint</span></code> given to the
 constructor of <code class="docutils literal notranslate"><span class="pre">shell</span></code>, with natural coordinates from <code class="docutils literal notranslate"><span class="pre">-1</span></code> to
 <code class="docutils literal notranslate"><span class="pre">1</span></code>, e.g. from <a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>.
@@ -1697,7 +1759,7 @@ Before this function is called, <code class="docutils literal notranslate"><span
 <dd class="field-odd"><dl>
 <dt><strong>shell</strong><span class="classifier"><a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code></a> object</span></dt><dd><p>The cylindrical shell element being added to KG</p>
 </dd>
-<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration poins
+<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration points
 1-D array of <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> of size <code class="docutils literal notranslate"><span class="pre">nint</span></code>, the <code class="docutils literal notranslate"><span class="pre">nint</span></code> given to the
 constructor of <code class="docutils literal notranslate"><span class="pre">shell</span></code>, with natural coordinates from <code class="docutils literal notranslate"><span class="pre">-1</span></code> to
 <code class="docutils literal notranslate"><span class="pre">1</span></code>, e.g. from <a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>.
@@ -1832,7 +1894,7 @@ for the first derivatives and of one over length for <span class="math notransla
 </dd>
 <dt><strong>shell</strong><span class="classifier"><a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code></a> object</span></dt><dd><p>The shell element being added to fext</p>
 </dd>
-<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration poins
+<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration points
 1-D array of <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> of size <code class="docutils literal notranslate"><span class="pre">nint</span></code>, the <code class="docutils literal notranslate"><span class="pre">nint</span></code> given to the
 constructor of <code class="docutils literal notranslate"><span class="pre">shell</span></code>, with natural coordinates from <code class="docutils literal notranslate"><span class="pre">-1</span></code> to
 <code class="docutils literal notranslate"><span class="pre">1</span></code>, e.g. from <a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>.
@@ -1876,15 +1938,62 @@ configuration <span class="math notranslate nohighlight">\(\boldsymbol{F}_p(\bol
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>The force vector of the Notes of
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fext_follower" title="bfsccylinder.bfsccylinder.update_fext_follower"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder.update_fext_follower()</span></code></a>, with <span class="math notranslate nohighlight">\(k_v = 1/R\)</span>:
-the term <span class="math notranslate nohighlight">\(w_{,y} - v/R\)</span> of the tangent vector <span class="math notranslate nohighlight">\(\boldsymbol{X}_{,y}\)</span> is minus the
-Sanders-type rotation <span class="math notranslate nohighlight">\(\beta_y\)</span> of the Notes of
-<a class="reference internal" href="#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>, and <span class="math notranslate nohighlight">\(\boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}\)</span> is
-the exact area vector of the deformed mid-surface. The area vector
-<code class="docutils literal notranslate"><span class="pre">ax</span></code>, <code class="docutils literal notranslate"><span class="pre">ay</span></code>, <code class="docutils literal notranslate"><span class="pre">az</span></code> is evaluated at each integration point with the
-displacement gradients <code class="docutils literal notranslate"><span class="pre">u_x</span></code>, <code class="docutils literal notranslate"><span class="pre">u_y</span></code>, <code class="docutils literal notranslate"><span class="pre">v_x</span></code>, <code class="docutils literal notranslate"><span class="pre">v_y</span></code>, <code class="docutils literal notranslate"><span class="pre">v</span></code>, <code class="docutils literal notranslate"><span class="pre">w</span></code>,
-<code class="docutils literal notranslate"><span class="pre">w_x</span></code> and <code class="docutils literal notranslate"><span class="pre">w_y</span></code> of <code class="docutils literal notranslate"><span class="pre">u</span></code>.</p>
+<p>With <span class="math notranslate nohighlight">\(\boldsymbol{X} = \boldsymbol{X}_0 + \boldsymbol{u}\)</span> the position
+of the deformed mid-surface, in the basis of the undeformed mid-surface
+<span class="math notranslate nohighlight">\(\boldsymbol{e}_x\)</span>, <span class="math notranslate nohighlight">\(\boldsymbol{e}_y\)</span> and its normal
+<span class="math notranslate nohighlight">\(\boldsymbol{e}_z\)</span>, the virtual work of the pressure is</p>
+<div class="math notranslate nohighlight">
+\[\delta W_p = \int_A p \boldsymbol{a}^\top \delta \boldsymbol{u} dA, \qquad
+\boldsymbol{a} = \boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> is the area vector of the deformed mid-surface
+per unit undeformed area, <span class="math notranslate nohighlight">\(\delta \boldsymbol{u} = \{\delta u, \delta v,
+\delta w\}^\top\)</span> and, with <span class="math notranslate nohighlight">\(\boldsymbol{e}_{y,y} = -\boldsymbol{e}_z/R\)</span>
+and <span class="math notranslate nohighlight">\(\boldsymbol{e}_{z,y} = \boldsymbol{e}_y/R\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{X}_{,x} = \begin{Bmatrix} 1 + u_{,x} \\ v_{,x} \\ w_{,x}
+\end{Bmatrix}, \qquad
+\boldsymbol{X}_{,y} = \begin{Bmatrix} u_{,y} \\ 1 + v_{,y} + w/R \\ w_{,y} - v/R
+\end{Bmatrix}\end{split}\]</div>
+<p>The component <span class="math notranslate nohighlight">\(w_{,y} - v/R\)</span> is minus the Sanders-type rotation
+<span class="math notranslate nohighlight">\(\beta_y = -w_{,y} + v/R\)</span>: no term of the tangent vectors is neglected,
+and <span class="math notranslate nohighlight">\(\boldsymbol{X}_{,x} \times \boldsymbol{X}_{,y}\)</span> is the exact area
+vector of the deformed mid-surface. Its parts of order 0, 1 and 2 in
+the displacement gradients are</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{a}_0 = \begin{Bmatrix} 0 \\ 0 \\ 1 \end{Bmatrix}, \qquad
+\boldsymbol{a}_1 = \begin{Bmatrix} -w_{,x} \\ -w_{,y} + v/R \\
+u_{,x} + v_{,y} + w/R \end{Bmatrix}\end{split}\]</div>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{a}_2 = \begin{Bmatrix} v_{,x} (w_{,y} - v/R)
+- w_{,x} (v_{,y} + w/R) \\ w_{,x} u_{,y} - u_{,x} (w_{,y} - v/R) \\
+u_{,x} (v_{,y} + w/R) - v_{,x} u_{,y} \end{Bmatrix}\end{split}\]</div>
+<p><span class="math notranslate nohighlight">\(\boldsymbol{a}_0\)</span> gives the dead load, <span class="math notranslate nohighlight">\(\boldsymbol{a}_1\)</span> the rotation
+of the normal and the change of area. The force vector added to
+<code class="docutils literal notranslate"><span class="pre">fext</span></code> is</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{F}_p(\boldsymbol{u}_e) = \int_A p \left( (\boldsymbol{S}^u)^\top a_x
++ (\boldsymbol{S}^v)^\top a_y + (\boldsymbol{S}^w)^\top a_z \right) dA,
+\qquad \boldsymbol{a} = r \boldsymbol{a}_0 + \boldsymbol{a}_1 + q \boldsymbol{a}_2\]</div>
+<p>with <span class="math notranslate nohighlight">\(r\)</span> = <code class="docutils literal notranslate"><span class="pre">reference</span></code> and <span class="math notranslate nohighlight">\(q\)</span> = <code class="docutils literal notranslate"><span class="pre">quadratic</span></code>, <span class="math notranslate nohighlight">\(\boldsymbol{a}\)</span> being
+<code class="docutils literal notranslate"><span class="pre">ax</span></code>, <code class="docutils literal notranslate"><span class="pre">ay</span></code> and <code class="docutils literal notranslate"><span class="pre">az</span></code> in the code, evaluated at each integration
+point with the displacement gradients <code class="docutils literal notranslate"><span class="pre">u_x</span></code>, <code class="docutils literal notranslate"><span class="pre">u_y</span></code>, <code class="docutils literal notranslate"><span class="pre">v_x</span></code>,
+<code class="docutils literal notranslate"><span class="pre">v_y</span></code>, <code class="docutils literal notranslate"><span class="pre">v</span></code>, <code class="docutils literal notranslate"><span class="pre">w</span></code>, <code class="docutils literal notranslate"><span class="pre">w_x</span></code> and <code class="docutils literal notranslate"><span class="pre">w_y</span></code> of <code class="docutils literal notranslate"><span class="pre">u</span></code>. <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>
+keeps the terms of the order of those of the strains, for which
+<span class="math notranslate nohighlight">\(\boldsymbol{F}_p\)</span> is affine in <span class="math notranslate nohighlight">\(\boldsymbol{u}_e\)</span>; <code class="docutils literal notranslate"><span class="pre">quadratic=1</span></code>
+gives the complete area vector. At <span class="math notranslate nohighlight">\(\boldsymbol{u}_e = \boldsymbol{0}\)</span>
+the force vector is the dead load <span class="math notranslate nohighlight">\(\int_A p (\boldsymbol{S}^w)^\top dA\)</span>
+for both truncations.</p>
+<p>In a nonlinear analysis the follower pressure enters the residual
+<span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymbol{F}_{int}(\boldsymbol{u}) -
+\boldsymbol{F}_p(\boldsymbol{u})\)</span>, with <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span> of
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_fint" title="bfsccylinder.bfsccylinder_sanders.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_fint()</span></code></a>, whose Jacobian is the sum of the matrices of
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KC0" title="bfsccylinder.bfsccylinder_sanders.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KCNL" title="bfsccylinder.bfsccylinder_sanders.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a>, <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KG" title="bfsccylinder.bfsccylinder_sanders.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> and
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KCfollower" title="bfsccylinder.bfsccylinder_sanders.update_KCfollower"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCfollower()</span></code></a>. For a pressure <span class="math notranslate nohighlight">\(p = \lambda p_0\)</span>
+proportional to a load factor <span class="math notranslate nohighlight">\(\lambda\)</span>, <code class="docutils literal notranslate"><span class="pre">reference=0</span></code> gives the part
+<span class="math notranslate nohighlight">\(\lambda (\boldsymbol{F}_p(\boldsymbol{u}) -
+\boldsymbol{F}_p(\boldsymbol{0}))\)</span> that depends on the displacements,
+while the dead part <span class="math notranslate nohighlight">\(\lambda \boldsymbol{F}_p(\boldsymbol{0})\)</span> can be
+given as the external force vector of the load factor.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1913,7 +2022,7 @@ for the first derivatives and of one over length for <span class="math notransla
 </dd>
 <dt><strong>shell</strong><span class="classifier"><a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders"><code class="xref py py-class docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code></a> object</span></dt><dd><p>The shell element being added to fint</p>
 </dd>
-<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration poins
+<dt><strong>points</strong><span class="classifier">np.array</span></dt><dd><p>Integration points
 1-D array of <code class="docutils literal notranslate"><span class="pre">DOUBLE</span></code> of size <code class="docutils literal notranslate"><span class="pre">nint</span></code>, the <code class="docutils literal notranslate"><span class="pre">nint</span></code> given to the
 constructor of <code class="docutils literal notranslate"><span class="pre">shell</span></code>, with natural coordinates from <code class="docutils literal notranslate"><span class="pre">-1</span></code> to
 <code class="docutils literal notranslate"><span class="pre">1</span></code>, e.g. from <a class="reference internal" href="api_quadrature.html#bfsccylinder.quadrature.get_points_weights" title="bfsccylinder.quadrature.get_points_weights"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.quadrature.get_points_weights()</span></code></a>.
@@ -1938,13 +2047,34 @@ squared for <span class="math notranslate nohighlight">\(w_{,xy}\)</span>.</p>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>The internal forces of the Notes of
-<a class="reference internal" href="api_bfsccylinder.html#bfsccylinder.bfsccylinder.update_fint" title="bfsccylinder.bfsccylinder.update_fint"><code class="xref py py-func docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder.update_fint()</span></code></a>, with the Sanders-type
-<span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span> and <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span> of the Notes of
-<a class="reference internal" href="#module-bfsccylinder.bfsccylinder_sanders" title="bfsccylinder.bfsccylinder_sanders"><code class="xref py py-mod docutils literal notranslate"><span class="pre">bfsccylinder.bfsccylinder_sanders</span></code></a>, evaluated at each integration
-point with <code class="docutils literal notranslate"><span class="pre">v</span></code>, <code class="docutils literal notranslate"><span class="pre">w_x</span></code> and <code class="docutils literal notranslate"><span class="pre">w_y</span></code>. Their derivative is the sum of the
+<p>The internal forces are the gradient of the strain energy:</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{F}_{int} = \int_A \left( \left( \boldsymbol{B}_m + \boldsymbol{B}_{NL} \right)^\top \boldsymbol{N}
+              + \boldsymbol{B}_b^\top \boldsymbol{M} \right) dA\]</div>
+<p>with the stress resultants of the total membrane strains,</p>
+<div class="math notranslate nohighlight">
+\[\boldsymbol{N} = \boldsymbol{A} \left( \boldsymbol{B}_m + \frac{1}{2} \boldsymbol{B}_{NL} \right) \boldsymbol{u}_e
+        + \boldsymbol{B}\boldsymbol{B}_b\boldsymbol{u}_e, \qquad
+\boldsymbol{M} = \boldsymbol{B} \left( \boldsymbol{B}_m + \frac{1}{2} \boldsymbol{B}_{NL} \right) \boldsymbol{u}_e
+        + \boldsymbol{D}\boldsymbol{B}_b\boldsymbol{u}_e\]</div>
+<p><code class="docutils literal notranslate"><span class="pre">Nxx</span></code>, <code class="docutils literal notranslate"><span class="pre">Nyy</span></code>, <code class="docutils literal notranslate"><span class="pre">Nxy</span></code> and <code class="docutils literal notranslate"><span class="pre">Mxx</span></code>, <code class="docutils literal notranslate"><span class="pre">Myy</span></code>, <code class="docutils literal notranslate"><span class="pre">Mxy</span></code> in the code.
+<span class="math notranslate nohighlight">\(\boldsymbol{B}_b\)</span> has the rows of the Sanders-type curvatures of
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb" title="bfsccylinder.bfsccylinder_sanders.BFSCCylinderSanders.update_Bb"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BFSCCylinderSanders.update_Bb()</span></code></a>, and <span class="math notranslate nohighlight">\(\boldsymbol{B}_{NL}\)</span> those
+of the nonlinear membrane strains of the rotations <span class="math notranslate nohighlight">\(\beta_x = -w_{,x}\)</span>
+and <span class="math notranslate nohighlight">\(\beta_y = -w_{,y} + v/R\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\boldsymbol{B}_{NL} = \begin{bmatrix} w_{,x} \boldsymbol{S}^w_{,x} \\
+(w_{,y} - v/R) \left( \boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R \right) \\
+w_{,x} \left( \boldsymbol{S}^w_{,y} - \boldsymbol{S}^v/R \right)
++ (w_{,y} - v/R) \boldsymbol{S}^w_{,x} \end{bmatrix}\end{split}\]</div>
+<p>the local variables <code class="docutils literal notranslate"><span class="pre">BmL1_*</span></code>, <code class="docutils literal notranslate"><span class="pre">BmL2_*</span></code> and <code class="docutils literal notranslate"><span class="pre">BmL3_*</span></code>, evaluated at
+each integration point with <code class="docutils literal notranslate"><span class="pre">v</span></code>, <code class="docutils literal notranslate"><span class="pre">w_x</span></code> and <code class="docutils literal notranslate"><span class="pre">w_y</span></code> of the current
+displacements. The tangent stiffness matrix <span class="math notranslate nohighlight">\(\partial
+\boldsymbol{F}_{int}/\partial \boldsymbol{u}_e\)</span> is the sum of the
 matrices of <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KC0" title="bfsccylinder.bfsccylinder_sanders.update_KC0"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KC0()</span></code></a>, <a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KCNL" title="bfsccylinder.bfsccylinder_sanders.update_KCNL"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KCNL()</span></code></a> and
-<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KG" title="bfsccylinder.bfsccylinder_sanders.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> of this module.</p>
+<a class="reference internal" href="#bfsccylinder.bfsccylinder_sanders.update_KG" title="bfsccylinder.bfsccylinder_sanders.update_KG"><code class="xref py py-func docutils literal notranslate"><span class="pre">update_KG()</span></code></a> of this module, computed with the same <code class="docutils literal notranslate"><span class="pre">u</span></code>,
+<code class="docutils literal notranslate"><span class="pre">points</span></code> and <code class="docutils literal notranslate"><span class="pre">weights</span></code>. At equilibrium <span class="math notranslate nohighlight">\(\boldsymbol{F}_{int}\)</span>
+balances the external forces.</p>
 </dd></dl>
 
 </section>

@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Nonlinear static analysis with structsolve &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Nonlinear static analysis with structsolve &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -1137,13 +1137,13 @@ Started Non-Linear Static Analysis
                 Iteration: 1, max(|R|) = 9.725e+02, zeta = 2.968e-02
                 Iteration: 2, max(|R|) = 3.290e+00, zeta = 1.612e-04
                 Iteration: 3, max(|R|) = 2.833e-04, zeta = 1.715e-08
-                Iteration: 4, max(|R|) = 7.584e-11, zeta = 1.374e-15
+                Iteration: 4, max(|R|) = 8.983e-11, zeta = 1.535e-15
                 Converged at load factor 0.50000
         Step 2, attempting load factor 1.00000
                 Iteration: 1, max(|R|) = 1.989e+03, zeta = 3.117e-02
                 Iteration: 2, max(|R|) = 4.744e+01, zeta = 1.353e-03
                 Iteration: 3, max(|R|) = 7.309e-02, zeta = 2.064e-06
-                Iteration: 4, max(|R|) = 4.947e-07, zeta = 1.173e-11
+                Iteration: 4, max(|R|) = 4.946e-07, zeta = 1.173e-11
                 Converged at load factor 1.00000
 Finished Non-Linear Static Analysis
             load factor 1.00000
@@ -1157,13 +1157,13 @@ Started Non-Linear Static Analysis
                 Iteration: 1, max(|R|) = 9.703e+02, zeta = 2.435e-02
                 Iteration: 2, max(|R|) = 1.998e+00, zeta = 1.127e-04
                 Iteration: 3, max(|R|) = 1.331e-04, zeta = 8.066e-09
-                Iteration: 4, max(|R|) = 9.108e-11, zeta = 1.472e-15
+                Iteration: 4, max(|R|) = 1.256e-10, zeta = 1.509e-15
                 Converged at load factor 0.50000
         Step 2, attempting load factor 1.00000
                 Iteration: 1, max(|R|) = 1.972e+03, zeta = 2.536e-02
                 Iteration: 2, max(|R|) = 3.198e+01, zeta = 9.283e-04
                 Iteration: 3, max(|R|) = 3.122e-02, zeta = 8.804e-07
-                Iteration: 4, max(|R|) = 9.291e-08, zeta = 2.170e-12
+                Iteration: 4, max(|R|) = 9.294e-08, zeta = 2.170e-12
                 Converged at load factor 1.00000
 Finished Non-Linear Static Analysis
             load factor 1.00000
@@ -1210,7 +1210,7 @@ Finished Non-Linear Static Analysis
 <td><p>[0.5, 1.0]</p></td>
 <td><p>0.39922</p></td>
 <td><p>2.1375</p></td>
-<td><p>2.5146e-11</p></td>
+<td><p>2.5145e-11</p></td>
 <td><p>0.0051691</p></td>
 <td><p>2</p></td>
 </tr>
@@ -1218,7 +1218,7 @@ Finished Non-Linear Static Analysis
 <td><p>[0.5, 1.0]</p></td>
 <td><p>0.39087</p></td>
 <td><p>0</p></td>
-<td><p>4.7221e-12</p></td>
+<td><p>4.7225e-12</p></td>
 <td><p>0.0047277</p></td>
 <td><p>2</p></td>
 </tr>
@@ -1228,7 +1228,7 @@ Finished Non-Linear Static Analysis
 </div>
 </div>
 <p>Crisfield’s <span class="math notranslate nohighlight">\(\zeta\)</span> of each iteration: the last iteration of each increment squares the previous value down to the round-off, the quadratic convergence that only a tangent stiffness matrix equal to the Jacobian of the residual, here unsymmetric, gives.</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
@@ -1245,7 +1245,14 @@ Finished Non-Linear Static Analysis
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ex_structsolve_nonlinear_13_0.png" src="../_images/notebooks_ex_structsolve_nonlinear_13_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
@@ -1259,6 +1266,13 @@ Finished Non-Linear Static Analysis
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">'Sanders-type kinematics, load factor 1'</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_ex_structsolve_nonlinear_14_0.png" src="../_images/notebooks_ex_structsolve_nonlinear_14_0.png" />
 </div>
 </div>
 </section>

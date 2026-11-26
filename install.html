@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Installing bfsccylinder &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Installing bfsccylinder &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="_static/documentation_options.js?v=c98573da"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -53,7 +53,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -121,7 +121,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -826,8 +826,9 @@ problems of <code class="docutils literal notranslate"><span class="pre">tests/t
 <a class="reference internal" href="analyses.html"><span class="doc">Analyses</span></a>. It is a requirement of the tests and of the examples of
 the documentation only: bfsccylinder does not import it, and it is not
 installed with bfsccylinder, not being in the <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> of
-<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>. The tests and the examples require structsolve 0.10.0
-or newer: Crisfield’s convergence criterion as default, the residual
+<code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>. The tests and the examples require the version of
+structsolve that <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> states, with Crisfield’s convergence
+criterion as default, the residual
 <span class="math notranslate nohighlight">\(\boldsymbol{R} = \boldsymbol{F}_{int} - \lambda \boldsymbol{F}_{ext}\)</span>, the
 convention of these pages, and the Riks method with a stop criterion on a
 displacement, the inertia of the tangent stiffness matrix and branch

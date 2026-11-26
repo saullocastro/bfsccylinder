@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968) &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Natural frequencies of integrally stringer-stiffened cylinders: Sewall and Naumann (1968) &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -800,7 +800,7 @@ Rayleigh-Ritz method with the stringers averaged (“smeared”) over the skin, 
 <p><strong>References</strong></p>
 <p>[1] Sewall, J. L.; Naumann, E. C., “An experimental and analytical vibration study of thin cylindrical shells with and without longitudinal stiffeners”, NASA TN D-4705, September 1968. <a class="reference external" href="https://ntrs.nasa.gov/citations/19680024266">https://ntrs.nasa.gov/citations/19680024266</a></p>
 <p>[2] Egle, D. M.; Sewall, J. L., “An analysis of free vibration of orthogonally stiffened cylindrical shells with stiffeners treated as discrete elements”, AIAA Journal 6(3), 518-526, 1968. <a class="reference external" href="https://doi.org/10.2514/3.4528">https://doi.org/10.2514/3.4528</a></p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -816,25 +816,11 @@ Rayleigh-Ritz method with the stringers averaged (“smeared”) over the skin, 
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">quad</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">bfsccylinder_version</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bfscplate2d.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">bfscplate2d_version</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">blade_cylinder_sector</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BladeCylinderSector</span><span class="p">,</span> <span class="n">frequencies</span><span class="p">,</span>
                                    <span class="n">axial_nodes_lines</span><span class="p">,</span> <span class="n">normalize_phase</span><span class="p">,</span> <span class="n">DOF</span><span class="p">,</span>
                                    <span class="n">V</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">'bfsccylinder'</span><span class="p">,</span> <span class="n">bfsccylinder_version</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">'bfscplate2d'</span><span class="p">,</span> <span class="n">bfscplate2d_version</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-bfsccylinder 0.7.1
-bfscplate2d 0.5.0
-</pre></div></div>
 </div>
 <section id="Geometry-and-material">
 <h2>Geometry and material<a class="headerlink" href="#Geometry-and-material" title="Link to this heading">#</a></h2>

@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Post-buckling of an axially compressed cylinder with imperfections &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Post-buckling of an axially compressed cylinder with imperfections &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -789,8 +789,8 @@
 <p>Simo, Fox and Rifai [1], Section 6.3.4 (pp. 54-57, Fig. 6.3.4 on p. 56), traced the post-buckling path of a simply supported cylinder under axial compression, with and without an initial geometric imperfection, with the Riks method and their geometrically exact shell element: radius <span class="math notranslate nohighlight">\(R = 36\)</span>, length <span class="math notranslate nohighlight">\(L = 100\)</span>, thickness <span class="math notranslate nohighlight">\(t = 0.125\)</span>, <span class="math notranslate nohighlight">\(E = 10^7\)</span>, <span class="math notranslate nohighlight">\(\nu = 0.3\)</span>. As in Stanley [2], they modelled an <span class="math notranslate nohighlight">\(L/10 \times 15°\)</span> section of the cylinder, with symmetry conditions
 on the interior edges and a simple support on the loaded edge, with a <span class="math notranslate nohighlight">\(10 \times 10\)</span> mesh, such that the post-buckling path is that of the diamond mode of 5 axial half-waves and 12 circumferential waves. The imperfections, of 10 % and 50 % of the thickness, have the shape of the lowest linear buckling mode; the loads are normalized by the linear buckling load and plotted against the axial deflection of the loaded edge, its maximum in Fig. 6.3.4(a) and (d) and also its average in Fig.
 6.3.4(c). Fig. 6.3.4(a) also has the results of the 9-node ANS element of Stanley [2].</p>
-<p>Here the same section is meshed with the Donnell-type element <code class="docutils literal notranslate"><span class="pre">BFSCCylinder</span></code>, the imperfection is added exactly as described below, and the path is traced with the Riks method of <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a> (0.10.0 or newer) to an axial deflection of 0.04, the end of the axes of the figure. The model is in the module <code class="docutils literal notranslate"><span class="pre">simo1990_cylinder.py</span></code> of the folder <code class="docutils literal notranslate"><span class="pre">tests/</span></code> of the repository, which also has its test, <code class="docutils literal notranslate"><span class="pre">tests/test_simo1990_cylinder.py</span></code>: the identities
-of the imperfect shell and the limit point of the 10 % imperfection on coarse meshes. Besides bfsccylinder, the notebook requires structsolve 0.10.0 or newer, composites and Matplotlib.</p>
+<p>Here the same section is meshed with the Donnell-type element <code class="docutils literal notranslate"><span class="pre">BFSCCylinder</span></code>, the imperfection is added exactly as described below, and the path is traced with the Riks method of <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a> to an axial deflection of 0.04, the end of the axes of the figure. The model is in the module <code class="docutils literal notranslate"><span class="pre">simo1990_cylinder.py</span></code> of the folder <code class="docutils literal notranslate"><span class="pre">tests/</span></code> of the repository, which also has its test, <code class="docutils literal notranslate"><span class="pre">tests/test_simo1990_cylinder.py</span></code>: the identities of the imperfect
+shell and the limit point of the 10 % imperfection on coarse meshes. Besides bfsccylinder, the notebook requires structsolve, composites and Matplotlib.</p>
 <section id="The-section">
 <h2>The section<a class="headerlink" href="#The-section" title="Link to this heading">#</a></h2>
 <p>The section has <span class="math notranslate nohighlight">\(x\)</span> from 0, the loaded edge, to <span class="math notranslate nohighlight">\(a = L/10 = 10\)</span>, and <span class="math notranslate nohighlight">\(y\)</span> from 0 to <span class="math notranslate nohighlight">\(b = 15° \, R = 9.425\)</span>. With the degrees of freedom <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(u_{,x}\)</span>, <span class="math notranslate nohighlight">\(u_{,y}\)</span>, <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(v_{,x}\)</span>, <span class="math notranslate nohighlight">\(v_{,y}\)</span>, <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span>, <span class="math notranslate nohighlight">\(w_{,xy}\)</span> of the nodes, the edges are:</p>

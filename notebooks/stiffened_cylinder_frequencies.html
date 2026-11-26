@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Natural frequencies of stringer-stiffened cylinders &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Natural frequencies of stringer-stiffened cylinders &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -792,7 +792,7 @@
 <li><p>each stringer with the BFSC plate element <code class="docutils literal notranslate"><span class="pre">BFSCPlate2D</span></code> of <a class="reference external" href="https://github.com/saullocastro/bfscplate2d">bfscplate2d</a>, in the plane <span class="math notranslate nohighlight">\((x, r)\)</span> of the stringer.</p></li>
 </ul>
 <p>The natural frequencies are computed with <code class="docutils literal notranslate"><span class="pre">structsolve.freq</span></code> and compared with the measured frequencies of Table II of [1].</p>
-<p>The model is given by the module <code class="docutils literal notranslate"><span class="pre">stiffened_cylinder.py</span></code>, next to this notebook. Besides <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code>, it needs <code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code> 0.5.0 or newer, <code class="docutils literal notranslate"><span class="pre">composites</span></code> and <code class="docutils literal notranslate"><span class="pre">structsolve</span></code>.</p>
+<p>The model is given by the module <code class="docutils literal notranslate"><span class="pre">stiffened_cylinder.py</span></code>, next to this notebook. Besides <code class="docutils literal notranslate"><span class="pre">bfsccylinder</span></code>, it needs <code class="docutils literal notranslate"><span class="pre">bfscplate2d</span></code>, <code class="docutils literal notranslate"><span class="pre">composites</span></code> and <code class="docutils literal notranslate"><span class="pre">structsolve</span></code>.</p>
 <section id="The-skin-stringer-connection">
 <h2>The skin-stringer connection<a class="headerlink" href="#The-skin-stringer-connection" title="Link to this heading">#</a></h2>
 <p>The plate of a stringer has the local coordinates <span class="math notranslate nohighlight">\(X = x\)</span> and <span class="math notranslate nohighlight">\(Y = r - R\)</span>, from the middle surface of the skin, positive outwards, and its displacements <span class="math notranslate nohighlight">\(U\)</span>, <span class="math notranslate nohighlight">\(V\)</span> and <span class="math notranslate nohighlight">\(W\)</span> are along <span class="math notranslate nohighlight">\(x\)</span>, along the outward radius and along the circumference, the direction of <span class="math notranslate nohighlight">\(v\)</span> of the skin. The nodes of the stringer at <span class="math notranslate nohighlight">\(Y = 0\)</span> are at the nodes of the skin along the stringer, and their translations and their rotation about <span class="math notranslate nohighlight">\(x\)</span> are those of the skin, with the
@@ -1012,9 +1012,9 @@ w_{,xy} = 0\)</span>. With 60 equally spaced stringers, the modes with <span cla
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-nx=13, nbay=2, nh=1: 12609 dofs, 3 s
-nx=17, nbay=2, nh=2: 21589 dofs, 6 s
-nx=25, nbay=4, nh=3: 54249 dofs, 20 s
+nx=13, nbay=2, nh=1: 12609 dofs, 5 s
+nx=17, nbay=2, nh=2: 21589 dofs, 10 s
+nx=25, nbay=4, nh=3: 54249 dofs, 35 s
 
  n     (13, 2, 1)    (17, 2, 2)    (25, 4, 3)
  4          297.3         296.9         296.5
@@ -1064,7 +1064,7 @@ nx=25, nbay=4, nh=3: 54249 dofs, 20 s
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-internally stiffened cylinder: 25 s
+internally stiffened cylinder: 41 s
 
 externally stiffened cylinder, Table II of [1]
  m   n   test (Hz)       FE (Hz)   FE/test
@@ -1113,7 +1113,7 @@ internally stiffened cylinder, Table II of [1]
  3  14   761              727.8    0.956
 </pre></div></div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
 </pre></div>
 </div>
@@ -1142,11 +1142,18 @@ internally stiffened cylinder, Table II of [1]
 </pre></div>
 </div>
 </div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_stiffened_cylinder_frequencies_14_0.png" src="../_images/notebooks_stiffened_cylinder_frequencies_14_0.png" />
+</div>
+</div>
 </section>
 <section id="Mode-shapes">
 <h2>Mode shapes<a class="headerlink" href="#Mode-shapes" title="Link to this heading">#</a></h2>
 <p>The normal displacement <span class="math notranslate nohighlight">\(w\)</span> of the skin over the developed half cylinder for three modes, with the stringers as thin lines, and, for the lowest mode of each cylinder, the deformed cross-section at mid-length with the stringers, the displacements greatly magnified:</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
 </pre></div>
 </div>
@@ -1174,7 +1181,14 @@ internally stiffened cylinder, Table II of [1]
 </pre></div>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_stiffened_cylinder_frequencies_16_0.png" src="../_images/notebooks_stiffened_cylinder_frequencies_16_0.png" />
+</div>
+</div>
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
 </pre></div>
 </div>
@@ -1210,6 +1224,13 @@ internally stiffened cylinder, Table II of [1]
 <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_stiffened_cylinder_frequencies_17_0.png" src="../_images/notebooks_stiffened_cylinder_frequencies_17_0.png" />
 </div>
 </div>
 </section>

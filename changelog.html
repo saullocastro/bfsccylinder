@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Changelog &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Changelog &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="_static/documentation_options.js?v=c98573da"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
     <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -51,7 +51,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="_static/searchtools.js"></script>
@@ -119,7 +119,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -789,7 +789,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-<span class="gu">## 0.7.2 (2026-11-13)</span>
+<span class="gu">## 0.7.3 (2026-11-26)</span>
 
 <span class="gu">### Tutorials</span>
 
@@ -881,6 +881,15 @@ The dates of the released versions are those of their tagged commits.
   rotation give the same buckling torque. Stiffened specimens 19, 14, 20,
   15 and 21, one stringer pitch: 2619, 3134, 3970, 4118 and 4422 psi, 6 to
   38 % above the observed first panel buckling.
+<span class="k">-</span><span class="w"> </span>The docstrings of the modules of <span class="sb">`notebooks/`</span>
+  (<span class="sb">`blade_cylinder_sector.py`</span>, <span class="sb">`channel_cylinder_sector.py`</span>,
+  <span class="sb">`composite_stiffened_shell.py`</span>, <span class="sb">`moore1944_utils.py`</span>,
+  <span class="sb">`smeared_stiffened_cylinder.py`</span>, <span class="sb">`stiffened_cylinder.py`</span> and
+  <span class="sb">`z_cylinder_sector.py`</span>) have their equations under Notes and their
+  sources under References.
+<span class="k">-</span><span class="w"> </span>The notebooks do not print or name the versions of the packages. The
+  seven <span class="sb">`ex_*`</span> notebooks, <span class="sb">`stiffened_cylinder_frequencies.ipynb`</span> and
+  <span class="sb">`moore1944_stiffened_cylinders.ipynb`</span> are stored with their figures.
 
 <span class="gu">### Tests</span>
 
@@ -919,12 +928,33 @@ The dates of the released versions are those of their tagged commits.
   values were the second-lowest double load multipliers: -201751 N becomes
   -201104 N (Donnell-type), -200606.75 N becomes -199872.11 N
   (Sanders-type).
+<span class="k">-</span><span class="w"> </span>Docstrings of the tests, with no test added or removed and no asserted
+  value changed: Notes of <span class="sb">`tests/test_follower_pressure.py`</span> (tangent
+  vectors, area vector, Taylor remainder), of
+  <span class="sb">`tests/test_follower_pressure_structsolve.py`</span> (the follower force in
+  the residual and its tangent) and of <span class="sb">`cylinder_closed_form`</span> of
+  <span class="sb">`tests/test_follower_pressure_validation.py`</span>; Arbocz and Starnes (2002)
+  in the References of <span class="sb">`tests/test_nonlinear_axial_compression.py`</span> and
+  <span class="sb">`tests/test_sanders_nonlinear_axial_compression.py`</span>;
+  <span class="sb">`tests/test_sanders_linear_buckling.py`</span> says that its reference is the
+  value stored in the test with the Donnell-type kinematics (the two
+  kinematics differ by 6.6e-6 for this cylinder);
+  <span class="sb">`tests/natural_frequency_solver.py`</span> describes the solver in the present
+  tense, with the reasons in Notes.
 
 <span class="gu">### Documentation</span>
 
 <span class="k">-</span><span class="w"> </span>The documentation is deployed to the <span class="sb">`gh-pages`</span> branch from the release
   tags only, as in panels: the manual run of <span class="sb">`auto_doc.yml`</span>, which deployed
   from any branch, is removed. Pull requests still build it.
+<span class="k">-</span><span class="w"> </span>The Notes of <span class="sb">`BFSCCylinderSanders`</span> and of <span class="sb">`update_Bm`</span>, <span class="sb">`update_KC0`</span>,
+  <span class="sb">`update_fint`</span>, <span class="sb">`update_fext_follower`</span> and <span class="sb">`update_KCfollower`</span> of the
+  Sanders-type element state their own equations: the curvatures, the
+  rows of <span class="sb">`\boldsymbol{B}_{NL}`</span>, the tangent and area vectors with <span class="sb">`v/R`</span>
+  and the <span class="sb">`v`</span>-<span class="sb">`v`</span> block of the load stiffness matrix.
+<span class="k">-</span><span class="w"> </span>The installation page refers to <span class="sb">`requirements.txt`</span> for the required
+  version of structsolve, without repeating the number.
+<span class="k">-</span><span class="w"> </span>Typo "Integration poins" in the Parameters of the <span class="sb">`update_*`</span> functions.
 
 <span class="gu">## 0.7.0 (2026-10-26)</span>
 

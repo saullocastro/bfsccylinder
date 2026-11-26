@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Cantilever cylinder under a follower pressure &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Cantilever cylinder under a follower pressure &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -795,8 +795,8 @@ nonconservative: its load stiffness matrix is unsymmetric. The pressure is norma
 = m_x = 0\)</span>, or B2, “warping partially restrained”, <span class="math notranslate nohighlight">\(v = w = m_x = 0\)</span> with the axial displacement <span class="math notranslate nohighlight">\(u_0\)</span> restrained at one point only. The paper models a sector of <span class="math notranslate nohighlight">\(180°/n\)</span> with 24 bicubic elements, 8 along the axis and 3 around, and symmetrizes the load stiffness matrix for the linear buckling analyses of Table 4 in three ways, its eqs. (63) to (65). Fig. 13 traces the path of shell 1, B1, under the follower pressure, with an imperfection of 1 % of <span class="math notranslate nohighlight">\(t\)</span> in the shape of the
 linear buckling mode, as the load <span class="math notranslate nohighlight">\(K = p
 \, 12 (1 - \mu^2)/E \, (R/t)^3\)</span> against the maximum displacement <span class="math notranslate nohighlight">\(w_i/t\)</span>, with the current stiffness parameter of Bergan.</p>
-<p>Here the same sectors are meshed with the Sanders-type element <code class="docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code>, with the follower pressure of <code class="docutils literal notranslate"><span class="pre">update_fext_follower</span></code> and its full, unsymmetric, load stiffness matrix of <code class="docutils literal notranslate"><span class="pre">update_KCfollower</span></code> (first-order area vector, <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>), and the path is traced with the Riks method of <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a> (0.10.0 or newer), counting the negative eigenvalues of the unsymmetric tangent stiffness matrix. The model is in the module
-<code class="docutils literal notranslate"><span class="pre">schweizerhof1984_cylinder.py</span></code> of the folder <code class="docutils literal notranslate"><span class="pre">tests/</span></code> of the repository, which also has its test, <code class="docutils literal notranslate"><span class="pre">tests/test_schweizerhof1984_cylinder.py</span></code>: the identities of the imperfect shell under the follower pressure, the factors of shell 1, B1, of Table 4, and the Riks path of B1 through its maximum. Besides bfsccylinder, the notebook requires structsolve 0.10.0 or newer, composites and Matplotlib.</p>
+<p>Here the same sectors are meshed with the Sanders-type element <code class="docutils literal notranslate"><span class="pre">BFSCCylinderSanders</span></code>, with the follower pressure of <code class="docutils literal notranslate"><span class="pre">update_fext_follower</span></code> and its full, unsymmetric, load stiffness matrix of <code class="docutils literal notranslate"><span class="pre">update_KCfollower</span></code> (first-order area vector, <code class="docutils literal notranslate"><span class="pre">quadratic=0</span></code>), and the path is traced with the Riks method of <a class="reference external" href="https://saullocastro.github.io/structsolve/">structsolve</a>, counting the negative eigenvalues of the unsymmetric tangent stiffness matrix. The model is in the module
+<code class="docutils literal notranslate"><span class="pre">schweizerhof1984_cylinder.py</span></code> of the folder <code class="docutils literal notranslate"><span class="pre">tests/</span></code> of the repository, which also has its test, <code class="docutils literal notranslate"><span class="pre">tests/test_schweizerhof1984_cylinder.py</span></code>: the identities of the imperfect shell under the follower pressure, the factors of shell 1, B1, of Table 4, and the Riks path of B1 through its maximum. Besides bfsccylinder, the notebook requires structsolve, composites and Matplotlib.</p>
 <section id="The-model">
 <h2>The model<a class="headerlink" href="#The-model" title="Link to this heading">#</a></h2>
 <p>The sector has <span class="math notranslate nohighlight">\(x\)</span> from 0, the lower edge, to <span class="math notranslate nohighlight">\(L\)</span>, the free edge, and <span class="math notranslate nohighlight">\(y\)</span> from 0 to <span class="math notranslate nohighlight">\(b = \pi R/n\)</span>, with <span class="math notranslate nohighlight">\(R = 100\)</span> (the factors <span class="math notranslate nohighlight">\(k\)</span> do not depend on it). With the degrees of freedom <span class="math notranslate nohighlight">\(u\)</span>, <span class="math notranslate nohighlight">\(u_{,x}\)</span>, <span class="math notranslate nohighlight">\(u_{,y}\)</span>, <span class="math notranslate nohighlight">\(v\)</span>, <span class="math notranslate nohighlight">\(v_{,x}\)</span>, <span class="math notranslate nohighlight">\(v_{,y}\)</span>, <span class="math notranslate nohighlight">\(w\)</span>, <span class="math notranslate nohighlight">\(w_{,x}\)</span>, <span class="math notranslate nohighlight">\(w_{,y}\)</span>, <span class="math notranslate nohighlight">\(w_{,xy}\)</span> of the nodes:</p>

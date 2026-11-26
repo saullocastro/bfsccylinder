@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966) &#8212; bfsccylinder 0.7.2 documentation</title>
+    <title>Discrete and smeared stringers: cylinders with riveted Z stringers (Peterson and Dow 1959; Card and Jones 1966) &#8212; bfsccylinder 0.7.3 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=6dfdf7c3"></script>
+    <script src="../_static/documentation_options.js?v=c98573da"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.2" />
+  <meta name="docsearch:version" content="0.7.3" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.2 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
   
 </a></div>
     
@@ -794,7 +794,7 @@ and <span class="math notranslate nohighlight">\(\bar{N}_s\)</span> of [2]). The
 <p>[1] J. P. Peterson and M. B. Dow, <em>Compression tests on circular cylinders stiffened longitudinally by closely spaced Z-section stringers</em>, NASA Memo 2-12-59L, March 1959.</p>
 <p>[2] M. F. Card and R. M. Jones, <em>Experimental and theoretical results for buckling of eccentrically stiffened cylinders</em>, NASA TN D-3639, October 1966, <a class="reference external" href="https://ntrs.nasa.gov/citations/19660027866">https://ntrs.nasa.gov/citations/19660027866</a>.</p>
 <p>[3] D. L. Block, M. F. Card and M. M. Mikulas, Jr., <em>Buckling of eccentrically stiffened orthotropic cylinders</em>, NASA TN D-2960, 1965, <a class="reference external" href="https://ntrs.nasa.gov/citations/19650021133">https://ntrs.nasa.gov/citations/19650021133</a>.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -806,14 +806,9 @@ and <span class="math notranslate nohighlight">\(\bar{N}_s\)</span> of [2]). The
 <span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span><span class="p">,</span> <span class="n">display</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">brentq</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">bfsccylinder.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">bfsccylinder_version</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">bfscplate2d.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">bfscplate2d_version</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">blade_cylinder_sector</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">BladeCylinderSector</span><span class="p">,</span> <span class="n">buckling_membrane</span><span class="p">,</span>
                                    <span class="n">axial_nodes</span><span class="p">,</span> <span class="n">normalize_phase</span><span class="p">,</span> <span class="n">W</span><span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">smeared_stiffened_cylinder</span><span class="w"> </span><span class="kn">import</span> <span class="n">buckling_ss</span><span class="p">,</span> <span class="n">buckling_ritz</span><span class="p">,</span> <span class="n">minimum</span>
-
-<span class="nb">print</span><span class="p">(</span><span class="s1">'bfsccylinder'</span><span class="p">,</span> <span class="n">bfsccylinder_version</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">'bfscplate2d'</span><span class="p">,</span> <span class="n">bfscplate2d_version</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">pct</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ref</span><span class="p">):</span>
@@ -826,15 +821,6 @@ and <span class="math notranslate nohighlight">\(\bar{N}_s\)</span> of [2]). The
     <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out</span><span class="p">)))</span>
 </pre></div>
 </div>
-</div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-bfsccylinder 0.7.1
-bfscplate2d 0.5.0
-</pre></div></div>
 </div>
 <section id="Cylinders,-geometry-and-material">
 <h2>Cylinders, geometry and material<a class="headerlink" href="#Cylinders,-geometry-and-material" title="Link to this heading">#</a></h2>
