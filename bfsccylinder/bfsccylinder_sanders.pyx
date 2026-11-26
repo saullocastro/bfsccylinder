@@ -1006,7 +1006,7 @@ cpdef void update_KC0(BFSCCylinderSanders shell,
     shell : :class:`.BFSCCylinderSanders` object
         The cylindrical shell element being added to KC0
     points : np.array
-        Integration poins
+        Integration points
         1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
         constructor of ``shell``, with natural coordinates from ``-1`` to
         ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
@@ -9300,7 +9300,7 @@ cpdef void update_KCNL(double [::1] u,
     shell : :class:`.BFSCCylinderSanders` object
         The shell element being added to K
     points : np.array
-        Integration poins
+        Integration points
         1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
         constructor of ``shell``, with natural coordinates from ``-1`` to
         ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
@@ -17012,7 +17012,7 @@ cpdef void update_KG(double [::1] u,
     shell : :class:`.BFSCCylinderSanders` object
         The cylindrical shell element being added to KG
     points : np.array
-        Integration poins
+        Integration points
         1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
         constructor of ``shell``, with natural coordinates from ``-1`` to
         ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
@@ -21261,7 +21261,7 @@ cpdef void update_KG_constant_stress(BFSCCylinderSanders shell,
     shell : :class:`.BFSCCylinderSanders` object
         The cylindrical shell element being added to KG
     points : np.array
-        Integration poins
+        Integration points
         1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
         constructor of ``shell``, with natural coordinates from ``-1`` to
         ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
@@ -30016,7 +30016,7 @@ cpdef void update_fint(double [::1] u,
     shell : :class:`.BFSCCylinderSanders` object
         The shell element being added to fint
     points : np.array
-        Integration poins
+        Integration points
         1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
         constructor of ``shell``, with natural coordinates from ``-1`` to
         ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
@@ -30451,7 +30451,7 @@ cpdef void update_fext_follower(double [::1] u,
     shell : :class:`.BFSCCylinderSanders` object
         The shell element being added to fext
     points : np.array
-        Integration poins
+        Integration points
         1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
         constructor of ``shell``, with natural coordinates from ``-1`` to
         ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
@@ -30833,7 +30833,7 @@ cpdef void update_KCfollower(double [::1] u,
     shell : :class:`.BFSCCylinderSanders` object
         The shell element being added to KCfollower
     points : np.array
-        Integration poins
+        Integration points
         1-D array of ``DOUBLE`` of size ``nint``, the ``nint`` given to the
         constructor of ``shell``, with natural coordinates from ``-1`` to
         ``1``, e.g. from :func:`bfsccylinder.quadrature.get_points_weights`.
