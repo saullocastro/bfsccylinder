@@ -7,7 +7,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I &#8212; bfsccylinder 0.7.3 documentation</title>
+    <title>Torsional buckling of ring-stiffened cylinders: Moore and Wescoat (1944), Table I &#8212; bfsccylinder 0.7.4 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=75c7c72ae941e8b558d8" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=75c7c72ae941e8b558d8" />
 
-    <script src="../_static/documentation_options.js?v=c98573da"></script>
+    <script src="../_static/documentation_options.js?v=020ce317"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -54,7 +54,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="color-scheme" content="light dark"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.7.3" />
+  <meta name="docsearch:version" content="0.7.4" />
   
     
     <script src="../_static/searchtools.js"></script>
@@ -122,7 +122,7 @@
   
   
   
-    <p class="title logo__title">bfsccylinder 0.7.3 documentation</p>
+    <p class="title logo__title">bfsccylinder 0.7.4 documentation</p>
   
 </a></div>
     
@@ -943,13 +943,13 @@ of the ring centres.</p>
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-59 s
+74 s
 spec           (1.0, 60, 2)         (0.5, 120, 2)        (0.35, 180, 2)        (0.25, 240, 4)
 16           1412.2 (n=14)   1403.7 (n=14) -0.60%  1402.6 (n=14) -0.08%  1402.1 (n=14) -0.04%
 17           1604.8 (n=15)   1593.4 (n=15) -0.71%  1591.6 (n=15) -0.11%  1590.8 (n=15) -0.05%
-18           2279.4 (n=20)   2255.3 (n=20) -1.06%  2252.3 (n=20) -0.13%  2251.0 (n=20) -0.06%
+18           2279.4 (n=40)   2255.3 (n=20) -1.06%  2252.3 (n=20) -0.13%  2251.0 (n=20) -0.06%
 13           2847.6 (n=23)   2813.8 (n=23) -1.19%  2810.1 (n=23) -0.13%  2808.6 (n=23) -0.06%
-13A          2868.7 (n=23)   2833.4 (n=23) -1.23%  2828.9 (n=23) -0.16%  2827.1 (n=23) -0.06%
+13A          2868.7 (n=37)   2833.4 (n=23) -1.23%  2828.9 (n=23) -0.16%  2827.1 (n=23) -0.06%
 </pre></div></div>
 </div>
 <p>Each entry is <span class="math notranslate nohighlight">\(\tau_{cr}\)</span> (psi), the wave number of the lowest mode and the change from the previous mesh. The change at the last refinement is below 1 % for every specimen (see the table), so the third mesh, <code class="docutils literal notranslate"><span class="pre">(0.35,</span> <span class="pre">180,</span> <span class="pre">2)</span></code>, is used below.</p>
@@ -1152,23 +1152,30 @@ so that the rotational restraint of the skin by the rings matters, and the ring 
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
+<div class="nboutput docutils container">
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 specimen 16 : largest |w| at x = 17.8 in; |w| &gt; 0.5 max for 6.6 &lt;= x &lt;= 29.0 in
 specimen 17 : largest |w| at x = 17.8 in; |w| &gt; 0.5 max for 9.1 &lt;= x &lt;= 26.5 in
-specimen 18 : largest |w| at x = 24.6 in; |w| &gt; 0.5 max for 7.0 &lt;= x &lt;= 28.7 in
+specimen 18 : largest |w| at x = 11.1 in; |w| &gt; 0.5 max for 7.0 &lt;= x &lt;= 28.7 in
 specimen 13 : largest |w| at x = 31.2 in; |w| &gt; 0.5 max for 1.7 &lt;= x &lt;= 33.9 in
 specimen 13A: largest |w| at x = 22.1 in; |w| &gt; 0.5 max for 10.8 &lt;= x &lt;= 24.9 in
 </pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_moore1944_ring_cylinders_21_1.png" src="../_images/notebooks_moore1944_ring_cylinders_21_1.png" />
+</div>
 </div>
 </section>
 <section id="Wave-number">
 <h2>Wave number<a class="headerlink" href="#Wave-number" title="Link to this heading">#</a></h2>
 <p><span class="math notranslate nohighlight">\(\tau_{cr}\)</span> against <span class="math notranslate nohighlight">\(n\)</span> (baseline, hinged):</p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -1183,6 +1190,13 @@ specimen 13A: largest |w| at x = 22.1 in; |w| &gt; 0.5 max for 10.8 &lt;= x &lt;
 <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_moore1944_ring_cylinders_23_0.png" src="../_images/notebooks_moore1944_ring_cylinders_23_0.png" />
 </div>
 </div>
 </section>
