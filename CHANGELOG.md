@@ -2,7 +2,7 @@
 
 The dates of the released versions are those of their tagged commits.
 
-## 0.7.3 (2026-11-26)
+## 0.7.4 (2026-11-28)
 
 ### Tutorials
 
@@ -168,6 +168,15 @@ The dates of the released versions are those of their tagged commits.
 - The installation page refers to `requirements.txt` for the required
   version of structsolve, without repeating the number.
 - Typo "Integration poins" in the Parameters of the `update_*` functions.
+- The notebook `moore1944_ring_cylinders.ipynb` re-executed with the
+  present versions of bfsccylinder and its dependencies: the figures of the
+  buckling modes and of the buckling stress against the wave number are
+  stored. The buckling stresses are unchanged; on the coarsest mesh the
+  scan over the wave number reports n = 40 and n = 37 for specimens 18 and
+  13A, the partners of n = 20 and n = 23 on 60 slices with the same
+  stress, and the largest deflection of specimen 18 at the mirrored station
+  x = 11.1 in. The other notebooks give their stored outputs to the
+  round-off.
 
 ## 0.7.0 (2026-10-26)
 
